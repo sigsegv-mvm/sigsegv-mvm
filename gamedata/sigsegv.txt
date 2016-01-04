@@ -1,0 +1,31 @@
+/**
+ * sigsegv
+ */
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CTFGameRules::PushAllPlayersAway"
+			{
+				"library" "server"
+				"linux"   "@_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
+				"mac"     "@_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
+				
+				/* 20151223a: 0x1041dbb0 */
+				"windows" "\x55\x8B\xEC\x83\xEC\x2C\x6A\x00"
+			}
+		}
+		
+		"Offsets"
+		{
+			"CTFGameRules::m_bPlayingMannVsMachine"
+			{
+				"class" "CTFGameRulesProxy"
+				"prop"  "m_bPlayingMannVsMachine"
+			}
+		}
+	}
+}

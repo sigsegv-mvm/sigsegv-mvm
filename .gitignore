@@ -1,0 +1,5 @@
+build/
+MSVC14/Debug/
+MSVC14/Release/
+MSVC14/*.suo
+MSVC14/*.user
