@@ -5,6 +5,7 @@
 /* C++ standard library */
 #include <algorithm>
 #include <list>
+#include <map>
 
 /* Source SDK */
 #include <tier0/dbg.h>

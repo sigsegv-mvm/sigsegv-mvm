@@ -42,7 +42,7 @@ void CModManager::LoadAllMods()
 {
 	for (auto info : s_Mods) {
 		if (!info->m_bLoaded) {
-			bool ok = info->m_pMod->OnLoad(info->m_szError, sizeof(info->m_szError));
+			bool ok = info->m_pMod->InvokeLoad(info->m_szError, sizeof(info->m_szError));
 			
 			info->m_bFailed = !ok;
 			info->m_bLoaded = ok;
@@ -54,7 +54,7 @@ void CModManager::UnloadAllMods()
 {
 	for (auto info : s_Mods) {
 		if (info->m_bLoaded) {
-			info->m_pMod->OnUnload();
+			info->m_pMod->InvokeUnload();
 			info->m_bLoaded = false;
 		}
 	}

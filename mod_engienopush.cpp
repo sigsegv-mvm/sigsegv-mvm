@@ -47,29 +47,21 @@ public:
 	
 	virtual bool OnLoad(char *error, size_t maxlen) override
 	{
-		MOD_DETOUR_CREATE_MEMBER(CTFBotMvMEngineerTeleportSpawn, Update);
-		MOD_DETOUR_CREATE_MEMBER(CTFBotMvMEngineerBuildSentryGun, Update);
-		MOD_DETOUR_CREATE_MEMBER(CTFBotMvMEngineerBuildTeleportExit, Update);
-		MOD_DETOUR_CREATE_MEMBER(CTFGameRules, PushAllPlayersAway);
+		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerTeleportSpawn, Update);
+		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildSentryGun, Update);
+		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildTeleportExit, Update);
+		MOD_ADD_DETOUR_MEMBER(CTFGameRules, PushAllPlayersAway);
 		
 		return true;
 	}
 	
 	virtual void OnUnload() override
 	{
-		MOD_DETOUR_DESTROY_MEMBER(CTFGameRules, PushAllPlayersAway);
-		MOD_DETOUR_DESTROY_MEMBER(CTFBotMvMEngineerBuildTeleportExit, Update);
-		MOD_DETOUR_DESTROY_MEMBER(CTFBotMvMEngineerBuildSentryGun, Update);
-		MOD_DETOUR_DESTROY_MEMBER(CTFBotMvMEngineerTeleportSpawn, Update);
 	}
 	
 	void SetEnabled(bool enable)
 	{
-		MOD_DETOUR_TOGGLE_MEMBER(enable, CTFBotMvMEngineerTeleportSpawn, Update);
-		MOD_DETOUR_TOGGLE_MEMBER(enable, CTFBotMvMEngineerBuildSentryGun, Update);
-		MOD_DETOUR_TOGGLE_MEMBER(enable, CTFBotMvMEngineerBuildTeleportExit, Update);
-		MOD_DETOUR_TOGGLE_MEMBER(enable, CTFGameRules, PushAllPlayersAway);
-		
+		this->ToggleAllDetours(enable);
 		this->m_bEnabled = enable;
 	}
 	
