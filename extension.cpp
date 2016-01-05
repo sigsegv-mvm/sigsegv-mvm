@@ -1,7 +1,6 @@
-#include "common.h"
-
-
-std::set<IMod *> g_Mods;
+#include "extension.h"
+#include "detours.h"
+#include "modmanager.h"
 
 
 CExtSigsegv g_Ext;
@@ -10,33 +9,43 @@ SMEXT_LINK(&g_Ext);
 
 ICvar *icvar;
 
+ISDKTools *g_pSDKTools;
+
 IGameConfig *g_pGameConf;
 
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
+	sharesys->AddDependency(myself, "sdktools.ext", true, true);
+	
 	if (!gameconfs->LoadGameConfigFile("sigsegv", &g_pGameConf, error, maxlen)) {
 		return false;
 	}
 	
 	CDetourManager::Init(g_pSM->GetScriptingEngine(), g_pGameConf);
 	
-	FOR_EACH_MOD {
-		if (!mod->OnLoad()) {
-			return false;
-		}
-	}
+	CModManager::LoadAllMods();
 	
 	return true;
 }
 
 void CExtSigsegv::SDK_OnUnload()
 {
-	FOR_EACH_MOD {
-		mod->OnUnload();
-	}
+	CModManager::UnloadAllMods();
 	
 	gameconfs->CloseGameConfigFile(g_pGameConf);
+}
+
+void CExtSigsegv::SDK_OnAllLoaded()
+{
+	SM_GET_LATE_IFACE(SDKTOOLS, g_pSDKTools);
+}
+
+bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
+{
+	SM_CHECK_IFACE(SDKTOOLS, g_pSDKTools);
+	
+	return true;
 }
 
 

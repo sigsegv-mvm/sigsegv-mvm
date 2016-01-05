@@ -2,32 +2,24 @@
 #define _INCLUDE_SIGSEGV_MOD_H_
 
 
+#include "common.h"
+
+
 class IMod
 {
 public:
-	virtual bool OnLoad() = 0;
+	virtual const char *GetName() const final { return this->m_pszName; }
+	
+	virtual bool OnLoad(char *err, size_t maxlen) = 0;
 	virtual void OnUnload() = 0;
 	
 protected:
-	IMod();
+	IMod(const char *name);
 	virtual ~IMod();
+	
+private:
+	const char *m_pszName;
 };
-
-
-extern std::set<IMod *> g_Mods;
-#define FOR_EACH_MOD for (auto mod : g_Mods)
-
-
-inline IMod::IMod()
-{
-	assert(g_Mods.find(this) == g_Mods.end());
-	g_Mods.insert(this);
-}
-
-inline IMod::~IMod()
-{
-	g_Mods.erase(this);
-}
 
 
 #endif

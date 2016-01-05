@@ -119,14 +119,27 @@
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c" />
     <ClCompile Include="$(SOURCEMOD18)\public\CDetour\detours.cpp" />
     <ClCompile Include="..\extension.cpp" />
+    <ClCompile Include="..\mod.cpp" />
+    <ClCompile Include="..\modmanager.cpp" />
     <ClCompile Include="..\mod_engienopush.cpp" />
+    <ClCompile Include="..\prop.cpp" />
     <ClCompile Include="..\smsdk_ext.cpp" />
+    <ClCompile Include="..\stub.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common.h" />
+    <ClInclude Include="..\detours.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\mod.h" />
+    <ClInclude Include="..\modmanager.h" />
+    <ClInclude Include="..\prop.h" />
+    <ClInclude Include="..\sdk2013.h" />
     <ClInclude Include="..\smsdk_config.h" />
+    <ClInclude Include="..\smsdk_ext.h" />
+    <ClInclude Include="..\stub_gamerules.h" />
+    <ClInclude Include="..\stub_misc.h" />
+    <ClInclude Include="..\stub_nextbot_behavior.h" />
+    <ClInclude Include="..\util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

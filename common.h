@@ -3,32 +3,19 @@
 
 
 /* C++ standard library */
-#include <set>
+#include <algorithm>
+#include <list>
 
 /* Source SDK */
 #include <tier0/dbg.h>
 #include <tier1/convar.h>
+#include "sdk2013.h"
+
+/* SourceMod */
+#include <ISDKTools.h>
 
 /* SourceMod */
 #include <smsdk_ext.h>
-#include <CDetour/detours.h>
-
-/* this extension */
-#include "mod.h"
-
-
-#define DETOUR_DECL_MEMBER_V(name, ret, ...) \
-class name##Class \
-{ \
-public: \
-	ret name(__VA_ARGS__); \
-	static ret (name##Class::* name##_Actual)(__VA_ARGS__); \
-}; \
-ret (name##Class::* name##Class::name##_Actual)(__VA_ARGS__) = NULL; \
-ret name##Class::name(__VA_ARGS__)
-
-
-class CTFPlayer;
 
 
 #endif

@@ -2,7 +2,16 @@
 #define _INCLUDE_SIGSEGV_EXTENSION_H_
 
 
+/* seriously? */
+#define maxlength maxlen
+
+
 #include "common.h"
+
+
+extern ISDKTools *g_pSDKTools;
+
+extern IGameConfig *g_pGameConf;
 
 
 class CExtSigsegv : public SDKExtension, public IConCommandBaseAccessor
@@ -10,9 +19,9 @@ class CExtSigsegv : public SDKExtension, public IConCommandBaseAccessor
 public:
 	virtual bool SDK_OnLoad(char *error, size_t maxlen, bool late);
 	virtual void SDK_OnUnload();
-//	virtual void SDK_OnAllLoaded();
+	virtual void SDK_OnAllLoaded();
 //	virtual void SDK_OnPauseChange(bool paused);
-//	virtual bool QueryRunning(char *error, size_t maxlen);
+	virtual bool QueryRunning(char *error, size_t maxlen);
 	
 #if defined SMEXT_CONF_METAMOD
 	virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late);
@@ -22,9 +31,6 @@ public:
 	
 	bool RegisterConCommandBase(ConCommandBase *pCommand);
 };
-
-
-extern IGameConfig *g_pGameConf;
 
 
 #endif
