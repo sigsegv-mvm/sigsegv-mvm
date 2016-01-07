@@ -1,4 +1,5 @@
 #include "extension.h"
+#include "link_nextbot.h"
 #include "detours.h"
 #include "modmanager.h"
 
@@ -8,6 +9,8 @@ SMEXT_LINK(&g_Ext);
 
 
 ICvar *icvar;
+IEngineTrace *enginetrace;
+IStaticPropMgrServer *staticpropmgr;
 
 ISDKTools *g_pSDKTools;
 
@@ -19,6 +22,10 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 	
 	if (!gameconfs->LoadGameConfigFile("sigsegv", &g_pGameConf, error, maxlen)) {
+		return false;
+	}
+	
+	if (!Link_NextBot::InitAll(error, maxlen)) {
 		return false;
 	}
 	
@@ -54,6 +61,9 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;
 	ConVar_Register(0, this);
+	
+	GET_V_IFACE_ANY(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
+	GET_V_IFACE_ANY(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
 	
 	return true;
 }

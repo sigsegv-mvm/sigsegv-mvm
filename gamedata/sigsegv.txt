@@ -8,14 +8,577 @@
 	{
 		"Signatures"
 		{
+			"INextBotEventResponder::~INextBotEventResponder [D0]"
+			{
+				"library" "server"
+				"linux"   "@_ZN22INextBotEventResponderD0Ev"
+			}
+			"INextBotEventResponder::~INextBotEventResponder [D2]"
+			{
+				"library" "server"
+				"linux"   "@_ZN22INextBotEventResponderD2Ev"
+			}
+			
+			
+			"IContextualQuery::~IContextualQuery [D0]"
+			{
+				"library" "server"
+				"linux"   "@_ZN16IContextualQueryD0Ev"
+			}
+			"IContextualQuery::~IContextualQuery [D2]"
+			{
+				"library" "server"
+				"linux"   "@_ZN16IContextualQueryD2Ev"
+			}
+			"IContextualQuery::ShouldPickUp"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery12ShouldPickUpEPK8INextBotP11CBaseEntity"
+			}
+			"IContextualQuery::ShouldHurry"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery11ShouldHurryEPK8INextBot"
+			}
+			"IContextualQuery::ShouldRetreat"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery13ShouldRetreatEPK8INextBot"
+			}
+			"IContextualQuery::ShouldAttack"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery12ShouldAttackEPK8INextBotPK12CKnownEntity"
+			}
+			"IContextualQuery::IsHindrance"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery11IsHindranceEPK8INextBotP11CBaseEntity"
+			}
+			"IContextualQuery::SelectTargetPoint"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery17SelectTargetPointEPK8INextBotPK20CBaseCombatCharacter"
+			}
+			"IContextualQuery::IsPositionAllowed"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery17IsPositionAllowedEPK8INextBotRK6Vector"
+			}
+			"IContextualQuery::SelectMoreDangerousThreat"
+			{
+				"library" "server"
+				"linux"   "@_ZNK16IContextualQuery25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+			}
+			
+			
+			"Action<CTFBot>::~Action [D2]"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotED2Ev"
+			}
+			"INER Action<CTFBot>::FirstContainedResponder"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6ActionI6CTFBotE23FirstContainedResponderEv"
+			}
+			"INER Action<CTFBot>::NextContainedResponder"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6ActionI6CTFBotE22NextContainedResponderEP22INextBotEventResponder"
+			}
+			"INER Action<CTFBot>::OnLeaveGround"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnLeaveGroundEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnLandOnGround"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnLandOnGroundEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnContact"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnContactEP11CBaseEntityP10CGameTrace"
+			}
+			"INER Action<CTFBot>::OnMoveToSuccess"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnMoveToSuccessEPK4Path"
+			}
+			"INER Action<CTFBot>::OnMoveToFailure"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnMoveToFailureEPK4Path17MoveToFailureType"
+			}
+			"INER Action<CTFBot>::OnStuck"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnStuckEv"
+			}
+			"INER Action<CTFBot>::OnUnStuck"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnUnStuckEv"
+			}
+			"INER Action<CTFBot>::OnPostureChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnPostureChangedEv"
+			}
+			"INER Action<CTFBot>::OnAnimationActivityComplete"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE27OnAnimationActivityCompleteEi"
+			}
+			"INER Action<CTFBot>::OnAnimationActivityInterrupted"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE30OnAnimationActivityInterruptedEi"
+			}
+			"INER Action<CTFBot>::OnAnimationEvent"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnAnimationEventEP11animevent_t"
+			}
+			"INER Action<CTFBot>::OnIgnite"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnIgniteEv"
+			}
+			"INER Action<CTFBot>::OnInjured"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnInjuredERK15CTakeDamageInfo"
+			}
+			"INER Action<CTFBot>::OnKilled"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnKilledERK15CTakeDamageInfo"
+			}
+			"INER Action<CTFBot>::OnOtherKilled"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnOtherKilledEP20CBaseCombatCharacterRK15CTakeDamageInfo"
+			}
+			"INER Action<CTFBot>::OnSight"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnSightEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnLostSight"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE11OnLostSightEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnSound"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnSoundEP11CBaseEntityRK6VectorP9KeyValues"
+			}
+			"INER Action<CTFBot>::OnSpokeConcept"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnSpokeConceptEP20CBaseCombatCharacterPKcP11AI_Response"
+			}
+			"INER Action<CTFBot>::OnWeaponFired"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnWeaponFiredEP20CBaseCombatCharacterP17CBaseCombatWeapon"
+			}
+			"INER Action<CTFBot>::OnNavAreaChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnNavAreaChangedEP8CNavAreaS3_"
+			}
+			"INER Action<CTFBot>::OnModelChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnModelChangedEv"
+			}
+			"INER Action<CTFBot>::OnPickUp"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnPickUpEP11CBaseEntityP20CBaseCombatCharacter"
+			}
+			"INER Action<CTFBot>::OnDrop"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE6OnDropEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnActorEmoted"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnActorEmotedEP20CBaseCombatCharacteri"
+			}
+			"INER Action<CTFBot>::OnCommandAttack"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandAttackEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnCommandApproach(vec)"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE17OnCommandApproachERK6Vectorf"
+			}
+			"INER Action<CTFBot>::OnCommandApproach(ent)"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE17OnCommandApproachEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnCommandRetreat"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnCommandRetreatEP11CBaseEntityf"
+			}
+			"INER Action<CTFBot>::OnCommandPause"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnCommandPauseEf"
+			}
+			"INER Action<CTFBot>::OnCommandResume"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandResumeEv"
+			}
+			"INER Action<CTFBot>::OnCommandString"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandStringEPKc"
+			}
+			"INER Action<CTFBot>::OnShoved"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnShovedEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnBlinded"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnBlindedEP11CBaseEntity"
+			}
+			"INER Action<CTFBot>::OnTerritoryContested"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE20OnTerritoryContestedEi"
+			}
+			"INER Action<CTFBot>::OnTerritoryCaptured"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE19OnTerritoryCapturedEi"
+			}
+			"INER Action<CTFBot>::OnTerritoryLost"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnTerritoryLostEi"
+			}
+			"INER Action<CTFBot>::OnWin"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE5OnWinEv"
+			}
+			"INER Action<CTFBot>::OnLose"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE6OnLoseEv"
+			}
+			"Action<CTFBot>::IsNamed"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6ActionI6CTFBotE7IsNamedEPKc"
+			}
+			"Action<CTFBot>::GetFullName"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6ActionI6CTFBotE11GetFullNameEv"
+			}
+			"Action<CTFBot>::OnStart"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnStartEPS0_PS1_"
+			}
+			"Action<CTFBot>::Update"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE6UpdateEPS0_f"
+			}
+			"Action<CTFBot>::OnEnd"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE5OnEndEPS0_PS1_"
+			}
+			"Action<CTFBot>::OnSuspend"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnSuspendEPS0_PS1_"
+			}
+			"Action<CTFBot>::OnResume"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnResumeEPS0_PS1_"
+			}
+			"Action<CTFBot>::InitialContainedAction"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE22InitialContainedActionEPS0_"
+			}
+			"Action<CTFBot>::OnLeaveGround"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnLeaveGroundEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnLandOnGround"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnLandOnGroundEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnContact"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnContactEPS0_P11CBaseEntityP10CGameTrace"
+			}
+			"Action<CTFBot>::OnMoveToSuccess"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnMoveToSuccessEPS0_PK4Path"
+			}
+			"Action<CTFBot>::OnMoveToFailure"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnMoveToFailureEPS0_PK4Path17MoveToFailureType"
+			}
+			"Action<CTFBot>::OnStuck"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnStuckEPS0_"
+			}
+			"Action<CTFBot>::OnUnStuck"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnUnStuckEPS0_"
+			}
+			"Action<CTFBot>::OnPostureChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnPostureChangedEPS0_"
+			}
+			"Action<CTFBot>::OnAnimationActivityComplete"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE27OnAnimationActivityCompleteEPS0_i"
+			}
+			"Action<CTFBot>::OnAnimationActivityInterrupted"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE30OnAnimationActivityInterruptedEPS0_i"
+			}
+			"Action<CTFBot>::OnAnimationEvent"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnAnimationEventEPS0_P11animevent_t"
+			}
+			"Action<CTFBot>::OnIgnite"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnIgniteEPS0_"
+			}
+			"Action<CTFBot>::OnInjured"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnInjuredEPS0_RK15CTakeDamageInfo"
+			}
+			"Action<CTFBot>::OnKilled"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnKilledEPS0_RK15CTakeDamageInfo"
+			}
+			"Action<CTFBot>::OnOtherKilled"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnOtherKilledEPS0_P20CBaseCombatCharacterRK15CTakeDamageInfo"
+			}
+			"Action<CTFBot>::OnSight"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnSightEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnLostSight"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE11OnLostSightEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnSound"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE7OnSoundEPS0_P11CBaseEntityRK6VectorP9KeyValues"
+			}
+			"Action<CTFBot>::OnSpokeConcept"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnSpokeConceptEPS0_P20CBaseCombatCharacterPKcP11AI_Response"
+			}
+			"Action<CTFBot>::OnWeaponFired"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnWeaponFiredEPS0_P20CBaseCombatCharacterP17CBaseCombatWeapon"
+			}
+			"Action<CTFBot>::OnNavAreaChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnNavAreaChangedEPS0_P8CNavAreaS4_"
+			}
+			"Action<CTFBot>::OnModelChanged"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnModelChangedEPS0_"
+			}
+			"Action<CTFBot>::OnPickUp"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnPickUpEPS0_P11CBaseEntityP20CBaseCombatCharacter"
+			}
+			"Action<CTFBot>::OnDrop"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE6OnDropEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnActorEmoted"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE13OnActorEmotedEPS0_P20CBaseCombatCharacteri"
+			}
+			"Action<CTFBot>::OnCommandAttack"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandAttackEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnCommandApproach(vec)"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE17OnCommandApproachEPS0_RK6Vectorf"
+			}
+			"Action<CTFBot>::OnCommandApproach(ent)"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE17OnCommandApproachEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnCommandRetreat"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE16OnCommandRetreatEPS0_P11CBaseEntityf"
+			}
+			"Action<CTFBot>::OnCommandPause"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE14OnCommandPauseEPS0_f"
+			}
+			"Action<CTFBot>::OnCommandResume"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandResumeEPS0_"
+			}
+			"Action<CTFBot>::OnCommandString"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnCommandStringEPS0_PKc"
+			}
+			"Action<CTFBot>::OnShoved"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE8OnShovedEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnBlinded"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE9OnBlindedEPS0_P11CBaseEntity"
+			}
+			"Action<CTFBot>::OnTerritoryContested"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE20OnTerritoryContestedEPS0_i"
+			}
+			"Action<CTFBot>::OnTerritoryCaptured"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE19OnTerritoryCapturedEPS0_i"
+			}
+			"Action<CTFBot>::OnTerritoryLost"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE15OnTerritoryLostEPS0_i"
+			}
+			"Action<CTFBot>::OnWin"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE5OnWinEPS0_"
+			}
+			"Action<CTFBot>::OnLose"
+			{
+				"library" "server"
+				"linux"   "@_ZN6ActionI6CTFBotE6OnLoseEPS0_"
+			}
+			"Action<CTFBot>::IsAbleToBlockMovementOf"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6ActionI6CTFBotE23IsAbleToBlockMovementOfEPK8INextBot"
+			}
+			
+			
 			"CTFGameRules::PushAllPlayersAway"
 			{
 				"library" "server"
 				"linux"   "@_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
-				"mac"     "@_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
 				
-				/* 20151223a: 0x1041dbb0 */
+				/* 20151223a: 0x41cfb0 */
 				"windows" "\x55\x8B\xEC\x83\xEC\x2C\x6A\x00"
+			}
+			
+			
+			"CTFBotMvMEngineerTeleportSpawn::Update"
+			{
+				"library" "server"
+				"linux"   "@_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"
+			}
+			
+			
+			"CTFBotMvMEngineerBuildSentryGun::Update"
+			{
+				"library" "server"
+				"linux"   "@_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
+			}
+			
+			
+			"CTFBotMvMEngineerBuildTeleportExit::Update"
+			{
+				"library" "server"
+				"linux"   "@_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
+			}
+			
+			
+			"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
+			{
+				"library" "server"
+				"linux"   "@_ZN21CTFBotScenarioMonitor29DesiredScenarioAndClassActionEP6CTFBot"
+			}
+			
+			
+			"CTFSniperRifle::ItemPostFrame"
+			{
+				"library" "server"
+				"linux"   "@_ZN14CTFSniperRifle13ItemPostFrameEv"
+				
+				/* 20151223a: 0x598850 */
+				"windows" ""
+			}
+			
+			
+			"CTFSniperRifleClassic::ItemPostFrame"
+			{
+				"library" "server"
+				"linux"   "@_ZN21CTFSniperRifleClassic13ItemPostFrameEv"
+				
+				/* 20151223a: 0x598c28 */
+				"windows" ""
 			}
 		}
 		

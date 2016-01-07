@@ -5,14 +5,20 @@ projectName = 'sigsegv'
 
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
+  '../sourcemod/public/CDetour/detours.cpp',
+  '../sourcemod/public/asm/asm.c',
+  'sizeof.cpp',
   'extension.cpp',
+  'patch.cpp',
   'prop.cpp',
   'stub.cpp',
+  'link_nextbot.cpp',
+  'link_nextbot2.cpp',
   'modmanager.cpp',
   'mod.cpp',
   'mod_engienopush.cpp',
-  '../sourcemod/public/CDetour/detours.cpp',
-  '../sourcemod/public/asm/asm.c',
+  'mod_sniperchargeuncap.cpp',
+  'mod_stickypusher.cpp',
 ]
 
 ###############

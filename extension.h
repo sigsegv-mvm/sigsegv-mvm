@@ -9,6 +9,10 @@
 #include "common.h"
 
 
+extern ICvar *icvar;
+extern IEngineTrace *enginetrace;
+extern IStaticPropMgrServer *staticpropmgr;
+
 extern ISDKTools *g_pSDKTools;
 
 extern IGameConfig *g_pGameConf;

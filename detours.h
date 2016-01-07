@@ -104,10 +104,6 @@ public:
 	 */
 	void EnableDetour();
 	void DisableDetour();
-	void SetEnabled(bool enable)
-	{
-		if (enable) EnableDetour(); else DisableDetour();
-	}
 
 	void Destroy();
 

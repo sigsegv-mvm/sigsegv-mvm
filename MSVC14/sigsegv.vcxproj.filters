@@ -38,6 +38,12 @@
     <ClCompile Include="..\stub.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\mod_sniperchargeuncap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\extension.h">
@@ -77,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\sdk2013.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\patch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

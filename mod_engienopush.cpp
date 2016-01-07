@@ -37,38 +37,23 @@ DETOUR_DECL_MEMBER(void, CTFGameRules_PushAllPlayersAway, const Vector *v1, floa
 }
 
 
-#define MOD_CLASS CMod_EngieNoPush
-#define MOD_NAME "EngieNoPush"
-
-class MOD_CLASS : public IMod
+class CMod_EngieNoPush : public IMod
 {
 public:
-	MOD_CLASS() : IMod(MOD_NAME) {}
-	
-	virtual bool OnLoad(char *error, size_t maxlen) override
+	CMod_EngieNoPush() : IMod("EngieNoPush")
 	{
 		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerTeleportSpawn, Update);
 		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildSentryGun, Update);
 		MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildTeleportExit, Update);
 		MOD_ADD_DETOUR_MEMBER(CTFGameRules, PushAllPlayersAway);
-		
-		return true;
-	}
-	
-	virtual void OnUnload() override
-	{
 	}
 	
 	void SetEnabled(bool enable)
 	{
 		this->ToggleAllDetours(enable);
-		this->m_bEnabled = enable;
 	}
-	
-private:
-	bool m_bEnabled = false;
 };
-static MOD_CLASS s_Mod;
+static CMod_EngieNoPush s_Mod;
 
 
 static ConVar cvar_enable("sigsegv_engienopush_enable", "0", FCVAR_NOTIFY,

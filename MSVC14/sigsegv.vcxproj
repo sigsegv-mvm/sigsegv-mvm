@@ -123,6 +123,8 @@
     <ClCompile Include="..\mod.cpp" />
     <ClCompile Include="..\modmanager.cpp" />
     <ClCompile Include="..\mod_engienopush.cpp" />
+    <ClCompile Include="..\mod_sniperchargeuncap.cpp" />
+    <ClCompile Include="..\patch.cpp" />
     <ClCompile Include="..\prop.cpp" />
     <ClCompile Include="..\smsdk_ext.cpp" />
     <ClCompile Include="..\stub.cpp" />
@@ -133,6 +135,7 @@
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\mod.h" />
     <ClInclude Include="..\modmanager.h" />
+    <ClInclude Include="..\patch.h" />
     <ClInclude Include="..\prop.h" />
     <ClInclude Include="..\sdk2013.h" />
     <ClInclude Include="..\smsdk_config.h" />
