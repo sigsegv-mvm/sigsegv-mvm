@@ -38,13 +38,13 @@ struct CPatch_UncapChargeRate_Common : public IPatch
 struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch_UncapChargeRate_Common
 {
 	virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
-	virtual uint32_t GetOffset() const override { return 0x26a; }
+	virtual uint32_t GetFuncOffset() const override { return 0x026a; }
 };
 
 struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Common
 {
 	virtual const char *GetFuncName() const override { return "CTFSniperRifleClassic::ItemPostFrame"; }
-	virtual uint32_t GetOffset() const override { return 0x146; }
+	virtual uint32_t GetFuncOffset() const override { return 0x0146; }
 };
 
 #elif defined _WIN32
@@ -88,13 +88,13 @@ struct CPatch_UncapChargeRate_Common : public IPatch
 struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch_UncapChargeRate_Common
 {
 	virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
-	virtual uint32_t GetOffset() const override { return (0x5989be - 0x598850); }
+	virtual uint32_t GetFuncOffset() const override { return (0x5989be - 0x598850); }
 };
 
 struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Common
 {
 	virtual const char *GetFuncName() const override { return "CTFSniperRifleClassic::ItemPostFrame"; }
-	virtual uint32_t GetOffset() const override { return (0x598c42 - 0x598ae0); }
+	virtual uint32_t GetFuncOffset() const override { return (0x598c42 - 0x598ae0); }
 };
 
 #endif

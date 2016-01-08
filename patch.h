@@ -90,15 +90,16 @@ public:
 	virtual void Apply();
 	virtual void UnApply();
 	
+	virtual int GetLength() const final { return this->m_iLength; }
+	virtual const char *GetFuncName() const = 0;
+	virtual uint32_t GetFuncOffset() const = 0;
+	
 protected:
 	IPatch(int len) :
 		m_iLength(len),
 		m_BufVerify(len), m_BufPatch(len),
 		m_MaskVerify(len), m_MaskPatch(len),
 		m_BufRestore(len) {}
-	
-	virtual const char *GetFuncName() const = 0;
-	virtual uint32_t GetOffset() const = 0;
 	
 	virtual void GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	virtual void GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
@@ -107,7 +108,7 @@ private:
 	const int m_iLength;
 	
 	const char *m_pszFuncName = nullptr;
-	uint32_t m_iOffset  = 0;
+	uint32_t m_iFuncOffset = 0;
 	
 	ByteBuf m_BufVerify;
 	ByteBuf m_BufPatch;

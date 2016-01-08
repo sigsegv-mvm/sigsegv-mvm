@@ -1,5 +1,7 @@
 #include "mod.h"
 #include "re_nextbot.h"
+#include "stub_baseentity.h"
+#include "stub_cmissionpopulator.h"
 
 
 constexpr int MISSION_PUSHSTICKIES = 7;
@@ -10,14 +12,14 @@ class CTFBotMissionPushStickies : public Action<CTFBot>
 public:
 	CTFBotMissionPushStickies()
 	{
-		DevMsg("%s\n", __PRETTY_FUNCTION__);
+		DevMsg("CTFBotMissionPushStickies::CTFBotMissionPushStickies\n");
 		
 		// TODO
 	}
 	
 	virtual ~CTFBotMissionPushStickies()
 	{
-		DevMsg("%s\n", __PRETTY_FUNCTION__);
+		DevMsg("CTFBotMissionPushStickies::~CTFBotMissionPushStickies\n");
 		
 		// TODO
 	}
@@ -26,7 +28,7 @@ public:
 	
 	virtual ActionResult<CTFBot> OnStart(CTFBot *actor, Action<CTFBot> *action) override
 	{
-		DevMsg("%s\n", __PRETTY_FUNCTION__);
+		DevMsg("CTFBotMissionPushStickies::OnStart(#%d)\n", ENTINDEX(actor));
 		
 		// TODO
 		
@@ -35,7 +37,7 @@ public:
 	
 	virtual ActionResult<CTFBot> Update(CTFBot *actor, float dt) override
 	{
-		DevMsg("%s\n", __PRETTY_FUNCTION__);
+		DevMsg("CTFBotMissionPushStickies::Update(#%d)\n", ENTINDEX(actor));
 		
 		// TODO
 		
@@ -44,21 +46,59 @@ public:
 	
 	virtual void OnEnd(CTFBot *actor, Action<CTFBot> *action) override
 	{
-		DevMsg("%s\n", __PRETTY_FUNCTION__);
+		DevMsg("CTFBotMissionPushStickies::OnEnd(#%d)\n", ENTINDEX(actor));
 		
 		// TODO
 	}
 };
 
 
+static RefCount s_rcCMissionPopulator_Parse;
+DETOUR_DECL_MEMBER(void, CMissionPopulator_Parse, KeyValues *kv)
+{
+	SCOPED_INCREMENT(s_rcCMissionPopulator_Parse);
+	return DETOUR_MEMBER_CALL(CMissionPopulator_Parse)(kv);
+}
+
+DETOUR_DECL_MEMBER(bool, CSpawnLocation_Parse, KeyValues *kv)
+{
+	if (s_rcCMissionPopulator_Parse.NonZero()) {
+		if (V_stricmp(kv->GetName(), "Objective") == 0 &&
+			V_stricmp(kv->GetString(), "PushStickies") == 0) {
+			int *p_m_Objective = (int *)((uintptr_t)this - (offsetof(CMissionPopulator, m_Where) -
+				offsetof(CMissionPopulator, m_Objective)));
+			
+			*p_m_Objective = MISSION_PUSHSTICKIES;
+			return true;
+		}
+	}
+	
+	return DETOUR_MEMBER_CALL(CSpawnLocation_Parse)(kv);
+}
+
+
+DETOUR_DECL_MEMBER(void, CMissionPopulator_Update)
+{
+	DETOUR_MEMBER_CALL(CMissionPopulator_Update)();
+	
+	CMissionPopulator *realthis = reinterpret_cast<CMissionPopulator *>(this);
+	
+	int objective = realthis->m_Objective;
+	if (objective == MISSION_PUSHSTICKIES) {
+		realthis->UpdateMission(objective);
+	}
+}
+
+
 // TODO: detour to make CMissionPopulator::Update call CMissionPopulator::UpdateMission for mission numbers above 5
 // TODO: detour to add "PushStickies" as a valid Objective KV for CMissionPopulator::Parse
 // TODO: detour to make CTFBotScenarioMonitor::DesiredScenarioAndClassAction select CTFBotMissionPushStickies for MISSION_PUSHSTICKIES
 
-// TODO: make sure vtable for CTFBotMissionPushStickies is getting set up right...
 
 DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
 {
+	DevMsg("CTFBotScenarioMonitor::DesiredScenarioAndClassAction\n");
+	
 	return new CTFBotMissionPushStickies();
 	
 	//DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
@@ -70,6 +110,11 @@ class CMod_StickyPusher : public IMod
 public:
 	CMod_StickyPusher() : IMod("StickyPusher")
 	{
+		MOD_ADD_DETOUR_MEMBER(CMissionPopulator, Parse);
+		MOD_ADD_DETOUR_MEMBER(CSpawnLocation, Parse);
+		
+		MOD_ADD_DETOUR_MEMBER(CMissionPopulator, Update);
+		
 		MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor, DesiredScenarioAndClassAction);
 	}
 	

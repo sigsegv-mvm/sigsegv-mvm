@@ -524,6 +524,18 @@
 			}
 			
 			
+			"CBaseEntity::GetDataDescMap"
+			{
+				"library" "server"
+				"linux"   "@_ZN11CBaseEntity14GetDataDescMapEv"
+			}
+			"CBaseEntity::GetNetworkable"
+			{
+				"library" "server"
+				"linux"   "@_ZN11CBaseEntity14GetNetworkableEv"
+			}
+			
+			
 			"CTFGameRules::PushAllPlayersAway"
 			{
 				"library" "server"
@@ -580,15 +592,28 @@
 				/* 20151223a: 0x598c28 */
 				"windows" ""
 			}
+			
+			
+			"CMissionPopulator::Parse"
+			{
+				"library" "server"
+				"linux"   "@_ZN17CMissionPopulator5ParseEP9KeyValues"
+			}
+			
+			"CMissionPopulator::UpdateMission"
+			{
+				"library" "server"
+				"linux"   "@_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
+			}
 		}
 		
 		"Offsets"
 		{
-			"CTFGameRules::m_bPlayingMannVsMachine"
+			/*"CTFGameRules::m_bPlayingMannVsMachine"
 			{
 				"class" "CTFGameRulesProxy"
 				"prop"  "m_bPlayingMannVsMachine"
-			}
+			}*/
 		}
 	}
 }

@@ -1,5 +1,5 @@
 #include "extension.h"
-#include "link_nextbot.h"
+#include "link.h"
 #include "detours.h"
 #include "modmanager.h"
 
@@ -11,6 +11,8 @@ SMEXT_LINK(&g_Ext);
 ICvar *icvar;
 IEngineTrace *enginetrace;
 IStaticPropMgrServer *staticpropmgr;
+
+CGlobalVars *gpGlobals;
 
 ISDKTools *g_pSDKTools;
 
@@ -25,7 +27,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 		return false;
 	}
 	
-	if (!Link_NextBot::InitAll(error, maxlen)) {
+	if (!Link::InitAll(error, maxlen)) {
 		return false;
 	}
 	
@@ -64,6 +66,8 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	GET_V_IFACE_ANY(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_V_IFACE_ANY(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
+	
+	gpGlobals = ismm->GetCGlobals();
 	
 	return true;
 }

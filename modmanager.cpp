@@ -40,6 +40,8 @@ void CModManager::Unregister(IMod *mod)
 
 void CModManager::LoadAllMods()
 {
+	DevMsg("CModManager::LoadAllMods\n");
+	
 	for (auto info : s_Mods) {
 		if (!info->m_bFailed && !info->m_bLoaded) {
 			info->m_bFailed = !info->m_pMod->Init_CheckPatches(info->m_szError, sizeof(info->m_szError));
@@ -64,6 +66,8 @@ void CModManager::LoadAllMods()
 
 void CModManager::UnloadAllMods()
 {
+	DevMsg("CModManager::UnloadAllMods\n");
+	
 	for (auto info : s_Mods) {
 		if (info->m_bLoaded) {
 			info->m_pMod->InvokeUnload();

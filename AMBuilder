@@ -12,6 +12,8 @@ sourceFiles = [
   'patch.cpp',
   'prop.cpp',
   'stub.cpp',
+  'stub_tfbot.cpp',
+  'link.cpp',
   'link_nextbot.cpp',
   'link_nextbot2.cpp',
   'modmanager.cpp',

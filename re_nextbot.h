@@ -3,6 +3,7 @@
 
 
 #include "stub_misc.h"
+#include "stub_tfbot.h"
 #include "util.h"
 
 

@@ -13,6 +13,8 @@ extern ICvar *icvar;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 
+extern CGlobalVars *gpGlobals;
+
 extern ISDKTools *g_pSDKTools;
 
 extern IGameConfig *g_pGameConf;

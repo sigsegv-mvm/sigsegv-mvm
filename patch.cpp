@@ -17,7 +17,7 @@ ByteBuf::~ByteBuf()
 bool IPatch::Init(char *error, size_t maxlen)
 {
 	this->m_pszFuncName = this->GetFuncName();
-	this->m_iOffset = this->GetOffset();
+	this->m_iFuncOffset = this->GetFuncOffset();
 	
 	if (!g_pGameConf->GetMemSig(this->m_pszFuncName, &this->m_pFuncAddr) || this->m_pFuncAddr == nullptr) {
 		snprintf(error, maxlen, "Patch error: signature lookup failed for %s", this->m_pszFuncName);
@@ -36,7 +36,7 @@ bool IPatch::Init(char *error, size_t maxlen)
 
 bool IPatch::Check(char *error, size_t maxlen)
 {
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iOffset);
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		
@@ -45,7 +45,7 @@ bool IPatch::Check(char *error, size_t maxlen)
 		
 		if ((*mem & v_mask) != (v_byte & v_mask)) {
 			snprintf(error, maxlen, "Patch/verify failure: func %s, offset 0x%x, byte 0x%x: < byte:%02x mask:%02x | mem:%02x >",
-				this->m_pszFuncName, this->m_iOffset, i, v_byte, v_mask, *mem);
+				this->m_pszFuncName, this->m_iFuncOffset, i, v_byte, v_mask, *mem);
 			return false;
 		}
 	}
@@ -60,7 +60,9 @@ void IPatch::Apply()
 		return;
 	}
 	
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iOffset);
+#warning need to unprotect/protect pages!
+	
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		
@@ -82,7 +84,9 @@ void IPatch::UnApply()
 		return;
 	}
 	
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iOffset);
+#warning need to unprotect/protect pages!
+	
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		

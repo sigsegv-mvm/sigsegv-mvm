@@ -36,6 +36,7 @@ extern IEngineTrace *enginetrace;
 #include <IStaticPropMgr.h>
 extern IStaticPropMgrServer *staticpropmgr;
 #include "sdk2013/util_shared.h"
+#include <datamap.h>
 
 /* SourceMod */
 #include <ISDKTools.h>

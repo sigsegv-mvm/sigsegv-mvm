@@ -3,6 +3,7 @@
 #include "stub_gamerules.h"
 #include "stub_nextbot_behavior.h"
 #include "stub_misc.h"
+#include "stub_tfbot.h"
 #include "util.h"
 
 

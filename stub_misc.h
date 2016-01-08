@@ -4,9 +4,8 @@
 
 class CNavArea;
 
-class CBaseCombatCharacter;
-class CTFPlayer;
-class CTFBot;
+typedef CBaseEntity CBaseCombatCharacter;
+typedef CBaseEntity CTFPlayer;
 
 class CTFBotMvMEngineerTeleportSpawn;
 class CTFBotMvMEngineerBuildTeleportExit;
