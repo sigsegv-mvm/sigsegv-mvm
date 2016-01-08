@@ -60,6 +60,8 @@ bool IExtract<T>::Init()
 	this->m_iFuncOffset = this->GetFuncOffset();
 	this->m_iExtractOffset = this->GetExtractOffset();
 	
+	assert(this->m_iExtractOffset + sizeof(T) <= this->m_iLength);
+	
 	if (!g_pGameConf->GetMemSig(this->m_pszFuncName, &this->m_pFuncAddr) || this->m_pFuncAddr == nullptr) {
 		return false;
 	}

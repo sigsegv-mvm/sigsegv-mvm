@@ -580,7 +580,7 @@
 				"linux"   "@_ZN14CTFSniperRifle13ItemPostFrameEv"
 				
 				/* 20151223a: 0x598850 */
-				"windows" ""
+				//"windows" ""
 			}
 			
 			
@@ -590,7 +590,7 @@
 				"linux"   "@_ZN21CTFSniperRifleClassic13ItemPostFrameEv"
 				
 				/* 20151223a: 0x598c28 */
-				"windows" ""
+				//"windows" ""
 			}
 			
 			
@@ -599,11 +599,29 @@
 				"library" "server"
 				"linux"   "@_ZN17CMissionPopulator5ParseEP9KeyValues"
 			}
-			
+			"CMissionPopulator::Update"
+			{
+				"library" "server"
+				"linux"   "@_ZN17CMissionPopulator6UpdateEv"
+			}
 			"CMissionPopulator::UpdateMission"
 			{
 				"library" "server"
 				"linux"   "@_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
+			}
+			
+			
+			"CSpawnLocation::Parse"
+			{
+				"library" "server"
+				"linux"   "@_ZN14CSpawnLocation5ParseEP9KeyValues"
+			}
+			
+			
+			"CTFBot::SetMission"
+			{
+				"library" "server"
+				"linux"   "@_ZN6CTFBot10SetMissionENS_11MissionTypeEb"
 			}
 		}
 		

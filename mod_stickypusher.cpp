@@ -99,6 +99,9 @@ DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndCla
 {
 	DevMsg("CTFBotScenarioMonitor::DesiredScenarioAndClassAction\n");
 	
+	int mission = actor->GetMission();
+	DevMsg("actor->m_nMission = %d\n", mission);
+	
 	return new CTFBotMissionPushStickies();
 	
 	//DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);

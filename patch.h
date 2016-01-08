@@ -56,8 +56,7 @@ inline void ByteBuf::SetAll(uint8_t val)
 
 inline void ByteBuf::SetRange(int idx, int len, uint8_t val)
 {
-	assert(idx       >= 0 && idx       < this->m_iSize);
-	assert(idx + len >= 0 && idx + len < this->m_iSize);
+	assert(idx >= 0 && idx + len <= this->m_iSize);
 	
 	for (int i = 0; i < len; ++i) {
 		this->m_Buf[idx + i] = val;
