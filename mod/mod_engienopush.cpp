@@ -1,10 +1,8 @@
 #include "mod.h"
-#include "detours.h"
-#include "stub_gamerules.h"
-#include "stub_nextbot_behavior.h"
-#include "stub_misc.h"
-#include "stub_tfbot.h"
-#include "util.h"
+#include "sdk/detours.h"
+#include "stub/stub.h"
+#include "util/util.h"
+#include "re_nextbot.h"
 
 
 static RefCount s_rcTeleSpawn;

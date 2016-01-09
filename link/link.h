@@ -1,10 +1,10 @@
-#ifndef _INCLUDE_SIGSEGV_LINK_H_
-#define _INCLUDE_SIGSEGV_LINK_H_
+#ifndef _INCLUDE_SIGSEGV_LINK_LINK_H_
+#define _INCLUDE_SIGSEGV_LINK_LINK_H_
 
 
 #include "extension.h"
 #include "common.h"
-#include "util.h"
+#include "util/util.h"
 
 
 class ILinkage : public AutoList<ILinkage>

@@ -150,6 +150,11 @@ class ExtensionConfig(object):
         '-msse',
         '-m32',
         '-fno-diagnostics-show-caret',
+        '-fdiagnostics-color=always',
+        '-fno-omit-frame-pointer',
+        '-Og',
+        '-masm=intel',
+        '-maccumulate-outgoing-args',
       ]
       cxx.cxxflags += [
         '-std=c++11',

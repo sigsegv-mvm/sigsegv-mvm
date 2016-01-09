@@ -3,7 +3,7 @@
 
 
 #include "extension.h"
-#include "link.h"
+#include "link/link.h"
 
 
 inline int ENTINDEX(edict_t *pEdict)

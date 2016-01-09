@@ -1,6 +1,6 @@
 #include "extension.h"
-#include "link.h"
-#include "detours.h"
+#include "link/link.h"
+#include "sdk/detours.h"
 #include "modmanager.h"
 
 

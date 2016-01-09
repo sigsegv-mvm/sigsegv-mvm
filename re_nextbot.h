@@ -2,9 +2,8 @@
 #define _INCLUDE_SIGSEGV_RE_NEXTBOT_H_
 
 
-#include "stub_misc.h"
-#include "stub_tfbot.h"
-#include "util.h"
+#include "stub/stub.h"
+#include "util/util.h"
 
 
 class CBaseEntity;

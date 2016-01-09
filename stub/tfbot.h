@@ -4,7 +4,7 @@
 
 #include "extension.h"
 #include "prop.h"
-#include "stub_baseentity.h"
+#include "stub/baseentity.h"
 
 
 class CTFBot : public CBaseEntity

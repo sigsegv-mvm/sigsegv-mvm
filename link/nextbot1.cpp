@@ -1,6 +1,6 @@
-#include "link.h"
+#include "link/link.h"
 #include "extension.h"
-#include "util.h"
+#include "util/util.h"
 #include "re_nextbot.h"
 
 
