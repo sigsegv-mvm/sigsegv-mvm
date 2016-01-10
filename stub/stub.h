@@ -5,6 +5,7 @@
 #include "stub/baseentity.h"
 #include "stub/gamerules.h"
 #include "stub/misc.h"
+#include "stub/nav.h"
 #include "stub/populators.h"
 #include "stub/tfbot.h"
 

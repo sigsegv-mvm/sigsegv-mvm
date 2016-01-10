@@ -1,6 +1,8 @@
 #include "stub/tfbot.h"
 
 
+#if defined _LINUX
+
 static constexpr uint8_t s_Buf[] = {
 	0x55,                               // +0000  push ebp
 	0x89, 0xe5,                         // +0001  mov ebp,esp
@@ -24,10 +26,16 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 		mask.SetRange(0x11 + 2, 4, 0x00);
 	}
 	
-	virtual const char *GetFuncName() const override { return "CTFBot::SetMission"; }
-	virtual uint32_t GetFuncOffset() const override { return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { return 0x0013; }
+	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
+	virtual uint32_t GetFuncOffset() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0011 + 2; }
 };
+
+#elif defined _WIN32
+
+
+
+#endif
 
 
 CProp_Extract<CTFBot, int> CTFBot::m_nMission("CTFBot", "m_nMission", new CExtract_CTFBot_m_nMission());

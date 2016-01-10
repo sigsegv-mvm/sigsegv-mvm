@@ -2,11 +2,15 @@
 #define _INCLUDE_SIGSEGV_RE_NEXTBOT_H_
 
 
+#if defined _WIN32
+#error NextBot classes have not been checked against the VC++ build!
+#endif
+
+
 #include "stub/stub.h"
 #include "util/util.h"
 
 
-class CBaseEntity;
 class INextBot;
 class Path;
 class PathFollower;
@@ -20,7 +24,6 @@ class NextBotCombatCharacter;
 typedef int Activity;
 template<class T> class Action;
 #define CUtlVectorAutoPurge CUtlVector
-
 
 #include "mvm-reversed/server/NextBot/NextBotKnownEntity.h"
 #include "mvm-reversed/server/NextBot/NextBotEventResponderInterface.h"

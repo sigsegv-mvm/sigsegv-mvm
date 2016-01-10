@@ -623,6 +623,27 @@
 				"library" "server"
 				"linux"   "@_ZN6CTFBot10SetMissionENS_11MissionTypeEb"
 			}
+			
+			
+			"CNavMesh::GetNavArea"
+			{
+				"library" "server"
+				"linux"   "@_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+			}
+			
+			
+			"CTFNavArea::IsValidForWanderingPopulation"
+			{
+				"library" "server"
+				"linux"   "@_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
+			}
+			
+			
+			"CCurrencyPack::ComeToRest"
+			{
+				"library" "server"
+				"linux"   "@_ZN13CCurrencyPack10ComeToRestEv"
+			}
 		}
 		
 		"Offsets"
