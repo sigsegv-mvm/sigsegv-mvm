@@ -3,7 +3,7 @@
 
 
 #include "extension.h"
-#include "prop.h"
+#include "prop/prop.h"
 
 
 class CTFGameRules
@@ -11,11 +11,13 @@ class CTFGameRules
 public:
 	bool IsMannVsMachineMode() const
 	{
-		return m_bPlayingMannVsMachine.Get(this);
+		return this->m_bPlayingMannVsMachine;
 	}
 	
 private:
-	static CProp_SendProp<CTFGameRules, bool> m_bPlayingMannVsMachine;
+	PROP_STR(CTFGameRules);
+	
+	PROP_SENDPROP(bool, CTFGameRules, m_bPlayingMannVsMachine);
 };
 
 

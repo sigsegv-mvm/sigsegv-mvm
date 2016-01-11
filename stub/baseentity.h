@@ -4,7 +4,7 @@
 
 #include "extension.h"
 #include "link/link.h"
-#include "prop.h"
+#include "prop/prop.h"
 
 
 class CBaseEntity
@@ -16,8 +16,8 @@ public:
 	bool IsEFlagSet(int nEFlagMask) const;
 	
 	/* getter/setter */
-	int GetTeamNumber() const { return m_iTeamNum.Get(this); }
-	bool IsAlive()            { return m_lifeState.Get(this) == LIFE_ALIVE; }
+	int GetTeamNumber() const { return this->m_iTeamNum; }
+	bool IsAlive()            { return this->m_lifeState == LIFE_ALIVE; }
 	
 	/* thunk */
 	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);       }
@@ -27,11 +27,13 @@ private:
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
 	static FuncThunk<void (*)(CBaseEntity *)>                 ft_CalcAbsolutePosition;
 	
-	// TODO: m_iHealth
-	static CProp_SendProp<CBaseEntity, char>   m_lifeState;
-	static CProp_DataMap<CBaseEntity, int>     m_iEFlags;
-	static CProp_SendProp<CBaseEntity, int>    m_iTeamNum;
-	static CProp_SendProp<CBaseEntity, Vector> m_vecAbsOrigin;
+	PROP_STR(CBaseEntity);
+	
+	PROP_SENDPROP(int,    CBaseEntity, m_iHealth);
+	PROP_SENDPROP(char,   CBaseEntity, m_lifeState);
+	PROP_DATAMAP(int,     CBaseEntity, m_iEFlags);
+	PROP_SENDPROP(int,    CBaseEntity, m_iTeamNum);
+	PROP_SENDPROP(Vector, CBaseEntity, m_vecAbsOrigin);
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -87,12 +89,12 @@ inline const Vector& CBaseEntity::GetAbsOrigin() const
 	if (this->IsEFlagSet(EFL_DIRTY_ABSTRANSFORM)) {
 		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
 	}
-	return this->m_vecAbsOrigin.Get(this);
+	return this->m_vecAbsOrigin;
 }
 
 inline bool CBaseEntity::IsEFlagSet(int nEFlagMask) const
 {
-	return (m_iEFlags.Get(this) & nEFlagMask) != 0;
+	return (this->m_iEFlags & nEFlagMask) != 0;
 }
 
 

@@ -3,6 +3,7 @@
 
 
 #include "stub/baseanimating.h"
+#include "prop/prop.h"
 
 
 class CBaseCombatCharacter : public CBaseFlex {};
@@ -46,7 +47,9 @@ public:
 	bool IsPlayerClass(int iClass) const { return (*ft_IsPlayerClass)(this, iClass); }
 	
 private:
-	static CProp_SendProp<CTFPlayer, CTFPlayerShared> m_Shared;
+	PROP_STR(CTFPlayer);
+	
+	PROP_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared);
 	
 	static FuncThunk<bool (*)(const CTFPlayer *, int)> ft_IsPlayerClass;
 };

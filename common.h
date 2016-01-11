@@ -10,6 +10,7 @@
 /* C++ standard library */
 #include <algorithm>
 #include <functional>
+#include <string>
 
 /* STL */
 #include <list>

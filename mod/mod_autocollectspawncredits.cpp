@@ -20,7 +20,7 @@ DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
 		TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
 		
 		if ((attr & BLUE_SPAWN_ROOM) != 0) {
-			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting");
+			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
 			return nullptr;
 		}
 	}
