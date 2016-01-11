@@ -11,6 +11,7 @@
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
 #include "stub/populators.h"
+#include "stub/path.h"
 
 
 #endif

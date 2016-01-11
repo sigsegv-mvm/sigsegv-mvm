@@ -1,6 +1,6 @@
 #include "mod.h"
-#include "re_nextbot.h"
-#include "stub/stub.h"
+#include "re/nextbot.h"
+#include "re/path.h"
 
 
 constexpr int MISSION_PUSHSTICKIES = 7;

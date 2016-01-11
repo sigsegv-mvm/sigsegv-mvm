@@ -3,7 +3,7 @@
 
 
 #if defined _WIN32
-//#error NextBot classes have not been checked against the VC++ build!
+#warning NextBot classes have not been checked against the VC++ build!
 #endif
 
 

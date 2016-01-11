@@ -15,6 +15,7 @@ sourceFiles = [
   'stub/baseentity.cpp',
   'stub/gamerules.cpp',
   'stub/nav.cpp',
+  'stub/path.cpp',
   'stub/populators.cpp',
   'stub/tfbot.cpp',
   'link/link.cpp',

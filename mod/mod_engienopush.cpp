@@ -2,7 +2,7 @@
 #include "sdk/detours.h"
 #include "stub/stub.h"
 #include "util/util.h"
-#include "re_nextbot.h"
+#include "re/nextbot.h"
 
 
 static RefCount s_rcTeleSpawn;

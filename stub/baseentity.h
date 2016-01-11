@@ -4,19 +4,29 @@
 
 #include "extension.h"
 #include "link/link.h"
+#include "prop.h"
 
 
 class CBaseEntity
 {
 public:
-	IServerNetworkable *GetNetworkable() { return (*ft_CBaseEntity_GetNetworkable)(this); }
-	
+	/* inline */
 	int entindex();
-	
 	const Vector& GetAbsOrigin() const;
+	bool IsEFlagSet(int nEFlagMask) const;
+	
+	/* thunk */
+	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);       }
+	bool IsAlive()                       { return (*ft_IsAlive)(this);              }
+	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this); }
 	
 private:
-	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_CBaseEntity_GetNetworkable;
+	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
+	static FuncThunk<bool (*)(CBaseEntity *)> ft_IsAlive;
+	static FuncThunk<void (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
+	
+	static CProp_DataMap<CBaseEntity, int> m_iEFlags;
+	static CProp_SendProp<CBaseEntity, Vector> m_vecAbsOrigin;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -67,16 +77,18 @@ inline int CBaseEntity::entindex()
 	return ENTINDEX(this->GetNetworkable()->GetEdict());
 }
 
-
-#if 0
 inline const Vector& CBaseEntity::GetAbsOrigin() const
 {
 	if (this->IsEFlagSet(EFL_DIRTY_ABSTRANSFORM)) {
 		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
 	}
-	return this->m_vecAbsOrigin;
+	return this->m_vecAbsOrigin.Get(this);
 }
-#endif
+
+inline bool CBaseEntity::IsEFlagSet(int nEFlagMask) const
+{
+	return (m_iEFlags.Get(this) & nEFlagMask) != 0;
+}
 
 
 #endif

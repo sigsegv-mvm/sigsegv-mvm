@@ -534,6 +534,16 @@
 				"library" "server"
 				"linux"   "@_ZN11CBaseEntity14GetNetworkableEv"
 			}
+			"CBaseEntity::IsAlive"
+			{
+				"library" "server"
+				"linux"   "@_ZN11CBaseEntity7IsAliveEv"
+			}
+			"CBaseEntity::CalcAbsolutePosition"
+			{
+				"library" "server"
+				"linux"   "@_ZN11CBaseEntity20CalcAbsolutePositionEv"
+			}
 			
 			
 			"CTFGameRules::PushAllPlayersAway"
@@ -763,6 +773,11 @@
 				"library" "server"
 				"linux"   "@_ZN6CTFBot22PressSpecialFireButtonEf"
 			}
+			"CTFBot::GetDesiredPathLookAheadRange"
+			{
+				"library" "server"
+				"linux"   "@_ZNK6CTFBot28GetDesiredPathLookAheadRangeEv"
+			}
 			
 			
 			"CNavMesh::GetNavArea"
@@ -783,6 +798,13 @@
 			{
 				"library" "server"
 				"linux"   "@_ZN13CCurrencyPack10ComeToRestEv"
+			}
+			
+			
+			"PathFollower::SetMinLookAheadDistance"
+			{
+				"library" "server"
+				"linux"   "@_ZN12PathFollower23SetMinLookAheadDistanceEf"
 			}
 		}
 		

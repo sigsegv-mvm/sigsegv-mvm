@@ -2,7 +2,7 @@
 #include "extension.h"
 #include "util/util.h"
 #include "stub/stub.h"
-#include "re_nextbot.h"
+#include "re/nextbot.h"
 
 
 #define INER INextBotEventResponder
