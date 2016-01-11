@@ -3,7 +3,7 @@
 
 
 #if defined _WIN32
-#error NextBot classes have not been checked against the VC++ build!
+//#error NextBot classes have not been checked against the VC++ build!
 #endif
 
 
@@ -21,10 +21,12 @@ class INextBotEntityFilter;
 class INextBotReply;
 class CNavLadder;
 class NextBotCombatCharacter;
-typedef int Activity;
 template<class T> class Action;
 #define CUtlVectorAutoPurge CUtlVector
 
+// TODO: NextBot/Path/Path.h
+// TODO: NextBot/Path/PathFollower.h
+// TODO: NextBot/Path/ChasePath.h
 #include "mvm-reversed/server/NextBot/NextBotKnownEntity.h"
 #include "mvm-reversed/server/NextBot/NextBotEventResponderInterface.h"
 #include "mvm-reversed/server/NextBot/NextBotContextualQueryInterface.h"
@@ -35,6 +37,8 @@ template<class T> class Action;
 #include "mvm-reversed/server/NextBot/NextBotVisionInterface.h"
 #include "mvm-reversed/server/NextBot/NextBotInterface.h"
 #include "mvm-reversed/server/NextBot/NextBotBehavior.h"
+// TODO: NextBot/Player/PlayerBody.h
+// TODO: NextBot/Player/PlayerLocomotion.h
 
 
 SIZE_CHECK(CKnownEntity,               0x30); // 0x2d

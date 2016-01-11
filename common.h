@@ -2,12 +2,14 @@
 #define _INCLUDE_SIGSEGV_COMMON_H_
 
 
+#if !defined __GNUC__
+#define __attribute__(...)
+#endif
+
+
 /* C++ standard library */
 #include <algorithm>
 #include <functional>
-
-/* C++ non-standard */
-#include <cxxabi.h>
 
 /* STL */
 #include <list>
@@ -37,6 +39,9 @@ extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 #include "sdk2013/util_shared.h"
 #include <datamap.h>
+#include <ai_activity.h>
+#include <usercmd.h>
+#include <npcevent.h>
 
 /* SourceMod */
 #include <ISDKTools.h>

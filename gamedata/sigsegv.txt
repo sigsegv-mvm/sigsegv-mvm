@@ -618,10 +618,150 @@
 			}
 			
 			
+			"NextBotPlayer<CTFPlayer>::ReleaseFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17ReleaseFireButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseAltFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE20ReleaseAltFireButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressMeleeButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE16PressMeleeButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseMeleeButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE18ReleaseMeleeButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseSpecialFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE24ReleaseSpecialFireButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressUseButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE14PressUseButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseUseButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE16ReleaseUseButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressReloadButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17PressReloadButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseReloadButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE19ReleaseReloadButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressForwardButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE18PressForwardButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseForwardButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE20ReleaseForwardButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressBackwardButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE19PressBackwardButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseBackwardButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE21ReleaseBackwardButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressLeftButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE15PressLeftButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseLeftButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17ReleaseLeftButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressRightButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE16PressRightButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseRightButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE18ReleaseRightButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressJumpButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE15PressJumpButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseJumpButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17ReleaseJumpButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressCrouchButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17PressCrouchButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseCrouchButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE19ReleaseCrouchButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::PressWalkButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE15PressWalkButtonEf"
+			}
+			"NextBotPlayer<CTFPlayer>::ReleaseWalkButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE17ReleaseWalkButtonEv"
+			}
+			"NextBotPlayer<CTFPlayer>::SetButtonScale"
+			{
+				"library" "server"
+				"linux"   "@_ZN13NextBotPlayerI9CTFPlayerE14SetButtonScaleEff"
+			}
+			
+			
 			"CTFBot::SetMission"
 			{
 				"library" "server"
 				"linux"   "@_ZN6CTFBot10SetMissionENS_11MissionTypeEb"
+				
+				/* 20151007a: 0x4c8e90 */
+				"windows" "\x55\x8B\xEC\x80\x7D\x0C\x00\x56\x8B\xF1"
+			}
+			"CTFBot::PressFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN6CTFBot15PressFireButtonEf"
+			}
+			"CTFBot::PressAltFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN6CTFBot18PressAltFireButtonEf"
+			}
+			"CTFBot::PressSpecialFireButton"
+			{
+				"library" "server"
+				"linux"   "@_ZN6CTFBot22PressSpecialFireButtonEf"
 			}
 			
 			

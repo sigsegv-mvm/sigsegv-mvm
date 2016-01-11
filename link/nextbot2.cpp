@@ -1,6 +1,11 @@
 #include "common.h"
 
 
+#if defined __GNUC__
+
+#include <cxxabi.h>
+
+
 struct vtable
 {
 	uint32_t offset;
@@ -26,70 +31,74 @@ extern "C"
 	
 	
 	/* vtable */
+	void VFuncNotImpl_INextBotEventResponder() { abort(); }
 	vtable _ZTV22INextBotEventResponder = {
 		0x00000000,
 		&_ZTI22INextBotEventResponder,
 		{
 			(void *)&_ZN22INextBotEventResponderD2Ev,
 			(void *)&_ZN22INextBotEventResponderD0Ev,
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
+			(void *)&VFuncNotImpl_INextBotEventResponder, // TODO
 		}
 	};
 	
+	void VFuncNotImpl_IContextualQuery() { abort(); }
 	vtable _ZTV16IContextualQuery = {
 		0x00000000,
 		&_ZTI16IContextualQuery,
 		{
 			(void *)&_ZN16IContextualQueryD2Ev,
 			(void *)&_ZN16IContextualQueryD0Ev,
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
-			0x00000000, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
+			(void *)&VFuncNotImpl_IContextualQuery, // TODO
 		}
 	};
 }
+
+#endif

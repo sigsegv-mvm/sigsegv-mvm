@@ -6,29 +6,18 @@
 #include "link/link.h"
 
 
-inline int ENTINDEX(edict_t *pEdict)
-{
-	return gamehelpers->IndexOfEdict(pEdict);
-}
-
-
 class CBaseEntity
 {
 public:
-	IServerNetworkable *GetNetworkable()
-	{
-		return (*ft_CBaseEntity_GetNetworkable)(this);
-	}
+	IServerNetworkable *GetNetworkable() { return (*ft_CBaseEntity_GetNetworkable)(this); }
 	
-	int entindex()
-	{
-		return ENTINDEX(this->GetNetworkable()->GetEdict());
-	}
+	int entindex();
+	
+	const Vector& GetAbsOrigin() const;
 	
 private:
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_CBaseEntity_GetNetworkable;
 };
-
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
 {
@@ -37,6 +26,11 @@ inline CBaseEntity *GetContainingEntity(edict_t *pent)
 	}
 	
 	return nullptr;
+}
+
+inline int ENTINDEX(edict_t *pEdict)
+{
+	return gamehelpers->IndexOfEdict(pEdict);
 }
 
 inline int ENTINDEX(CBaseEntity *pEnt)
@@ -53,7 +47,6 @@ inline edict_t *INDEXENT(int iEdictNum)
 	return engine->PEntityOfEntIndex(iEdictNum);
 }
 
-
 inline CBaseEntity *UTIL_EntityByIndex(int entityIndex)
 {
 	CBaseEntity *entity = nullptr;
@@ -67,6 +60,23 @@ inline CBaseEntity *UTIL_EntityByIndex(int entityIndex)
 	
 	return entity;
 }
+
+
+inline int CBaseEntity::entindex()
+{
+	return ENTINDEX(this->GetNetworkable()->GetEdict());
+}
+
+
+#if 0
+inline const Vector& CBaseEntity::GetAbsOrigin() const
+{
+	if (this->IsEFlagSet(EFL_DIRTY_ABSTRANSFORM)) {
+		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
+	}
+	return this->m_vecAbsOrigin;
+}
+#endif
 
 
 #endif

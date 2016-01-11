@@ -11,15 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\extension.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\mod_engienopush.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\smsdk_ext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,60 +23,150 @@
     <ClCompile Include="..\modmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\prop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\stub.cpp">
+    <ClCompile Include="..\sizeof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mod_sniperchargeuncap.cpp">
+    <ClCompile Include="..\extension.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\patch.cpp">
+    <ClCompile Include="..\link\link.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\link\nextbot1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\link\nextbot2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\mod_autocollectspawncredits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\mod_engienopush.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\mod_stickypusher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdk\smsdk_ext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\baseentity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\gamerules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\nav.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\populators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\tfbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\extension.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\mod.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\smsdk_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\detours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\modmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\patch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\prop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\smsdk_ext.h">
+    <ClInclude Include="..\re_nextbot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\stub_gamerules.h">
+    <ClInclude Include="..\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\stub_misc.h">
+    <ClInclude Include="..\extension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\stub_nextbot_behavior.h">
+    <ClInclude Include="..\extract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\util.h">
+    <ClInclude Include="..\link\link.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sdk2013.h">
+    <ClInclude Include="..\sdk\detours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\patch.h">
+    <ClInclude Include="..\sdk\smsdk_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk\smsdk_ext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\annotations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\basetypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\fmtstr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\util_shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\valve_minmax_off.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk2013\valve_minmax_on.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\baseentity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\gamerules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\nav.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\populators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\stub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\tfbot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\autolist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\scope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\trace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
