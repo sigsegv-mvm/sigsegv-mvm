@@ -8,8 +8,10 @@ builder.SetBuildFolder('package')
 # Add any folders you need to this list
 folder_list = [
   'addons/sourcemod/extensions',
+  'addons/sourcemod/scripting',
   'addons/sourcemod/scripting/include',
   'addons/sourcemod/gamedata',
+  'addons/sourcemod/gamedata/sigsegv',
   'addons/sourcemod/configs',
 ]
 
@@ -36,9 +38,17 @@ CopyFiles('include', 'addons/sourcemod/scripting/include',
 )
 
 # GameData files
-CopyFiles('gamedata', 'addons/sourcemod/gamedata',
+CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
   [
+    'master.games.txt',
     'sigsegv.txt',
+    'sigsegv.nextbot.action.txt',
+    'sigsegv.nextbot.eventresponder.txt',
+    'sigsegv.nextbot.contextualquery.txt',
+    'sigsegv.nextbot.player.txt',
+    'sigsegv.tfbot.txt',
+    'sigsegv.tfbot.behavior.txt',
+    'sigsegv.population.txt',
   ]
 )
 

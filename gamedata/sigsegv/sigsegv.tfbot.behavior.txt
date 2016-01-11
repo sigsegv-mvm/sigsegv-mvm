@@ -1,0 +1,34 @@
+// sigsegv: CTFBot: Behaviors
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
+			{
+				linux "@_ZN21CTFBotScenarioMonitor29DesiredScenarioAndClassActionEP6CTFBot"
+				// TODO: windows
+			}
+			
+			"CTFBotMvMEngineerTeleportSpawn::Update"
+			{
+				linux "@_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"
+				// TODO: windows
+			}
+			
+			"CTFBotMvMEngineerBuildSentryGun::Update"
+			{
+				linux "@_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
+				// TODO: windows
+			}
+			
+			"CTFBotMvMEngineerBuildTeleportExit::Update"
+			{
+				linux "@_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
+				// TODO: windows
+			}
+		}
+	}
+}

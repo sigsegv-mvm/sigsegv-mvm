@@ -15,17 +15,22 @@ public:
 	const Vector& GetAbsOrigin() const;
 	bool IsEFlagSet(int nEFlagMask) const;
 	
+	/* getter/setter */
+	int GetTeamNumber() const { return m_iTeamNum.Get(this); }
+	bool IsAlive()            { return m_lifeState.Get(this) == LIFE_ALIVE; }
+	
 	/* thunk */
 	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);       }
-	bool IsAlive()                       { return (*ft_IsAlive)(this);              }
 	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this); }
 	
 private:
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
-	static FuncThunk<bool (*)(CBaseEntity *)> ft_IsAlive;
-	static FuncThunk<void (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
+	static FuncThunk<void (*)(CBaseEntity *)>                 ft_CalcAbsolutePosition;
 	
-	static CProp_DataMap<CBaseEntity, int> m_iEFlags;
+	// TODO: m_iHealth
+	static CProp_SendProp<CBaseEntity, char>   m_lifeState;
+	static CProp_DataMap<CBaseEntity, int>     m_iEFlags;
+	static CProp_SendProp<CBaseEntity, int>    m_iTeamNum;
 	static CProp_SendProp<CBaseEntity, Vector> m_vecAbsOrigin;
 };
 

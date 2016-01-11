@@ -6,6 +6,12 @@
 #include "stub/tfplayer.h"
 
 
+class ILocomotion;
+class IBody;
+class IVision;
+class IIntention;
+
+
 template<typename T>
 class NextBotPlayer : public T {};
 
@@ -14,6 +20,11 @@ class CTFBot : public NextBotPlayer<CTFPlayer>
 public:
 	int GetMission() const { return m_nMission.Get(this); }
 	
+	/* thunk */
+	ILocomotion *GetLocomotionInterface() const { return (*ft_GetLocomotionInterface)(this); }
+	IBody *GetBodyInterface() const             { return (*ft_GetBodyInterface)      (this); }
+	IVision *GetVisionInterface() const         { return (*ft_GetVisionInterface)    (this); }
+	IIntention *GetIntentionInterface() const   { return (*ft_GetIntentionInterface) (this); }
 	void PressFireButton(float duration = -1.0f);
 	void ReleaseFireButton();
 	void PressAltFireButton(float duration = -1.0f);
@@ -44,6 +55,11 @@ public:
 	
 private:
 	static CProp_Extract<CTFBot, int> m_nMission;
+	
+	static FuncThunk<ILocomotion * (*)(const CTFBot *)> ft_GetLocomotionInterface;
+	static FuncThunk<IBody * (*)(const CTFBot *)>       ft_GetBodyInterface;
+	static FuncThunk<IVision * (*)(const CTFBot *)>     ft_GetVisionInterface;
+	static FuncThunk<IIntention * (*)(const CTFBot *)>  ft_GetIntentionInterface;
 };
 
 

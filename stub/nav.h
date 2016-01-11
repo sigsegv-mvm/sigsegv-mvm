@@ -3,13 +3,13 @@
 
 
 #include "prop.h"
+#include "link/link.h"
 
 
-#define TEAM_ANY -2
+class CBaseObject;
+
+
 enum NavErrorType {};
-
-
-class CNavArea {};
 
 
 /* from mvm-reversed/server/tf/nav_mesh/tf_nav_area.h */
@@ -63,6 +63,8 @@ enum TFNavAttributeType : int
 };
 
 
+class CNavArea {};
+
 class CTFNavArea : public CNavArea
 {
 public:
@@ -74,6 +76,21 @@ public:
 private:
 	static CProp_Extract<CTFNavArea, TFNavAttributeType> m_nAttributes;
 };
+
+
+class CNavMesh {};
+
+class CTFNavMesh : public CNavMesh
+{
+public:
+	void CollectBuiltObjects(CUtlVector<CBaseObject *> *objects, int i1) {}
+	
+private:
+	static FuncThunk<void (*)(CTFNavMesh *, CUtlVector<CBaseObject *> *, int)> ft_CollectBuiltObjects;
+};
+
+
+extern GlobalThunk<CTFNavMesh *> TheNavMesh;
 
 
 #endif

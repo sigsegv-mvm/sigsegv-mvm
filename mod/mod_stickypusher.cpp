@@ -38,6 +38,9 @@ public:
 	{
 		DevMsg("CTFBotMissionPushStickies::Update(#%d)\n", ENTINDEX(actor));
 		
+		CTFBotPathCost cost_func((CTFBot *)0x11111111, RETREAT_ROUTE);
+		
+		
 		// TODO
 		
 		return ActionResult<CTFBot>::Continue();

@@ -7,6 +7,7 @@
 
 
 #include "common.h"
+#include "gameconf.h"
 
 
 extern ICvar *icvar;

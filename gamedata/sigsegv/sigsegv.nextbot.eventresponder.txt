@@ -1,0 +1,21 @@
+// sigsegv: NextBot: INextBotEventResponder
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"INextBotEventResponder::~INextBotEventResponder [D0]"
+			{
+				linux "@_ZN22INextBotEventResponderD0Ev"
+				// TODO: windows
+			}
+			"INextBotEventResponder::~INextBotEventResponder [D2]"
+			{
+				linux "@_ZN22INextBotEventResponderD2Ev"
+				// TODO: windows
+			}
+		}
+	}
+}

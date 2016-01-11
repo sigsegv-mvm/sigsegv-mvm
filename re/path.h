@@ -55,10 +55,18 @@ SIZE_CHECK(CTFBotPathCost, 0x2c);
 
 inline CTFBotPathCost::CTFBotPathCost(CTFBot *actor, RouteType rtype)
 {
-#warning TODO
+	this->m_flStepHeight      = actor->GetLocomotionInterface()->GetStepHeight();
+	this->m_flMaxJumpHeight   = actor->GetLocomotionInterface()->GetMaxJumpHeight();
+	this->m_flDeathDropHeight = actor->GetLocomotionInterface()->GetDeathDropHeight();
+	
+	if (actor->IsPlayerClass(TF_CLASS_SPY)) {
+		TheNavMesh->CollectBuiltObjects(&this->m_EnemyObjects, GetEnemyTeam(actor));
+	} else {
+		this->m_EnemyObjects.RemoveAll();
+	}
 }
 
-// CTFBotPathCost::operator() needs a FuncThunk
+inline CTFBotPathCost::~CTFBotPathCost() {}
 
 
 #endif

@@ -1,0 +1,59 @@
+// sigsegv: CTFBot
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CTFBot::GetLocomotionInterface"
+			{
+				linux "@_ZNK6CTFBot22GetLocomotionInterfaceEv"
+				// TODO: windows
+			}
+			"CTFBot::GetBodyInterface"
+			{
+				linux "@_ZNK6CTFBot16GetBodyInterfaceEv"
+				// TODO: windows
+			}
+			"CTFBot::GetVisionInterface"
+			{
+				linux "@_ZNK6CTFBot18GetVisionInterfaceEv"
+				// TODO: windows
+			}
+			"CTFBot::GetIntentionInterface"
+			{
+				linux "@_ZNK6CTFBot21GetIntentionInterfaceEv"
+				// TODO: windows
+			}
+			
+			"CTFBot::PressFireButton"
+			{
+				linux "@_ZN6CTFBot15PressFireButtonEf"
+				// TODO: windows
+			}
+			"CTFBot::PressAltFireButton"
+			{
+				linux "@_ZN6CTFBot18PressAltFireButtonEf"
+				// TODO: windows
+			}
+			"CTFBot::PressSpecialFireButton"
+			{
+				linux "@_ZN6CTFBot22PressSpecialFireButtonEf"
+				// TODO: windows
+			}
+			
+			"CTFBot::SetMission"
+			{
+				linux "@_ZN6CTFBot10SetMissionENS_11MissionTypeEb"
+				windows "\x55\x8B\xEC\x80\x7D\x0C\x00\x56\x8B\xF1"
+				// 20151007a: 0x4c8e90
+			}
+			"CTFBot::GetDesiredPathLookAheadRange"
+			{
+				linux "@_ZNK6CTFBot28GetDesiredPathLookAheadRangeEv"
+				// TODO: windows
+			}
+		}
+	}
+}

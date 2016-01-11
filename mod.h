@@ -54,4 +54,5 @@ private:
 #define MOD_ADD_DETOUR_MEMBER(obj, func) \
 	this->AddDetour(#obj "::" #func, GET_MEMBER_CALLBACK(obj##_##func), GET_MEMBER_TRAMPOLINE(obj##_##func))
 
+
 #endif

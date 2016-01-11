@@ -54,6 +54,46 @@ private:
 };
 
 
+template<typename T>
+class GlobalThunk : public ILinkage
+{
+public:
+	GlobalThunk(const char *name) :
+		m_pszObjName(name) {}
+	
+	virtual bool Link(char *error, size_t maxlen) override
+	{
+		if (this->m_pObjPtr == nullptr) {
+			if (!g_pGameConf->GetMemSig(this->m_pszObjName, (void **)&this->m_pObjPtr) ||
+				this->m_pObjPtr == nullptr) {
+				DevMsg("GlobalThunk::Link FAIL \"%s\"\n", this->m_pszObjName);
+				snprintf(error, maxlen, "GlobalThunk linkage error: signature lookup failed for \"%s\"", this->m_pszObjName);
+				return false;
+			}
+		}
+		
+		DevMsg("GlobalThunk::Link OK \"%s\"\n", this->m_pszObjName);
+		return true;
+	}
+	
+	operator T&() const
+	{
+		assert(this->m_pObjPtr != nullptr);
+		return *m_pObjPtr;
+	}
+	
+	T& operator->() const
+	{
+		return *m_pObjPtr;
+	}
+	
+private:
+	const char *m_pszObjName;
+	
+	T *m_pObjPtr = nullptr;
+};
+
+
 namespace Link
 {
 	bool InitAll(char *error, size_t maxlen);

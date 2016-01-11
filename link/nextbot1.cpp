@@ -3,6 +3,7 @@
 #include "util/util.h"
 #include "stub/stub.h"
 #include "re/nextbot.h"
+#include "re/path.h"
 
 
 #define INER INextBotEventResponder
@@ -24,47 +25,47 @@ static FuncThunk<QueryResponse        (*)(const IContextualQuery *, const INextB
 static FuncThunk<const CKnownEntity * (*)(const IContextualQuery *, const INextBot *nextbot, const CBaseCombatCharacter *, const CKnownEntity *, const CKnownEntity *)> ft_IContextualQuery_SelectMoreDangerousThreat("IContextualQuery::SelectMoreDangerousThreat");
 
 static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_dtor_D2(                            "Action<CTFBot>::~Action [D2]");
-static FuncThunk<INER *           (*)(const Action<CTFBot> *)>                                                               ft_Action_INER_FirstContainedResponder(       "INER Action<CTFBot>::FirstContainedResponder");
-static FuncThunk<INER *           (*)(const Action<CTFBot> *, INER *)>                                                       ft_Action_INER_NextContainedResponder(        "INER Action<CTFBot>::NextContainedResponder");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLeaveGround(                 "INER Action<CTFBot>::OnLeaveGround");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLandOnGround(                "INER Action<CTFBot>::OnLandOnGround");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, CGameTrace *)>                                        ft_Action_INER_OnContact(                     "INER Action<CTFBot>::OnContact");
-static FuncThunk<void             (*)(Action<CTFBot> *, const Path *)>                                                       ft_Action_INER_OnMoveToSuccess(               "INER Action<CTFBot>::OnMoveToSuccess");
-static FuncThunk<void             (*)(Action<CTFBot> *, const Path *, INER::MoveToFailureType)>                              ft_Action_INER_OnMoveToFailure(               "INER Action<CTFBot>::OnMoveToFailure");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnStuck(                       "INER Action<CTFBot>::OnStuck");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnUnStuck(                     "INER Action<CTFBot>::OnUnStuck");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnPostureChanged(              "INER Action<CTFBot>::OnPostureChanged");
-static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnAnimationActivityComplete(   "INER Action<CTFBot>::OnAnimationActivityComplete");
-static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnAnimationActivityInterrupted("INER Action<CTFBot>::OnAnimationActivityInterrupted");
-static FuncThunk<void             (*)(Action<CTFBot> *, animevent_t *)>                                                      ft_Action_INER_OnAnimationEvent(              "INER Action<CTFBot>::OnAnimationEvent");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnIgnite(                      "INER Action<CTFBot>::OnIgnite");
-static FuncThunk<void             (*)(Action<CTFBot> *, const CTakeDamageInfo&)>                                             ft_Action_INER_OnInjured(                     "INER Action<CTFBot>::OnInjured");
-static FuncThunk<void             (*)(Action<CTFBot> *, const CTakeDamageInfo&)>                                             ft_Action_INER_OnKilled(                      "INER Action<CTFBot>::OnKilled");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, const CTakeDamageInfo&)>                     ft_Action_INER_OnOtherKilled(                 "INER Action<CTFBot>::OnOtherKilled");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnSight(                       "INER Action<CTFBot>::OnSight");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLostSight(                   "INER Action<CTFBot>::OnLostSight");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, const Vector&, KeyValues *)>                          ft_Action_INER_OnSound(                       "INER Action<CTFBot>::OnSound");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, const char *, AI_Response *)>                ft_Action_INER_OnSpokeConcept(                "INER Action<CTFBot>::OnSpokeConcept");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, CBaseCombatWeapon *)>                        ft_Action_INER_OnWeaponFired(                 "INER Action<CTFBot>::OnWeaponFired");
-static FuncThunk<void             (*)(Action<CTFBot> *, CNavArea *, CNavArea *)>                                             ft_Action_INER_OnNavAreaChanged(              "INER Action<CTFBot>::OnNavAreaChanged");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnModelChanged(                "INER Action<CTFBot>::OnModelChanged");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, CBaseCombatCharacter *)>                              ft_Action_INER_OnPickUp(                      "INER Action<CTFBot>::OnPickUp");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnDrop(                        "INER Action<CTFBot>::OnDrop");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, int)>                                        ft_Action_INER_OnActorEmoted(                 "INER Action<CTFBot>::OnActorEmoted");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnCommandAttack(               "INER Action<CTFBot>::OnCommandAttack");
-static FuncThunk<void             (*)(Action<CTFBot> *, const Vector&, float)>                                               ft_Action_INER_OnCommandApproach_vec(         "INER Action<CTFBot>::OnCommandApproach(vec)");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnCommandApproach_ent(         "INER Action<CTFBot>::OnCommandApproach(ent)");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, float)>                                               ft_Action_INER_OnCommandRetreat(              "INER Action<CTFBot>::OnCommandRetreat");
-static FuncThunk<void             (*)(Action<CTFBot> *, float)>                                                              ft_Action_INER_OnCommandPause(                "INER Action<CTFBot>::OnCommandPause");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnCommandResume(               "INER Action<CTFBot>::OnCommandResume");
-static FuncThunk<void             (*)(Action<CTFBot> *, const char *)>                                                       ft_Action_INER_OnCommandString(               "INER Action<CTFBot>::OnCommandString");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnShoved(                      "INER Action<CTFBot>::OnShoved");
-static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnBlinded(                     "INER Action<CTFBot>::OnBlinded");
-static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryContested(          "INER Action<CTFBot>::OnTerritoryContested");
-static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryCaptured(           "INER Action<CTFBot>::OnTerritoryCaptured");
-static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryLost(               "INER Action<CTFBot>::OnTerritoryLost");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnWin(                         "INER Action<CTFBot>::OnWin");
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnLose(                        "INER Action<CTFBot>::OnLose");
+static FuncThunk<INER *           (*)(const Action<CTFBot> *)>                                                               ft_Action_INER_FirstContainedResponder(       "Action<CTFBot>::FirstContainedResponder"        " [INER]");
+static FuncThunk<INER *           (*)(const Action<CTFBot> *, INER *)>                                                       ft_Action_INER_NextContainedResponder(        "Action<CTFBot>::NextContainedResponder"         " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLeaveGround(                 "Action<CTFBot>::OnLeaveGround"                  " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLandOnGround(                "Action<CTFBot>::OnLandOnGround"                 " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, CGameTrace *)>                                        ft_Action_INER_OnContact(                     "Action<CTFBot>::OnContact"                      " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const Path *)>                                                       ft_Action_INER_OnMoveToSuccess(               "Action<CTFBot>::OnMoveToSuccess"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const Path *, INER::MoveToFailureType)>                              ft_Action_INER_OnMoveToFailure(               "Action<CTFBot>::OnMoveToFailure"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnStuck(                       "Action<CTFBot>::OnStuck"                        " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnUnStuck(                     "Action<CTFBot>::OnUnStuck"                      " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnPostureChanged(              "Action<CTFBot>::OnPostureChanged"               " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnAnimationActivityComplete(   "Action<CTFBot>::OnAnimationActivityComplete"    " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnAnimationActivityInterrupted("Action<CTFBot>::OnAnimationActivityInterrupted" " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, animevent_t *)>                                                      ft_Action_INER_OnAnimationEvent(              "Action<CTFBot>::OnAnimationEvent"               " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnIgnite(                      "Action<CTFBot>::OnIgnite"                       " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const CTakeDamageInfo&)>                                             ft_Action_INER_OnInjured(                     "Action<CTFBot>::OnInjured"                      " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const CTakeDamageInfo&)>                                             ft_Action_INER_OnKilled(                      "Action<CTFBot>::OnKilled"                       " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, const CTakeDamageInfo&)>                     ft_Action_INER_OnOtherKilled(                 "Action<CTFBot>::OnOtherKilled"                  " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnSight(                       "Action<CTFBot>::OnSight"                        " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLostSight(                   "Action<CTFBot>::OnLostSight"                    " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, const Vector&, KeyValues *)>                          ft_Action_INER_OnSound(                       "Action<CTFBot>::OnSound"                        " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, const char *, AI_Response *)>                ft_Action_INER_OnSpokeConcept(                "Action<CTFBot>::OnSpokeConcept"                 " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, CBaseCombatWeapon *)>                        ft_Action_INER_OnWeaponFired(                 "Action<CTFBot>::OnWeaponFired"                  " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CNavArea *, CNavArea *)>                                             ft_Action_INER_OnNavAreaChanged(              "Action<CTFBot>::OnNavAreaChanged"               " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnModelChanged(                "Action<CTFBot>::OnModelChanged"                 " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, CBaseCombatCharacter *)>                              ft_Action_INER_OnPickUp(                      "Action<CTFBot>::OnPickUp"                       " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnDrop(                        "Action<CTFBot>::OnDrop"                         " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseCombatCharacter *, int)>                                        ft_Action_INER_OnActorEmoted(                 "Action<CTFBot>::OnActorEmoted"                  " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnCommandAttack(               "Action<CTFBot>::OnCommandAttack"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const Vector&, float)>                                               ft_Action_INER_OnCommandApproach_vec(         "Action<CTFBot>::OnCommandApproach(vec)"         " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnCommandApproach_ent(         "Action<CTFBot>::OnCommandApproach(ent)"         " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *, float)>                                               ft_Action_INER_OnCommandRetreat(              "Action<CTFBot>::OnCommandRetreat"               " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, float)>                                                              ft_Action_INER_OnCommandPause(                "Action<CTFBot>::OnCommandPause"                 " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnCommandResume(               "Action<CTFBot>::OnCommandResume"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, const char *)>                                                       ft_Action_INER_OnCommandString(               "Action<CTFBot>::OnCommandString"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnShoved(                      "Action<CTFBot>::OnShoved"                       " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnBlinded(                     "Action<CTFBot>::OnBlinded"                      " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryContested(          "Action<CTFBot>::OnTerritoryContested"           " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryCaptured(           "Action<CTFBot>::OnTerritoryCaptured"            " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *, int)>                                                                ft_Action_INER_OnTerritoryLost(               "Action<CTFBot>::OnTerritoryLost"                " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnWin(                         "Action<CTFBot>::OnWin"                          " [INER]");
+static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_INER_OnLose(                        "Action<CTFBot>::OnLose"                         " [INER]");
 static FuncThunk<bool             (*)(const Action<CTFBot> *, const char *)>                                                 ft_Action_IsNamed(                            "Action<CTFBot>::IsNamed");
 static FuncThunk<char *           (*)(const Action<CTFBot> *)>                                                               ft_Action_GetFullName(                        "Action<CTFBot>::GetFullName");
 static FuncThunk<AR               (*)(Action<CTFBot> *, CTFBot *actor, Action<CTFBot> *)>                                    ft_Action_OnStart(                            "Action<CTFBot>::OnStart");
@@ -141,6 +142,8 @@ static FuncThunk<void (*)(CTFBot *)>               ft_CTFBot_ReleaseCrouchButton
 static FuncThunk<void (*)(CTFBot *, float)>        ft_CTFBot_PressWalkButton(         "NextBotPlayer<CTFPlayer>::PressWalkButton");
 static FuncThunk<void (*)(CTFBot *)>               ft_CTFBot_ReleaseWalkButton(       "NextBotPlayer<CTFPlayer>::ReleaseWalkButton");
 static FuncThunk<void (*)(CTFBot *, float, float)> ft_CTFBot_SetButtonScale(          "NextBotPlayer<CTFPlayer>::SetButtonScale");
+
+static FuncThunk<float (*)(const CTFBotPathCost *, CNavArea *, CNavArea *, const CNavLadder *, const CFuncElevator *, float)> ft_CTFBotPathCost_op_func("CTFBotPathCost::operator()");
 
 
 QueryResponse IContextualQuery::ShouldPickUp(const INextBot *nextbot, CBaseEntity *it) const                                                                                               { return (*ft_IContextualQuery_ShouldPickUp)             (this, nextbot, it);                     }
@@ -269,6 +272,8 @@ void CTFBot::ReleaseCrouchButton()                     { (*ft_CTFBot_ReleaseCrou
 void CTFBot::PressWalkButton(float duration)           { (*ft_CTFBot_PressWalkButton)         (this, duration);      }
 void CTFBot::ReleaseWalkButton()                       { (*ft_CTFBot_ReleaseWalkButton)       (this);                }
 void CTFBot::SetButtonScale(float forward, float side) { (*ft_CTFBot_SetButtonScale)          (this, forward, side); }
+
+float CTFBotPathCost::operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const { return (*ft_CTFBotPathCost_op_func)(this, area1, area2, ladder, elevator, f1); }
 
 
 extern "C"

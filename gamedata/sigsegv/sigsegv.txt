@@ -1,0 +1,115 @@
+// sigsegv: Miscellaneous
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CBaseEntity::GetDataDescMap"
+			{
+				linux "@_ZN11CBaseEntity14GetDataDescMapEv"
+				// TODO: windows
+			}
+			"CBaseEntity::GetNetworkable"
+			{
+				linux "@_ZN11CBaseEntity14GetNetworkableEv"
+				// TODO: windows
+			}
+			"CBaseEntity::CalcAbsolutePosition"
+			{
+				linux "@_ZN11CBaseEntity20CalcAbsolutePositionEv"
+				// TODO: windows
+			}
+			
+			"CTFPlayer::IsPlayerClass"
+			{
+				linux "@_ZNK9CTFPlayer13IsPlayerClassEi"
+				// TODO: windows
+			}
+			
+			"CTFGameRules::PushAllPlayersAway"
+			{
+				linux "@_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
+				windows "\x55\x8B\xEC\x83\xEC\x2C\x6A\x00"
+				// 20151223a: 0x41cfb0
+			}
+			
+			"CTFSniperRifle::ItemPostFrame"
+			{
+				linux "@_ZN14CTFSniperRifle13ItemPostFrameEv"
+				// TODO: windows
+				// 20151223a: 0x598850
+			}
+			
+			"CTFSniperRifleClassic::ItemPostFrame"
+			{
+				linux "@_ZN21CTFSniperRifleClassic13ItemPostFrameEv"
+				// TODO: windows
+				// 20151223a: 0x598c28
+			}
+			
+			"CCurrencyPack::ComeToRest"
+			{
+				linux "@_ZN13CCurrencyPack10ComeToRestEv"
+				// TODO: windows
+			}
+			
+			"CNavMesh::GetNavArea"
+			{
+				linux "@_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+				// TODO: windows
+			}
+			
+			"CTFNavMesh::CollectBuiltObjects"
+			{
+				linux "@_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
+				// TODO: windows
+			}
+			
+			"CTFNavArea::IsValidForWanderingPopulation"
+			{
+				linux "@_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
+				// TODO: windows
+			}
+			
+			"CTFBotPathCost::operator()"
+			{
+				linux "@_ZNK14CTFBotPathCostclEP8CNavAreaS1_PK10CNavLadderPK13CFuncElevatorf"
+				// TODO: windows
+			}
+			
+			"Path::Compute<CTFBotPathCost>"
+			{
+				linux "@_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+				// TODO: windows
+			}
+			
+			"PathFollower::SetMinLookAheadDistance"
+			{
+				linux "@_ZN12PathFollower23SetMinLookAheadDistanceEf"
+				// TODO: windows
+			}
+			"PathFollower::Update"
+			{
+				linux "@_ZN12PathFollower6UpdateEP8INextBot"
+				// TODO: windows
+			}
+			
+			"TheNavMesh"
+			{
+				linux "@TheNavMesh"
+				// TODO: windows
+			}
+		}
+		
+		"Offsets"
+		{
+			/*"CTFGameRules::m_bPlayingMannVsMachine"
+			{
+				class "CTFGameRulesProxy"
+				prop  "m_bPlayingMannVsMachine"
+			}*/
+		}
+	}
+}

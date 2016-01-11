@@ -1,0 +1,461 @@
+// sigsegv: NextBot: Action<CTFBot>
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"Action<CTFBot>::~Action [D2]"
+			{
+				linux "@_ZN6ActionI6CTFBotED2Ev"
+				// TODO: windows
+			}
+			"Action<CTFBot>::FirstContainedResponder [INER]"
+			{
+				linux "@_ZNK6ActionI6CTFBotE23FirstContainedResponderEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::NextContainedResponder [INER]"
+			{
+				linux "@_ZNK6ActionI6CTFBotE22NextContainedResponderEP22INextBotEventResponder"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLeaveGround [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnLeaveGroundEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLandOnGround [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnLandOnGroundEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnContact [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnContactEP11CBaseEntityP10CGameTrace"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnMoveToSuccess [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnMoveToSuccessEPK4Path"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnMoveToFailure [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnMoveToFailureEPK4Path17MoveToFailureType"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnStuck [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnStuckEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnUnStuck [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnUnStuckEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnPostureChanged [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnPostureChangedEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationActivityComplete [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE27OnAnimationActivityCompleteEi"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationActivityInterrupted [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE30OnAnimationActivityInterruptedEi"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationEvent [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnAnimationEventEP11animevent_t"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnIgnite [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnIgniteEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnInjured [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnInjuredERK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnKilled [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnKilledERK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnOtherKilled [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnOtherKilledEP20CBaseCombatCharacterRK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSight [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnSightEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLostSight [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE11OnLostSightEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSound [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnSoundEP11CBaseEntityRK6VectorP9KeyValues"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSpokeConcept [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnSpokeConceptEP20CBaseCombatCharacterPKcP11AI_Response"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnWeaponFired [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnWeaponFiredEP20CBaseCombatCharacterP17CBaseCombatWeapon"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnNavAreaChanged [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnNavAreaChangedEP8CNavAreaS3_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnModelChanged [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnModelChangedEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnPickUp [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnPickUpEP11CBaseEntityP20CBaseCombatCharacter"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnDrop [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE6OnDropEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnActorEmoted [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnActorEmotedEP20CBaseCombatCharacteri"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandAttack [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandAttackEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandApproach(vec) [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE17OnCommandApproachERK6Vectorf"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandApproach(ent) [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE17OnCommandApproachEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandRetreat [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnCommandRetreatEP11CBaseEntityf"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandPause [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnCommandPauseEf"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandResume [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandResumeEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandString [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandStringEPKc"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnShoved [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnShovedEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnBlinded [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnBlindedEP11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryContested [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE20OnTerritoryContestedEi"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryCaptured [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE19OnTerritoryCapturedEi"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryLost [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnTerritoryLostEi"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnWin [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE5OnWinEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLose [INER]"
+			{
+				linux "@_ZN6ActionI6CTFBotE6OnLoseEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::IsNamed"
+			{
+				linux "@_ZNK6ActionI6CTFBotE7IsNamedEPKc"
+				// TODO: windows
+			}
+			"Action<CTFBot>::GetFullName"
+			{
+				linux "@_ZNK6ActionI6CTFBotE11GetFullNameEv"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnStart"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnStartEPS0_PS1_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::Update"
+			{
+				linux "@_ZN6ActionI6CTFBotE6UpdateEPS0_f"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnEnd"
+			{
+				linux "@_ZN6ActionI6CTFBotE5OnEndEPS0_PS1_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSuspend"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnSuspendEPS0_PS1_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnResume"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnResumeEPS0_PS1_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::InitialContainedAction"
+			{
+				linux "@_ZN6ActionI6CTFBotE22InitialContainedActionEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLeaveGround"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnLeaveGroundEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLandOnGround"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnLandOnGroundEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnContact"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnContactEPS0_P11CBaseEntityP10CGameTrace"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnMoveToSuccess"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnMoveToSuccessEPS0_PK4Path"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnMoveToFailure"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnMoveToFailureEPS0_PK4Path17MoveToFailureType"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnStuck"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnStuckEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnUnStuck"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnUnStuckEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnPostureChanged"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnPostureChangedEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationActivityComplete"
+			{
+				linux "@_ZN6ActionI6CTFBotE27OnAnimationActivityCompleteEPS0_i"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationActivityInterrupted"
+			{
+				linux "@_ZN6ActionI6CTFBotE30OnAnimationActivityInterruptedEPS0_i"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnAnimationEvent"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnAnimationEventEPS0_P11animevent_t"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnIgnite"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnIgniteEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnInjured"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnInjuredEPS0_RK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnKilled"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnKilledEPS0_RK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnOtherKilled"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnOtherKilledEPS0_P20CBaseCombatCharacterRK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSight"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnSightEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLostSight"
+			{
+				linux "@_ZN6ActionI6CTFBotE11OnLostSightEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSound"
+			{
+				linux "@_ZN6ActionI6CTFBotE7OnSoundEPS0_P11CBaseEntityRK6VectorP9KeyValues"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnSpokeConcept"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnSpokeConceptEPS0_P20CBaseCombatCharacterPKcP11AI_Response"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnWeaponFired"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnWeaponFiredEPS0_P20CBaseCombatCharacterP17CBaseCombatWeapon"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnNavAreaChanged"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnNavAreaChangedEPS0_P8CNavAreaS4_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnModelChanged"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnModelChangedEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnPickUp"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnPickUpEPS0_P11CBaseEntityP20CBaseCombatCharacter"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnDrop"
+			{
+				linux "@_ZN6ActionI6CTFBotE6OnDropEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnActorEmoted"
+			{
+				linux "@_ZN6ActionI6CTFBotE13OnActorEmotedEPS0_P20CBaseCombatCharacteri"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandAttack"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandAttackEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandApproach(vec)"
+			{
+				linux "@_ZN6ActionI6CTFBotE17OnCommandApproachEPS0_RK6Vectorf"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandApproach(ent)"
+			{
+				linux "@_ZN6ActionI6CTFBotE17OnCommandApproachEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandRetreat"
+			{
+				linux "@_ZN6ActionI6CTFBotE16OnCommandRetreatEPS0_P11CBaseEntityf"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandPause"
+			{
+				linux "@_ZN6ActionI6CTFBotE14OnCommandPauseEPS0_f"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandResume"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandResumeEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnCommandString"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnCommandStringEPS0_PKc"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnShoved"
+			{
+				linux "@_ZN6ActionI6CTFBotE8OnShovedEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnBlinded"
+			{
+				linux "@_ZN6ActionI6CTFBotE9OnBlindedEPS0_P11CBaseEntity"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryContested"
+			{
+				linux "@_ZN6ActionI6CTFBotE20OnTerritoryContestedEPS0_i"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryCaptured"
+			{
+				linux "@_ZN6ActionI6CTFBotE19OnTerritoryCapturedEPS0_i"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnTerritoryLost"
+			{
+				linux "@_ZN6ActionI6CTFBotE15OnTerritoryLostEPS0_i"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnWin"
+			{
+				linux "@_ZN6ActionI6CTFBotE5OnWinEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::OnLose"
+			{
+				linux "@_ZN6ActionI6CTFBotE6OnLoseEPS0_"
+				// TODO: windows
+			}
+			"Action<CTFBot>::IsAbleToBlockMovementOf"
+			{
+				linux "@_ZNK6ActionI6CTFBotE23IsAbleToBlockMovementOfEPK8INextBot"
+				// TODO: windows
+			}
+		}
+	}
+}

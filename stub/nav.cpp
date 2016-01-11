@@ -49,3 +49,7 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 
 
 CProp_Extract<CTFNavArea, TFNavAttributeType> CTFNavArea::m_nAttributes("CTFNavArea", "m_nAttributes", new CExtract_CTFNavArea_m_nAttributes());
+
+FuncThunk<void (*)(CTFNavMesh *, CUtlVector<CBaseObject *> *, int)> CTFNavMesh::ft_CollectBuiltObjects("CTFNavMesh::CollectBuiltObjects");
+
+GlobalThunk<CTFNavMesh *> TheNavMesh("TheNavMesh");
