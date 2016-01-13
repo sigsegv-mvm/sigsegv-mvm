@@ -29,6 +29,7 @@
 #include <tier1/utlvector.h>
 #include <shareddefs.h>
 #include <ehandle.h>
+#include <datamap.h>
 #include <predictioncopy.h>
 #include <takedamageinfo.h>
 #include <iserverunknown.h>
@@ -38,11 +39,13 @@
 extern IEngineTrace *enginetrace;
 #include <IStaticPropMgr.h>
 extern IStaticPropMgrServer *staticpropmgr;
+#include <ivdebugoverlay.h>
+extern IVDebugOverlay *debugoverlay;
 #include "sdk2013/util_shared.h"
-#include <datamap.h>
 #include <ai_activity.h>
 #include <usercmd.h>
 #include <npcevent.h>
+#include <debugoverlay_shared.h>
 
 /* SourceMod */
 #include <ISDKTools.h>

@@ -23,8 +23,8 @@ template<typename T>
 class FuncThunk : public ILinkage
 {
 public:
-	FuncThunk(const char *name) :
-		m_pszFuncName(name) {}
+	FuncThunk(const char *n_func) :
+		m_pszFuncName(n_func) {}
 	
 	virtual bool Link(char *error, size_t maxlen) override
 	{
@@ -37,11 +37,11 @@ public:
 			}
 		}
 		
-		DevMsg("FuncThunk::Link OK \"%s\"\n", this->m_pszFuncName);
+		DevMsg("FuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
 		return true;
 	}
 	
-	const T& operator*()
+	const T& operator*() const
 	{
 		assert(this->m_pFuncPtr != nullptr);
 		return this->m_pFuncPtr;
@@ -58,8 +58,8 @@ template<typename T>
 class GlobalThunk : public ILinkage
 {
 public:
-	GlobalThunk(const char *name) :
-		m_pszObjName(name) {}
+	GlobalThunk(const char *n_obj) :
+		m_pszObjName(n_obj) {}
 	
 	virtual bool Link(char *error, size_t maxlen) override
 	{
@@ -72,7 +72,7 @@ public:
 			}
 		}
 		
-		DevMsg("GlobalThunk::Link OK \"%s\"\n", this->m_pszObjName);
+		DevMsg("GlobalThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pObjPtr, this->m_pszObjName);
 		return true;
 	}
 	
@@ -92,6 +92,9 @@ private:
 	
 	T *m_pObjPtr = nullptr;
 };
+
+
+#include "link/vcall.h"
 
 
 namespace Link

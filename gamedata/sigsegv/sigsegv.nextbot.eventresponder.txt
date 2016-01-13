@@ -9,11 +9,216 @@
 			"INextBotEventResponder::~INextBotEventResponder [D0]"
 			{
 				linux "@_ZN22INextBotEventResponderD0Ev"
-				// TODO: windows
+				// not using this on windows
 			}
 			"INextBotEventResponder::~INextBotEventResponder [D2]"
 			{
 				linux "@_ZN22INextBotEventResponderD2Ev"
+				// not using this on windows
+			}
+			"INextBotEventResponder::FirstContainedResponder"
+			{
+				linux "@_ZNK22INextBotEventResponder23FirstContainedResponderEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::NextContainedResponder"
+			{
+				linux "@_ZNK22INextBotEventResponder22NextContainedResponderEPS_"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnLeaveGround"
+			{
+				linux "@_ZN22INextBotEventResponder13OnLeaveGroundEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnLandOnGround"
+			{
+				linux "@_ZN22INextBotEventResponder14OnLandOnGroundEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnContact"
+			{
+				linux "@_ZN22INextBotEventResponder9OnContactEP11CBaseEntityP10CGameTrace"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnMoveToSuccess"
+			{
+				linux "@_ZN22INextBotEventResponder15OnMoveToSuccessEPK4Path"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnMoveToFailure"
+			{
+				linux "@_ZN22INextBotEventResponder15OnMoveToFailureEPK4Path17MoveToFailureType"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnStuck"
+			{
+				linux "@_ZN22INextBotEventResponder7OnStuckEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnUnStuck"
+			{
+				linux "@_ZN22INextBotEventResponder9OnUnStuckEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnPostureChanged"
+			{
+				linux "@_ZN22INextBotEventResponder16OnPostureChangedEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnAnimationActivityComplete"
+			{
+				linux "@_ZN22INextBotEventResponder27OnAnimationActivityCompleteEi"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnAnimationActivityInterrupted"
+			{
+				linux "@_ZN22INextBotEventResponder30OnAnimationActivityInterruptedEi"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnAnimationEvent"
+			{
+				linux "@_ZN22INextBotEventResponder16OnAnimationEventEP11animevent_t"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnIgnite"
+			{
+				linux "@_ZN22INextBotEventResponder8OnIgniteEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnInjured"
+			{
+				linux "@_ZN22INextBotEventResponder9OnInjuredERK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnKilled"
+			{
+				linux "@_ZN22INextBotEventResponder8OnKilledERK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnOtherKilled"
+			{
+				linux "@_ZN22INextBotEventResponder13OnOtherKilledEP20CBaseCombatCharacterRK15CTakeDamageInfo"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnSight"
+			{
+				linux "@_ZN22INextBotEventResponder7OnSightEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnLostSight"
+			{
+				linux "@_ZN22INextBotEventResponder11OnLostSightEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnSound"
+			{
+				linux "@_ZN22INextBotEventResponder7OnSoundEP11CBaseEntityRK6VectorP9KeyValues"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnSpokeConcept"
+			{
+				linux "@_ZN22INextBotEventResponder14OnSpokeConceptEP20CBaseCombatCharacterPKcP11AI_Response"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnWeaponFired"
+			{
+				linux "@_ZN22INextBotEventResponder13OnWeaponFiredEP20CBaseCombatCharacterP17CBaseCombatWeapon"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnNavAreaChanged"
+			{
+				linux "@_ZN22INextBotEventResponder16OnNavAreaChangedEP8CNavAreaS1_"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnModelChanged"
+			{
+				linux "@_ZN22INextBotEventResponder14OnModelChangedEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnPickUp"
+			{
+				linux "@_ZN22INextBotEventResponder8OnPickUpEP11CBaseEntityP20CBaseCombatCharacter"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnDrop"
+			{
+				linux "@_ZN22INextBotEventResponder6OnDropEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnActorEmoted"
+			{
+				linux "@_ZN22INextBotEventResponder13OnActorEmotedEP20CBaseCombatCharacteri"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandAttack"
+			{
+				linux "@_ZN22INextBotEventResponder15OnCommandAttackEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandApproach(vec)"
+			{
+				linux "@_ZN22INextBotEventResponder17OnCommandApproachERK6Vectorf"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandApproach(ent)"
+			{
+				linux "@_ZN22INextBotEventResponder17OnCommandApproachEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandRetreat"
+			{
+				linux "@_ZN22INextBotEventResponder16OnCommandRetreatEP11CBaseEntityf"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandPause"
+			{
+				linux "@_ZN22INextBotEventResponder14OnCommandPauseEf"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandResume"
+			{
+				linux "@_ZN22INextBotEventResponder15OnCommandResumeEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnCommandString"
+			{
+				linux "@_ZN22INextBotEventResponder15OnCommandStringEPKc"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnShoved"
+			{
+				linux "@_ZN22INextBotEventResponder8OnShovedEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnBlinded"
+			{
+				linux "@_ZN22INextBotEventResponder9OnBlindedEP11CBaseEntity"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnTerritoryContested"
+			{
+				linux "@_ZN22INextBotEventResponder20OnTerritoryContestedEi"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnTerritoryCaptured"
+			{
+				linux "@_ZN22INextBotEventResponder19OnTerritoryCapturedEi"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnTerritoryLost"
+			{
+				linux "@_ZN22INextBotEventResponder15OnTerritoryLostEi"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnWin"
+			{
+				linux "@_ZN22INextBotEventResponder5OnWinEv"
+				// TODO: windows
+			}
+			"INextBotEventResponder::OnLose"
+			{
+				linux "@_ZN22INextBotEventResponder6OnLoseEv"
 				// TODO: windows
 			}
 		}

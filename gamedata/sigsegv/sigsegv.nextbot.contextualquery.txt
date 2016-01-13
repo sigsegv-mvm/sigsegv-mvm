@@ -9,12 +9,12 @@
 			"IContextualQuery::~IContextualQuery [D0]"
 			{
 				linux "@_ZN16IContextualQueryD0Ev"
-				// TODO: windows
+				// not using this on windows
 			}
 			"IContextualQuery::~IContextualQuery [D2]"
 			{
 				linux "@_ZN16IContextualQueryD2Ev"
-				// TODO: windows
+				// not using this on windows
 			}
 			"IContextualQuery::ShouldPickUp"
 			{

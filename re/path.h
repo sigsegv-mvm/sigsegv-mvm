@@ -3,7 +3,7 @@
 
 
 #if defined _WIN32
-#warning Path classes have not been checked against the VC++ build!
+#pragma message("Path classes have not been checked against the VC++ build!")
 #endif
 
 

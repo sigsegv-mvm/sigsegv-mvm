@@ -26,9 +26,6 @@
     <ClCompile Include="..\patch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\prop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\sizeof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +74,33 @@
     <ClCompile Include="..\util\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\mod\mod_robottickle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stub\tfplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\scan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gameconf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\debug_airblastbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\debug_ehsphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\debug_deflectcylinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mod.h">
@@ -86,12 +110,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\patch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\prop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\re_nextbot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common.h">
@@ -167,6 +185,48 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\util\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\link\vcall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\prop\datamap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\prop\extract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\prop\prop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\prop\sendprop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\re\nextbot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\re\path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\baseanimating.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\tfplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stub\tfweaponbase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\scan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\abi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gameconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

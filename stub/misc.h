@@ -40,5 +40,7 @@ class CTFBotMvMEngineerTeleportSpawn;
 class CTFBotMvMEngineerBuildTeleportExit;
 class CTFBotMvMEngineerBuildSentryGun;
 
+class CFlaggedEntitiesEnum;
+
 
 #endif

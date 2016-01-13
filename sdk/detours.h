@@ -46,12 +46,12 @@
  */
 
 #define DETOUR_MEMBER_CALL(name) (this->*name##_Actual)
-#define DETOUR_STATIC_CALL(name) (name##_Actual)
+#define DETOUR_STATIC_CALL(name) (Actual_##name)
 
 #define DETOUR_DECL_STATIC(ret, name, ...) \
 	static CDetour *detour_##name = nullptr; \
-	ret (*name##_Actual)(__VA_ARGS__) = nullptr; \
-	ret name(__VA_ARGS__)
+	static ret (*Actual_##name)(__VA_ARGS__) = nullptr; \
+	static ret Detour_##name(__VA_ARGS__)
 
 #define DETOUR_DECL_MEMBER(ret, name, ...) \
 	static CDetour *detour_##name = nullptr; \
@@ -68,8 +68,8 @@
 #define GET_MEMBER_CALLBACK(name) (void *)GetCodeAddress(&Detour_##name::name)
 #define GET_MEMBER_TRAMPOLINE(name) (void **)(&Detour_##name::name##_Actual)
 
-#define GET_STATIC_CALLBACK(name) (void *)&name
-#define GET_STATIC_TRAMPOLINE(name) (void **)&name##_Actual
+#define GET_STATIC_CALLBACK(name) (void *)&Detour_##name
+#define GET_STATIC_TRAMPOLINE(name) (void **)&Actual_##name
 
 #define DETOUR_CREATE_MEMBER(name, gamedata) CDetourManager::CreateDetour(GET_MEMBER_CALLBACK(name), GET_MEMBER_TRAMPOLINE(name), gamedata);
 #define DETOUR_CREATE_STATIC(name, gamedata) CDetourManager::CreateDetour(GET_STATIC_CALLBACK(name), GET_STATIC_TRAMPOLINE(name), gamedata);

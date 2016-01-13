@@ -2,6 +2,7 @@
 #define _INCLUDE_SIGSEGV_PROP_DATAMAP_H_
 
 
+#include "common.h"
 #include "extension.h"
 
 

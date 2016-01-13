@@ -60,7 +60,7 @@ void IPatch::Apply()
 		return;
 	}
 	
-#warning need to unprotect/protect pages!
+	DevMsg("IPatch::Apply: TODO: unprotect/protect pages\n");
 	
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {
@@ -84,7 +84,7 @@ void IPatch::UnApply()
 		return;
 	}
 	
-#warning need to unprotect/protect pages!
+	DevMsg("IPatch::UnApply: TODO: unprotect/protect pages\n");
 	
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {

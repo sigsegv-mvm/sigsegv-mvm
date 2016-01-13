@@ -10,11 +10,48 @@
 #define AR   ActionResult<CTFBot>
 #define EDR  EventDesiredResult<CTFBot>
 
-static FuncThunk<void (*)(INextBotEventResponder *)> ft_INextBotEventResponder_dtor_D0("INextBotEventResponder::~INextBotEventResponder [D0]");
-static FuncThunk<void (*)(INextBotEventResponder *)> ft_INextBotEventResponder_dtor_D2("INextBotEventResponder::~INextBotEventResponder [D2]");
+static FuncThunk<INER * (*)(const INER *)>                                                ft_INextBotEventResponder_FirstContainedResponder(       "INextBotEventResponder::FirstContainedResponder");
+static FuncThunk<INER * (*)(const INER *, INER *)>                                        ft_INextBotEventResponder_NextContainedResponder(        "INextBotEventResponder::NextContainedResponder");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnLeaveGround(                 "INextBotEventResponder::OnLeaveGround");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnLandOnGround(                "INextBotEventResponder::OnLandOnGround");
+static FuncThunk<void   (*)(INER *, CBaseEntity *, CGameTrace *)>                         ft_INextBotEventResponder_OnContact(                     "INextBotEventResponder::OnContact");
+static FuncThunk<void   (*)(INER *, const Path *)>                                        ft_INextBotEventResponder_OnMoveToSuccess(               "INextBotEventResponder::OnMoveToSuccess");
+static FuncThunk<void   (*)(INER *, const Path *, INER::MoveToFailureType)>               ft_INextBotEventResponder_OnMoveToFailure(               "INextBotEventResponder::OnMoveToFailure");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnStuck(                       "INextBotEventResponder::OnStuck");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnUnStuck(                     "INextBotEventResponder::OnUnStuck");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnPostureChanged(              "INextBotEventResponder::OnPostureChanged");
+static FuncThunk<void   (*)(INER *, int)>                                                 ft_INextBotEventResponder_OnAnimationActivityComplete(   "INextBotEventResponder::OnAnimationActivityComplete");
+static FuncThunk<void   (*)(INER *, int)>                                                 ft_INextBotEventResponder_OnAnimationActivityInterrupted("INextBotEventResponder::OnAnimationActivityInterrupted");
+static FuncThunk<void   (*)(INER *, animevent_t *)>                                       ft_INextBotEventResponder_OnAnimationEvent(              "INextBotEventResponder::OnAnimationEvent");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnIgnite(                      "INextBotEventResponder::OnIgnite");
+static FuncThunk<void   (*)(INER *, const CTakeDamageInfo&)>                              ft_INextBotEventResponder_OnInjured(                     "INextBotEventResponder::OnInjured");
+static FuncThunk<void   (*)(INER *, const CTakeDamageInfo&)>                              ft_INextBotEventResponder_OnKilled(                      "INextBotEventResponder::OnKilled");
+static FuncThunk<void   (*)(INER *, CBaseCombatCharacter *, const CTakeDamageInfo&)>      ft_INextBotEventResponder_OnOtherKilled(                 "INextBotEventResponder::OnOtherKilled");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnSight(                       "INextBotEventResponder::OnSight");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnLostSight(                   "INextBotEventResponder::OnLostSight");
+static FuncThunk<void   (*)(INER *, CBaseEntity *, const Vector&, KeyValues *)>           ft_INextBotEventResponder_OnSound(                       "INextBotEventResponder::OnSound");
+static FuncThunk<void   (*)(INER *, CBaseCombatCharacter *, const char *, AI_Response *)> ft_INextBotEventResponder_OnSpokeConcept(                "INextBotEventResponder::OnSpokeConcept");
+static FuncThunk<void   (*)(INER *, CBaseCombatCharacter *, CBaseCombatWeapon *)>         ft_INextBotEventResponder_OnWeaponFired(                 "INextBotEventResponder::OnWeaponFired");
+static FuncThunk<void   (*)(INER *, CNavArea *, CNavArea *)>                              ft_INextBotEventResponder_OnNavAreaChanged(              "INextBotEventResponder::OnNavAreaChanged");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnModelChanged(                "INextBotEventResponder::OnModelChanged");
+static FuncThunk<void   (*)(INER *, CBaseEntity *, CBaseCombatCharacter *)>               ft_INextBotEventResponder_OnPickUp(                      "INextBotEventResponder::OnPickUp");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnDrop(                        "INextBotEventResponder::OnDrop");
+static FuncThunk<void   (*)(INER *, CBaseCombatCharacter *, int)>                         ft_INextBotEventResponder_OnActorEmoted(                 "INextBotEventResponder::OnActorEmoted");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnCommandAttack(               "INextBotEventResponder::OnCommandAttack");
+static FuncThunk<void   (*)(INER *, const Vector&, float)>                                ft_INextBotEventResponder_OnCommandApproach_vec(         "INextBotEventResponder::OnCommandApproach(vec)");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnCommandApproach_ent(         "INextBotEventResponder::OnCommandApproach(ent)");
+static FuncThunk<void   (*)(INER *, CBaseEntity *, float)>                                ft_INextBotEventResponder_OnCommandRetreat(              "INextBotEventResponder::OnCommandRetreat");
+static FuncThunk<void   (*)(INER *, float)>                                               ft_INextBotEventResponder_OnCommandPause(                "INextBotEventResponder::OnCommandPause");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnCommandResume(               "INextBotEventResponder::OnCommandResume");
+static FuncThunk<void   (*)(INER *, const char *)>                                        ft_INextBotEventResponder_OnCommandString(               "INextBotEventResponder::OnCommandString");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnShoved(                      "INextBotEventResponder::OnShoved");
+static FuncThunk<void   (*)(INER *, CBaseEntity *)>                                       ft_INextBotEventResponder_OnBlinded(                     "INextBotEventResponder::OnBlinded");
+static FuncThunk<void   (*)(INER *, int)>                                                 ft_INextBotEventResponder_OnTerritoryContested(          "INextBotEventResponder::OnTerritoryContested");
+static FuncThunk<void   (*)(INER *, int)>                                                 ft_INextBotEventResponder_OnTerritoryCaptured(           "INextBotEventResponder::OnTerritoryCaptured");
+static FuncThunk<void   (*)(INER *, int)>                                                 ft_INextBotEventResponder_OnTerritoryLost(               "INextBotEventResponder::OnTerritoryLost");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnWin(                         "INextBotEventResponder::OnWin");
+static FuncThunk<void   (*)(INER *)>                                                      ft_INextBotEventResponder_OnLose(                        "INextBotEventResponder::OnLose");
 
-static FuncThunk<void                 (*)(IContextualQuery *)>                                                                                                          ft_IContextualQuery_dtor_D0(                  "IContextualQuery::~IContextualQuery [D0]");
-static FuncThunk<void                 (*)(IContextualQuery *)>                                                                                                          ft_IContextualQuery_dtor_D2(                  "IContextualQuery::~IContextualQuery [D2]");
 static FuncThunk<QueryResponse        (*)(const IContextualQuery *, const INextBot *nextbot, CBaseEntity *)>                                                            ft_IContextualQuery_ShouldPickUp(             "IContextualQuery::ShouldPickUp");
 static FuncThunk<QueryResponse        (*)(const IContextualQuery *, const INextBot *nextbot)>                                                                           ft_IContextualQuery_ShouldHurry(              "IContextualQuery::ShouldHurry");
 static FuncThunk<QueryResponse        (*)(const IContextualQuery *, const INextBot *nextbot)>                                                                           ft_IContextualQuery_ShouldRetreat(            "IContextualQuery::ShouldRetreat");
@@ -24,7 +61,6 @@ static FuncThunk<Vector               (*)(const IContextualQuery *, const INextB
 static FuncThunk<QueryResponse        (*)(const IContextualQuery *, const INextBot *nextbot, const Vector&)>                                                            ft_IContextualQuery_IsPositionAllowed(        "IContextualQuery::IsPositionAllowed");
 static FuncThunk<const CKnownEntity * (*)(const IContextualQuery *, const INextBot *nextbot, const CBaseCombatCharacter *, const CKnownEntity *, const CKnownEntity *)> ft_IContextualQuery_SelectMoreDangerousThreat("IContextualQuery::SelectMoreDangerousThreat");
 
-static FuncThunk<void             (*)(Action<CTFBot> *)>                                                                     ft_Action_dtor_D2(                            "Action<CTFBot>::~Action [D2]");
 static FuncThunk<INER *           (*)(const Action<CTFBot> *)>                                                               ft_Action_INER_FirstContainedResponder(       "Action<CTFBot>::FirstContainedResponder"        " [INER]");
 static FuncThunk<INER *           (*)(const Action<CTFBot> *, INER *)>                                                       ft_Action_INER_NextContainedResponder(        "Action<CTFBot>::NextContainedResponder"         " [INER]");
 static FuncThunk<void             (*)(Action<CTFBot> *, CBaseEntity *)>                                                      ft_Action_INER_OnLeaveGround(                 "Action<CTFBot>::OnLeaveGround"                  " [INER]");
@@ -145,6 +181,48 @@ static FuncThunk<void (*)(CTFBot *, float, float)> ft_CTFBot_SetButtonScale(    
 
 static FuncThunk<float (*)(const CTFBotPathCost *, CNavArea *, CNavArea *, const CNavLadder *, const CFuncElevator *, float)> ft_CTFBotPathCost_op_func("CTFBotPathCost::operator()");
 
+
+INextBotEventResponder *INextBotEventResponder::FirstContainedResponder() const                               { return (*ft_INextBotEventResponder_FirstContainedResponder)       (this);                    }
+INextBotEventResponder *INextBotEventResponder::NextContainedResponder(INextBotEventResponder *prev) const    { return (*ft_INextBotEventResponder_NextContainedResponder)        (this, prev);              }
+void INextBotEventResponder::OnLeaveGround(CBaseEntity *ent)                                                  {        (*ft_INextBotEventResponder_OnLeaveGround)                 (this, ent);               }
+void INextBotEventResponder::OnLandOnGround(CBaseEntity *ent)                                                 {        (*ft_INextBotEventResponder_OnLandOnGround)                (this, ent);               }
+void INextBotEventResponder::OnContact(CBaseEntity *ent, CGameTrace *trace)                                   {        (*ft_INextBotEventResponder_OnContact)                     (this, ent, trace);        }
+void INextBotEventResponder::OnMoveToSuccess(const Path *path)                                                {        (*ft_INextBotEventResponder_OnMoveToSuccess)               (this, path);              }
+void INextBotEventResponder::OnMoveToFailure(const Path *path, MoveToFailureType fail)                        {        (*ft_INextBotEventResponder_OnMoveToFailure)               (this, path, fail);        }
+void INextBotEventResponder::OnStuck()                                                                        {        (*ft_INextBotEventResponder_OnStuck)                       (this);                    }
+void INextBotEventResponder::OnUnStuck()                                                                      {        (*ft_INextBotEventResponder_OnUnStuck)                     (this);                    }
+void INextBotEventResponder::OnPostureChanged()                                                               {        (*ft_INextBotEventResponder_OnPostureChanged)              (this);                    }
+void INextBotEventResponder::OnAnimationActivityComplete(int i1)                                              {        (*ft_INextBotEventResponder_OnAnimationActivityComplete)   (this, i1);                }
+void INextBotEventResponder::OnAnimationActivityInterrupted(int i1)                                           {        (*ft_INextBotEventResponder_OnAnimationActivityInterrupted)(this, i1);                }
+void INextBotEventResponder::OnAnimationEvent(animevent_t *a1)                                                {        (*ft_INextBotEventResponder_OnAnimationEvent)              (this, a1);                }
+void INextBotEventResponder::OnIgnite()                                                                       {        (*ft_INextBotEventResponder_OnIgnite)                      (this);                    }
+void INextBotEventResponder::OnInjured(const CTakeDamageInfo& info)                                           {        (*ft_INextBotEventResponder_OnInjured)                     (this, info);              }
+void INextBotEventResponder::OnKilled(const CTakeDamageInfo& info)                                            {        (*ft_INextBotEventResponder_OnKilled)                      (this, info);              }
+void INextBotEventResponder::OnOtherKilled(CBaseCombatCharacter *who, const CTakeDamageInfo& info)            {        (*ft_INextBotEventResponder_OnOtherKilled)                 (this, who, info);         }
+void INextBotEventResponder::OnSight(CBaseEntity *ent)                                                        {        (*ft_INextBotEventResponder_OnSight)                       (this, ent);               }
+void INextBotEventResponder::OnLostSight(CBaseEntity *ent)                                                    {        (*ft_INextBotEventResponder_OnLostSight)                   (this, ent);               }
+void INextBotEventResponder::OnSound(CBaseEntity *ent, const Vector& v1, KeyValues *kv)                       {        (*ft_INextBotEventResponder_OnSound)                       (this, ent, v1, kv);       }
+void INextBotEventResponder::OnSpokeConcept(CBaseCombatCharacter *who, const char *s1, AI_Response *response) {        (*ft_INextBotEventResponder_OnSpokeConcept)                (this, who, s1, response); }
+void INextBotEventResponder::OnWeaponFired(CBaseCombatCharacter *who, CBaseCombatWeapon *weapon)              {        (*ft_INextBotEventResponder_OnWeaponFired)                 (this, who, weapon);       }
+void INextBotEventResponder::OnNavAreaChanged(CNavArea *area1, CNavArea *area2)                               {        (*ft_INextBotEventResponder_OnNavAreaChanged)              (this, area1, area2);      }
+void INextBotEventResponder::OnModelChanged()                                                                 {        (*ft_INextBotEventResponder_OnModelChanged)                (this);                    }
+void INextBotEventResponder::OnPickUp(CBaseEntity *ent, CBaseCombatCharacter *who)                            {        (*ft_INextBotEventResponder_OnPickUp)                      (this, ent, who);          }
+void INextBotEventResponder::OnDrop(CBaseEntity *ent)                                                         {        (*ft_INextBotEventResponder_OnDrop)                        (this, ent);               }
+void INextBotEventResponder::OnActorEmoted(CBaseCombatCharacter *who, int concept)                            {        (*ft_INextBotEventResponder_OnActorEmoted)                 (this, who, concept);      }
+void INextBotEventResponder::OnCommandAttack(CBaseEntity *ent)                                                {        (*ft_INextBotEventResponder_OnCommandAttack)               (this, ent);               }
+void INextBotEventResponder::OnCommandApproach(const Vector& v1, float f1)                                    {        (*ft_INextBotEventResponder_OnCommandApproach_vec)         (this, v1, f1);            }
+void INextBotEventResponder::OnCommandApproach(CBaseEntity *ent)                                              {        (*ft_INextBotEventResponder_OnCommandApproach_ent)         (this, ent);               }
+void INextBotEventResponder::OnCommandRetreat(CBaseEntity *ent, float f1)                                     {        (*ft_INextBotEventResponder_OnCommandRetreat)              (this, ent, f1);           }
+void INextBotEventResponder::OnCommandPause(float f1)                                                         {        (*ft_INextBotEventResponder_OnCommandPause)                (this, f1);                }
+void INextBotEventResponder::OnCommandResume()                                                                {        (*ft_INextBotEventResponder_OnCommandResume)               (this);                    }
+void INextBotEventResponder::OnCommandString(const char *cmd)                                                 {        (*ft_INextBotEventResponder_OnCommandString)               (this, cmd);               }
+void INextBotEventResponder::OnShoved(CBaseEntity *ent)                                                       {        (*ft_INextBotEventResponder_OnShoved)                      (this, ent);               }
+void INextBotEventResponder::OnBlinded(CBaseEntity *ent)                                                      {        (*ft_INextBotEventResponder_OnBlinded)                     (this, ent);               }
+void INextBotEventResponder::OnTerritoryContested(int i1)                                                     {        (*ft_INextBotEventResponder_OnTerritoryContested)          (this, i1);                }
+void INextBotEventResponder::OnTerritoryCaptured(int i1)                                                      {        (*ft_INextBotEventResponder_OnTerritoryCaptured)           (this, i1);                }
+void INextBotEventResponder::OnTerritoryLost(int i1)                                                          {        (*ft_INextBotEventResponder_OnTerritoryLost)               (this, i1);                }
+void INextBotEventResponder::OnWin()                                                                          {        (*ft_INextBotEventResponder_OnWin)                         (this);                    }
+void INextBotEventResponder::OnLose()                                                                         {        (*ft_INextBotEventResponder_OnLose)                        (this);                    }
 
 QueryResponse IContextualQuery::ShouldPickUp(const INextBot *nextbot, CBaseEntity *it) const                                                                                               { return (*ft_IContextualQuery_ShouldPickUp)             (this, nextbot, it);                     }
 QueryResponse IContextualQuery::ShouldHurry(const INextBot *nextbot) const                                                                                                                 { return (*ft_IContextualQuery_ShouldHurry)              (this, nextbot);                         }
@@ -274,14 +352,3 @@ void CTFBot::ReleaseWalkButton()                       { (*ft_CTFBot_ReleaseWalk
 void CTFBot::SetButtonScale(float forward, float side) { (*ft_CTFBot_SetButtonScale)          (this, forward, side); }
 
 float CTFBotPathCost::operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const { return (*ft_CTFBotPathCost_op_func)(this, area1, area2, ladder, elevator, f1); }
-
-
-extern "C"
-{
-	/* dtor */
-	void _ZN22INextBotEventResponderD0Ev(INextBotEventResponder *_this) { return (*ft_INextBotEventResponder_dtor_D0)(_this); }
-	void _ZN22INextBotEventResponderD2Ev(INextBotEventResponder *_this) { return (*ft_INextBotEventResponder_dtor_D2)(_this); }
-	void _ZN16IContextualQueryD0Ev      (IContextualQuery *_this)       { return (*ft_IContextualQuery_dtor_D0)      (_this); }
-	void _ZN16IContextualQueryD2Ev      (IContextualQuery *_this)       { return (*ft_IContextualQuery_dtor_D2)      (_this); }
-	void _ZN6ActionI6CTFBotED2Ev        (Action<CTFBot> *_this)         { return (*ft_Action_dtor_D2)                (_this); }
-}

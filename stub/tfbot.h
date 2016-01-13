@@ -39,7 +39,24 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 
 #elif defined _WIN32
 
+static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
+	0x00,
+	// TODO
+};
 
+struct CExtract_CTFBot_m_nMission : public IExtract<int>
+{
+	CExtract_CTFBot_m_nMission() : IExtract<int>(sizeof(s_Buf_CTFBot_m_nMission)) {}
+	
+	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		// TODO
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
+	virtual uint32_t GetFuncOffset() const override    { /* TODO */ return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { /* TODO */ return 0x0011 + 2; }
+};
 
 #endif
 

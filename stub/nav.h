@@ -94,7 +94,24 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 
 #elif defined _WIN32
 
+static constexpr uint8_t s_Buf_CTFNavArea_m_nAttributes[] = {
+	0x00,
+	// TODO
+};
 
+struct CExtract_CTFNavArea_m_nAttributes : public IExtract<int>
+{
+	CExtract_CTFNavArea_m_nAttributes() : IExtract<int>(sizeof(s_Buf_CTFNavArea_m_nAttributes)) {}
+	
+	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		// TODO
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsValidForWanderingPopulation"; }
+	virtual uint32_t GetFuncOffset() const override    { /* TODO */ return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { /* TODO */ return 0x0007 + 2; }
+};
 
 #endif
 

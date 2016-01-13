@@ -11,6 +11,7 @@ SMEXT_LINK(&g_Ext);
 ICvar *icvar;
 IEngineTrace *enginetrace;
 IStaticPropMgrServer *staticpropmgr;
+IVDebugOverlay *debugoverlay;
 
 CGlobalVars *gpGlobals;
 
@@ -60,12 +61,16 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 
 bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
+	GET_V_IFACE_ANY(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
+	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;
 	ConVar_Register(0, this);
 	
 	GET_V_IFACE_ANY(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_V_IFACE_ANY(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
+	
+	GET_V_IFACE_ANY(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	
 	gpGlobals = ismm->GetCGlobals();
 	

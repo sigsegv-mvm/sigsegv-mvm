@@ -3,7 +3,7 @@
 
 
 #if defined _WIN32
-#warning NextBot classes have not been checked against the VC++ build!
+#pragma message("NextBot classes have not been checked against the VC++ build!")
 #endif
 
 
@@ -14,7 +14,7 @@
 class INextBot;
 class Path;
 class PathFollower;
-class animevent_t;
+struct animevent_t;
 class AI_Response;
 class CBaseCombatWeapon;
 class INextBotEntityFilter;

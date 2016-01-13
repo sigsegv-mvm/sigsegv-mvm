@@ -61,7 +61,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..;..\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl\include;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -70,9 +70,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -99,9 +100,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -120,36 +122,51 @@
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c" />
     <ClCompile Include="$(SOURCEMOD18)\public\CDetour\detours.cpp" />
     <ClCompile Include="..\extension.cpp" />
+    <ClCompile Include="..\gameconf.cpp" />
     <ClCompile Include="..\link\link.cpp" />
     <ClCompile Include="..\link\nextbot1.cpp" />
     <ClCompile Include="..\link\nextbot2.cpp" />
     <ClCompile Include="..\mod.cpp" />
     <ClCompile Include="..\modmanager.cpp" />
+    <ClCompile Include="..\mod\debug_airblastbox.cpp" />
+    <ClCompile Include="..\mod\debug_deflectcylinder.cpp" />
+    <ClCompile Include="..\mod\debug_ehsphere.cpp" />
     <ClCompile Include="..\mod\mod_autocollectspawncredits.cpp" />
     <ClCompile Include="..\mod\mod_engienopush.cpp" />
+    <ClCompile Include="..\mod\mod_robottickle.cpp" />
     <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp" />
     <ClCompile Include="..\mod\mod_stickypusher.cpp" />
     <ClCompile Include="..\patch.cpp" />
-    <ClCompile Include="..\prop.cpp" />
+    <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\sizeof.cpp" />
     <ClCompile Include="..\stub\baseentity.cpp" />
     <ClCompile Include="..\stub\gamerules.cpp" />
     <ClCompile Include="..\stub\nav.cpp" />
+    <ClCompile Include="..\stub\path.cpp" />
     <ClCompile Include="..\stub\populators.cpp" />
     <ClCompile Include="..\stub\tfbot.cpp" />
+    <ClCompile Include="..\stub\tfplayer.cpp" />
+    <ClCompile Include="..\util\scan.cpp" />
     <ClCompile Include="..\util\trace.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\abi.h" />
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\extract.h" />
+    <ClInclude Include="..\gameconf.h" />
     <ClInclude Include="..\link\link.h" />
+    <ClInclude Include="..\link\vcall.h" />
     <ClInclude Include="..\mod.h" />
     <ClInclude Include="..\modmanager.h" />
     <ClInclude Include="..\patch.h" />
-    <ClInclude Include="..\prop.h" />
-    <ClInclude Include="..\re_nextbot.h" />
+    <ClInclude Include="..\prop\datamap.h" />
+    <ClInclude Include="..\prop\extract.h" />
+    <ClInclude Include="..\prop\prop.h" />
+    <ClInclude Include="..\prop\sendprop.h" />
+    <ClInclude Include="..\re\nextbot.h" />
+    <ClInclude Include="..\re\path.h" />
     <ClInclude Include="..\sdk2013\annotations.h" />
     <ClInclude Include="..\sdk2013\basetypes.h" />
     <ClInclude Include="..\sdk2013\fmtstr.h" />
@@ -159,15 +176,20 @@
     <ClInclude Include="..\sdk\detours.h" />
     <ClInclude Include="..\sdk\smsdk_config.h" />
     <ClInclude Include="..\sdk\smsdk_ext.h" />
+    <ClInclude Include="..\stub\baseanimating.h" />
     <ClInclude Include="..\stub\baseentity.h" />
     <ClInclude Include="..\stub\gamerules.h" />
     <ClInclude Include="..\stub\misc.h" />
     <ClInclude Include="..\stub\nav.h" />
+    <ClInclude Include="..\stub\path.h" />
     <ClInclude Include="..\stub\populators.h" />
     <ClInclude Include="..\stub\stub.h" />
     <ClInclude Include="..\stub\tfbot.h" />
+    <ClInclude Include="..\stub\tfplayer.h" />
+    <ClInclude Include="..\stub\tfweaponbase.h" />
     <ClInclude Include="..\util\autolist.h" />
     <ClInclude Include="..\util\misc.h" />
+    <ClInclude Include="..\util\scan.h" />
     <ClInclude Include="..\util\scope.h" />
     <ClInclude Include="..\util\trace.h" />
     <ClInclude Include="..\util\util.h" />

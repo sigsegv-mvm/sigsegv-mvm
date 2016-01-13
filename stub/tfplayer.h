@@ -7,7 +7,16 @@
 
 
 class CBaseCombatCharacter : public CBaseFlex {};
-class CBasePlayer : public CBaseCombatCharacter {};
+
+class CBasePlayer : public CBaseCombatCharacter
+{
+public:
+	bool IsBot() const { return (vt_IsBot.Get(this))(this); }
+	
+private:
+	static VFuncThunk<bool (*)(const CBasePlayer *)> vt_IsBot;
+};
+
 class CBaseMultiplayerPlayer : public CBasePlayer {};
 
 

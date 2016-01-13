@@ -10,9 +10,11 @@
 #include "gameconf.h"
 
 
+extern IServerGameDLL *gamedll;
 extern ICvar *icvar;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
+extern IVDebugOverlay *debugoverlay;
 
 extern CGlobalVars *gpGlobals;
 
