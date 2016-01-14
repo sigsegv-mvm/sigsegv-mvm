@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "extension.h"
+#include "addr/addr.h"
 
 
 template<typename T, const char *const *CLASS, const char *const *PROP>
@@ -57,8 +58,8 @@ inline int CProp_DataMap<T, CLASS, PROP>::CalcOffset()
 	char str_GetDataDescMap[256];
 	snprintf(str_GetDataDescMap, sizeof(str_GetDataDescMap), "%s::GetDataDescMap", *CLASS);
 	
-	datamap_t * (*p_GetDataDescMap)(void *) = nullptr;
-	assert(g_pGameConf->GetMemSig(str_GetDataDescMap, (void **)&p_GetDataDescMap) && p_GetDataDescMap != nullptr);
+	datamap_t * (*p_GetDataDescMap)(void *) = (datamap_t * (*)(void *))AddrManager::GetAddr(str_GetDataDescMap);
+	assert(p_GetDataDescMap != nullptr);
 	
 	datamap_t *pMap = (*p_GetDataDescMap)(nullptr);
 	

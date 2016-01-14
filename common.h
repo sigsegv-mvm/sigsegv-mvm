@@ -49,6 +49,7 @@ extern IVDebugOverlay *debugoverlay;
 
 /* SourceMod */
 #include <ISDKTools.h>
+#include "sm/MemoryUtils.h"
 
 /* SourceMod */
 #include <smsdk_ext.h>

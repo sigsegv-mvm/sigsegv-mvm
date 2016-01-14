@@ -47,7 +47,7 @@ struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Com
 	virtual uint32_t GetFuncOffset() const override { return 0x0146; }
 };
 
-#elif defined _WIN32
+#elif defined _WINDOWS
 
 static constexpr uint8_t s_Buf[] = {
 	0xa1, 0x00, 0x00, 0x00, 0x00,                   // +0000  mov eax,DWORD PTR [xxxxxxxx]

@@ -3,6 +3,7 @@
 
 
 #include "util/util.h"
+#include "addr/addr.h"
 
 
 // CPatch:

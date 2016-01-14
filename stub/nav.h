@@ -92,7 +92,7 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 	virtual uint32_t GetExtractOffset() const override { return 0x0007 + 2; }
 };
 
-#elif defined _WIN32
+#elif defined _WINDOWS
 
 static constexpr uint8_t s_Buf_CTFNavArea_m_nAttributes[] = {
 	0x00,

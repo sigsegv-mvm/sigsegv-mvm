@@ -5,6 +5,7 @@
 #include "extension.h"
 #include "common.h"
 #include "util/util.h"
+#include "addr/addr.h"
 
 
 class ILinkage : public AutoList<ILinkage>
@@ -29,8 +30,8 @@ public:
 	virtual bool Link(char *error, size_t maxlen) override
 	{
 		if (this->m_pFuncPtr == nullptr) {
-			if (!g_pGameConf->GetMemSig(this->m_pszFuncName, (void **)&this->m_pFuncPtr) ||
-				this->m_pFuncPtr == nullptr) {
+			this->m_pFuncPtr = (T)AddrManager::GetAddr(this->m_pszFuncName);
+			if (this->m_pFuncPtr == nullptr) {
 				DevMsg("FuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
 				snprintf(error, maxlen, "FuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
 				return false;
@@ -64,8 +65,8 @@ public:
 	virtual bool Link(char *error, size_t maxlen) override
 	{
 		if (this->m_pObjPtr == nullptr) {
-			if (!g_pGameConf->GetMemSig(this->m_pszObjName, (void **)&this->m_pObjPtr) ||
-				this->m_pObjPtr == nullptr) {
+			this->m_pObjPtr = (T *)AddrManager::GetAddr(this->m_pszObjName);
+			if (this->m_pObjPtr == nullptr) {
 				DevMsg("GlobalThunk::Link FAIL \"%s\"\n", this->m_pszObjName);
 				snprintf(error, maxlen, "GlobalThunk linkage error: signature lookup failed for \"%s\"", this->m_pszObjName);
 				return false;

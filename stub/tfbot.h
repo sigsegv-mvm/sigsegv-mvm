@@ -37,7 +37,7 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 	virtual uint32_t GetExtractOffset() const override { return 0x0011 + 2; }
 };
 
-#elif defined _WIN32
+#elif defined _WINDOWS
 
 static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
 	0x00,

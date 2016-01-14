@@ -113,7 +113,7 @@ protected:
 	CDetour(void *callbackfunction, void **trampoline, const char *signame);
 	CDetour(void*callbackfunction, void **trampoline, void *pAddress);
 
-	bool Init(ISourcePawnEngine *spengine, IGameConfig *gameconf);
+	bool Init(ISourcePawnEngine *spengine);
 private:
 
 	/* These create/delete the allocated memory */
@@ -135,14 +135,13 @@ private:
 	
 	const char *signame;
 	ISourcePawnEngine *spengine;
-	IGameConfig *gameconf;
 };
 
 class CDetourManager
 {
 public:
 
-	static void Init(ISourcePawnEngine *spengine, IGameConfig *gameconf);
+	static void Init(ISourcePawnEngine *spengine);
 
 	/**
 	 * Creates a new detour
@@ -191,7 +190,6 @@ public:
 
 private:
 	static ISourcePawnEngine *spengine;
-	static IGameConfig *gameconf;
 };
 
 #endif // _INCLUDE_SOURCEMOD_DETOURS_H_

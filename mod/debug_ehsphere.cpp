@@ -1,5 +1,5 @@
 #include "mod.h"
-#include "sdk/detours.h"
+#include "sm/detours.h"
 #include "stub/stub.h"
 #include "util/util.h"
 

@@ -3,7 +3,7 @@
 
 
 #include "common.h"
-#include "sdk/detours.h"
+#include "sm/detours.h"
 #include "mem/patch.h"
 
 

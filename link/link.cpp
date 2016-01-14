@@ -1,7 +1,7 @@
 #include "link/link.h"
 
 
-#if defined _WIN32
+#if defined _WINDOWS
 #define LINK_NONFATAL
 #endif
 

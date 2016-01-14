@@ -56,14 +56,15 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 	T pFunc = nullptr;
 	
 	if (this->m_iVTIndex == -1) {
-		if (!g_pGameConf->GetMemSig(this->m_pszVTName, (void **)&pVT) ||
-			pVT == nullptr) {
+		pVT = (T *)AddrManager::GetAddr(this->m_pszVTName);
+		if (pVT == nullptr) {
 			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
 			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszVTName);
 			return false;
 		}
-		if (!g_pGameConf->GetMemSig(this->m_pszFuncName, (void **)&pFunc) ||
-			pFunc == nullptr) {
+		
+		pFunc = (T)AddrManager::GetAddr(this->m_pszFuncName);
+		if (pFunc == nullptr) {
 			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
 			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
 			return false;
@@ -114,14 +115,15 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 	T pFunc = nullptr;
 	
 	if (this->m_iVTIndex == -1) {
-		if (!g_pGameConf->GetMemSig(this->m_pszVTName, (void **)&pTD) ||
-			pTD == nullptr) {
+		pTD = (_TypeDescriptor *)AddrManager::GetAddr(this->m_pszVTName);
+		if (pTD == nullptr) {
 			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
 			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszVTName);
 			return false;
 		}
-		if (!g_pGameConf->GetMemSig(this->m_pszFuncName, (void **)&pFunc) ||
-			pFunc == nullptr) {
+		
+		pFunc = (T)AddrManager::GetAddr(this->m_pszFuncName);
+		if (pFunc == nullptr) {
 			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
 			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
 			return false;

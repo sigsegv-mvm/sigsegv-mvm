@@ -2,7 +2,7 @@
 #define _INCLUDE_SIGSEGV_RE_NEXTBOT_H_
 
 
-#if defined _WIN32
+#if defined _MSC_VER
 #pragma message("NextBot classes have not been checked against the VC++ build!")
 #endif
 

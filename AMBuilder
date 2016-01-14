@@ -5,12 +5,13 @@ projectName = 'sigsegv'
 
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
-  '../sourcemod/public/CDetour/detours.cpp',
   '../sourcemod/public/asm/asm.c',
+  'sm/detours.cpp',
+  'sm/MemoryUtils.cpp',
   'sdk2013/debugoverlay_shared.cpp',
   'sizeof.cpp',
   'extension.cpp',
-  'gameconf.cpp',
+  'addr/addr.cpp',
   'mem/patch.cpp',
   'util/scan.cpp',
   'util/trace.cpp',

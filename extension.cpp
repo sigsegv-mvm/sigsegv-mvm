@@ -1,7 +1,8 @@
 #include "extension.h"
 #include "link/link.h"
-#include "sdk/detours.h"
+#include "sm/detours.h"
 #include "modmanager.h"
+#include "addr/addr.h"
 
 
 CExtSigsegv g_Ext;
@@ -28,11 +29,13 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 		return false;
 	}
 	
+	AddrManager::Load();
+	
 	if (!Link::InitAll(error, maxlen)) {
 		return false;
 	}
 	
-	CDetourManager::Init(g_pSM->GetScriptingEngine(), g_pGameConf);
+	CDetourManager::Init(g_pSM->GetScriptingEngine());
 	
 	CModManager::LoadAllMods();
 	
@@ -42,6 +45,8 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 void CExtSigsegv::SDK_OnUnload()
 {
 	CModManager::UnloadAllMods();
+	
+	AddrManager::UnLoad();
 	
 	gameconfs->CloseGameConfigFile(g_pGameConf);
 }
@@ -73,6 +78,9 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_ANY(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	
 	gpGlobals = ismm->GetCGlobals();
+	
+	this->m_pLibServer = (void *)ismm->GetServerFactory(false);
+	this->m_pLibEngine = (void *)ismm->GetEngineFactory(false);
 	
 	return true;
 }

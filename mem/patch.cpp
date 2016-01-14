@@ -7,7 +7,8 @@ bool IPatch::Init(char *error, size_t maxlen)
 	this->m_pszFuncName = this->GetFuncName();
 	this->m_iFuncOffset = this->GetFuncOffset();
 	
-	if (!g_pGameConf->GetMemSig(this->m_pszFuncName, &this->m_pFuncAddr) || this->m_pFuncAddr == nullptr) {
+	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
+	if (this->m_pFuncAddr == nullptr) {
 		snprintf(error, maxlen, "Patch error: signature lookup failed for %s", this->m_pszFuncName);
 		return false;
 	}

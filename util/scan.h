@@ -3,6 +3,7 @@
 
 
 #include "common.h"
+#include "extension.h"
 
 
 bool MemFindPattern(const void *libPtr, const char *pattern, size_t len, std::vector<void *>& matches);

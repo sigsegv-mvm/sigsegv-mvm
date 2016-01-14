@@ -3,6 +3,7 @@
 
 
 #include "util/util.h"
+#include "addr/addr.h"
 
 
 template<typename T>
@@ -62,7 +63,8 @@ bool IExtract<T>::Init()
 	
 	assert(this->m_iExtractOffset + sizeof(T) <= (unsigned int)this->m_iLength);
 	
-	if (!g_pGameConf->GetMemSig(this->m_pszFuncName, &this->m_pFuncAddr) || this->m_pFuncAddr == nullptr) {
+	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
+	if (this->m_pFuncAddr == nullptr) {
 		return false;
 	}
 	
