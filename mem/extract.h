@@ -2,7 +2,7 @@
 #define _INCLUDE_SIGSEGV_MEM_EXTRACT_H_
 
 
-#include "util/util.h"
+#include "util/buf.h"
 #include "addr/addr.h"
 
 

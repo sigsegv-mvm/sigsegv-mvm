@@ -20,6 +20,10 @@ public:
 	void CopyFrom(const ByteBuf& that);
 	void CopyFrom(const uint8_t *arr);
 	
+	int GetSize() const { return this->m_iSize; }
+	
+	const uint8_t *GetBufPtr() const { return this->m_Buf; }
+	
 private:
 	const int m_iSize;
 	uint8_t *m_Buf = nullptr;

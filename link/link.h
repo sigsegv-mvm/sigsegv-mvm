@@ -2,9 +2,8 @@
 #define _INCLUDE_SIGSEGV_LINK_LINK_H_
 
 
-#include "extension.h"
 #include "common.h"
-#include "util/util.h"
+#include "util/autolist.h"
 #include "addr/addr.h"
 
 

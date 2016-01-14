@@ -27,12 +27,16 @@ void IAddr::Init()
 }
 
 
+void *AddrManager::s_hServer = nullptr;
+void *AddrManager::s_hEngine = nullptr;
+
+
 void AddrManager::Load()
 {
 	DevMsg("AddrManager::Load BEGIN\n");
 	
-	OpenLibHandle(&s_hServer, g_Ext.GetLibPtr_Server(), "server");
-	OpenLibHandle(&s_hEngine, g_Ext.GetLibPtr_Engine(), "engine");
+	OpenLibHandle(&s_hServer, LibMgr::GetPtr(Library::SERVER), "server");
+	OpenLibHandle(&s_hEngine, LibMgr::GetPtr(Library::ENGINE), "engine");
 	
 	for (auto& pair : AutoNameMap<IAddr>::Map()) {
 		IAddr *addr = pair.second;
@@ -73,23 +77,18 @@ void *AddrManager::GetAddr(const char *name)
 }
 
 
-void *AddrManager::FindSymbol(const char *lib, const char *sym)
+void *AddrManager::FindSymbol(Library lib, const char *sym)
 {
 	void *handle = nullptr;
-	
-	if (stricmp(lib, "server") == 0) {
+	switch (lib) {
+	case Library::SERVER:
 		handle = s_hServer;
-	} else if (stricmp(lib, "engine") == 0) {
+		break;
+	case Library::ENGINE:
 		handle = s_hEngine;
-	} else {
-		DevMsg("AddrManager::FindSymbol: unknown lib \"%s\" for symbol \"%s\"\n", lib, sym);
-		return nullptr;
+		break;
 	}
-	
-	if (handle == nullptr) {
-		DevMsg("AddrManager::FindSymbol: handle for lib \"%s\" is nullptr\n", lib);
-		return nullptr;
-	}
+	assert(handle != nullptr);
 	
 	return g_MemUtils.ResolveSymbol(handle, sym);
 }

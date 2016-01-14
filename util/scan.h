@@ -2,11 +2,17 @@
 #define _INCLUDE_SIGSEGV_UTIL_SCAN_H_
 
 
-#include "common.h"
-#include "extension.h"
+#include "library.h"
+#include "util/buf.h"
 
-
-bool MemFindPattern(const void *libPtr, const char *pattern, size_t len, std::vector<void *>& matches);
+namespace Scan
+{
+	bool CheckMasked(const void *ptr, const ByteBuf& pattern, const ByteBuf& mask);
+	void FindMasked(Library lib, const ByteBuf& pattern, const ByteBuf& mask, int align, std::vector<void *>& matches);
+	
+	void FindFast(Library lib, const void *pattern, int len, int align, std::vector<void *>& matches);
+	void FindString(Library lib, const char *str, std::vector<void *>& matches);
+}
 
 
 #endif

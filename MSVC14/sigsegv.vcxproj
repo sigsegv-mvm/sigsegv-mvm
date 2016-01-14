@@ -120,12 +120,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c" />
-    <ClCompile Include="$(SOURCEMOD18)\public\CDetour\detours.cpp" />
+    <ClCompile Include="..\addr\addr.cpp" />
+    <ClCompile Include="..\addr\misc.cpp" />
+    <ClCompile Include="..\addr\vtable.cpp" />
     <ClCompile Include="..\extension.cpp" />
-    <ClCompile Include="..\gameconf.cpp" />
+    <ClCompile Include="..\library.cpp" />
     <ClCompile Include="..\link\link.cpp" />
     <ClCompile Include="..\link\nextbot1.cpp" />
     <ClCompile Include="..\link\nextbot2.cpp" />
+    <ClCompile Include="..\mem\patch.cpp" />
     <ClCompile Include="..\mod.cpp" />
     <ClCompile Include="..\modmanager.cpp" />
     <ClCompile Include="..\mod\debug_airblastbox.cpp" />
@@ -136,10 +139,11 @@
     <ClCompile Include="..\mod\mod_robottickle.cpp" />
     <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp" />
     <ClCompile Include="..\mod\mod_stickypusher.cpp" />
-    <ClCompile Include="..\patch.cpp" />
     <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\sizeof.cpp" />
+    <ClCompile Include="..\sm\detours.cpp" />
+    <ClCompile Include="..\sm\MemoryUtils.cpp" />
     <ClCompile Include="..\stub\baseentity.cpp" />
     <ClCompile Include="..\stub\gamerules.cpp" />
     <ClCompile Include="..\stub\nav.cpp" />
@@ -152,15 +156,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\abi.h" />
+    <ClInclude Include="..\addr\addr.h" />
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\extract.h" />
-    <ClInclude Include="..\gameconf.h" />
+    <ClInclude Include="..\library.h" />
     <ClInclude Include="..\link\link.h" />
     <ClInclude Include="..\link\vcall.h" />
+    <ClInclude Include="..\mem\extract.h" />
+    <ClInclude Include="..\mem\patch.h" />
     <ClInclude Include="..\mod.h" />
     <ClInclude Include="..\modmanager.h" />
-    <ClInclude Include="..\patch.h" />
     <ClInclude Include="..\prop\datamap.h" />
     <ClInclude Include="..\prop\extract.h" />
     <ClInclude Include="..\prop\prop.h" />
@@ -173,9 +179,11 @@
     <ClInclude Include="..\sdk2013\util_shared.h" />
     <ClInclude Include="..\sdk2013\valve_minmax_off.h" />
     <ClInclude Include="..\sdk2013\valve_minmax_on.h" />
-    <ClInclude Include="..\sdk\detours.h" />
     <ClInclude Include="..\sdk\smsdk_config.h" />
     <ClInclude Include="..\sdk\smsdk_ext.h" />
+    <ClInclude Include="..\sm\detours.h" />
+    <ClInclude Include="..\sm\MemoryUtils.h" />
+    <ClInclude Include="..\sm\sm_symtable.h" />
     <ClInclude Include="..\stub\baseanimating.h" />
     <ClInclude Include="..\stub\baseentity.h" />
     <ClInclude Include="..\stub\gamerules.h" />
@@ -188,6 +196,7 @@
     <ClInclude Include="..\stub\tfplayer.h" />
     <ClInclude Include="..\stub\tfweaponbase.h" />
     <ClInclude Include="..\util\autolist.h" />
+    <ClInclude Include="..\util\buf.h" />
     <ClInclude Include="..\util\misc.h" />
     <ClInclude Include="..\util\scan.h" />
     <ClInclude Include="..\util\scope.h" />

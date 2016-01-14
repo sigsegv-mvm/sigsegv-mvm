@@ -109,6 +109,7 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 template<typename T>
 inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 {
+#if 0
 	_TypeDescriptor *pTD = nullptr;
 	__RTTI_CompleteObjectLocator *pCOL = nullptr;
 	T *pVT = nullptr;
@@ -150,7 +151,7 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 		pCOL = (__RTTI_CompleteObjectLocator *)refs_TD[0];
 		
 		std::vector<void *>refs_COL;
-		assert(MemFindPattern(gamedll, (const char *)pCOL, 0x4, refs_COL));
+		assert(MemFindPattern(gamedll, (const char *)&pCOL, 0x4, refs_COL));
 		
 		if (refs_COL.size() != 1) {
 			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
@@ -176,6 +177,7 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 		}
 	}
 	
+#endif
 	DevMsg("VFuncThunk::Link OK +0x%x \"%s\"\n", this->m_iVTIndex * 4, this->m_pszFuncName);
 	return true;
 }

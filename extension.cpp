@@ -1,4 +1,5 @@
 #include "extension.h"
+#include "library.h"
 #include "link/link.h"
 #include "sm/detours.h"
 #include "modmanager.h"
@@ -79,8 +80,8 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	gpGlobals = ismm->GetCGlobals();
 	
-	this->m_pLibServer = (void *)ismm->GetServerFactory(false);
-	this->m_pLibEngine = (void *)ismm->GetEngineFactory(false);
+	LibMgr::SetPtr(Library::SERVER, (void *)ismm->GetServerFactory(false));
+	LibMgr::SetPtr(Library::ENGINE, (void *)ismm->GetEngineFactory(false));
 	
 	return true;
 }

@@ -3,8 +3,16 @@
 
 
 #if defined __GNUC__
-
 #include <cxxabi.h>
+#else
+namespace abi
+{
+	typedef void __class_type_info;
+}
+#endif
+
+
+/* GCC ABI */
 
 struct vtable
 {
@@ -13,14 +21,15 @@ struct vtable
 	void *vfptrs[0x1000];
 };
 
-#endif
 
+/* MSVC ABI */
 
 #if defined _MSC_VER
-
 #pragma warning(disable:4200)
+#endif
 
-/*struct _PMD
+#if !defined _MSC_VER
+struct _PMD
 {
 	int mdisp;
 	int pdisp;
@@ -29,10 +38,11 @@ struct vtable
 
 struct _TypeDescriptor
 {
-	const void *pVTFable;
+	const void *pVFTable;
 	void *spare;
 	char name[];
-};*/
+};
+#endif
 
 struct __RTTI_BaseClassDescriptor
 {
@@ -64,8 +74,8 @@ struct __RTTI_CompleteObjectLocator
 	__RTTI_ClassHierarchyDescriptor *pClassDescriptor;
 };
 
+#if defined _MSC_VER
 #pragma warning(default:4200)
-
 #endif
 
 

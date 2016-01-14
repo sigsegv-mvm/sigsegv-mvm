@@ -14,16 +14,10 @@
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SOURCEMOD18)\public\CDetour\detours.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\mod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\modmanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\patch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\sizeof.cpp">
@@ -86,9 +80,6 @@
     <ClCompile Include="..\util\scan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gameconf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\mod\debug_airblastbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,15 +92,33 @@
     <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\addr\addr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\addr\misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\addr\vtable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mem\patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sm\detours.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sm\MemoryUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\library.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\modmanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\patch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common.h">
@@ -122,9 +131,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\link\link.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\sdk\detours.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\sdk\smsdk_config.h">
@@ -226,7 +232,28 @@
     <ClInclude Include="..\abi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\gameconf.h">
+    <ClInclude Include="..\addr\addr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mem\extract.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mem\patch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sm\detours.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sm\MemoryUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sm\sm_symtable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\buf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

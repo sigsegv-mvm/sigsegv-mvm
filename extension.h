@@ -38,13 +38,6 @@ public:
 #endif
 	
 	bool RegisterConCommandBase(ConCommandBase *pCommand);
-	
-	void *GetLibPtr_Server() { return this->m_pLibServer; }
-	void *GetLibPtr_Engine() { return this->m_pLibEngine; }
-	
-private:
-	void *m_pLibServer = nullptr;
-	void *m_pLibEngine = nullptr;
 };
 extern CExtSigsegv g_Ext;
 
