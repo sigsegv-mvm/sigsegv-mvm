@@ -155,6 +155,7 @@ class ExtensionConfig(object):
         '-Og',
         '-masm=intel',
         '-maccumulate-outgoing-args',
+#        '-Q',
       ]
       cxx.cxxflags += [
         '-std=c++11',

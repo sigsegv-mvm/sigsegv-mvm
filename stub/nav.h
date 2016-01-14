@@ -4,7 +4,7 @@
 
 #include "prop/prop.h"
 #include "link/link.h"
-#include "extract.h"
+#include "mem/extract.h"
 
 
 class CBaseObject;

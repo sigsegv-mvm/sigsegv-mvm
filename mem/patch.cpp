@@ -1,17 +1,5 @@
-#include "patch.h"
+#include "mem/patch.h"
 #include "extension.h"
-
-
-ByteBuf::ByteBuf(int size) :
-	m_iSize(size)
-{
-	this->m_Buf = new uint8_t[size];
-}
-
-ByteBuf::~ByteBuf()
-{
-	delete[] this->m_Buf;
-}
 
 
 bool IPatch::Init(char *error, size_t maxlen)

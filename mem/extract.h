@@ -1,8 +1,8 @@
-#ifndef _INCLUDE_SIGSEGV_EXTRACT_H_
-#define _INCLUDE_SIGSEGV_EXTRACT_H_
+#ifndef _INCLUDE_SIGSEGV_MEM_EXTRACT_H_
+#define _INCLUDE_SIGSEGV_MEM_EXTRACT_H_
 
 
-#include "patch.h"
+#include "util/util.h"
 
 
 template<typename T>

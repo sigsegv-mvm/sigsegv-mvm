@@ -3,6 +3,7 @@
 
 
 #include "util/autolist.h"
+#include "util/buf.h"
 #include "util/misc.h"
 #include "util/scope.h"
 #include "util/trace.h"

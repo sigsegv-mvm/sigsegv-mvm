@@ -3,7 +3,7 @@
 
 
 #include "extension.h"
-#include "extract.h"
+#include "mem/extract.h"
 
 
 template<typename T, const char *const *CLASS, const char *const *PROP, class EXTRACTOR>

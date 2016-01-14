@@ -4,7 +4,7 @@
 
 #include "common.h"
 #include "sdk/detours.h"
-#include "patch.h"
+#include "mem/patch.h"
 
 
 struct DetourInfo
