@@ -15,6 +15,7 @@ sourceFiles = [
   'addr/addr.cpp',
   'addr/misc.cpp',
   'addr/vtable.cpp',
+  'addr/nextbot.cpp',
   'mem/patch.cpp',
   'util/scan.cpp',
   'util/trace.cpp',

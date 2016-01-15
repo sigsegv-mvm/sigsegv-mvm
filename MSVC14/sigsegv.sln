@@ -4,6 +4,20 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sigsegv", "sigsegv.vcxproj", "{B3E797CF-4E77-4C9D-B8A8-7589B6902206}"
 EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "hl2", "C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe", "{07363E4A-95D0-4958-83A6-B4A42C101BF1}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe
+		RemoteMachine = JGVM-WIN8
+		StartingDirectory = C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2
+		Arguments = -steam -game tf -novid -condebug -insecure -textmode -nosound -windowed -w 640 -h 480 +maxplayers 32 +developer 1 +map mvm_example
+		Environment = Default
+		LaunchingEngine = 3b476d35-a401-11d2-aad4-00c04f990171
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -14,6 +28,8 @@ Global
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Debug|Win32.Build.0 = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Release|Win32.ActiveCfg = Release|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Release|Win32.Build.0 = Release|Win32
+		{07363E4A-95D0-4958-83A6-B4A42C101BF1}.Debug|Win32.ActiveCfg = Release|x86
+		{07363E4A-95D0-4958-83A6-B4A42C101BF1}.Release|Win32.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

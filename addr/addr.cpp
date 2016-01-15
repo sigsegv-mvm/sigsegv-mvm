@@ -27,6 +27,8 @@ void IAddr::Init()
 }
 
 
+std::map<std::string, IAddr *> AddrManager::s_Addrs;
+
 void *AddrManager::s_hServer = nullptr;
 void *AddrManager::s_hEngine = nullptr;
 
@@ -38,8 +40,21 @@ void AddrManager::Load()
 	OpenLibHandle(&s_hServer, LibMgr::GetPtr(Library::SERVER), "server");
 	OpenLibHandle(&s_hEngine, LibMgr::GetPtr(Library::ENGINE), "engine");
 	
-	for (auto& pair : AutoNameMap<IAddr>::Map()) {
-		IAddr *addr = pair.second;
+	for (auto addr : AutoList<IAddr>::List()) {
+		std::string name(addr->GetName());
+		
+		assert(s_Addrs.find(name) == s_Addrs.end());
+		s_Addrs[name] = addr;
+	}
+	
+	/* early init pass to ensure vtables are ready */
+	for (auto addr : AutoList<IAddr>::List()) {
+		if (addr->ShouldInitFirst()) {
+			addr->Init();
+		}
+	}
+	
+	for (auto addr : AutoList<IAddr>::List()) {
 		addr->Init();
 	}
 	
@@ -55,10 +70,8 @@ void AddrManager::UnLoad()
 
 void *AddrManager::GetAddr(const char *name)
 {
-	const auto& addrs = AutoNameMap<IAddr>::Map();
-	
-	auto it = addrs.find(std::string(name));
-	if (it == addrs.end()) {
+	auto it = s_Addrs.find(std::string(name));
+	if (it == s_Addrs.end()) {
 		DevMsg("AddrManager::GetAddr FAIL: no addr exists with name \"%s\"\n", name);
 		return nullptr;
 	}

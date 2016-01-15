@@ -1,0 +1,31 @@
+
+
+
+MSVC function-finding heuristics:
+- funcs always start at 16-byte boundaries
+- funcs often have 0xCC padding before they begin
+- the sequence "push ebp; mov ebp,esp" virtually never happens except in func prologues
+
+
+so, for longer funcs with proper stack frames:
+- find a spot in the function body (e.g. a unique string reference)
+- search backwards for "push ebp; mov ebp,esp": 55 8b ec
+
+
+CTFBotMvMEngineerTeleportSpawn::Update
+- unique string ref: "teleported_mvm_bot"
+- backtrack to 55 8b ec
+- sanity check: ptr to func should be found at vtable+0xb8
+
+CTFBotMvMEngineerBuildSentryGun::Update
+- unique string refs: "Built a sentry" "Placing sentry"
+- backtrack to 55 8b ec
+- sanity check: ptr to func should be found at vtable+0xb8
+
+CTFBotMvMEngineerBuildTeleportExit::Update
+- unique string refs: "Engineer.MVM_AutoBuildingTeleporter02"
+- backtrack to 55 8b ec
+- sanity check: ptr to func should be found at vtable+0xb8
+
+CTFGameRules::PushAllPlayersAway
+

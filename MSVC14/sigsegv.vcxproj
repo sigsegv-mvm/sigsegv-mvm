@@ -122,6 +122,7 @@
     <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c" />
     <ClCompile Include="..\addr\addr.cpp" />
     <ClCompile Include="..\addr\misc.cpp" />
+    <ClCompile Include="..\addr\nextbot.cpp" />
     <ClCompile Include="..\addr\vtable.cpp" />
     <ClCompile Include="..\extension.cpp" />
     <ClCompile Include="..\library.cpp" />

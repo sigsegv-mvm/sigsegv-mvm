@@ -113,6 +113,9 @@
     <ClCompile Include="..\library.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\addr\nextbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mod.h">
