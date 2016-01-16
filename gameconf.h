@@ -5,6 +5,13 @@
 class CSigsegvGameConf : public ITextListener_SMC
 {
 public:
+	bool LoadAll(char *error, size_t maxlen);
+	void UnloadAll();
+	
+private:
+	std::vector<IGameConfig *> m_GameConfs;
+	
+public:
 	virtual void ReadSMC_ParseStart() override;
 	virtual void ReadSMC_ParseEnd(bool halted, bool failed) override;
 	virtual SMCResult ReadSMC_NewSection(const SMCStates *states, const char *name) override;

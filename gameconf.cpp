@@ -5,7 +5,47 @@
 #define DEBUG_GC 0
 
 
+constexpr const char *const configs[] = {
+	"sigsegv/sigsegv.vtable",
+	"sigsegv/sigsegv.nextbot.action",
+	"sigsegv/sigsegv.nextbot.contextualquery",
+	"sigsegv/sigsegv.nextbot.eventresponder",
+	"sigsegv/sigsegv.nextbot.player",
+	"sigsegv/sigsegv.population",
+	"sigsegv/sigsegv.tfbot",
+	"sigsegv/sigsegv.tfbot.behavior",
+	"sigsegv/sigsegv.misc",
+	nullptr,
+};
+
+
 CSigsegvGameConf g_GCHook;
+
+
+bool CSigsegvGameConf::LoadAll(char *error, size_t maxlen)
+{
+	gameconfs->AddUserConfigHook("sigsegv", this);
+	
+	for (const char *const *c_name = configs; *c_name != nullptr; ++c_name) {
+		IGameConfig *conf = nullptr;
+		
+		if (!gameconfs->LoadGameConfigFile(*c_name, &conf, error, maxlen) || conf == nullptr) {
+			return false;
+		}
+		
+		this->m_GameConfs.push_back(conf);
+	}
+}
+
+void CSigsegvGameConf::UnloadAll()
+{
+	for (auto conf : this->m_GameConfs) {
+		gameconfs->CloseGameConfigFile(conf);
+	}
+	this->m_GameConfs.clear();
+	
+	gameconfs->RemoveUserConfigHook("sigsegv", this);
+}
 
 
 void CSigsegvGameConf::ReadSMC_ParseStart()
@@ -13,7 +53,6 @@ void CSigsegvGameConf::ReadSMC_ParseStart()
 #if DEBUG_GC
 	DevMsg("GC ParseStart\n");
 #endif
-	BACKTRACE();
 	
 	this->m_Section = ParseSection::ROOT;
 }

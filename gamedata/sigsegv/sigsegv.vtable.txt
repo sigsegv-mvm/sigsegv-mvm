@@ -1,12 +1,17 @@
 // vtables
 
-Games
+"Games"
 {
-	"tf"
+	"#default"
 	{
-		sigsegv
+		"#supported"
 		{
-			addrs
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
 			{
 				"[VT] CBaseEntity"
 				{

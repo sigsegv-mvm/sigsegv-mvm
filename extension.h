@@ -16,8 +16,6 @@ extern CGlobalVars *gpGlobals;
 
 extern ISDKTools *g_pSDKTools;
 
-extern IGameConfig *g_pGameConf;
-
 
 class CExtSigsegv : public SDKExtension, public IConCommandBaseAccessor
 {

@@ -20,23 +20,16 @@ CGlobalVars *gpGlobals;
 
 ISDKTools *g_pSDKTools;
 
-IGameConfig *g_pGameConf;
-
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
 	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 	
-	gameconfs->AddUserConfigHook("sigsegv", &g_GCHook);
-	if (!gameconfs->LoadGameConfigFile("sigsegv", &g_pGameConf, error, maxlen)) {
-		goto fail;
-	}
+	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
 	
 	AddrManager::Load();
 	
-	if (!Link::InitAll(error, maxlen)) {
-		goto fail;
-	}
+	if (!Link::InitAll(error, maxlen)) goto fail;
 	
 	CDetourManager::Init(g_pSM->GetScriptingEngine());
 	
@@ -45,9 +38,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	return true;
 	
 fail:
-	if (g_pGameConf != nullptr) {
-		gameconfs->CloseGameConfigFile(g_pGameConf);
-	}
+	g_GCHook.UnloadAll();
 	return false;
 }
 
@@ -57,8 +48,7 @@ void CExtSigsegv::SDK_OnUnload()
 	
 	AddrManager::UnLoad();
 	
-	gameconfs->CloseGameConfigFile(g_pGameConf);
-	gameconfs->RemoveUserConfigHook("sigsegv", &g_GCHook);
+	g_GCHook.UnloadAll();
 }
 
 void CExtSigsegv::SDK_OnAllLoaded()

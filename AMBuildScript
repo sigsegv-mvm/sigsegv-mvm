@@ -155,6 +155,7 @@ class ExtensionConfig(object):
         '-maccumulate-outgoing-args',
 #        '-Q',
         '-Winvalid-pch',
+        '-rdynamic',
       ]
       cxx.cxxflags += [
         '-std=c++11',

@@ -1,12 +1,17 @@
 // sigsegv: Miscellaneous
 
-Games
+"Games"
 {
-	"tf"
+	"#default"
 	{
-		sigsegv
+		"#supported"
 		{
-			addrs
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
 			{
 				"TheNavMesh"
 				{

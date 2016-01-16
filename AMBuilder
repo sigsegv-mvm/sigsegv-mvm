@@ -169,4 +169,6 @@ binary.compiler.sourcedeps += pch
 #binary.compiler.includes += [ os.getcwd() ]
 binary.compiler.cflags += [ '-I', os.getcwd(), '-include', 'common.h' ]
 
+binary.compiler.linkflags += [ '-lunwind', '-lunwind-x86', '-liberty' ]
+
 Extension.extensions = builder.Add(project)
