@@ -1,0 +1,26 @@
+// vtables
+
+Games
+{
+	"tf"
+	{
+		sigsegv
+		{
+			addrs
+			{
+				"[VT] CBaseEntity"
+				{
+					type    "vtable"
+					sym     "_ZTV11CBaseEntity"
+					winrtti ".?AVCBaseEntity@@"
+				}
+				"[VT] CBasePlayer"
+				{
+					type    "vtable"
+					sym     "_ZTV11CBasePlayer"
+					winrtti ".?AVCBasePlayer@@"
+				}
+			}
+		}
+	}
+}

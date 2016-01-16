@@ -2,7 +2,6 @@
 #define _INCLUDE_SIGSEGV_MODMANAGER_H_
 
 
-#include "common.h"
 #include "mod.h"
 
 

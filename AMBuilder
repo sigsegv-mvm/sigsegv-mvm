@@ -5,12 +5,15 @@ projectName = 'sigsegv'
 
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
+#  'common.h',
   '../sourcemod/public/asm/asm.c',
   'sm/detours.cpp',
   'sm/MemoryUtils.cpp',
   'sdk2013/debugoverlay_shared.cpp',
+#  'common.cpp',
   'sizeof.cpp',
   'extension.cpp',
+  'gameconf.cpp',
   'library.cpp',
   'addr/addr.cpp',
   'addr/misc.cpp',
@@ -19,6 +22,7 @@ sourceFiles = [
   'mem/patch.cpp',
   'util/scan.cpp',
   'util/trace.cpp',
+  'util/backtrace.cpp',
   'stub/baseentity.cpp',
   'stub/gamerules.cpp',
   'stub/nav.cpp',
@@ -60,5 +64,109 @@ for sdk_name in Extension.sdks:
   sdk = Extension.sdks[sdk_name]
   
   binary = Extension.HL2Config(project, projectName + '.ext.' + sdk.ext, sdk)
+
+#project.weak_deps += builder.AddCommand(
+#  argv    = [ 'echo', 'hello' ],
+#  inputs  = [ os.path.join(builder.sourcePath, 'PCH.mak') ],
+#  outputs = [ 'common.h' ],
+#)
+
+
+# from ambuild2.frontend.v2_1.cpp.builders import ObjectFileBase
+# from ambuild2.frontend.v2_1.cpp.builders import ObjectArgvBuilder
+# 
+# class PCHFile(ObjectFileBase):
+#   def __init__(self, folderNode, compiler, sourceFile, outputFile, argv):
+#     super(ObjectFile, self).__init__(folderNode, compiler, sourceFile, outputFile)
+#     self.argv = argv
+#     self.behavior = compiler.vendor.behavior
+# 
+#   @property
+#   def type(self):
+#     return 'pcheader'
+# 
+# 
+# class ImprovedObjectArgvBuilder(ObjectArgvBuilder):
+#   def __init__(self):
+#     super(ImprovedObjectArgvBuilder, self).__init__()
+#   
+#   def buildItem(self, sourceName, sourceFile):
+#     sourceNameSansExtension, extension = os.path.splitext(sourceName)
+#     encodedName = NameForObjectFile(sourceNameSansExtension)
+#     if extension == '.gch':
+#       return self.buildPchItem(sourceFile, encodedName)
+#     return super(ImprovedObjectArgvBuilder, self).buildItem(self, sourceName, sourceFile)
+#   
+#   def buildPchItem(self, sourceFile, encodedName):
+#     argv = self.cxx_argv[:]
+#     self.used_cxx = True
+#     objectFile = encodedName + '.gch'
+#     argv += self.vendor.objectArgs(sourceFile, objectFile)
+#     return PCHFile(self.localFolderNode, self.compiler, sourceFile, objectFile, argv)
+# 
+# 
+# from ambuild2.frontend.v2_1.cpp.builders import BinaryBuilder
+# 
+# class ImprovedBinaryBuilder(BinaryBuilder):
+#   def __init__(self, compiler, name):
+#     super(ImprovedBinaryBuilder, self).__init__(compiler, name)
+#   
+#   def buildModule(self, cx, module):
+#     localFolder, outputFolder, outputPath = self.computeModuleFolders(cx, module)
+#     localFolderNode = cx.AddFolder(localFolder)
+#     
+#     builder = ImprovedObjectArgvBuilder()
+#     builder.setOutputs(localFolderNode, outputFolder, outputPath)
+#     builder.setCompiler(module.compiler)
+#     
+#     for item in module.sources:
+#       if os.path.isabs(item):
+#         sourceFile = item
+#       else:
+#         sourceFile = os.path.join(module.context.currentSourcePath, item)
+#       sourceFile = os.path.normpath(sourceFile)
+#       
+#       self.objects.append(builder.buildItem(item, sourceFile))
+#     
+#     if builder.used_cxx:
+#       self.used_cxx_ = True
+
+#cmd, pch_builder = builder.Add(PCHBuilder(binary.compiler, 'pch'))
+#binary.compiler.sourcedeps += [ pch_builder ]
+
+
+pch_makefile = os.path.join(builder.sourcePath, 'PCH.mak')
+pch_input    = os.path.join(builder.sourcePath, 'common.h')
+pch_output   = 'common.h.gch'
+
+pch_flags = binary.compiler.cxx_argv[:]
+pch_flags += binary.compiler.cflags
+if binary.compiler.symbol_files is not None:
+  pch_flags += binary.compiler.vendor.debugInfoArgv
+pch_flags += binary.compiler.cxxflags
+pch_flags += [binary.compiler.vendor.definePrefix + define for define in binary.compiler.defines]
+pch_flags += [binary.compiler.vendor.definePrefix + define for define in binary.compiler.cxxdefines]
+for include in binary.compiler.includes + binary.compiler.cxxincludes:
+  pch_flags += binary.compiler.vendor.formatInclude('', include)
+
+
+builder.AddConfigureFile(pch_makefile)
+
+cmd, pch = builder.AddCommand(
+  argv    = [ 'make',
+              '-f', pch_makefile,
+              'INFILE={}'.format(pch_input),
+              'OUTFILE={}'.format(pch_output),
+              'CXX={}'.format(' '.join(pch_flags)),
+            ],
+  inputs  = [ pch_input ],
+  outputs = [ pch_output ],
+)
+binary.compiler.sourcedeps += [ cmd ]
+binary.compiler.sourcedeps += pch
+#binary.weak_deps += pch
+
+#binary.compiler.includes += [ os.getcwd() ]
+binary.compiler.cflags += [ '-I', os.getcwd(), '-include', 'common.h' ]
 
 Extension.extensions = builder.Add(project)

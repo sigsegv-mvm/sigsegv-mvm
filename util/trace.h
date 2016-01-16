@@ -2,9 +2,6 @@
 #define _INCLUDE_SIGSEGV_UTIL_TRACE_H_
 
 
-#include "common.h"
-
-
 class TraceLevel
 {
 public:

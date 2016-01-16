@@ -66,11 +66,13 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -84,7 +86,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
+      <Command>copy $(TargetDir)\sigsegv.ext.2.tf2.dll $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,11 +98,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -115,16 +119,24 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
+      <Command>copy $(TargetDir)\sigsegv.ext.2.tf2.dll $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c" />
+    <ClCompile Include="$(SOURCEMOD18)\public\asm\asm.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\addr\addr.cpp" />
     <ClCompile Include="..\addr\misc.cpp" />
     <ClCompile Include="..\addr\nextbot.cpp" />
     <ClCompile Include="..\addr\vtable.cpp" />
+    <ClCompile Include="..\common.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\extension.cpp" />
+    <ClCompile Include="..\gameconf.cpp" />
     <ClCompile Include="..\library.cpp" />
     <ClCompile Include="..\link\link.cpp" />
     <ClCompile Include="..\link\nextbot1.cpp" />
@@ -152,6 +164,7 @@
     <ClCompile Include="..\stub\populators.cpp" />
     <ClCompile Include="..\stub\tfbot.cpp" />
     <ClCompile Include="..\stub\tfplayer.cpp" />
+    <ClCompile Include="..\util\backtrace.cpp" />
     <ClCompile Include="..\util\scan.cpp" />
     <ClCompile Include="..\util\trace.cpp" />
   </ItemGroup>
@@ -161,6 +174,7 @@
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\extract.h" />
+    <ClInclude Include="..\gameconf.h" />
     <ClInclude Include="..\library.h" />
     <ClInclude Include="..\link\link.h" />
     <ClInclude Include="..\link\vcall.h" />
@@ -197,6 +211,7 @@
     <ClInclude Include="..\stub\tfplayer.h" />
     <ClInclude Include="..\stub\tfweaponbase.h" />
     <ClInclude Include="..\util\autolist.h" />
+    <ClInclude Include="..\util\backtrace.h" />
     <ClInclude Include="..\util\buf.h" />
     <ClInclude Include="..\util\misc.h" />
     <ClInclude Include="..\util\scan.h" />

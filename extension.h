@@ -6,9 +6,6 @@
 #define maxlength maxlen
 
 
-#include "common.h"
-
-
 extern IServerGameDLL *gamedll;
 extern ICvar *icvar;
 extern IEngineTrace *enginetrace;

@@ -4,6 +4,7 @@
 #include "sm/detours.h"
 #include "modmanager.h"
 #include "addr/addr.h"
+#include "gameconf.h"
 
 
 CExtSigsegv g_Ext;
@@ -26,14 +27,15 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
 	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 	
+	gameconfs->AddUserConfigHook("sigsegv", &g_GCHook);
 	if (!gameconfs->LoadGameConfigFile("sigsegv", &g_pGameConf, error, maxlen)) {
-		return false;
+		goto fail;
 	}
 	
 	AddrManager::Load();
 	
 	if (!Link::InitAll(error, maxlen)) {
-		return false;
+		goto fail;
 	}
 	
 	CDetourManager::Init(g_pSM->GetScriptingEngine());
@@ -41,6 +43,12 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	CModManager::LoadAllMods();
 	
 	return true;
+	
+fail:
+	if (g_pGameConf != nullptr) {
+		gameconfs->CloseGameConfigFile(g_pGameConf);
+	}
+	return false;
 }
 
 void CExtSigsegv::SDK_OnUnload()
@@ -50,6 +58,7 @@ void CExtSigsegv::SDK_OnUnload()
 	AddrManager::UnLoad();
 	
 	gameconfs->CloseGameConfigFile(g_pGameConf);
+	gameconfs->RemoveUserConfigHook("sigsegv", &g_GCHook);
 }
 
 void CExtSigsegv::SDK_OnAllLoaded()
@@ -67,6 +76,8 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 
 bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
+	DevMsg("CExtSigsegv: compiled @ " __DATE__ " " __TIME__ "\n");
+	
 	GET_V_IFACE_ANY(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);

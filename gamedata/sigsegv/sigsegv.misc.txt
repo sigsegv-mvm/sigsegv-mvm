@@ -1,0 +1,154 @@
+// sigsegv: Miscellaneous
+
+Games
+{
+	"tf"
+	{
+		sigsegv
+		{
+			addrs
+			{
+				"TheNavMesh"
+				{
+					type "sym"
+					sym  "TheNavMesh"
+				}
+				
+				"UTIL_EntitiesInBox"
+				{
+					type "sym"
+					sym  "_Z18UTIL_EntitiesInBoxRK6VectorS1_P20CFlaggedEntitiesEnum"
+				}
+				"UTIL_EntitiesInSphere"
+				{
+					type "sym"
+					sym  "_Z21UTIL_EntitiesInSphereRK6VectorfP20CFlaggedEntitiesEnum"
+				}
+				"CalcDistanceToLineSegment"
+				{
+					type "sym"
+					sym  "_Z25CalcDistanceToLineSegmentRK6VectorS1_S1_Pf"
+				}
+				
+				"CBaseEntity::GetDataDescMap"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity14GetDataDescMapEv"
+				}
+				"CBaseEntity::GetNetworkable"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity14GetNetworkableEv"
+				}
+				"CBaseEntity::CalcAbsolutePosition"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity20CalcAbsolutePositionEv"
+				}
+				"CBaseEntity::IsAlive"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity7IsAliveEv"
+				}
+				
+				"CTFPlayer::CanBeForcedToLaugh"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18CanBeForcedToLaughEv"
+				}
+				"CTFPlayer::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10IsMiniBossEv"
+				}
+				"CTFPlayer::IsPlayerClass"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer13IsPlayerClassEi"
+				}
+				
+				"CTFGameRules::PushAllPlayersAway"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules18PushAllPlayersAwayERK6VectorffiP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS5_iEE"
+				}
+				
+				"CTFWeaponBase::DeflectProjectiles"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase18DeflectProjectilesEv"
+				}
+				
+				"CTFMinigun::AttackEnemyProjectiles"
+				{
+					type "sym"
+					sym  "_ZN10CTFMinigun22AttackEnemyProjectilesEv"
+				}
+				
+				"CTFSniperRifle::ExplosiveHeadShot"
+				{
+					type "sym"
+					sym  "_ZN14CTFSniperRifle17ExplosiveHeadShotEP9CTFPlayerS1_"
+				}
+				"CTFSniperRifle::ItemPostFrame"
+				{
+					type "sym"
+					sym  "_ZN14CTFSniperRifle13ItemPostFrameEv"
+				}
+				
+				"CTFSniperRifleClassic::ItemPostFrame"
+				{
+					type "sym"
+					sym  "_ZN21CTFSniperRifleClassic13ItemPostFrameEv"
+				}
+				
+				"CCurrencyPack::ComeToRest"
+				{
+					type "sym"
+					sym  "_ZN13CCurrencyPack10ComeToRestEv"
+				}
+				
+				"CNavMesh::GetNavArea"
+				{
+					type "sym"
+					sym  "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+				}
+				
+				"CTFNavMesh::CollectBuiltObjects"
+				{
+					type "sym"
+					sym  "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
+				}
+				
+				"CTFNavArea::IsValidForWanderingPopulation"
+				{
+					type "sym"
+					sym  "_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
+				}
+				
+				"CTFBotPathCost::operator()"
+				{
+					type "sym"
+					sym  "_ZNK14CTFBotPathCostclEP8CNavAreaS1_PK10CNavLadderPK13CFuncElevatorf"
+				}
+				
+				"Path::Compute<CTFBotPathCost>"
+				{
+					type "sym"
+					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+				}
+				
+				"PathFollower::Update"
+				{
+					type "sym"
+					sym  "_ZN12PathFollower6UpdateEP8INextBot"
+				}
+				"PathFollower::SetMinLookAheadDistance"
+				{
+					type "sym"
+					sym  "_ZN12PathFollower23SetMinLookAheadDistanceEf"
+				}
+			}
+		}
+	}
+}

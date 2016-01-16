@@ -2,9 +2,6 @@
 #define _INCLUDE_SIGSEGV_UTIL_BUF_H_
 
 
-#include "common.h"
-
-
 class ByteBuf
 {
 public:

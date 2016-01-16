@@ -2,7 +2,6 @@
 #define _INCLUDE_SIGSEGV_MOD_H_
 
 
-#include "common.h"
 #include "sm/detours.h"
 #include "mem/patch.h"
 

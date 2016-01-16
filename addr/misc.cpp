@@ -73,19 +73,3 @@ struct CAddr_CTFBotMvMEngineerBuildTeleportExit_Update : public IAddr_Func_Uniqu
 	int GetVTableIndex() const override        { return VT_idx_Action_Update; }
 };
 static CAddr_CTFBotMvMEngineerBuildTeleportExit_Update addr_CTFBotMvMEngineerBuildTeleportExit_Update;
-
-
-static CAddr_Sym addr_TheNavMesh("TheNavMesh", "TheNavMesh");
-
-static CAddr_Sym addr_CBaseEntity_GetNetworkable("CBaseEntity::GetNetworkable", "_ZN11CBaseEntity14GetNetworkableEv");
-static CAddr_Sym addr_CBaseEntity_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition", "_ZN11CBaseEntity20CalcAbsolutePositionEv");
-static CAddr_Sym addr_CBaseEntity_IsAlive("CBaseEntity::IsAlive", "_ZN11CBaseEntity7IsAliveEv");
-
-static CAddr_Sym addr_CTFPlayer_CanBeForcedToLaugh("CTFPlayer::CanBeForcedToLaugh", "_ZN9CTFPlayer18CanBeForcedToLaughEv");
-
-static CAddr_Sym addr_CTFNavMesh_CollectBuiltObjects("CTFNavMesh::CollectBuiltObjects", "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi");
-
-static CAddr_Sym addr_Path_Compute_CTFBotPathCost("Path::Compute<CTFBotPathCost>", "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb");
-
-static CAddr_Sym addr_PathFollower_Update("PathFollower::Update", "_ZN12PathFollower6UpdateEP8INextBot");
-static CAddr_Sym addr_PathFollower_SetMinLookAheadDistance("PathFollower::SetMinLookAheadDistance", "_ZN12PathFollower23SetMinLookAheadDistanceEf");

@@ -2,9 +2,6 @@
 #define _INCLUDE_SIGSEGV_UTIL_AUTOLIST_H_
 
 
-#include "common.h"
-
-
 template<typename T>
 class AutoList
 {

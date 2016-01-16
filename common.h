@@ -1,6 +1,10 @@
+/* precompiled header! */
+
 #ifndef _INCLUDE_SIGSEGV_COMMON_H_
 #define _INCLUDE_SIGSEGV_COMMON_H_
 
+
+#if defined __cplusplus
 
 #if !defined __GNUC__
 #define __attribute__(...)
@@ -53,6 +57,8 @@ extern IVDebugOverlay *debugoverlay;
 
 /* SourceMod */
 #include <smsdk_ext.h>
+
+#endif
 
 
 #endif

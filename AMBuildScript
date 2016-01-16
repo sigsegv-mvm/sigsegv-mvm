@@ -1,8 +1,6 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
 import os, sys
 
-# Simple extensions do not need to modify this file.
-
 class SDK(object):
   def __init__(self, sdk, ext, aDef, name, platform, dir):
     self.folder = 'hl2sdk-' + dir
@@ -85,7 +83,7 @@ class ExtensionConfig(object):
 
     for sdk_name in PossibleSDKs:
       sdk = PossibleSDKs[sdk_name]
-      if builder.target_platform in sdk.platform:
+      if builder.target.platform in sdk.platform:
         if builder.options.hl2sdk_root:
           sdk_path = os.path.join(builder.options.hl2sdk_root, sdk.folder)
         else:
@@ -128,7 +126,7 @@ class ExtensionConfig(object):
     self.mms_root = Normalize(self.mms_root)
 
   def configure(self):
-    cxx = builder.DetectCompilers()
+    cxx = builder.DetectCxx()
 
     if cxx.like('gcc'):
       cxx.defines += [
@@ -156,21 +154,22 @@ class ExtensionConfig(object):
         '-masm=intel',
         '-maccumulate-outgoing-args',
 #        '-Q',
+        '-Winvalid-pch',
       ]
       cxx.cxxflags += [
         '-std=c++11',
       ]
 
-      have_gcc = cxx.vendor == 'gcc'
-      have_clang = cxx.vendor == 'clang'
-      if have_clang or (have_gcc and cxx.version >= '4'):
+      have_gcc = ('gcc' in cxx.version.vendor_name)
+      have_clang = ('clang' in cxx.version.vendor_name)
+      if have_clang or (have_gcc and cxx.version >= 'gcc-4'):
         cxx.cflags += ['-fvisibility=hidden']
         cxx.cxxflags += ['-fvisibility-inlines-hidden']
-        if have_clang or (have_gcc and cxx.version >= '4.6'):
+        if have_clang or (have_gcc and cxx.version >= 'gcc-4.6'):
           cxx.cflags += ['-Wno-narrowing']
-        if (have_gcc and cxx.version >= '4.7') or (have_clang and cxx.version >= '3'):
+        if (have_gcc and cxx.version >= 'gcc-4.7') or (have_clang and cxx.version >= 'gcc-3'):
           cxx.cxxflags += ['-Wno-delete-non-virtual-dtor']
-        if have_gcc and cxx.version >= '4.8':
+        if have_gcc and cxx.version >= 'gcc-4.8':
           cxx.cflags += ['-Wno-unused-result']
       if have_clang:
         cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
@@ -247,14 +246,14 @@ class ExtensionConfig(object):
       cxx.cflags += ['/Oy-']
 
     # Platform-specifics
-    if builder.target_platform == 'linux':
+    if builder.target.platform == 'linux':
       cxx.defines += ['_LINUX', 'POSIX']
       cxx.linkflags += ['-lm']
       if cxx.vendor == 'gcc':
         cxx.linkflags += ['-static-libgcc']
       elif cxx.vendor == 'clang':
         cxx.linkflags += ['-lgcc_eh']
-    elif builder.target_platform == 'mac':
+    elif builder.target.platform == 'mac':
       cxx.defines += ['OSX', '_OSX', 'POSIX']
       cxx.cflags += ['-mmacosx-version-min=10.5']
       cxx.linkflags += [
@@ -264,7 +263,7 @@ class ExtensionConfig(object):
         '-stdlib=libstdc++',
       ]
       cxx.cxxflags += ['-stdlib=libstdc++']
-    elif builder.target_platform == 'windows':
+    elif builder.target.platform == 'windows':
       cxx.defines += ['WIN32', '_WINDOWS']
 
     # Finish up.
@@ -280,7 +279,7 @@ class ExtensionConfig(object):
     else:
       mms_path = os.path.join(self.mms_root, 'core')
 
-    compiler.cxxincludes += [
+    compiler.includes += [
       os.path.join(mms_path),
       os.path.join(mms_path, 'sourcehook'),
     ]
@@ -325,29 +324,29 @@ class ExtensionConfig(object):
       compiler.defines += ['NETWORK_VARS_ENABLED']
 
     if sdk.name in ['css', 'hl2dm', 'dods', 'sdk2013', 'bms', 'tf2', 'l4d', 'nucleardawn', 'l4d2', 'dota']:
-      if builder.target_platform in ['linux', 'mac']:
+      if builder.target.platform in ['linux', 'mac']:
         compiler.defines += ['NO_HOOK_MALLOC', 'NO_MALLOC_OVERRIDE']
 
-    if sdk.name == 'csgo' and builder.target_platform == 'linux':
+    if sdk.name == 'csgo' and builder.target.platform == 'linux':
       compiler.linkflags += ['-lstdc++']
 
     for path in paths:
-      compiler.cxxincludes += [os.path.join(sdk.path, *path)]
+      compiler.includes += [os.path.join(sdk.path, *path)]
 
-    if builder.target_platform == 'linux':
+    if builder.target.platform == 'linux':
       if sdk.name == 'episode1':
         lib_folder = os.path.join(sdk.path, 'linux_sdk')
       elif sdk.name in ['sdk2013', 'bms']:
         lib_folder = os.path.join(sdk.path, 'lib', 'public', 'linux32')
       else:
         lib_folder = os.path.join(sdk.path, 'lib', 'linux')
-    elif builder.target_platform == 'mac':
+    elif builder.target.platform == 'mac':
       if sdk.name in ['sdk2013', 'bms']:
         lib_folder = os.path.join(sdk.path, 'lib', 'public', 'osx32')
       else:
         lib_folder = os.path.join(sdk.path, 'lib', 'mac')
 
-    if builder.target_platform in ['linux', 'mac']:
+    if builder.target.platform in ['linux', 'mac']:
       if sdk.name in ['sdk2013', 'bms']:
         compiler.postlink += [
           compiler.Dep(os.path.join(lib_folder, 'tier1.a')),
@@ -363,17 +362,17 @@ class ExtensionConfig(object):
         compiler.postlink += [compiler.Dep(os.path.join(lib_folder, 'interfaces_i486.a'))]
 
     dynamic_libs = []
-    if builder.target_platform == 'linux':
+    if builder.target.platform == 'linux':
       if sdk.name in ['css', 'hl2dm', 'dods', 'tf2', 'sdk2013', 'bms', 'nucleardawn', 'l4d2']:
         dynamic_libs = ['libtier0_srv.so', 'libvstdlib_srv.so']
       elif sdk.name in ['l4d', 'blade', 'insurgency', 'csgo', 'dota']:
         dynamic_libs = ['libtier0.so', 'libvstdlib.so']
       else:
         dynamic_libs = ['tier0_i486.so', 'vstdlib_i486.so']
-    elif builder.target_platform == 'mac':
+    elif builder.target.platform == 'mac':
       compiler.linkflags.append('-liconv')
       dynamic_libs = ['libtier0.dylib', 'libvstdlib.dylib']
-    elif builder.target_platform == 'windows':
+    elif builder.target.platform == 'windows':
       libs = ['tier0', 'tier1', 'vstdlib', 'mathlib']
       if sdk.name in ['swarm', 'blade', 'insurgency', 'csgo', 'dota']:
         libs.append('interfaces')
@@ -397,7 +396,7 @@ class ExtensionConfig(object):
     return binary
 
   def ConfigureForExtension(self, context, compiler):
-    compiler.cxxincludes += [
+    compiler.includes += [
       os.path.join(context.currentSourcePath),
       os.path.join(context.currentSourcePath, 'sdk'),
       os.path.join(self.sm_root, 'public'),
@@ -408,7 +407,7 @@ class ExtensionConfig(object):
     return compiler
 
   def HL2Project(self, context, name):
-    project = context.compiler.LibraryProject(name)
+    project = context.cxx.LibraryProject(name)
     self.ConfigureForExtension(context, project.compiler)
     return project
 	
@@ -430,4 +429,4 @@ if builder.backend == 'amb2':
     'PackageScript',
   ]
 
-builder.RunBuildScripts(BuildScripts, { 'Extension': Extension})
+builder.Build(BuildScripts, { 'Extension': Extension})
