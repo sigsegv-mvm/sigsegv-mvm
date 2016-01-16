@@ -14,6 +14,7 @@
 /* C++ standard library */
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <string>
 
 /* STL */

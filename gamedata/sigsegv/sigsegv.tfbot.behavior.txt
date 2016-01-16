@@ -2,32 +2,54 @@
 
 "Games"
 {
-	"tf"
+	"#default"
 	{
-		"Signatures"
+		"#supported"
 		{
-			"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
 			{
-				linux "@_ZN21CTFBotScenarioMonitor29DesiredScenarioAndClassActionEP6CTFBot"
-				// TODO: windows
-			}
-			
-			"CTFBotMvMEngineerTeleportSpawn::Update"
-			{
-				linux "@_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"
-				// TODO: windows
-			}
-			
-			"CTFBotMvMEngineerBuildSentryGun::Update"
-			{
-				linux "@_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
-				// TODO: windows
-			}
-			
-			"CTFBotMvMEngineerBuildTeleportExit::Update"
-			{
-				linux "@_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
-				// TODO: windows
+				"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotScenarioMonitor29DesiredScenarioAndClassActionEP6CTFBot"
+				}
+				
+				"CTFBotMvMEngineerTeleportSpawn::Update"
+				{
+					type   "func unistr ebpprologue knownvtidx"
+					sym    "_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"
+					unistr "teleported_mvm_bot"
+					// alt: "Engineer.MVM_BattleCry07"
+					// alt: "Announcer.MVM_First_Engineer_Teleport_Spawned"
+					// alt: "Announcer.MVM_Another_Engineer_Teleport_Spawned"
+					// alt: "Cannot teleport to hint as m_hintEntity is NULL"
+					vtable "[VT] CTFBotMvMEngineerTeleportSpawn"
+					idx    "0x2e"
+				}
+				
+				"CTFBotMvMEngineerBuildSentryGun::Update"
+				{
+					type   "func unistr ebpprologue knownvtidx"
+					sym    "_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
+					unistr "Built a sentry"
+					// alt: "Placing sentry"
+					vtable "[VT] CTFBotMvMEngineerBuildSentryGun"
+					idx    "0x2e"
+				}
+				
+				"CTFBotMvMEngineerBuildTeleportExit::Update"
+				{
+					type   "func unistr ebpprologue knownvtidx"
+					sym    "_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
+					unistr "Engineer.MVM_AutoBuildingTeleporter02"
+					vtable "[VT] CTFBotMvMEngineerBuildTeleportExit"
+					idx    "0x2e"
+				}
 			}
 		}
 	}

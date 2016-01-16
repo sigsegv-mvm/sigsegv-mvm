@@ -19,7 +19,7 @@ void IAddr::Init()
 	
 	if (result) {
 		this->m_State = State::OK;
-		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
+//		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
 	} else {
 		this->m_State = State::FAIL;
 		DevMsg("IAddr::Init \"%s\" FAIL\n", this->GetName());
@@ -40,11 +40,14 @@ void AddrManager::Load()
 	OpenLibHandle(&s_hServer, LibMgr::GetPtr(Library::SERVER), "server");
 	OpenLibHandle(&s_hEngine, LibMgr::GetPtr(Library::ENGINE), "engine");
 	
-	for (auto addr : AutoList<IAddr>::List()) {
+	for (const auto& addr : AutoList<IAddr>::List()) {
 		std::string name(addr->GetName());
 		
-		assert(s_Addrs.find(name) == s_Addrs.end());
-		s_Addrs[name] = addr;
+		if (s_Addrs.find(name) == s_Addrs.end()) {
+			s_Addrs[name] = addr;
+		} else {
+			DevMsg("AddrManager::Load: duplicate addr for \"%s\"\n", addr->GetName());
+		}
 	}
 	
 	/* early init pass to ensure vtables are ready */

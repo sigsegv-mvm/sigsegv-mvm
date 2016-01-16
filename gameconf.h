@@ -2,6 +2,9 @@
 #define _INCLUDE_SIGSEGV_GAMECONF_H_
 
 
+#include "addr/addr.h"
+
+
 class CSigsegvGameConf : public ITextListener_SMC
 {
 public:
@@ -27,15 +30,24 @@ private:
 	};
 	ParseSection m_Section;
 	
+	
+	struct
+	{
+		std::string m_Name;
+		std::map<std::string, std::string> m_KeyValues;
+	} m_AddrEntry_State;
+	
+	std::list<std::unique_ptr<IAddr>> m_AddrPtrs;
+	
 	SMCResult AddrEntry_Start(const char *name);
 	SMCResult AddrEntry_KeyValue(const char *key, const char *value);
 	SMCResult AddrEntry_End();
 	
-	struct
-	{
-		const char *m_Name;
-		std::map<std::string, std::string> m_KeyValues;
-	} m_AddrEntry_State;
+	
+	SMCResult AddrEntry_Load_Sym();
+	SMCResult AddrEntry_Load_VTable();
+	SMCResult AddrEntry_Load_Func_KnownVTIdx();
+	SMCResult AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx();
 };
 extern CSigsegvGameConf g_GCHook;
 

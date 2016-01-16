@@ -2,59 +2,85 @@
 
 "Games"
 {
-	"tf"
+	"#default"
 	{
-		"Signatures"
+		"#supported"
 		{
-			"IContextualQuery::~IContextualQuery [D0]"
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
 			{
-				linux "@_ZN16IContextualQueryD0Ev"
-				// not using this on windows
-			}
-			"IContextualQuery::~IContextualQuery [D2]"
-			{
-				linux "@_ZN16IContextualQueryD2Ev"
-				// not using this on windows
-			}
-			"IContextualQuery::ShouldPickUp"
-			{
-				linux "@_ZNK16IContextualQuery12ShouldPickUpEPK8INextBotP11CBaseEntity"
-				// TODO: windows
-			}
-			"IContextualQuery::ShouldHurry"
-			{
-				linux "@_ZNK16IContextualQuery11ShouldHurryEPK8INextBot"
-				// TODO: windows
-			}
-			"IContextualQuery::ShouldRetreat"
-			{
-				linux "@_ZNK16IContextualQuery13ShouldRetreatEPK8INextBot"
-				// TODO: windows
-			}
-			"IContextualQuery::ShouldAttack"
-			{
-				linux "@_ZNK16IContextualQuery12ShouldAttackEPK8INextBotPK12CKnownEntity"
-				// TODO: windows
-			}
-			"IContextualQuery::IsHindrance"
-			{
-				linux "@_ZNK16IContextualQuery11IsHindranceEPK8INextBotP11CBaseEntity"
-				// TODO: windows
-			}
-			"IContextualQuery::SelectTargetPoint"
-			{
-				linux "@_ZNK16IContextualQuery17SelectTargetPointEPK8INextBotPK20CBaseCombatCharacter"
-				// TODO: windows
-			}
-			"IContextualQuery::IsPositionAllowed"
-			{
-				linux "@_ZNK16IContextualQuery17IsPositionAllowedEPK8INextBotRK6Vector"
-				// TODO: windows
-			}
-			"IContextualQuery::SelectMoreDangerousThreat"
-			{
-				linux "@_ZNK16IContextualQuery25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
-				// TODO: windows
+				"IContextualQuery::~IContextualQuery [D0]"
+				{
+					type "sym"
+					sym  "_ZN16IContextualQueryD0Ev"
+				}
+				"IContextualQuery::~IContextualQuery [D2]"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN16IContextualQueryD2Ev"
+					vtable "[VT] IContextualQuery"
+					idx    "0x00"
+				}
+				"IContextualQuery::ShouldPickUp"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery12ShouldPickUpEPK8INextBotP11CBaseEntity"
+					vtable "[VT] IContextualQuery"
+					idx    "0x01"
+				}
+				"IContextualQuery::ShouldHurry"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery11ShouldHurryEPK8INextBot"
+					vtable "[VT] IContextualQuery"
+					idx    "0x02"
+				}
+				"IContextualQuery::ShouldRetreat"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery13ShouldRetreatEPK8INextBot"
+					vtable "[VT] IContextualQuery"
+					idx    "0x03"
+				}
+				"IContextualQuery::ShouldAttack"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery12ShouldAttackEPK8INextBotPK12CKnownEntity"
+					vtable "[VT] IContextualQuery"
+					idx    "0x04"
+				}
+				"IContextualQuery::IsHindrance"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery11IsHindranceEPK8INextBotP11CBaseEntity"
+					vtable "[VT] IContextualQuery"
+					idx    "0x05"
+				}
+				"IContextualQuery::SelectTargetPoint"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery17SelectTargetPointEPK8INextBotPK20CBaseCombatCharacter"
+					vtable "[VT] IContextualQuery"
+					idx    "0x06"
+				}
+				"IContextualQuery::IsPositionAllowed"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery17IsPositionAllowedEPK8INextBotRK6Vector"
+					vtable "[VT] IContextualQuery"
+					idx    "0x07"
+				}
+				"IContextualQuery::SelectMoreDangerousThreat"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+					vtable "[VT] IContextualQuery"
+					idx    "0x08"
+				}
 			}
 		}
 	}

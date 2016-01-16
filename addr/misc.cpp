@@ -42,6 +42,7 @@ static CAddr_CTFSniperRifleClassic_ItemPostFrame addr_CTFSniperRifleClassic_Item
 #endif
 
 
+#if 0
 struct CAddr_CTFBotMvMEngineerTeleportSpawn_Update : public IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff
 {
 	const char *GetName() const override       { return "CTFBotMvMEngineerTeleportSpawn::Update"; }
@@ -73,3 +74,4 @@ struct CAddr_CTFBotMvMEngineerBuildTeleportExit_Update : public IAddr_Func_Uniqu
 	int GetVTableIndex() const override        { return VT_idx_Action_Update; }
 };
 static CAddr_CTFBotMvMEngineerBuildTeleportExit_Update addr_CTFBotMvMEngineerBuildTeleportExit_Update;
+#endif

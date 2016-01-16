@@ -86,15 +86,15 @@ protected:
 class CAddr_Sym : public IAddr_Sym
 {
 public:
-	CAddr_Sym(const char *name, const char *sym) :
-		m_pszName(name), m_pszSymbol(sym) {}
+	CAddr_Sym(const std::string& name, const std::string& sym) :
+		m_strName(name), m_strSymbol(sym) {}
 	
-	virtual const char *GetName() const override       { return this->m_pszName; }
-	virtual const char *GetSymbol() const override     { return this->m_pszSymbol; }
+	virtual const char *GetName() const override   { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override { return this->m_strSymbol.c_str(); }
 	
 private:
-	const char *m_pszName;
-	const char *m_pszSymbol;
+	std::string m_strName;
+	std::string m_strSymbol;
 };
 
 
@@ -195,26 +195,65 @@ protected:
 class CAddr_VTable : public IAddr_VTable
 {
 public:
-	CAddr_VTable(const char *name, const char *sym, const char *rtti) :
-		m_pszName(name), m_pszSymbol(sym), m_pszWinRTTIStr(rtti) {}
+	CAddr_VTable(const std::string& name, const std::string& sym, const std::string& rtti) :
+		m_strName(name), m_strSymbol(sym), m_strWinRTTIStr(rtti) {}
 	
-	virtual const char *GetName() const override       { return this->m_pszName; }
-	virtual const char *GetSymbol() const override     { return this->m_pszSymbol; }
-	virtual const char *GetWinRTTIStr() const override { return this->m_pszWinRTTIStr; }
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetWinRTTIStr() const override { return this->m_strWinRTTIStr.c_str(); }
 	
 private:
-	const char *m_pszName;
-	const char *m_pszSymbol;
-	const char *m_pszWinRTTIStr;
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strWinRTTIStr;
+};
+
+
+/* address finder for functions with these traits:
+ * 1. func is virtual and has a confidently known vtable index
+ */
+class IAddr_Func_KnownVTIdx : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
+		if (p_VT == nullptr) return false;
+		
+		addr = p_VT[this->GetVTableIndex()];
+		return true;
+	}
+	
+protected:
+	virtual const char *GetVTableName() const = 0;
+	virtual int GetVTableIndex() const = 0;
+};
+
+class CAddr_Func_KnownVTIdx : public IAddr_Func_KnownVTIdx
+{
+public:
+	CAddr_Func_KnownVTIdx(const std::string& name, const std::string& sym, const std::string& vt_name, int vt_idx) :
+		m_strName(name), m_strSymbol(sym), m_strVTName(vt_name), m_iVTIndex(vt_idx) {}
+	
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetVTableName() const override { return this->m_strVTName.c_str(); }
+	virtual int GetVTableIndex() const override        { return this->m_iVTIndex; }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strVTName;
+	int m_iVTIndex;
 };
 
 
 /* address finder for functions with these traits:
  * 1. func body contains a unique string reference
  * 2. func body starts with "push ebp; mov ebp,esp"
- * 3. func is virtual and has a confidently known vtable offset
+ * 3. func is virtual and has a confidently known vtable index
  */
-class IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff : public IAddr_Sym
+class IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx : public IAddr_Sym
 {
 public:
 	virtual bool FindAddrWin(uintptr_t& addr) const override
@@ -253,46 +292,27 @@ protected:
 private:
 	void Fail(int step) const
 	{
-		DevMsg("IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff: FAIL @ step %d\n", step);
+		DevMsg("IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx: FAIL @ step %d\n", step);
 	}
 };
 
-
-/* address finder for functions with these traits:
- * 1. func is virtual and has a confidently known vtable offset
- */
-class IAddr_Func_KnownVTOff : public IAddr_Sym
+class CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx : public IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx
 {
 public:
-	virtual bool FindAddrWin(uintptr_t& addr) const override
-	{
-		auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
-		if (p_VT == nullptr) return false;
-		
-		addr = p_VT[this->GetVTableIndex()];
-		return true;
-	}
+	CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx(const std::string& name, const std::string& sym, const std::string& uni_str, const std::string& vt_name, int vt_idx) :
+		m_strName(name), m_strSymbol(sym), m_strUniqueStr(uni_str), m_strVTName(vt_name), m_iVTIndex(vt_idx) {}
 	
-protected:
-	virtual const char *GetVTableName() const = 0;
-	virtual int GetVTableIndex() const = 0;
-};
-
-class CAddr_Func_KnownVTOff : public IAddr_Func_KnownVTOff
-{
-public:
-	CAddr_Func_KnownVTOff(const char *name, const char *sym, const char *vt_name, int vt_idx) :
-		m_pszName(name), m_pszSymbol(sym), m_pszVTName(vt_name), m_iVTIndex(vt_idx) {}
-	
-	virtual const char *GetName() const override       { return this->m_pszName; }
-	virtual const char *GetSymbol() const override     { return this->m_pszSymbol; }
-	virtual const char *GetVTableName() const override { return this->m_pszVTName; }
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetUniqueStr() const override  { return this->m_strUniqueStr.c_str(); }
+	virtual const char *GetVTableName() const override { return this->m_strVTName.c_str(); }
 	virtual int GetVTableIndex() const override        { return this->m_iVTIndex; }
 	
 private:
-	const char *m_pszName;
-	const char *m_pszSymbol;
-	const char *m_pszVTName;
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strUniqueStr;
+	std::string m_strVTName;
 	int m_iVTIndex;
 };
 

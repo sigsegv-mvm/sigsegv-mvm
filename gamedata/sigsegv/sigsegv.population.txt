@@ -2,30 +2,38 @@
 
 "Games"
 {
-	"tf"
+	"#default"
 	{
-		"Signatures"
+		"#supported"
 		{
-			"CMissionPopulator::Parse"
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
 			{
-				linux "@_ZN17CMissionPopulator5ParseEP9KeyValues"
-				// TODO: windows
-			}
-			"CMissionPopulator::Update"
-			{
-				linux "@_ZN17CMissionPopulator6UpdateEv"
-				// TODO: windows
-			}
-			"CMissionPopulator::UpdateMission"
-			{
-				linux "@_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
-				// TODO: windows
-			}
-			
-			"CSpawnLocation::Parse"
-			{
-				linux "@_ZN14CSpawnLocation5ParseEP9KeyValues"
-				// TODO: windows
+				"CMissionPopulator::Parse"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulator5ParseEP9KeyValues"
+				}
+				"CMissionPopulator::Update"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulator6UpdateEv"
+				}
+				"CMissionPopulator::UpdateMission"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
+				}
+				
+				"CSpawnLocation::Parse"
+				{
+					type "sym"
+					sym  "_ZN14CSpawnLocation5ParseEP9KeyValues"
+				}
 			}
 		}
 	}

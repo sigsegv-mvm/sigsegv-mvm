@@ -19,11 +19,65 @@
 					sym     "_ZTV11CBaseEntity"
 					winrtti ".?AVCBaseEntity@@"
 				}
+				
 				"[VT] CBasePlayer"
 				{
 					type    "vtable"
 					sym     "_ZTV11CBasePlayer"
 					winrtti ".?AVCBasePlayer@@"
+				}
+				
+				"[VT] CTFSniperRifle"
+				{
+					type    "vtable"
+					sym     "_ZTV14CTFSniperRifle"
+					winrtti ".?AVCTFSniperRifle@@"
+				}
+				"[VT] CTFSniperRifleClassic"
+				{
+					type    "vtable"
+					sym     "_ZTV21CTFSniperRifleClassic"
+					winrtti ".?AVCTFSniperRifleClassic@@"
+				}
+				
+				"[VT] INextBotEventResponder"
+				{
+					type    "vtable"
+					sym     "_ZTV22INextBotEventResponder"
+					winrtti ".?AVINextBotEventResponder@@"
+				}
+				
+				"[VT] IContextualQuery"
+				{
+					type    "vtable"
+					sym     "_ZTV16IContextualQuery"
+					winrtti ".?AVIContextualQuery@@"
+				}
+				
+				"[VT] Action<CTFBot>"
+				{
+					type    "vtable"
+					sym     "_ZTV6ActionI6CTFBotE"
+					winrtti ".?AV?$Action@VCTFBot@@@@"
+				}
+				
+				"[VT] CTFBotMvMEngineerTeleportSpawn"
+				{
+					type    "vtable"
+					sym     "_ZTV30CTFBotMvMEngineerTeleportSpawn"
+					winrtti ".?AVCTFBotMvMEngineerTeleportSpawn@@"
+				}
+				"[VT] CTFBotMvMEngineerBuildSentryGun"
+				{
+					type    "vtable"
+					sym     "_ZTV31CTFBotMvMEngineerBuildSentryGun"
+					winrtti ".?AVCTFBotMvMEngineerBuildSentryGun@@"
+				}
+				"[VT] CTFBotMvMEngineerBuildTeleportExit"
+				{
+					type    "vtable"
+					sym     "_ZTV34CTFBotMvMEngineerBuildTeleportExit"
+					winrtti ".?AVCTFBotMvMEngineerBuildTeleportExit@@"
 				}
 			}
 		}

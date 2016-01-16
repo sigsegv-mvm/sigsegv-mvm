@@ -1,5 +1,4 @@
 #include "gameconf.h"
-#include "util/backtrace.h"
 
 
 #define DEBUG_GC 0
@@ -35,6 +34,8 @@ bool CSigsegvGameConf::LoadAll(char *error, size_t maxlen)
 		
 		this->m_GameConfs.push_back(conf);
 	}
+	
+	return true;
 }
 
 void CSigsegvGameConf::UnloadAll()
@@ -146,19 +147,128 @@ SMCResult CSigsegvGameConf::AddrEntry_KeyValue(const char *key, const char *valu
 
 SMCResult CSigsegvGameConf::AddrEntry_End()
 {
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
 #if DEBUG_GC
 	DevMsg("GC AddrEntry_End\n");
-#endif
 	
-	DevMsg("CSigsegvGameConf: addr \"%s\" {", this->m_AddrEntry_State.m_Name);
-	
-	for (auto& pair : this->m_AddrEntry_State.m_KeyValues) {
+	DevMsg("CSigsegvGameConf: addr \"%s\" {", name);
+	for (const auto& pair : kv) {
 		DevMsg(" \"%s\" => \"%s\" ", pair.first.c_str(), pair.second.c_str());
 	}
-	
 	DevMsg("}\n");
+#endif
 	
+	for (const std::string& key : { "type" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
 	
+	const std::string& type = kv.at("type");
+	if (type == "sym") {
+		return this->AddrEntry_Load_Sym();
+	} else if (type == "vtable") {
+		return this->AddrEntry_Load_VTable();
+	} else if (type == "func knownvtidx") {
+		return this->AddrEntry_Load_Func_KnownVTIdx();
+	} else if (type == "func unistr ebpprologue knownvtidx") {
+		return this->AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx();
+	} else {
+		DevMsg("GameData error: addr \"%s\" has unknown type \"%s\"\n", name.c_str(), type.c_str());
+		return SMCResult_HaltFail;
+	}
+}
+
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Sym()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym = kv.at("sym");
+	
+	auto addr = new CAddr_Sym(name, sym);
+//	DevMsg("new CAddr_Sym(name:\"%s\", sym:\"%s\") @ 0x%08x\n",
+//		addr->GetName(), addr->GetSymbol(), (uintptr_t)addr);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_VTable()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "winrtti" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym     = kv.at("sym");
+	const auto& winrtti = kv.at("winrtti");
+	
+	auto addr = new CAddr_VTable(name, sym, winrtti);
+//	DevMsg("new CAddr_VTable(name:\"%s\", sym:\"%s\", winrtti:\"%s\") @ 0x%08x\n",
+//		addr->GetName(), addr->GetSymbol(), addr->GetWinRTTIStr(), (uintptr_t)addr);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "vtable", "idx" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym    = kv.at("sym");
+	const auto& vtable = kv.at("vtable");
+	int idx            = stoi(kv.at("idx"));
+	
+	auto addr = new CAddr_Func_KnownVTIdx(name, sym, vtable, idx);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "unistr", "vtable", "idx" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym    = kv.at("sym");
+	const auto& unistr = kv.at("unistr");
+	const auto& vtable = kv.at("vtable");
+	int idx            = stoi(kv.at("idx"));
+	
+	auto addr = new CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx(name, unistr, sym, vtable, idx);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
 	
 	return SMCResult_Continue;
 }
