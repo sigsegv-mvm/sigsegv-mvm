@@ -47,7 +47,8 @@ private:
 	SMCResult AddrEntry_Load_Sym();
 	SMCResult AddrEntry_Load_VTable();
 	SMCResult AddrEntry_Load_Func_KnownVTIdx();
-	SMCResult AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx();
+	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr();
+	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx();
 };
 extern CSigsegvGameConf g_GCHook;
 

@@ -59,6 +59,13 @@ extern IVDebugOverlay *debugoverlay;
 /* SourceMod */
 #include <smsdk_ext.h>
 
+/* Windows */
+#if defined _WINDOWS
+#pragma warning(disable:4091)
+#include <Dbghelp.h>
+#pragma warning(default:4091)
+#endif
+
 #endif
 
 

@@ -4,8 +4,9 @@
 #define DEBUG_GC 0
 
 
-constexpr const char *const configs[] = {
+static const char *const configs[] = {
 	"sigsegv/sigsegv.vtable",
+	"sigsegv/sigsegv.globals",
 	"sigsegv/sigsegv.nextbot.action",
 	"sigsegv/sigsegv.nextbot.contextualquery",
 	"sigsegv/sigsegv.nextbot.eventresponder",
@@ -174,8 +175,10 @@ SMCResult CSigsegvGameConf::AddrEntry_End()
 		return this->AddrEntry_Load_VTable();
 	} else if (type == "func knownvtidx") {
 		return this->AddrEntry_Load_Func_KnownVTIdx();
-	} else if (type == "func unistr ebpprologue knownvtidx") {
-		return this->AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx();
+	} else if (type == "func ebpprologue unistr") {
+		return this->AddrEntry_Load_Func_EBPPrologue_UniqueStr();
+	} else if (type == "func ebpprologue unistr knownvtidx") {
+		return this->AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx();
 	} else {
 		DevMsg("GameData error: addr \"%s\" has unknown type \"%s\"\n", name.c_str(), type.c_str());
 		return SMCResult_HaltFail;
@@ -242,7 +245,7 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
 	
 	const auto& sym    = kv.at("sym");
 	const auto& vtable = kv.at("vtable");
-	int idx            = stoi(kv.at("idx"));
+	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
 	auto addr = new CAddr_Func_KnownVTIdx(name, sym, vtable, idx);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
@@ -250,7 +253,28 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
 	return SMCResult_Continue;
 }
 
-SMCResult CSigsegvGameConf::AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx()
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "unistr" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym    = kv.at("sym");
+	const auto& unistr = kv.at("unistr");
+	
+	auto addr = new CAddr_Func_EBPPrologue_UniqueStr(name, sym, unistr);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx()
 {
 	const auto& name = this->m_AddrEntry_State.m_Name;
 	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
@@ -265,9 +289,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_UniqueStr_EBPPrologue_KnownVTIdx
 	const auto& sym    = kv.at("sym");
 	const auto& unistr = kv.at("unistr");
 	const auto& vtable = kv.at("vtable");
-	int idx            = stoi(kv.at("idx"));
+	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
-	auto addr = new CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx(name, unistr, sym, vtable, idx);
+	auto addr = new CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx(name, sym, unistr, vtable, idx);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
 	
 	return SMCResult_Continue;

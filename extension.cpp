@@ -4,6 +4,7 @@
 #include "sm/detours.h"
 #include "modmanager.h"
 #include "addr/addr.h"
+#include "addr/prescan.h"
 #include "gameconf.h"
 
 
@@ -25,8 +26,10 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
 	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 	
+	PreScan::DoScans();
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
 	
+	LibMgr::Load();
 	AddrManager::Load();
 	
 	if (!Link::InitAll(error, maxlen)) goto fail;
@@ -46,7 +49,7 @@ void CExtSigsegv::SDK_OnUnload()
 {
 	CModManager::UnloadAllMods();
 	
-	AddrManager::UnLoad();
+	LibMgr::Unload();
 	
 	g_GCHook.UnloadAll();
 }

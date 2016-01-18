@@ -4,7 +4,6 @@
 
 #include "library.h"
 #include "util/util.h"
-#include "abi.h"
 
 
 class IAddr;
@@ -13,22 +12,13 @@ class AddrManager
 {
 public:
 	static void Load();
-	static void UnLoad();
 	
 	static void *GetAddr(const char *name);
-	
-	static void *FindSymbol(Library lib, const char *sym);
 	
 private:
 	AddrManager() {}
 	
-	static void OpenLibHandle(void **handle, void *ptr, const char *name);
-	static void CloseLibHandle(void **handle);
-	
 	static std::map<std::string, IAddr *> s_Addrs;
-	
-	static void *s_hServer;
-	static void *s_hEngine;
 };
 
 
@@ -68,16 +58,7 @@ private:
 class IAddr_Sym : public IAddr
 {
 public:
-	virtual bool FindAddrLinux(uintptr_t& addr) const override
-	{
-		void *sym_addr = AddrManager::FindSymbol(this->GetLibrary(), this->GetSymbol());
-		if (sym_addr == nullptr) {
-			return false;
-		}
-		
-		addr = (uintptr_t)sym_addr;
-		return true;
-	}
+	virtual bool FindAddrLinux(uintptr_t& addr) const override;
 	
 protected:
 	virtual const char *GetSymbol() const = 0;
@@ -98,6 +79,7 @@ private:
 };
 
 
+#if 0
 #define _ADDR_SYM(name, namestr, sym) \
 	class Addr_Base__##name : public IAddr_Sym \
 	{ \
@@ -113,6 +95,7 @@ private:
 
 #define ADDR_SYM_GLOBAL(name, sym) _ADDR_SYM(name, #name, sym)
 #define ADDR_SYM_MEMBER(obj, member, sym) _ADDR_SYM(obj##_##member, #obj "::" #member, sym)
+#endif
 
 
 class IAddr_VTable : public IAddr_Sym
@@ -120,73 +103,8 @@ class IAddr_VTable : public IAddr_Sym
 public:
 	virtual bool ShouldInitFirst() const override { return true; }
 	
-	virtual bool FindAddrLinux(uintptr_t& addr) const override
-	{
-		bool result = IAddr_Sym::FindAddrLinux(addr);
-		
-		if (result) {
-			addr += offsetof(vtable, vfptrs);
-		}
-		
-		return result;
-	}
-	
-	virtual bool FindAddrWin(uintptr_t& addr) const override
-	{
-		/* STEP 1: get ptr to _TypeDescriptor by finding typeinfo name string */
-		
-		const char *str = this->GetWinRTTIStr();
-		
-		CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, str);
-		if (scan1.Matches().size() == 0) {
-			DevMsg("CAddr_VTable::FindAddrWin: could not find RTTI string \"%s\"\n", str);
-			return false;
-		}
-		if (scan1.Matches().size() > 1) {
-			DevMsg("CAddr_VTable::FindAddrWin: found multiple string matches for \"%s\"\n", str);
-		}
-		
-		auto *p_TD = (_TypeDescriptor *)((uintptr_t)scan1.Matches()[0] - offsetof(_TypeDescriptor, name));
-		
-		
-		/* STEP 2: get ptr to __RTTI_CompleteObjectLocator by finding references to the _TypeDescriptor */
-		
-		__RTTI_CompleteObjectLocator seek_COL = {
-			0x00000000,
-			0x00000000,
-			0x00000000,
-			p_TD,
-		};
-		
-		CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 4, (const void *)&seek_COL, 0x10);
-		if (scan2.Matches().size() == 0) {
-			DevMsg("CAddr_VTable::FindAddrWin: could not find _TypeDescriptor refs for \"%s\"\n", this->GetName());
-			return false;
-		}
-		if (scan2.Matches().size() > 1) {
-			DevMsg("CAddr_VTable::FindAddrWin: found multiple _TypeDescriptor refs for \"%s\"\n", this->GetName());
-		}
-		
-		auto *p_COL = (__RTTI_CompleteObjectLocator *)scan2.Matches()[0];
-		
-		
-		/* STEP 3: get ptr to the vtable itself by finding references to the __RTTI_CompleteObjectLocator */
-		
-		CBasicScan scan3(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 4, (const void *)&p_COL, 0x4);
-		if (scan3.Matches().size() == 0) {
-			DevMsg("CAddr_VTable::FindAddrWin: could not find __RTTI_CompleteObjectLocator refs for \"%s\"\n", this->GetName());
-			return false;
-		}
-		if (scan3.Matches().size() > 1) {
-			DevMsg("CAddr_VTable::FindAddrWin: found multiple __RTTI_CompleteObjectLocator refs for \"%s\"\n", this->GetName());
-		}
-		
-		auto p_VT = (void **)((uintptr_t)scan3.Matches()[0] + 0x4);
-		
-		
-		addr = (uintptr_t)p_VT;
-		return true;
-	}
+	virtual bool FindAddrLinux(uintptr_t& addr) const override;
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
 	
 protected:
 	virtual const char *GetWinRTTIStr() const = 0;
@@ -215,14 +133,7 @@ private:
 class IAddr_Func_KnownVTIdx : public IAddr_Sym
 {
 public:
-	virtual bool FindAddrWin(uintptr_t& addr) const override
-	{
-		auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
-		if (p_VT == nullptr) return false;
-		
-		addr = p_VT[this->GetVTableIndex()];
-		return true;
-	}
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
 	
 protected:
 	virtual const char *GetVTableName() const = 0;
@@ -249,57 +160,55 @@ private:
 
 
 /* address finder for functions with these traits:
- * 1. func body contains a unique string reference
- * 2. func body starts with "push ebp; mov ebp,esp"
- * 3. func is virtual and has a confidently known vtable index
+ * 1. func body starts with "push ebp; mov ebp,esp"
+ * 2. func body contains a unique string reference
  */
-class IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx : public IAddr_Sym
+class IAddr_Func_EBPPrologue_UniqueStr : public IAddr_Sym
 {
 public:
-	virtual bool FindAddrWin(uintptr_t& addr) const override
-	{
-		CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, this->GetUniqueStr());
-		if (scan1.Matches().size() != 1) { Fail(1); return false; }
-		auto p_str = (const char *)scan1.Matches()[0];
-		
-		CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, (const void *)&p_str, 0x4);
-		if (scan2.Matches().size() != 1) { Fail(2); return false; }
-		auto p_in_func = (const char **)scan2.Matches()[0];
-		
-		constexpr uint8_t prologue[] = {
-			0x55,       // +0000  push ebp
-			0x8b, 0xec, // +0001  mov ebp,esp
-		};
-		CBasicScan scan3(ScanDir::REVERSE, ScanResults::FIRST, CAddrOffBounds(p_in_func, -0x1000), 0x10, (const void *)prologue, sizeof(prologue));
-		if (scan3.Matches().size() != 1) { Fail(3); return false; }
-		auto p_func = (uintptr_t)scan3.Matches()[0];
-		
-		auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
-		if (p_VT == nullptr) { Fail(4); return false; }
-		
-		uintptr_t vfptr = p_VT[this->GetVTableIndex()];
-		if (vfptr != p_func) { Fail(5); return false; }
-		
-		addr = p_func;
-		return true;
-	}
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetUniqueStr() const = 0;
+};
+
+class CAddr_Func_EBPPrologue_UniqueStr : public IAddr_Func_EBPPrologue_UniqueStr
+{
+public:
+	CAddr_Func_EBPPrologue_UniqueStr(const std::string& name, const std::string& sym, const std::string& uni_str) :
+		m_strName(name), m_strSymbol(sym), m_strUniqueStr(uni_str) {}
+	
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetUniqueStr() const override  { return this->m_strUniqueStr.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strUniqueStr;
+};
+
+
+/* address finder for functions with these traits:
+ * 1. func body starts with "push ebp; mov ebp,esp"
+ * 2. func body contains a unique string reference
+ * 3. func is virtual and has a confidently known vtable index
+ */
+class IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
 	
 protected:
 	virtual const char *GetUniqueStr() const = 0;
 	virtual const char *GetVTableName() const = 0;
 	virtual int GetVTableIndex() const = 0;
-	
-private:
-	void Fail(int step) const
-	{
-		DevMsg("IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx: FAIL @ step %d\n", step);
-	}
 };
 
-class CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx : public IAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx
+class CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx : public IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx
 {
 public:
-	CAddr_Func_UniqueStr_EBPPrologue_KnownVTIdx(const std::string& name, const std::string& sym, const std::string& uni_str, const std::string& vt_name, int vt_idx) :
+	CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx(const std::string& name, const std::string& sym, const std::string& uni_str, const std::string& vt_name, int vt_idx) :
 		m_strName(name), m_strSymbol(sym), m_strUniqueStr(uni_str), m_strVTName(vt_name), m_iVTIndex(vt_idx) {}
 	
 	virtual const char *GetName() const override       { return this->m_strName.c_str(); }

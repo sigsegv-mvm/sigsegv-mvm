@@ -3,18 +3,19 @@
 
 CLibBounds::CLibBounds(Library lib)
 {
-	DynLibInfo info;
-	memset(&info, 0x00, sizeof(info));
-	assert(g_MemUtils.GetLibraryInfo(LibMgr::GetPtr(lib), info));
+	const LibInfo& info = LibMgr::GetInfo(lib);
 	
-	this->m_AddrLow  = (const void *)info.baseAddress;
-	this->m_AddrHigh = (const void *)((uintptr_t)info.baseAddress + info.memorySize);
+	this->m_AddrLow  = (const void *)info.baseaddr;
+	this->m_AddrHigh = (const void *)(info.baseaddr + info.len);
 }
 
-CLibSegBounds::CLibSegBounds(Library lib, Segment seg)
+CLibSegBounds::CLibSegBounds(Library lib, const char *seg)
 {
-	// TODO
-	assert(false);
+	const LibInfo& l_info = LibMgr::GetInfo(lib);
+	const SegInfo& s_info = l_info.segs.at(seg);
+	
+	this->m_AddrLow  = (const void *)(l_info.baseaddr + s_info.off);
+	this->m_AddrHigh = (const void *)(l_info.baseaddr + s_info.off + s_info.len);
 }
 
 
@@ -45,18 +46,21 @@ void IScan::DoScanForward()
 	DevMsg("IScan::DoScanForward: ptr 0x%08x\n", (uintptr_t)ptr);
 	DevMsg("IScan::DoScanForward: end 0x%08x\n", (uintptr_t)end);
 	
+	uintptr_t rem = (uintptr_t)ptr % align;
+	if (rem != 0) {
+		ptr += (align - rem);
+	}
+	
 	while (ptr < end) {
-		if ((uintptr_t)ptr % align == 0) {
-			if (this->CheckOne(ptr)) {
-				this->m_Matches.push_back((void *)ptr);
-				
-				if (this->m_RType == ScanResults::FIRST) {
-					break;
-				}
+		if (this->CheckOne(ptr)) {
+			this->m_Matches.push_back((void *)ptr);
+			
+			if (this->m_RType == ScanResults::FIRST) {
+				break;
 			}
 		}
 		
-		++ptr;
+		ptr += align;
 	}
 }
 
@@ -70,23 +74,24 @@ void IScan::DoScanReverse()
 	DevMsg("IScan::DoScanReverse: ptr 0x%08x\n", (uintptr_t)ptr);
 	DevMsg("IScan::DoScanReverse: end 0x%08x\n", (uintptr_t)end);
 	
+	uintptr_t rem = (uintptr_t)ptr % align;
+	if (rem != 0) {
+		ptr -= rem;
+	}
+	
 	while (ptr > end) {
-		if ((uintptr_t)ptr % align == 0) {
-			if (this->CheckOne(ptr)) {
-//				DevMsg("  %08x   aligned MATCH\n", (uintptr_t)ptr);
-				this->m_Matches.push_back((void *)ptr);
-				
-				if (this->m_RType == ScanResults::FIRST) {
-					break;
-				}
-			} else {
-//				DevMsg("  %08x   aligned NOPE\n", (uintptr_t)ptr);
+		if (this->CheckOne(ptr)) {
+//			DevMsg("  %08x   MATCH\n", (uintptr_t)ptr);
+			this->m_Matches.push_back((void *)ptr);
+			
+			if (this->m_RType == ScanResults::FIRST) {
+				break;
 			}
 		} else {
-//			DevMsg("  %08x unaligned\n", (uintptr_t)ptr);
+//			DevMsg("  %08x   NOPE\n", (uintptr_t)ptr);
 		}
 		
-		--ptr;
+		ptr -= align;
 	}
 }
 
@@ -116,4 +121,9 @@ bool CMaskedScan::CheckOne(const void *where) const
 bool CStringScan::CheckOne(const void *where) const
 {
 	return (strcmp((const char *)where, this->m_Str) == 0);
+}
+
+bool CStringPrefixScan::CheckOne(const void *where) const
+{
+	return (strncmp((const char *)where, this->m_Str, strlen(this->m_Str)) == 0);
 }

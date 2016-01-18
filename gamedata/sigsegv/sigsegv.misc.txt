@@ -13,12 +13,6 @@
 		{
 			"addrs"
 			{
-				"TheNavMesh"
-				{
-					type "sym"
-					sym  "TheNavMesh"
-				}
-				
 				"UTIL_EntitiesInBox"
 				{
 					type "sym"
@@ -33,6 +27,20 @@
 				{
 					type "sym"
 					sym  "_Z25CalcDistanceToLineSegmentRK6VectorS1_S1_Pf"
+				}
+				
+				"CreateEntityByName"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_Z18CreateEntityByNamePKci"
+					unistr "CreateEntityByName( %s, %d ) - CreateEdict failed."
+				}
+				
+				"TranslateWeaponEntForClass"
+				{
+					type   "func ebpprologue uniref"
+					sym    "_Z26TranslateWeaponEntForClassPKci"
+					uniref "pszWpnEntTranslationList"
 				}
 				
 				"CBaseEntity::GetDataDescMap"
@@ -54,6 +62,12 @@
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity7IsAliveEv"
+				}
+				
+				"CBasePlayer::IsBot"
+				{
+					type "sym"
+					sym  "_ZNK11CBasePlayer5IsBotEv"
 				}
 				
 				"CTFPlayer::CanBeForcedToLaugh"

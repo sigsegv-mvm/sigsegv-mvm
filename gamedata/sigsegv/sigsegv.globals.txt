@@ -1,0 +1,32 @@
+// globals
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"TheNavMesh"
+				{
+					type "sym"
+					sym  "TheNavMesh"
+				}
+				
+				"pszWpnEntTranslationList"
+				{
+					type "sym"
+					sym  "pszWpnEntTranslationList"
+					// win: in .data
+					// find by contents
+				}
+			}
+		}
+	}
+}

@@ -125,6 +125,12 @@
     <ClCompile Include="..\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\addr\prescan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mod\mod_botmulticlassitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\mod.h">
@@ -272,6 +278,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\gameconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\addr\prescan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

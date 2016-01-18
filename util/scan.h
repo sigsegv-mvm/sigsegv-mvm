@@ -19,14 +19,6 @@ enum class ScanResults : int
 };
 
 
-enum class Segment : int
-{
-	SEG_TEXT,
-	SEG_DATA,
-	SEG_BSS,
-};
-
-
 class IBounds
 {
 public:
@@ -80,7 +72,7 @@ private:
 class CLibSegBounds : public IBounds
 {
 public:
-	CLibSegBounds(Library lib, Segment seg);
+	CLibSegBounds(Library lib, const char *seg);
 	
 	virtual const void *GetLowerBound() const override { return this->m_AddrLow; }
 	virtual const void *GetUpperBound() const override { return this->m_AddrHigh; }
@@ -162,7 +154,23 @@ public:
 	}
 	
 private:
-	virtual int GetBufLen() const override { return (strlen(this->m_Str) + 1); }
+	virtual int GetBufLen() const override { return strlen(this->m_Str) + 1; }
+	virtual bool CheckOne(const void *where) const override;
+	
+	const char *m_Str;
+};
+
+class CStringPrefixScan : public IScan
+{
+public:
+	CStringPrefixScan(ScanDir dir, ScanResults rtype, const IBounds& bounds, int align, const char *str) :
+		IScan(dir, rtype, bounds, align), m_Str(str)
+	{
+		this->DoScan();
+	}
+	
+private:
+	virtual int GetBufLen() const override { return strlen(this->m_Str) + 1; }
 	virtual bool CheckOne(const void *where) const override;
 	
 	const char *m_Str;

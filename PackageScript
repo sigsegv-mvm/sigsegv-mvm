@@ -41,6 +41,7 @@ CopyFiles('include', 'addons/sourcemod/scripting/include',
 CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
   [
     'sigsegv.vtable.txt',
+    'sigsegv.globals.txt',
     'sigsegv.nextbot.action.txt',
     'sigsegv.nextbot.eventresponder.txt',
     'sigsegv.nextbot.contextualquery.txt',

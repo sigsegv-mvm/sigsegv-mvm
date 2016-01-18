@@ -61,6 +61,13 @@
 					type "sym"
 					sym  "_ZNK6CTFBot28GetDesiredPathLookAheadRangeEv"
 				}
+				
+				"CTFBot::AddItem"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN6CTFBot7AddItemEPKc"
+					unistr "CTFBotSpawner::AddItemToBot: Invalid item %s.\n"
+				}
 			}
 		}
 	}

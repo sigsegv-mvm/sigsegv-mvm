@@ -9,17 +9,57 @@ enum class Library : int
 };
 
 
+#if 0
+enum class Segment : int
+{
+	SEG_TEXT,
+	SEG_DATA,
+	SEG_RODATA,
+	SEG_BSS,
+};
+#endif
+
+
+struct SegInfo
+{
+	uintptr_t off;
+	uintptr_t len;
+};
+
+
+struct LibInfo
+{
+	uintptr_t baseaddr;
+	uintptr_t len;
+	
+	std::map<std::string, SegInfo> segs;
+};
+
+
 class LibMgr
 {
 public:
+	static void Load();
+	static void Unload();
+	
 	static void SetPtr(Library lib, void *ptr);
 	static void *GetPtr(Library lib);
+	
+	static const LibInfo& GetInfo(Library lib);
+	
+	static void *FindSym(Library lib, const char *sym);
 	
 private:
 	LibMgr() {}
 	
-	static void *s_pLibServer;
-	static void *s_pLibEngine;
+	static void FindInfo(Library lib);
+	
+	static void *OpenLibHandle(Library lib);
+	static void CloseLibHandle(void *handle);
+	
+	static std::map<Library, void *> s_LibPtrs;
+	static std::map<Library, LibInfo> s_LibInfos;
+	static std::map<Library, void *> s_LibHandles;
 };
 
 

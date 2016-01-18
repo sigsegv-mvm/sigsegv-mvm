@@ -75,7 +75,7 @@
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -107,7 +107,7 @@
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +130,7 @@
     <ClCompile Include="..\addr\addr.cpp" />
     <ClCompile Include="..\addr\misc.cpp" />
     <ClCompile Include="..\addr\nextbot.cpp" />
+    <ClCompile Include="..\addr\prescan.cpp" />
     <ClCompile Include="..\addr\vtable.cpp" />
     <ClCompile Include="..\common.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -148,6 +149,7 @@
     <ClCompile Include="..\mod\debug_deflectcylinder.cpp" />
     <ClCompile Include="..\mod\debug_ehsphere.cpp" />
     <ClCompile Include="..\mod\mod_autocollectspawncredits.cpp" />
+    <ClCompile Include="..\mod\mod_botmulticlassitem.cpp" />
     <ClCompile Include="..\mod\mod_engienopush.cpp" />
     <ClCompile Include="..\mod\mod_robottickle.cpp" />
     <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp" />
@@ -171,6 +173,7 @@
   <ItemGroup>
     <ClInclude Include="..\abi.h" />
     <ClInclude Include="..\addr\addr.h" />
+    <ClInclude Include="..\addr\prescan.h" />
     <ClInclude Include="..\common.h" />
     <ClInclude Include="..\extension.h" />
     <ClInclude Include="..\extract.h" />

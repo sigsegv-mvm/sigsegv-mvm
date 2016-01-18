@@ -21,7 +21,7 @@
 				
 				"CTFBotMvMEngineerTeleportSpawn::Update"
 				{
-					type   "func unistr ebpprologue knownvtidx"
+					type   "func ebpprologue unistr knownvtidx"
 					sym    "_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"
 					unistr "teleported_mvm_bot"
 					// alt: "Engineer.MVM_BattleCry07"
@@ -34,7 +34,7 @@
 				
 				"CTFBotMvMEngineerBuildSentryGun::Update"
 				{
-					type   "func unistr ebpprologue knownvtidx"
+					type   "func ebpprologue unistr knownvtidx"
 					sym    "_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
 					unistr "Built a sentry"
 					// alt: "Placing sentry"
@@ -44,7 +44,7 @@
 				
 				"CTFBotMvMEngineerBuildTeleportExit::Update"
 				{
-					type   "func unistr ebpprologue knownvtidx"
+					type   "func ebpprologue unistr knownvtidx"
 					sym    "_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
 					unistr "Engineer.MVM_AutoBuildingTeleporter02"
 					vtable "[VT] CTFBotMvMEngineerBuildTeleportExit"
