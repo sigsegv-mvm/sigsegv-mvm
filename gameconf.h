@@ -43,6 +43,13 @@ private:
 	SMCResult AddrEntry_KeyValue(const char *key, const char *value);
 	SMCResult AddrEntry_End();
 	
+	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
+		{ "sym",                                &CSigsegvGameConf::AddrEntry_Load_Sym },
+		{ "vtable",                             &CSigsegvGameConf::AddrEntry_Load_VTable },
+		{ "func knownvtidx",                    &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
+		{ "func ebpprologue unistr",            &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr },
+		{ "func ebpprologue unistr knownvtidx", &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx },
+	};
 	
 	SMCResult AddrEntry_Load_Sym();
 	SMCResult AddrEntry_Load_VTable();

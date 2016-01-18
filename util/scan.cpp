@@ -21,77 +21,51 @@ CLibSegBounds::CLibSegBounds(Library lib, const char *seg)
 
 void IScan::DoScan()
 {
-	this->m_Matches.clear();
-	
+	bool fwd;
 	switch (this->m_Dir) {
 	case ScanDir::FORWARD:
-		this->DoScanForward();
+		fwd = true;
 		break;
 	case ScanDir::REVERSE:
-		this->DoScanReverse();
+		fwd = false;
 		break;
 	default:
 		assert(false);
 	}
-}
-
-
-void IScan::DoScanForward()
-{
+	
+	this->m_Matches.clear();
+	
 	int align = this->m_Align;
 	
-	const uint8_t *ptr = (const uint8_t *)this->m_Bounds.GetLowerBound();
-	const uint8_t *end = (const uint8_t *)this->m_Bounds.GetUpperBound() - this->GetBufLen();
+	const uint8_t *p_low  = (const uint8_t *)this->m_Bounds.GetLowerBound();
+	const uint8_t *p_high = (const uint8_t *)this->m_Bounds.GetUpperBound() - this->GetBufLen();
 	
-	DevMsg("IScan::DoScanForward: ptr 0x%08x\n", (uintptr_t)ptr);
-	DevMsg("IScan::DoScanForward: end 0x%08x\n", (uintptr_t)end);
+	const uint8_t *ptr = (fwd ? p_low : p_high - 1);
+	const uint8_t *end = (fwd ? p_high : p_low - 1);
 	
 	uintptr_t rem = (uintptr_t)ptr % align;
 	if (rem != 0) {
-		ptr += (align - rem);
-	}
-	
-	while (ptr < end) {
-		if (this->CheckOne(ptr)) {
-			this->m_Matches.push_back((void *)ptr);
-			
-			if (this->m_RType == ScanResults::FIRST) {
-				break;
-			}
-		}
-		
-		ptr += align;
-	}
-}
-
-void IScan::DoScanReverse()
-{
-	int align = this->m_Align;
-	
-	const uint8_t *ptr = -1 + (const uint8_t *)this->m_Bounds.GetUpperBound() - this->GetBufLen();
-	const uint8_t *end = -1 + (const uint8_t *)this->m_Bounds.GetLowerBound();
-	
-	DevMsg("IScan::DoScanReverse: ptr 0x%08x\n", (uintptr_t)ptr);
-	DevMsg("IScan::DoScanReverse: end 0x%08x\n", (uintptr_t)end);
-	
-	uintptr_t rem = (uintptr_t)ptr % align;
-	if (rem != 0) {
-		ptr -= rem;
-	}
-	
-	while (ptr > end) {
-		if (this->CheckOne(ptr)) {
-//			DevMsg("  %08x   MATCH\n", (uintptr_t)ptr);
-			this->m_Matches.push_back((void *)ptr);
-			
-			if (this->m_RType == ScanResults::FIRST) {
-				break;
-			}
+		if (fwd) {
+			ptr += (align - rem);
 		} else {
-//			DevMsg("  %08x   NOPE\n", (uintptr_t)ptr);
+			ptr -= rem;
+		}
+	}
+	
+	int incr = (fwd ? align : -align);
+	
+	DevMsg("IScan::DoScan: ptr 0x%08x, end 0x%08x, incr %c0x%08x\n", (uintptr_t)ptr, (uintptr_t)end, (incr < 0 ? '-' : '+'), incr);
+	
+	while (fwd ? (ptr < end) : (ptr > end)) {
+		if (this->CheckOne(ptr)) {
+			this->m_Matches.push_back((void *)ptr);
+			
+			if (this->m_RType == ScanResults::FIRST) {
+				break;
+			}
 		}
 		
-		ptr -= align;
+		ptr += incr;
 	}
 }
 

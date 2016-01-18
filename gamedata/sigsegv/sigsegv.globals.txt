@@ -19,13 +19,13 @@
 					sym  "TheNavMesh"
 				}
 				
-				"pszWpnEntTranslationList"
-				{
-					type "sym"
-					sym  "pszWpnEntTranslationList"
-					// win: in .data
-					// find by contents
-				}
+//				"pszWpnEntTranslationList"
+//				{
+//					type "sym"
+//					sym  "pszWpnEntTranslationList"
+//					// win: in .data
+//					// find by contents
+//				}
 			}
 		}
 	}

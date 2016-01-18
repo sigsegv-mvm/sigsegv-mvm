@@ -46,13 +46,14 @@ void AddrManager::Load()
 		}
 	}
 	
-	/* early init pass to ensure vtables are ready */
+	/* early pass 1: vtables */
 	for (auto addr : AutoList<IAddr>::List()) {
-		if (addr->ShouldInitFirst()) {
+		if (dynamic_cast<IAddr_VTable *>(addr) != nullptr) {
 			addr->Init();
 		}
 	}
 	
+	/* main pass */
 	for (auto addr : AutoList<IAddr>::List()) {
 		addr->Init();
 	}
@@ -131,7 +132,7 @@ bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
 		0x00000000,
 		p_TD,
 	};
-	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 4, (const void *)&seek_COL, 0x10);
+	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".rdata"), 4, (const void *)&seek_COL, 0x10);
 	if (scan2.Matches().size() == 0) {
 		DevMsg("IAddr_VTable: \"%s\": could not find ref to _TypeDescriptor\n", this->GetName());
 		return false;
@@ -142,7 +143,7 @@ bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
 	auto *p_COL = (__RTTI_CompleteObjectLocator *)scan2.Matches()[0];
 	
 	/* STEP 3: get ptr to the vtable itself by finding references to the __RTTI_CompleteObjectLocator */
-	CBasicScan scan3(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 4, (const void *)&p_COL, 0x4);
+	CBasicScan scan3(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".rdata"), 4, (const void *)&p_COL, 0x4);
 	if (scan3.Matches().size() == 0) {
 		DevMsg("IAddr_VTable: \"%s\": could not find ref to __RTTI_CompleteObjectLocator\n", this->GetName());
 		return false;
@@ -172,14 +173,14 @@ bool IAddr_Func_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 {
-	CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, this->GetUniqueStr());
+	CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".rdata"), 1, this->GetUniqueStr());
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u matches for ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
 	}
 	auto p_str = (const char *)scan1.Matches()[0];
 	
-	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, (const void *)&p_str, 0x4);
+	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".text"), 1, (const void *)&p_str, 0x4);
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan2.Matches().size());
 		return false;
@@ -204,14 +205,14 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 {
-	CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, this->GetUniqueStr());
+	CStringScan scan1(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".rdata"), 1, this->GetUniqueStr());
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": found %u matches for ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
 	}
 	auto p_str = (const char *)scan1.Matches()[0];
 	
-	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibBounds(this->GetLibrary()), 1, (const void *)&p_str, 0x4);
+	CBasicScan scan2(ScanDir::FORWARD, ScanResults::ALL, CLibSegBounds(this->GetLibrary(), ".text"), 1, (const void *)&p_str, 0x4);
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan2.Matches().size());
 		return false;

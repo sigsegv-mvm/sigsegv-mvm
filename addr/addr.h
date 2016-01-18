@@ -38,7 +38,6 @@ public:
 	
 	virtual const char *GetName() const = 0;
 	virtual Library GetLibrary() const                { return Library::SERVER; }
-	virtual bool ShouldInitFirst() const              { return false; }
 	virtual bool FindAddrLinux(uintptr_t& addr) const { return false; }
 	virtual bool FindAddrOSX(uintptr_t& addr) const   { return this->FindAddrLinux(addr); }
 	virtual bool FindAddrWin(uintptr_t& addr) const   { return false; }
@@ -101,8 +100,6 @@ private:
 class IAddr_VTable : public IAddr_Sym
 {
 public:
-	virtual bool ShouldInitFirst() const override { return true; }
-	
 	virtual bool FindAddrLinux(uintptr_t& addr) const override;
 	virtual bool FindAddrWin(uintptr_t& addr) const override;
 	

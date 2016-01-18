@@ -169,20 +169,12 @@ SMCResult CSigsegvGameConf::AddrEntry_End()
 	}
 	
 	const std::string& type = kv.at("type");
-	if (type == "sym") {
-		return this->AddrEntry_Load_Sym();
-	} else if (type == "vtable") {
-		return this->AddrEntry_Load_VTable();
-	} else if (type == "func knownvtidx") {
-		return this->AddrEntry_Load_Func_KnownVTIdx();
-	} else if (type == "func ebpprologue unistr") {
-		return this->AddrEntry_Load_Func_EBPPrologue_UniqueStr();
-	} else if (type == "func ebpprologue unistr knownvtidx") {
-		return this->AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx();
-	} else {
+	if (this->m_AddrParsers.find(type) == this->m_AddrParsers.end()) {
 		DevMsg("GameData error: addr \"%s\" has unknown type \"%s\"\n", name.c_str(), type.c_str());
 		return SMCResult_HaltFail;
 	}
+	
+	return (this->*(this->m_AddrParsers.at(type)))();
 }
 
 

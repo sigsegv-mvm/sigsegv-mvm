@@ -98,9 +98,6 @@ protected:
 	virtual bool CheckOne(const void *where) const = 0;
 	
 private:
-	void DoScanForward();
-	void DoScanReverse();
-	
 	ScanDir m_Dir;
 	ScanResults m_RType;
 	const IBounds& m_Bounds;

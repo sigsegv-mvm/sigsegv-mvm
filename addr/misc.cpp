@@ -1,6 +1,20 @@
 #include "addr/addr.h"
 
 
+class CAddr_pszWpnEntTranslationList : public IAddr_Sym
+{
+public:
+	virtual const char *GetName() const override { return "pszWpnEntTranslationList"; }
+	virtual const char *GetSymbol() const override { return "pszWpnEntTranslationList"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		
+	}
+};
+
+
+
 /* vtable indexes (valid for windows ONLY!) */
 constexpr int VT_idx_CBaseCombatWeapon_ItemPostFrame = (0x41c / 4);
 constexpr int VT_idx_Action_Update                   = ( 0xb8 / 4);
