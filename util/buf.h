@@ -13,6 +13,7 @@ public:
 	
 	void SetAll(uint8_t val);
 	void SetRange(int idx, int len, uint8_t val);
+	void SetDword(int idx, uint32_t val);
 	
 	void CopyFrom(const ByteBuf& that);
 	void CopyFrom(const uint8_t *arr);
@@ -31,6 +32,7 @@ inline ByteBuf::ByteBuf(int size) :
 	m_iSize(size)
 {
 	this->m_Buf = new uint8_t[size];
+	this->SetAll(0x00);
 }
 
 inline ByteBuf::~ByteBuf()
@@ -64,6 +66,12 @@ inline void ByteBuf::SetRange(int idx, int len, uint8_t val)
 	for (int i = 0; i < len; ++i) {
 		this->m_Buf[idx + i] = val;
 	}
+}
+
+inline void ByteBuf::SetDword(int idx, uint32_t val)
+{
+	assert(idx >= 0 && idx + 4 <= this->m_iSize);
+	*(uint32_t *)(this->m_Buf + idx) = val;
 }
 
 
