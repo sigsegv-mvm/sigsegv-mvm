@@ -10,10 +10,10 @@ class PreScan
 public:
 	static void DoScans();
 	
-	static const std::vector<void *>& WinRTTI_Server() { return s_WinRTTI_server->Matches(); }
+	static const std::vector<const void *>& WinRTTI_Server() { return s_WinRTTI_server->Matches(); }
 	
 private:
-	static IScan *s_WinRTTI_server;
+	static CSingleScan *s_WinRTTI_server;
 };
 
 

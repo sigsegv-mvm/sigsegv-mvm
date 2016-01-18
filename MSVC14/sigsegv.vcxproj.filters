@@ -145,9 +145,6 @@
     <ClInclude Include="..\extension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\extract.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\link\link.h">
       <Filter>Header Files</Filter>
     </ClInclude>

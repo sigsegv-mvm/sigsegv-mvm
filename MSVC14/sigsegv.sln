@@ -19,6 +19,9 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "hl2", "C:\Program Files (x8
 	EndProjectSection
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
