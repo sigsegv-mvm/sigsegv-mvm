@@ -40,6 +40,13 @@
 					winrtti ".?AVCTFSniperRifleClassic@@"
 				}
 				
+				"[VT] CCurrencyPack"
+				{
+					type    "vtable"
+					sym     "_ZTV13CCurrencyPack"
+					winrtti ".?AVCCurrencyPack@@"
+				}
+				
 				"[VT] INextBotEventResponder"
 				{
 					type    "vtable"

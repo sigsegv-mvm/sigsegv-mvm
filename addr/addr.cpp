@@ -21,7 +21,7 @@ void IAddr::Init()
 	
 	if (result) {
 		this->m_State = State::OK;
-//		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
+		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
 	} else {
 		this->m_State = State::FAIL;
 		DevMsg("IAddr::Init \"%s\" FAIL\n", this->GetName());
@@ -158,6 +158,44 @@ bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
 }
 
 
+bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
+{
+	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".rdata"), 1, new CStringScanner(ScanResults::ALL, this->GetClassName()));
+	if (scan1.Matches().size() != 1) {
+		DevMsg("IAddr_DataDescMap: \"%s\": found %u matches for class name string\n", this->GetName(), scan1.Matches().size());
+		return false;
+	}
+	auto p_str = (const char *)scan1.Matches()[0];
+	
+	CSingleScan scan2(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".data"), 4, new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
+	struct GetDataDescMap { uint8_t buf[6]; };
+	std::vector<IScanner *> scanners;
+	for (auto match : scan2.Matches()) {
+		GetDataDescMap gddm;
+		gddm.buf[0x00] = 0xb8; // mov eax,[????????]
+		*(uint32_t *)(&gddm.buf[0x01]) = (uint32_t)match - offsetof(datamap_t, dataClassName);
+		gddm.buf[0x05] = 0xc3; // ret
+		
+		scanners.push_back(new CBasicScanner(ScanResults::ALL, (const void *)&gddm, 0x6));
+	}
+	
+	CMultiScan scan3(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 0x10, scanners);
+	std::vector<const void *> results;
+	for (auto scanner : scanners) {
+		if (scanner->Matches().size() == 1) {
+			results.push_back(scanner->Matches()[0]);
+		}
+	}
+	if (results.size() != 1) {
+		DevMsg("IAddr_DataDescMap: \"%s\": found %u matches for GetDataDescMap func\n", this->GetName(), results.size());
+		return false;
+	}
+	
+	addr = *(uintptr_t *)((uintptr_t)results[0] + 1);
+	return true;
+}
+
+
 bool IAddr_Func_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 {
 	auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
@@ -167,6 +205,94 @@ bool IAddr_Func_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 	}
 	
 	addr = p_VT[this->GetVTableIndex()];
+	return true;
+}
+
+
+bool IAddr_Func_DataMap_VThunk::FindAddrWin(uintptr_t& addr) const
+{
+	auto p_DM = (const datamap_t *)AddrManager::GetAddr(this->GetDataMapName());
+	if (p_DM == nullptr) {
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": no addr for datamap\n", this->GetName());
+		return false;
+	}
+	
+	bool found_entry = false;
+	void *p_VThunk = nullptr;
+	for (int i = 0; i < p_DM->dataNumFields; ++i) {
+		const typedescription_t *td = p_DM->dataDesc + i;
+		
+		if (td->fieldName != nullptr && strcmp(td->fieldName, this->GetFuncName()) == 0) {
+			union {
+				inputfunc_t inputFunc;
+				void *voidptr;
+			} u;
+			
+			u.inputFunc = td->inputFunc;
+			p_VThunk = u.voidptr;
+			
+			found_entry = true;
+			break;
+		}
+	}
+	if (!found_entry) {
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": could not find func entry in datamap\n", this->GetName());
+		return false;
+	}
+	
+	constexpr uint8_t thunk[] = {
+		0x8b, 0x01, // mov eax,[ecx]
+		0xff, 0xa0, // jmp dword ptr [eax+0x????????]
+	};
+	if (memcmp(p_VThunk, thunk, 0x4) != 0) {
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": virtual thunk doesn't look quite right\n", this->GetName());
+		return false;
+	}
+	uint32_t vt_off = *(uint32_t *)((uintptr_t)p_VThunk + 0x4);
+	if (vt_off % 4 != 0) {
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": vt_off 0x%x isn't a multiple of 4\n", this->GetName(), vt_off);
+		return false;
+	}
+	uint32_t vt_idx = vt_off / 4;
+	
+	auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
+	if (p_VT == nullptr) {
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": no addr for vtable\n", this->GetName());
+		return false;
+	}
+	
+	addr = p_VT[vt_idx];
+	return true;
+}
+
+
+bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
+{
+	auto p_ref = AddrManager::GetAddr(this->GetUniqueSymbol());
+	if (p_ref == nullptr) {
+		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": no addr for ostensibly unique symbol\n", this->GetName());
+		return false;
+	}
+	
+	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::ALL, (const void *)&p_ref, 0x4));
+	if (scan1.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": found %u refs to ostensibly unique symbol\n", this->GetName(), scan1.Matches().size());
+		return false;
+	}
+	auto p_in_func = (const char **)scan1.Matches()[0];
+	
+	constexpr uint8_t prologue[] = {
+		0x55,       // +0000  push ebp
+		0x8b, 0xec, // +0001  mov ebp,esp
+	};
+	CSingleScan scan2(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	if (scan2.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": could not locate EBP prologue\n", this->GetName());
+		return false;
+	}
+	auto p_func = (uintptr_t)scan2.Matches()[0];
+	
+	addr = p_func;
 	return true;
 }
 
@@ -241,6 +367,51 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": func addr (0x%08x) doesn't match vtable entry (0x%08x)\n", this->GetName(), p_func, vfptr);
 		return false;
 	}
+	
+	addr = p_func;
+	return true;
+}
+
+
+bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
+{
+	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".rdata"), 1, new CStringScanner(ScanResults::ALL, this->GetVProfName()));
+	if (scan1.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": found %u matches for VProf name string\n", this->GetName(), scan1.Matches().size());
+		return false;
+	}
+	auto p_name = (const char *)scan1.Matches()[0];
+	
+	CSingleScan scan2(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".rdata"), 1, new CStringScanner(ScanResults::ALL, this->GetVProfGroup()));
+	if (scan2.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": found %u matches for VProf group string\n", this->GetName(), scan2.Matches().size());
+		return false;
+	}
+	auto p_group = (const char *)scan2.Matches()[0];
+	
+	uint8_t vprof[] = {
+		0x68, 0x00, 0x00, 0x00, 0x00, // push 0x????????
+		0x68, 0x00, 0x00, 0x00, 0x00, // push 0x????????
+	};
+	*(const char **)(vprof + 0x01) = p_name;
+	*(const char **)(vprof + 0x06) = p_group;
+	CSingleScan scan3(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::FIRST, (const void *)vprof, sizeof(vprof)));
+	if (scan3.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate VPROF_BUDGET\n", this->GetName());
+		return false;
+	}
+	auto p_in_func = scan3.Matches()[0];
+	
+	constexpr uint8_t prologue[] = {
+		0x55,       // +0000  push ebp
+		0x8b, 0xec, // +0001  mov ebp,esp
+	};
+	CSingleScan scan4(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	if (scan4.Matches().size() != 1) {
+		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate EBP prologue\n", this->GetName());
+		return false;
+	}
+	auto p_func = (uintptr_t)scan4.Matches()[0];
 	
 	addr = p_func;
 	return true;

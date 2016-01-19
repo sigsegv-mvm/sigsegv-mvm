@@ -86,6 +86,8 @@ private:
 class IScanner
 {
 public:
+	virtual ~IScanner() {}
+	
 	const std::vector<const void *>& Matches() const { return this->m_Matches; }
 	
 	void Reset() { this->m_Matches.clear(); }
@@ -111,14 +113,22 @@ class CBasicScanner : public IScanner
 {
 public:
 	CBasicScanner(ScanResults rtype, const void *seek, int len) :
-		IScanner(rtype), m_Seek(seek), m_Len(len) {}
+		IScanner(rtype), m_Len(len)
+	{
+		this->m_Seek = new uint8_t[len];
+		memcpy(this->m_Seek, seek, len);
+	}
+	virtual ~CBasicScanner()
+	{
+		delete[] this->m_Seek;
+	}
 	
 	virtual int GetBufLen() const override { return this->m_Len; }
 	virtual void CheckOne(const void *where) override;
 	
 private:
-	const void *m_Seek;
 	int m_Len;
+	uint8_t *m_Seek;
 };
 
 class CMaskedScanner : public IScanner

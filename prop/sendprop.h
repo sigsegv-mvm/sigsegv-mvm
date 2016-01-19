@@ -11,6 +11,9 @@ class CProp_SendProp
 public:
 	const T& operator=(const T& val) { this->Set(val); return val; }
 	operator const T&() const        { return this->Get(); }
+	operator T*() const              { return this->GetPtr(); }
+	
+	T *GetPtr() const;
 	
 private:
 	const T& Get() const;
@@ -29,14 +32,20 @@ template<typename T, const char *const *CLASS, const char *const *PROP>
 int CProp_SendProp<T, CLASS, PROP>::s_iOffset = 0;
 
 template<typename T, const char *const *CLASS, const char *const *PROP>
-inline const T& CProp_SendProp<T, CLASS, PROP>::Get() const
+inline T *CProp_SendProp<T, CLASS, PROP>::GetPtr() const
 {
 	if (!s_bInit) {
 		s_iOffset = CalcOffset();
 		s_bInit = true;
 	}
 	
-	return *reinterpret_cast<const T *>((uintptr_t)this + s_iOffset);
+	return reinterpret_cast<T *>((uintptr_t)this + s_iOffset);
+}
+
+template<typename T, const char *const *CLASS, const char *const *PROP>
+inline const T& CProp_SendProp<T, CLASS, PROP>::Get() const
+{
+	return *this->GetPtr();
 }
 
 template<typename T, const char *const *CLASS, const char *const *PROP>

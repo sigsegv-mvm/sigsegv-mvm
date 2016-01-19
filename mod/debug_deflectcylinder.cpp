@@ -28,10 +28,10 @@ static ConVar cvar_sphere_color_a("sigsegv_debug_deflectcylinder_sphere_color_a"
 	"Debug: sphere color (alpha)");
 
 
-static RefCount s_rcAttackEnemyProjectiles;
+static RefCount rc_CTFMinigun_AttackProjectiles;
 DETOUR_DECL_MEMBER(void, CTFMinigun_AttackEnemyProjectiles, void)
 {
-	SCOPED_INCREMENT(s_rcAttackEnemyProjectiles);
+	SCOPED_INCREMENT(rc_CTFMinigun_AttackProjectiles);
 	DETOUR_MEMBER_CALL(CTFMinigun_AttackEnemyProjectiles)();
 }
 
@@ -45,7 +45,7 @@ DETOUR_DECL_MEMBER(bool, CTFPlayer_IsMiniBoss, void)
 
 DETOUR_DECL_STATIC(int, UTIL_EntitiesInSphere, const Vector& center, float radius, CFlaggedEntitiesEnum *pEnum)
 {
-	if (s_rcAttackEnemyProjectiles.NonZero() && cvar_sphere_enable.GetBool()) {
+	if (rc_CTFMinigun_AttackProjectiles.NonZero() && cvar_sphere_enable.GetBool()) {
 		NDebugOverlay::Sphere(center, QAngle(0.0f, 0.0f, 0.0f), radius,
 			cvar_sphere_color_r.GetInt(),
 			cvar_sphere_color_g.GetInt(),
@@ -78,7 +78,7 @@ DETOUR_DECL_STATIC(float, CalcDistanceToLineSegment, const Vector& P, const Vect
 {
 	float dist = DETOUR_STATIC_CALL(CalcDistanceToLineSegment)(P, vLineA, vLineB, t);
 	
-	if (s_rcAttackEnemyProjectiles.NonZero()) {
+	if (rc_CTFMinigun_AttackProjectiles.NonZero()) {
 		float radius = (s_IsMiniBoss ? 56.0f : 38.0f);
 		bool is_inside = (dist <= radius);
 		

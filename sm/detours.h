@@ -111,7 +111,7 @@ public:
 
 protected:
 	CDetour(void *callbackfunction, void **trampoline, const char *signame);
-	CDetour(void*callbackfunction, void **trampoline, void *pAddress);
+	CDetour(void *callbackfunction, void **trampoline, void *pAddress);
 
 	bool Init(ISourcePawnEngine *spengine);
 private:

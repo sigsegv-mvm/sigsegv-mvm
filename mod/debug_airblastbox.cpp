@@ -17,16 +17,16 @@ static ConVar cvar_color_a("sigsegv_debug_airblastbox_color_a", "255", FCVAR_NOT
 	"Debug: box color (alpha)");
 
 
-static RefCount s_rcDeflectProjectiles;
+static RefCount rc_CTFWeaponBase_DeflectProjectiles;
 DETOUR_DECL_MEMBER(bool, CTFWeaponBase_DeflectProjectiles, void)
 {
-	SCOPED_INCREMENT(s_rcDeflectProjectiles);
+	SCOPED_INCREMENT(rc_CTFWeaponBase_DeflectProjectiles);
 	return DETOUR_MEMBER_CALL(CTFWeaponBase_DeflectProjectiles)();
 }
 
 DETOUR_DECL_STATIC(int, UTIL_EntitiesInBox, const Vector& mins, const Vector& maxs, CFlaggedEntitiesEnum *pEnum)
 {
-	if (s_rcDeflectProjectiles.NonZero()) {
+	if (rc_CTFWeaponBase_DeflectProjectiles.NonZero()) {
 		NDebugOverlay::Box(vec3_origin, mins, maxs,
 			cvar_color_r.GetInt(),
 			cvar_color_g.GetInt(),

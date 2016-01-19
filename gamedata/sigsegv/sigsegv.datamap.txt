@@ -1,0 +1,31 @@
+// datamaps
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"CBaseEntity::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN11CBaseEntity9m_DataMapE"
+					class "CBaseEntity"
+				}
+				"CItem::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN5CItem9m_DataMapE"
+					class "CItem"
+				}
+			}
+		}
+	}
+}

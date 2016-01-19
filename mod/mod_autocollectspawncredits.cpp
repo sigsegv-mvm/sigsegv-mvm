@@ -5,10 +5,10 @@
 #include "re/nextbot.h"
 
 
-static RefCount s_rcCCurrencyPack_ComeToRest;
+static RefCount rc_CCurrencyPack_ComeToRest;
 DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest, void)
 {
-	SCOPED_INCREMENT(s_rcCCurrencyPack_ComeToRest);
+	SCOPED_INCREMENT(rc_CCurrencyPack_ComeToRest);
 	return DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
 }
 
@@ -16,7 +16,7 @@ DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
 {
 	CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
 	
-	if (area != nullptr && s_rcCCurrencyPack_ComeToRest.NonZero()) {
+	if (area != nullptr && rc_CCurrencyPack_ComeToRest.NonZero()) {
 		TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
 		
 		if ((attr & BLUE_SPAWN_ROOM) != 0) {

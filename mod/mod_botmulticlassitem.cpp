@@ -1,45 +1,48 @@
 #include "mod.h"
+#include "stub/stub.h"
 //#include "sm/detours.h"
-//#include "stub/stub.h"
 //#include "util/util.h"
 //#include "re/nextbot.h"
 
 
-#if 0
-static RefCount s_rcCCurrencyPack_ComeToRest;
-DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest, void)
+/* allow some cases that would normally get translated into an empty string by TranslateWeaponEntForClass */
+static const char *TranslateWeaponEntForClass_improved(const char *name, int classnum)
 {
-	SCOPED_INCREMENT(s_rcCCurrencyPack_ComeToRest);
-	return DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
-}
-
-DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
-{
-	CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
+	const char *xlat = TranslateWeaponEntForClass(name, classnum);
 	
-	if (area != nullptr && s_rcCCurrencyPack_ComeToRest.NonZero()) {
-		TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
-		
-		if ((attr & BLUE_SPAWN_ROOM) != 0) {
-			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
-			return nullptr;
+	/* if TranslateWeaponEntForClass gave us an empty string, return something reasonable instead */
+	if (strcmp(xlat, "") == 0) {
+		/* tf_weapon_shotgun: default to tf_weapon_shotgun_primary */
+		if (strcasecmp(name, "tf_weapon_shotgun") == 0) {
+			return "tf_weapon_shotgun_primary";
 		}
+		
+		/* passthru the original entity class name for these cases */
+		if (strcasecmp(name, "tf_weapon_pistol")    == 0) return name;
+		if (strcasecmp(name, "tf_weapon_shovel")    == 0) return name;
+		if (strcasecmp(name, "tf_weapon_bottle")    == 0) return name;
+		if (strcasecmp(name, "tf_weapon_parachute") == 0) return name;
+		if (strcasecmp(name, "tf_weapon_revolver")  == 0) return name;
 	}
 	
-	return area;
+	return xlat;
 }
-#endif
 
-static RefCount s_rcCTFBot_AddItem;
+
+static RefCount rc_CTFBot_AddItem;
+static int bot_classnum = TF_CLASS_UNDEFINED;
 DETOUR_DECL_MEMBER(void, CTFBot_AddItem, const char *item)
 {
-	SCOPED_INCREMENT(s_rcCTFBot_AddItem);
+	SCOPED_INCREMENT(rc_CTFBot_AddItem);
+	bot_classnum = reinterpret_cast<CTFBot *>(this)->GetPlayerClass()->GetClassIndex();
 	DETOUR_MEMBER_CALL(CTFBot_AddItem)(item);
 }
 
 DETOUR_DECL_STATIC(CBaseEntity *, CreateEntityByName, const char *className, int iForceEdictIndex)
 {
-	// TODO
+	if (rc_CTFBot_AddItem.NonZero()) {
+		className = TranslateWeaponEntForClass_improved(className, bot_classnum);
+	}
 	
 	return DETOUR_STATIC_CALL(CreateEntityByName)(className, iForceEdictIndex);
 }
@@ -59,13 +62,13 @@ class CMod_BotMultiClassItem : public IMod
 public:
 	CMod_BotMultiClassItem() : IMod("BotMultiClassItem")
 	{
-		//MOD_ADD_DETOUR_MEMBER(CCurrencyPack, ComeToRest);
-		//MOD_ADD_DETOUR_MEMBER(CNavMesh, GetNavArea);
+		MOD_ADD_DETOUR_MEMBER(CTFBot, AddItem);
+		MOD_ADD_DETOUR_GLOBAL(CreateEntityByName);
 	}
 	
 	void SetEnabled(bool enable)
 	{
-		//this->ToggleAllDetours(enable);
+		this->ToggleAllDetours(enable);
 	}
 };
 static CMod_BotMultiClassItem s_Mod;

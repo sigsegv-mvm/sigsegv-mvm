@@ -26,6 +26,7 @@ sourceFiles = [
   'util/backtrace.cpp',
   'stub/baseentity.cpp',
   'stub/gamerules.cpp',
+  'stub/misc.cpp',
   'stub/nav.cpp',
   'stub/path.cpp',
   'stub/populators.cpp',

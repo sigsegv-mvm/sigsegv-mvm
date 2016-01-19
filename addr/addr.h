@@ -124,6 +124,32 @@ private:
 };
 
 
+class IAddr_DataDescMap : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetClassName() const = 0;
+};
+
+class CAddr_DataDescMap : public IAddr_DataDescMap
+{
+public:
+	CAddr_DataDescMap(const std::string& name, const std::string& sym, const std::string& class_name) :
+		m_strName(name), m_strSymbol(sym), m_strClassName(class_name) {}
+	
+	virtual const char *GetName() const override      { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override    { return this->m_strSymbol.c_str(); }
+	virtual const char *GetClassName() const override { return this->m_strClassName.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strClassName;
+};
+
+
 /* address finder for functions with these traits:
  * 1. func is virtual and has a confidently known vtable index
  */
@@ -156,6 +182,68 @@ private:
 };
 
 
+class IAddr_Func_DataMap_VThunk : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetDataMapName() const = 0;
+	virtual const char *GetFuncName() const = 0;
+	virtual const char *GetVTableName() const = 0;
+};
+
+class CAddr_Func_DataMap_VThunk : public IAddr_Func_DataMap_VThunk
+{
+public:
+	CAddr_Func_DataMap_VThunk(const std::string& name, const std::string& sym, const std::string& dm_name, const std::string& func_name, const std::string& vt_name) :
+		m_strName(name), m_strSymbol(sym), m_strDataMapName(dm_name), m_strFuncName(func_name), m_strVTName(vt_name) {}
+	
+	virtual const char *GetName() const override        { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override      { return this->m_strSymbol.c_str(); }
+	virtual const char *GetDataMapName() const override { return this->m_strDataMapName.c_str(); }
+	virtual const char *GetFuncName() const override    { return this->m_strFuncName.c_str(); }
+	virtual const char *GetVTableName() const override  { return this->m_strVTName.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strDataMapName;
+	std::string m_strFuncName;
+	std::string m_strVTName;
+};
+
+
+/* address finder for functions with these traits:
+ * 1. func body starts with "push ebp; mov ebp,esp"
+ * 2. func body contains a unique absolute symbol reference
+ */
+class IAddr_Func_EBPPrologue_UniqueRef : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetUniqueSymbol() const = 0;
+};
+
+class CAddr_Func_EBPPrologue_UniqueRef : public IAddr_Func_EBPPrologue_UniqueRef
+{
+public:
+	CAddr_Func_EBPPrologue_UniqueRef(const std::string& name, const std::string& sym, const std::string& uni_ref) :
+		m_strName(name), m_strSymbol(sym), m_strUniqueSymbol(uni_ref) {}
+	
+	virtual const char *GetName() const override         { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override       { return this->m_strSymbol.c_str(); }
+	virtual const char *GetUniqueSymbol() const override { return this->m_strUniqueSymbol.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strUniqueSymbol;
+};
+
+
 /* address finder for functions with these traits:
  * 1. func body starts with "push ebp; mov ebp,esp"
  * 2. func body contains a unique string reference
@@ -175,9 +263,9 @@ public:
 	CAddr_Func_EBPPrologue_UniqueStr(const std::string& name, const std::string& sym, const std::string& uni_str) :
 		m_strName(name), m_strSymbol(sym), m_strUniqueStr(uni_str) {}
 	
-	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
-	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
-	virtual const char *GetUniqueStr() const override  { return this->m_strUniqueStr.c_str(); }
+	virtual const char *GetName() const override      { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override    { return this->m_strSymbol.c_str(); }
+	virtual const char *GetUniqueStr() const override { return this->m_strUniqueStr.c_str(); }
 	
 private:
 	std::string m_strName;
@@ -220,6 +308,35 @@ private:
 	std::string m_strUniqueStr;
 	std::string m_strVTName;
 	int m_iVTIndex;
+};
+
+
+class IAddr_Func_EBPPrologue_VProf : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetVProfName() const = 0;
+	virtual const char *GetVProfGroup() const = 0;
+};
+
+class CAddr_Func_EBPPrologue_VProf : public IAddr_Func_EBPPrologue_VProf
+{
+public:
+	CAddr_Func_EBPPrologue_VProf(const std::string& name, const std::string& sym, const std::string& vprof_name, const std::string& vprof_group) :
+		m_strName(name), m_strSymbol(sym), m_strVProfName(vprof_name), m_strVProfGroup(vprof_group) {}
+	
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetVProfName() const override  { return this->m_strVProfName.c_str(); }
+	virtual const char *GetVProfGroup() const override { return this->m_strVProfGroup.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strVProfName;
+	std::string m_strVProfGroup;
 };
 
 

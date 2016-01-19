@@ -126,20 +126,14 @@ bool CDetour::IsEnabled()
 
 bool CDetour::CreateDetour()
 {
-	if (signame && (detour_address = AddrManager::GetAddr(signame)) != nullptr)
-	{
-		g_pSM->LogError(myself, "Could not locate %s - Disabling detour", signame);
-		return false;
-	}
-	else if(!detour_address)
-	{
-		g_pSM->LogError(myself, "Invalid detour address passed - Disabling detour to prevent crashes");
-		return false;
-	}
-
-	if (!detour_address)
-	{
-		g_pSM->LogError(myself, "Sigscan for %s failed - Disabling detour to prevent crashes", signame);
+	if (signame != nullptr) {
+		detour_address = AddrManager::GetAddr(signame);
+		if (detour_address == nullptr) {
+			g_pSM->LogError(myself, "Could not locate %s - Disabling detour", signame);
+			return false;
+		}
+	} else {
+		g_pSM->LogError(myself, "Invalid detour address passed - Disabling detour");
 		return false;
 	}
 

@@ -55,16 +55,16 @@ public:
 };
 
 
-static RefCount s_rcCMissionPopulator_Parse;
+static RefCount rc_CMissionPopulator_Parse;
 DETOUR_DECL_MEMBER(void, CMissionPopulator_Parse, KeyValues *kv)
 {
-	SCOPED_INCREMENT(s_rcCMissionPopulator_Parse);
+	SCOPED_INCREMENT(rc_CMissionPopulator_Parse);
 	return DETOUR_MEMBER_CALL(CMissionPopulator_Parse)(kv);
 }
 
 DETOUR_DECL_MEMBER(bool, CSpawnLocation_Parse, KeyValues *kv)
 {
-	if (s_rcCMissionPopulator_Parse.NonZero()) {
+	if (rc_CMissionPopulator_Parse.NonZero()) {
 		if (V_stricmp(kv->GetName(), "Objective") == 0 &&
 			V_stricmp(kv->GetString(), "PushStickies") == 0) {
 			int *p_m_Objective = (int *)((uintptr_t)this - (offsetof(CMissionPopulator, m_Where) -

@@ -2,6 +2,10 @@
 #define _INCLUDE_SIGSEGV_STUB_MISC_H_
 
 
+#include "stub/baseentity.h"
+#include "link/link.h"
+
+
 enum
 {
 	TEAM_ANY = -2,
@@ -41,6 +45,9 @@ class CTFBotMvMEngineerBuildTeleportExit;
 class CTFBotMvMEngineerBuildSentryGun;
 
 class CFlaggedEntitiesEnum;
+
+
+const char *TranslateWeaponEntForClass(const char *name, int classnum);
 
 
 #endif

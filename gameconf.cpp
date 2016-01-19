@@ -6,6 +6,7 @@
 
 static const char *const configs[] = {
 	"sigsegv/sigsegv.vtable",
+	"sigsegv/sigsegv.datamap",
 	"sigsegv/sigsegv.globals",
 	"sigsegv/sigsegv.nextbot.action",
 	"sigsegv/sigsegv.nextbot.contextualquery",
@@ -174,7 +175,8 @@ SMCResult CSigsegvGameConf::AddrEntry_End()
 		return SMCResult_HaltFail;
 	}
 	
-	return (this->*(this->m_AddrParsers.at(type)))();
+	auto parser = this->m_AddrParsers.at(type);
+	return (this->*parser)();
 }
 
 
@@ -223,6 +225,27 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_VTable()
 	return SMCResult_Continue;
 }
 
+SMCResult CSigsegvGameConf::AddrEntry_Load_DataDescMap()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "class" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym     = kv.at("sym");
+	const auto& c_name = kv.at("class");
+	
+	auto addr = new CAddr_DataDescMap(name, sym, c_name);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
 SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
 {
 	const auto& name = this->m_AddrEntry_State.m_Name;
@@ -240,6 +263,50 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
 	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
 	auto addr = new CAddr_Func_KnownVTIdx(name, sym, vtable, idx);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "datamap", "func", "vtable" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym     = kv.at("sym");
+	const auto& dm_name = kv.at("datamap");
+	const auto& f_name  = kv.at("func");
+	const auto& vtable  = kv.at("vtable");
+	
+	auto addr = new CAddr_Func_DataMap_VThunk(name, sym, dm_name, f_name, vtable);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueRef()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "uniref" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym    = kv.at("sym");
+	const auto& uniref = kv.at("uniref");
+	
+	auto addr = new CAddr_Func_EBPPrologue_UniqueRef(name, sym, uniref);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
 	
 	return SMCResult_Continue;
@@ -284,6 +351,28 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx
 	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
 	auto addr = new CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx(name, sym, unistr, vtable, idx);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "v_name", "v_group" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym     = kv.at("sym");
+	const auto& v_name  = kv.at("v_name");
+	const auto& v_group = kv.at("v_group");
+	
+	auto addr = new CAddr_Func_EBPPrologue_VProf(name, sym, v_name, v_group);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
 	
 	return SMCResult_Continue;

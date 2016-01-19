@@ -73,6 +73,7 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -110,6 +111,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
+      <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -169,6 +171,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\sm\MemoryUtils.cpp" />
     <ClCompile Include="..\stub\baseentity.cpp" />
     <ClCompile Include="..\stub\gamerules.cpp" />
+    <ClCompile Include="..\stub\misc.cpp" />
     <ClCompile Include="..\stub\nav.cpp" />
     <ClCompile Include="..\stub\path.cpp" />
     <ClCompile Include="..\stub\populators.cpp" />

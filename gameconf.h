@@ -46,16 +46,24 @@ private:
 	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
 		{ "sym",                                &CSigsegvGameConf::AddrEntry_Load_Sym },
 		{ "vtable",                             &CSigsegvGameConf::AddrEntry_Load_VTable },
+		{ "datamap",                            &CSigsegvGameConf::AddrEntry_Load_DataDescMap },
 		{ "func knownvtidx",                    &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
+		{ "func datamap vthunk",                &CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk },
+		{ "func ebpprologue uniref",            &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueRef },
 		{ "func ebpprologue unistr",            &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr },
 		{ "func ebpprologue unistr knownvtidx", &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx },
+		{ "func ebpprologue vprof",             &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf },
 	};
 	
 	SMCResult AddrEntry_Load_Sym();
 	SMCResult AddrEntry_Load_VTable();
+	SMCResult AddrEntry_Load_DataDescMap();
 	SMCResult AddrEntry_Load_Func_KnownVTIdx();
+	SMCResult AddrEntry_Load_Func_DataMap_VThunk();
+	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueRef();
 	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr();
 	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx();
+	SMCResult AddrEntry_Load_Func_EBPPrologue_VProf();
 };
 extern CSigsegvGameConf g_GCHook;
 

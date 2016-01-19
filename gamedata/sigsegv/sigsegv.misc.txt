@@ -43,11 +43,6 @@
 					uniref "pszWpnEntTranslationList"
 				}
 				
-				"CBaseEntity::GetDataDescMap"
-				{
-					type "sym"
-					sym  "_ZN11CBaseEntity14GetDataDescMapEv"
-				}
 				"CBaseEntity::GetNetworkable"
 				{
 					type "sym"
@@ -70,6 +65,12 @@
 					sym  "_ZNK11CBasePlayer5IsBotEv"
 				}
 				
+				"CTFPlayer::ApplyAbsVelocityImpulse"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
+					unistr "mult_aiming_knockback_resistance"
+				}
 				"CTFPlayer::CanBeForcedToLaugh"
 				{
 					type "sym"
@@ -123,14 +124,19 @@
 				
 				"CCurrencyPack::ComeToRest"
 				{
-					type "sym"
-					sym  "_ZN13CCurrencyPack10ComeToRestEv"
+					type    "func datamap vthunk"
+					sym     "_ZN13CCurrencyPack10ComeToRestEv"
+					datamap "CItem::m_DataMap"
+					func    "CItemComeToRest"
+					vtable  "[VT] CCurrencyPack"
 				}
 				
 				"CNavMesh::GetNavArea"
 				{
-					type "sym"
-					sym  "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+					type    "func ebpprologue vprof"
+					sym     "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+					v_name  "CNavMesh::GetNavArea"
+					v_group "NextBot"
 				}
 				
 				"CTFNavMesh::CollectBuiltObjects"

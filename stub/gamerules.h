@@ -9,10 +9,7 @@
 class CTFGameRules
 {
 public:
-	bool IsMannVsMachineMode() const
-	{
-		return this->m_bPlayingMannVsMachine;
-	}
+	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
 	
 private:
 	PROP_STR(CTFGameRules);

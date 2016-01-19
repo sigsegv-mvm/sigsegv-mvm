@@ -39,28 +39,48 @@ enum
 
 class CTFPlayerClassShared
 {
-	
-};
-
-class CTFPlayerShared
-{
-	
-};
-
-
-class CTFPlayer : public CBaseMultiplayerPlayer
-{
 public:
-	// TODO: CTFPlayerClassShared *GetPlayerClass()
+	bool IsClass(int iClass) const { return (this->m_iClass == iClass); }
 	
-	bool IsPlayerClass(int iClass) const { return (*ft_IsPlayerClass)(this, iClass); }
+	int GetClassIndex() const { return this->m_iClass; }
+	// TODO: accessor for m_iszClassIcon
+	// TODO: accessor for m_iszCustomModel
 	
 private:
 	PROP_STR(CTFPlayer);
 	
-	PROP_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared);
+	PROP_SENDPROP(int,      CTFPlayer, m_iClass);
+	PROP_SENDPROP(string_t, CTFPlayer, m_iszClassIcon);
+	PROP_SENDPROP(string_t, CTFPlayer, m_iszCustomModel);
+};
+class CTFPlayerClass : public CTFPlayerClassShared {};
+
+class CTFPlayerShared
+{
+public:
 	
-	static FuncThunk<bool (*)(const CTFPlayer *, int)> ft_IsPlayerClass;
+	
+private:
+	PROP_STR(CTFPlayerShared);
+	
+	
+};
+
+class CTFPlayer : public CBaseMultiplayerPlayer
+{
+public:
+	CTFPlayerClass *GetPlayerClass() { return reinterpret_cast<CTFPlayerClass *>(this); }
+	const CTFPlayerClass *GetPlayerClass() const { return reinterpret_cast<const CTFPlayerClass *>(this); }
+	
+	bool IsPlayerClass(int iClass) const;
+	
+private:
+	PROP_STR(CTFPlayer);
+	
+//	PROP_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass);
+	
+public:
+//	PROP_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared);
 };
 
 

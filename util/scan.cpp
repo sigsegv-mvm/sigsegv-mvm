@@ -55,14 +55,18 @@ void CMaskedScanner::CheckOne(const void *where)
 void CStringScanner::CheckOne(const void *where)
 {
 	if (strcmp((const char *)where, this->m_Str) == 0) {
-		this->AddMatch(where);
+		if (((const char *)where)[-1] == '\0') {
+			this->AddMatch(where);
+		}
 	}
 }
 
 void CStringPrefixScanner::CheckOne(const void *where)
 {
 	if (strncmp((const char *)where, this->m_Str, strlen(this->m_Str)) == 0) {
-		this->AddMatch(where);
+		if (((const char *)where)[-1] == '\0') {
+			this->AddMatch(where);
+		}
 	}
 }
 

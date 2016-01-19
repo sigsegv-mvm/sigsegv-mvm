@@ -17,16 +17,16 @@ static ConVar cvar_color_a("sigsegv_debug_ehsphere_color_a", "0", FCVAR_NOTIFY,
 	"Debug: EH sphere color (alpha)");
 
 
-static RefCount s_rcExplosiveHeadShot;
+static RefCount rc_CTFSniperRifle_ExplosiveHeadShot;
 DETOUR_DECL_MEMBER(void, CTFSniperRifle_ExplosiveHeadShot, CTFPlayer *player1, CTFPlayer *player2)
 {
-	SCOPED_INCREMENT(s_rcExplosiveHeadShot);
+	SCOPED_INCREMENT(rc_CTFSniperRifle_ExplosiveHeadShot);
 	DETOUR_MEMBER_CALL(CTFSniperRifle_ExplosiveHeadShot)(player1, player2);
 }
 
 DETOUR_DECL_STATIC(int, UTIL_EntitiesInSphere, const Vector& center, float radius, CFlaggedEntitiesEnum *pEnum)
 {
-	if (s_rcExplosiveHeadShot.NonZero()) {
+	if (rc_CTFSniperRifle_ExplosiveHeadShot.NonZero()) {
 		for (int i = 0; i < 8; ++i) {
 			NDebugOverlay::Sphere(center, QAngle(0.0f, (float)i * 22.5f, 0.0f), radius,
 				cvar_color_r.GetInt(),

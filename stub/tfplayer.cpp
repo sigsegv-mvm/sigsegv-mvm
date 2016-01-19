@@ -3,4 +3,11 @@
 
 VFuncThunk<bool (*)(const CBasePlayer *)> CBasePlayer::vt_IsBot("[VT] CBasePlayer", "CBasePlayer::IsBot");
 
-FuncThunk<bool (*)(const CTFPlayer *, int)> CTFPlayer::ft_IsPlayerClass("CTFPlayer::IsPlayerClass");
+
+bool CTFPlayer::IsPlayerClass(int iClass) const
+{
+	const CTFPlayerClass *pClass = this->GetPlayerClass();
+	if (pClass == nullptr) return false;
+	
+	return pClass->IsClass(iClass);
+}
