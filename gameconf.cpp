@@ -8,10 +8,12 @@ static const char *const configs[] = {
 	"sigsegv/sigsegv.vtable",
 	"sigsegv/sigsegv.datamap",
 	"sigsegv/sigsegv.globals",
+#ifdef EXPERIMENTAL
 	"sigsegv/sigsegv.nextbot.action",
 	"sigsegv/sigsegv.nextbot.contextualquery",
 	"sigsegv/sigsegv.nextbot.eventresponder",
 	"sigsegv/sigsegv.nextbot.player",
+#endif
 	"sigsegv/sigsegv.population",
 	"sigsegv/sigsegv.tfbot",
 	"sigsegv/sigsegv.tfbot.behavior",

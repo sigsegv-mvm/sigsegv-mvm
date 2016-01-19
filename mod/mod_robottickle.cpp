@@ -3,6 +3,8 @@
 #include "stub/stub.h"
 
 
+#ifdef EXPERIMENTAL
+
 DETOUR_DECL_MEMBER(bool, CTFPlayer_CanBeForcedToLaugh)
 {
 	
@@ -34,3 +36,5 @@ static CMod_RobotTickle s_Mod;
 		s_Mod.SetEnabled(var.GetBool());
 	});
 */
+
+#endif

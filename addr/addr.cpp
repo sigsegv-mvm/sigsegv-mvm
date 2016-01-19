@@ -21,7 +21,7 @@ void IAddr::Init()
 	
 	if (result) {
 		this->m_State = State::OK;
-		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
+//		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
 	} else {
 		this->m_State = State::FAIL;
 		DevMsg("IAddr::Init \"%s\" FAIL\n", this->GetName());
@@ -81,6 +81,28 @@ void *AddrManager::GetAddr(const char *name)
 	}
 	
 	return addr->GetAddr();
+}
+
+
+static ConCommand ccmd_addrlist("sigsegv_addrlist", &AddrManager::CC_ListAddrs,
+	"List addresses and show their status", FCVAR_NONE);
+void AddrManager::CC_ListAddrs(const CCommand& cmd)
+{
+	for (const auto& pair : s_Addrs) {
+		const IAddr *addr = pair.second;
+		
+		switch (addr->GetState()) {
+		case IAddr::State::INITIAL:
+			Msg("%-8s %s\n", "INITIAL", addr->GetName());
+			break;
+		case IAddr::State::OK:
+			Msg("%08x %s\n", addr->GetAddr(), addr->GetName());
+			break;
+		case IAddr::State::FAIL:
+			Msg("%-8s %s\n", "FAIL", addr->GetName());
+			break;
+		}
+	}
 }
 
 

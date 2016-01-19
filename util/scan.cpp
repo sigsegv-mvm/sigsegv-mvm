@@ -108,7 +108,7 @@ void IScan::DoScan()
 	
 	int incr = (fwd ? align : -align);
 	
-	DevMsg("IScan::DoScan: ptr 0x%08x, end 0x%08x, incr %c0x%08x\n", (uintptr_t)ptr, (uintptr_t)end, (fwd ? '+' : '-'), align);
+//	DevMsg("IScan::DoScan: ptr 0x%08x, end 0x%08x, incr %c0x%08x\n", (uintptr_t)ptr, (uintptr_t)end, (fwd ? '+' : '-'), align);
 	
 	/* use an array because std::vector is horrendously slow here */
 	int num_scanners = this->m_Scanners.size();

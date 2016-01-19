@@ -4,6 +4,8 @@
 #include "util/util.h"
 
 
+#ifdef EXPERIMENTAL
+
 static ConVar cvar_duration("sigsegv_debug_ehsphere_duration", "0.5", FCVAR_NOTIFY,
 	"Debug: EH sphere draw duration");
 
@@ -66,3 +68,4 @@ static ConVar cvar_enable("sigsegv_debug_ehsphere_enable", "0", FCVAR_NOTIFY,
 		s_Mod.SetEnabled(var.GetBool());
 	});
 	
+#endif

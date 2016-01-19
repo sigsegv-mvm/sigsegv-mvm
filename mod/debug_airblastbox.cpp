@@ -4,6 +4,8 @@
 #include "util/util.h"
 
 
+#ifdef EXPERIMENTAL
+
 static ConVar cvar_duration("sigsegv_debug_airblastbox_duration", "0.1", FCVAR_NOTIFY,
 	"Debug: box draw duration");
 
@@ -62,3 +64,5 @@ static ConVar cvar_enable("sigsegv_debug_airblastbox_enable", "0", FCVAR_NOTIFY,
 		ConVarRef var(pConVar);
 		s_Mod.SetEnabled(var.GetBool());
 	});
+
+#endif

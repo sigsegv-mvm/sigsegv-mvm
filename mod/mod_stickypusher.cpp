@@ -3,6 +3,8 @@
 #include "re/path.h"
 
 
+#ifdef EXPERIMENTAL
+
 constexpr int MISSION_PUSHSTICKIES = 7;
 
 
@@ -137,3 +139,5 @@ static ConVar cvar_enable("sigsegv_stickypusher_enable", "0", FCVAR_NOTIFY,
 		ConVarRef var(pConVar);
 		s_Mod.SetEnabled(var.GetBool());
 	});
+
+#endif

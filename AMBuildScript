@@ -228,7 +228,7 @@ class ExtensionConfig(object):
 
     # Optimization
     if builder.options.opt == '1':
-      cxx.defines += ['NDEBUG']
+      #cxx.defines += ['NDEBUG']
       if cxx.like('gcc'):
         cxx.cflags += ['-O3']
       elif cxx.like('msvc'):
@@ -240,6 +240,10 @@ class ExtensionConfig(object):
       cxx.defines += ['DEBUG', '_DEBUG']
       if cxx.like('msvc'):
         cxx.cflags += ['/Od', '/RTC1']
+    
+    # Experimental features
+    if builder.options.experimental == '1':
+      cxx.defines += ['EXPERIMENTAL']
 
     # This needs to be after our optimization flags which could otherwise disable it.
     if cxx.vendor == 'msvc':

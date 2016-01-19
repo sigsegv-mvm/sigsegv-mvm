@@ -15,6 +15,8 @@ public:
 	
 	static void *GetAddr(const char *name);
 	
+	static void CC_ListAddrs(const CCommand& cmd);
+	
 private:
 	AddrManager() {}
 	

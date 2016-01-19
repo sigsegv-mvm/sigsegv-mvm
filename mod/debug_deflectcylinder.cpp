@@ -4,6 +4,8 @@
 #include "util/util.h"
 
 
+#ifdef EXPERIMENTAL
+
 static ConVar cvar_duration("sigsegv_debug_deflectcylinder_duration", "0.1", FCVAR_NOTIFY,
 	"Debug: cylinder draw duration");
 
@@ -148,3 +150,4 @@ static ConVar cvar_enable("sigsegv_debug_deflectcylinder_enable", "0", FCVAR_NOT
 		s_Mod.SetEnabled(var.GetBool());
 	});
 	
+#endif
