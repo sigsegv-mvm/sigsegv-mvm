@@ -19,14 +19,13 @@ public:
 	int GetTeamNumber() const { return this->m_iTeamNum; }
 	
 	/* thunk */
-	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);       }
-	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this); }
-	bool IsAlive()                       { return (vt_IsAlive.Get(this))(this);     }
+	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);        }
+	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this);  }
+	bool IsAlive()                       { return (this->m_lifeState == LIFE_ALIVE); }
 	
 private:
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
 	static FuncThunk<void (*)(CBaseEntity *)>                 ft_CalcAbsolutePosition;
-	static VFuncThunk<bool (*)(CBaseEntity *)>                vt_IsAlive;
 	
 	PROP_STR(CBaseEntity);
 	

@@ -36,12 +36,12 @@
 					unistr "CreateEntityByName( %s, %d ) - CreateEdict failed."
 				}
 				
-				"TranslateWeaponEntForClass"
-				{
-					type   "func ebpprologue uniref"
-					sym    "_Z26TranslateWeaponEntForClassPKci"
-					uniref "pszWpnEntTranslationList"
-				}
+//				"TranslateWeaponEntForClass"
+//				{
+//					type   "func ebpprologue uniref"
+//					sym    "_Z26TranslateWeaponEntForClassPKci"
+//					uniref "pszWpnEntTranslationList"
+//				}
 				
 				"CBaseEntity::GetNetworkable"
 				{
@@ -86,6 +86,21 @@
 					type "sym"
 					sym  "_ZNK9CTFPlayer13IsPlayerClassEi"
 				}
+				"CTFPlayer::ShouldGib"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer9ShouldGibERK15CTakeDamageInfo"
+					unistr "crit_kill_will_gib"
+				}
+				"CTFPlayer::SpeakConceptIfAllowed"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
+					unistr "disguiseclass:%s"
+				}
+				// CTFPlayer::TFPlayerThink
+				// warning! warning! not a straightforward ebp prologue!
+				// push ebx; mov ebx, esp
 				
 				"CTFGameRules::PushAllPlayersAway"
 				{
@@ -122,6 +137,13 @@
 					sym  "_ZN21CTFSniperRifleClassic13ItemPostFrameEv"
 				}
 				
+				"CTFKnife::PrimaryAttack"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN8CTFKnife13PrimaryAttackEv"
+					unistr "DisguiseOnKill"
+				}
+				
 				"CCurrencyPack::ComeToRest"
 				{
 					type    "func datamap vthunk"
@@ -145,6 +167,13 @@
 					sym  "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
 				}
 				
+				"CTFNavArea::IsBlocked"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK10CTFNavArea9IsBlockedEib"
+					vtable "[VT] CTFNavArea"
+					idx    "0x11"
+				}
 				"CTFNavArea::IsValidForWanderingPopulation"
 				{
 					type "sym"

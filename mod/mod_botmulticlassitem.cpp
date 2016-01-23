@@ -1,31 +1,99 @@
 #include "mod.h"
 #include "stub/stub.h"
-//#include "sm/detours.h"
-//#include "util/util.h"
-//#include "re/nextbot.h"
 
 
-/* allow some cases that would normally get translated into an empty string by TranslateWeaponEntForClass */
+/* a less strict version of TranslateWeaponEntForClass (don't return empty strings) */
 static const char *TranslateWeaponEntForClass_improved(const char *name, int classnum)
 {
-	const char *xlat = TranslateWeaponEntForClass(name, classnum);
-	
-	/* if TranslateWeaponEntForClass gave us an empty string, return something reasonable instead */
-	if (strcmp(xlat, "") == 0) {
-		/* tf_weapon_shotgun: default to tf_weapon_shotgun_primary */
-		if (strcasecmp(name, "tf_weapon_shotgun") == 0) {
+	if (strcasecmp(name, "tf_weapon_shotgun") == 0) {
+		switch (classnum) {
+		case TF_CLASS_SOLDIER:
+			return "tf_weapon_shotgun_soldier";
+		case TF_CLASS_PYRO:
+			return "tf_weapon_shotgun_pyro";
+		case TF_CLASS_HEAVYWEAPONS:
+			return "tf_weapon_shotgun_hwg";
+		case TF_CLASS_ENGINEER:
+			return "tf_weapon_shotgun_primary";
+		default:
 			return "tf_weapon_shotgun_primary";
 		}
-		
-		/* passthru the original entity class name for these cases */
-		if (strcasecmp(name, "tf_weapon_pistol")    == 0) return name;
-		if (strcasecmp(name, "tf_weapon_shovel")    == 0) return name;
-		if (strcasecmp(name, "tf_weapon_bottle")    == 0) return name;
-		if (strcasecmp(name, "tf_weapon_parachute") == 0) return name;
-		if (strcasecmp(name, "tf_weapon_revolver")  == 0) return name;
 	}
 	
-	return xlat;
+	if (strcasecmp(name, "tf_weapon_pistol") == 0) {
+		switch (classnum) {
+		case TF_CLASS_SCOUT:
+			return "tf_weapon_pistol_scout";
+		case TF_CLASS_ENGINEER:
+			return "tf_weapon_pistol";
+		default:
+			return "tf_weapon_pistol";
+		}
+	}
+	
+	if (strcasecmp(name, "tf_weapon_shovel") == 0 || strcasecmp(name, "tf_weapon_bottle") == 0) {
+		switch (classnum) {
+		case TF_CLASS_SOLDIER:
+			return "tf_weapon_shovel";
+		case TF_CLASS_DEMOMAN:
+			return "tf_weapon_bottle";
+		}
+	}
+	
+	if (strcasecmp(name, "saxxy") == 0) {
+		switch (classnum) {
+		case TF_CLASS_SCOUT:
+			return "tf_weapon_bat";
+		case TF_CLASS_SOLDIER:
+			return "tf_weapon_shovel";
+		case TF_CLASS_PYRO:
+			return "tf_weapon_fireaxe";
+		case TF_CLASS_DEMOMAN:
+			return "tf_weapon_bottle";
+		case TF_CLASS_HEAVYWEAPONS:
+			return "tf_weapon_fireaxe";
+		case TF_CLASS_ENGINEER:
+			return "tf_weapon_wrench";
+		case TF_CLASS_MEDIC:
+			return "tf_weapon_bonesaw";
+		case TF_CLASS_SNIPER:
+			return "tf_weapon_club";
+		case TF_CLASS_SPY:
+			return "tf_weapon_knife";
+		}
+	}
+	
+	if (strcasecmp(name, "tf_weapon_throwable") == 0) {
+		switch (classnum) {
+		case TF_CLASS_MEDIC:
+			return "tf_weapon_throwable_primary";
+		default:
+			return "tf_weapon_throwable_secondary";
+		}
+	}
+	
+	if (strcasecmp(name, "tf_weapon_parachute") == 0) {
+		switch (classnum) {
+		case TF_CLASS_SOLDIER:
+			return "tf_weapon_parachute_secondary";
+		case TF_CLASS_DEMOMAN:
+			return "tf_weapon_parachute_primary";
+		default:
+			return "tf_weapon_parachute";
+		}
+	}
+	
+	if (strcasecmp(name, "tf_weapon_revolver") == 0) {
+		switch (classnum) {
+		case TF_CLASS_ENGINEER:
+			return "tf_weapon_revolver_secondary";
+		default:
+			return "tf_weapon_revolver";
+		}
+	}
+	
+	/* if not handled: return original entity name, not an empty string */
+	return name;
 }
 
 
@@ -54,7 +122,6 @@ DETOUR_DECL_STATIC(CBaseEntity *, CreateEntityByName, const char *className, int
 //     - CBaseEntity *CreateEntityByName(const char *className, int iForceEdictIndex)
 
 // const char *TranslateWeaponEntForClass(const char *name, int classnum)
-
 
 
 class CMod_BotMultiClassItem : public IMod

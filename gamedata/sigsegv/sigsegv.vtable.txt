@@ -47,6 +47,13 @@
 					winrtti ".?AVCCurrencyPack@@"
 				}
 				
+				"[VT] CTFNavArea"
+				{
+					type    "vtable"
+					sym     "_ZTV10CTFNavArea"
+					winrtti ".?AVCTFNavArea@@"
+				}
+				
 				"[VT] INextBotEventResponder"
 				{
 					type    "vtable"

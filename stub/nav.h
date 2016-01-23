@@ -64,6 +64,17 @@ enum TFNavAttributeType : int
 };
 
 
+// CTFNavArea::m_nAttributes
+// * CTFNavArea::IsValidForWanderingPopulation
+// * CTFNavArea::IsBlocked
+// * CTFNavMesh::IsSentryGunHere
+//   CTFNavMesh::ResetMeshAttributes
+//   CTFNavMesh::RemoveAllMeshDecoration
+//   CTFNavMesh::ComputeLegalBombDropAreas
+//   CTFNavMesh::CollectAndMaskSpawnRoomExits
+//   TF_EditClearAllAttributes
+//   GetBombInfo
+
 #if defined _LINUX
 
 static constexpr uint8_t s_Buf_CTFNavArea_m_nAttributes[] = {
@@ -95,8 +106,9 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 #elif defined _WINDOWS
 
 static constexpr uint8_t s_Buf_CTFNavArea_m_nAttributes[] = {
-	0x00,
-	// TODO
+	0x55,                               // +0000  push ebp
+	0x8b, 0xec,                         // +0001  mov ebp,esp
+	0x8b, 0x91, 0x00, 0x00, 0x00, 0x00, // +0003  mov edx,[ecx+0xVVVVVVVV]
 };
 
 struct CExtract_CTFNavArea_m_nAttributes : public IExtract<int>
@@ -105,12 +117,14 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<int>
 	
 	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
-		// TODO
+		buf.CopyFrom(s_Buf_CTFNavArea_m_nAttributes);
+		
+		mask.SetRange(0x03 + 2, 4, 0x00);
 	}
 	
-	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsValidForWanderingPopulation"; }
-	virtual uint32_t GetFuncOffset() const override    { /* TODO */ return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { /* TODO */ return 0x0007 + 2; }
+	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsBlocked"; }
+	virtual uint32_t GetFuncOffset() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0003 + 2; }
 };
 
 #endif

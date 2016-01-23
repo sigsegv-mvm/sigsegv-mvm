@@ -61,23 +61,28 @@ public:
 	
 	
 private:
-	PROP_STR(CTFPlayerShared);
+	PROP_STR(CTFPlayer);
 	
-	
+	PROP_SENDPROP(float, CTFPlayer, m_flRageMeter);
+	PROP_SENDPROP(bool,  CTFPlayer, m_bRageDraining);
+	PROP_SENDPROP(bool,  CTFPlayer, m_bInUpgradeZone);
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
 {
 public:
-	CTFPlayerClass *GetPlayerClass() { return reinterpret_cast<CTFPlayerClass *>(this); }
+	CTFPlayerClass *GetPlayerClass()             { return reinterpret_cast<CTFPlayerClass *>(this); }
 	const CTFPlayerClass *GetPlayerClass() const { return reinterpret_cast<const CTFPlayerClass *>(this); }
 	
 	bool IsPlayerClass(int iClass) const;
+	
+	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
 	
 private:
 	PROP_STR(CTFPlayer);
 	
 //	PROP_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass);
+	PROP_SENDPROP(bool, CTFPlayer, m_bIsMiniBoss);
 	
 public:
 //	PROP_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared);

@@ -47,8 +47,6 @@ inline const T& VFuncThunk<T>::Get(const void *_this) const
 }
 
 
-#if defined __GNUC__
-
 template<typename T>
 inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 {
@@ -70,7 +68,9 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 			return false;
 		}
 		
-		pVT = (T *)((uintptr_t)pVT - offsetof(vtable, vfptrs));
+#if defined __GNUC__
+		pVT = (T *)((uintptr_t)pVT + offsetof(vtable, vfptrs));
+#endif
 		
 		bool found = false;
 		for (int i = 0; i < 0x1000; ++i) {
@@ -91,98 +91,6 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 	DevMsg("VFuncThunk::Link OK +0x%x \"%s\"\n", this->m_iVTIndex * 4, this->m_pszFuncName);
 	return true;
 }
-
-#elif defined _MSC_VER
-
-// for MSVC:
-// 1. do a string search for the ".?AV" string
-// 2. ensure exactly one match; subtract 8; now we have the _TypeDescriptor
-// 3. do a mem search for references to the _TypeDescriptor:
-//      0x00000000 (signature)
-//      0x00000000 (offset)
-//      0x00000000 (cdOffset)
-//      &_TypeDescriptor
-// 4. ensure exactly one match; now we have the __RTTI_CompleteObjectLocator
-// 5. do a mem search for references to the __RTTI_CompleteObjectLocator
-// 6. ensure exactly one match; add 4; now we have the VFTable
-
-template<typename T>
-inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
-{
-#if 0
-	_TypeDescriptor *pTD = nullptr;
-	__RTTI_CompleteObjectLocator *pCOL = nullptr;
-	T *pVT = nullptr;
-	T pFunc = nullptr;
-	
-	if (this->m_iVTIndex == -1) {
-		pTD = (_TypeDescriptor *)AddrManager::GetAddr(this->m_pszVTName);
-		if (pTD == nullptr) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszVTName);
-			return false;
-		}
-		
-		pFunc = (T)AddrManager::GetAddr(this->m_pszFuncName);
-		if (pFunc == nullptr) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
-			return false;
-		}
-		
-		pTD = (_TypeDescriptor *)((uintptr_t)pTD - offsetof(_TypeDescriptor, name));
-		
-		__RTTI_CompleteObjectLocator pattern_COL = {
-			0x00000000,
-			0x00000000,
-			0x00000000,
-			pTD,
-		};
-		
-		std::vector<void *> refs_TD;
-		assert(MemFindPattern(gamedll, (const char *)&pattern_COL, 0x10, refs_TD));
-		
-		if (refs_TD.size() != 1) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: %d TD refs for \"%s\"", refs_TD.size(), this->m_pszFuncName);
-			return false;
-		}
-		
-		pCOL = (__RTTI_CompleteObjectLocator *)refs_TD[0];
-		
-		std::vector<void *>refs_COL;
-		assert(MemFindPattern(gamedll, (const char *)&pCOL, 0x4, refs_COL));
-		
-		if (refs_COL.size() != 1) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: %d COL refs for \"%s\"", refs_COL.size(), this->m_pszFuncName);
-			return false;
-		}
-		
-		pVT = (T *)((uintptr_t)refs_COL[0] + 0x4);
-		
-		bool found = false;
-		for (int i = 0; i < 0x1000; ++i) {
-			if (pVT[i] == pFunc) {
-				this->m_iVTIndex = i;
-				found = true;
-				break;
-			}
-		}
-		
-		if (!found) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: vtable lookup failed for \"%s\"", this->m_pszFuncName);
-			return false;
-		}
-	}
-	
-#endif
-	DevMsg("VFuncThunk::Link OK +0x%x \"%s\"\n", this->m_iVTIndex * 4, this->m_pszFuncName);
-	return true;
-}
-
-#endif
 
 
 #endif

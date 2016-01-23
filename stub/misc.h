@@ -47,7 +47,9 @@ class CTFBotMvMEngineerBuildSentryGun;
 class CFlaggedEntitiesEnum;
 
 
+#if 0
 const char *TranslateWeaponEntForClass(const char *name, int classnum);
+#endif
 
 
 #endif

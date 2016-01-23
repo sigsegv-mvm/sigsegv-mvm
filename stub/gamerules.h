@@ -6,6 +6,12 @@
 #include "prop/prop.h"
 
 
+// CGameRules
+// CMultiplayRules
+// CTeamplayRules
+// CTeamplayRoundBasedRules
+
+
 class CTFGameRules
 {
 public:

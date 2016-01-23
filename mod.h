@@ -15,17 +15,18 @@ struct DetourInfo
 };
 
 
-class IMod
+class IMod : public AutoList<IMod>
 {
 public:
 	virtual const char *GetName() const final { return this->m_pszName; }
 	
-	virtual bool OnLoad(char *error, size_t maxlen) { return true; }
+	virtual bool OnLoad()   { return true; }
 	virtual void OnUnload() {}
 	
 protected:
-	IMod(const char *name);
-	virtual ~IMod();
+	IMod(const char *name) :
+		m_pszName(name) {}
+	virtual ~IMod() {}
 	
 	void AddPatch(IPatch *patch);
 	void ToggleAllPatches(bool enable);
@@ -35,13 +36,16 @@ protected:
 	void ToggleAllDetours(bool enable);
 	
 private:
-	bool Init_CheckPatches(char *error, size_t maxlen);
-	bool Init_SetupDetours(char *error, size_t maxlen);
-	
-	bool InvokeLoad(char *error, size_t maxlen);
+	void InvokeLoad();
 	void InvokeUnload();
 	
+	bool Init_CheckPatches();
+	bool Init_SetupDetours();
+	
 	const char *m_pszName;
+	
+	bool m_bFailed = false;
+	bool m_bLoaded = false;
 	
 	std::vector<IPatch *> m_Patches;
 	std::map<const char *, DetourInfo> m_Detours;

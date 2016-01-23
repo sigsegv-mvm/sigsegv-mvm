@@ -2,61 +2,24 @@
 #include "modmanager.h"
 
 
-IMod::IMod(const char *name)
-	: m_pszName(name)
-{
-	CModManager::Register(this);
-}
-
-IMod::~IMod()
-{
-	CModManager::Unregister(this);
-}
-
-
-bool IMod::Init_CheckPatches(char *error, size_t maxlen)
-{
-	for (auto patch : this->m_Patches) {
-		if (!patch->Init(error, maxlen)) {
-			DevMsg("IMod::Init_CheckPatches: \"%s\" FAIL in Init\n", this->GetName());
-			return false;
-		}
-		if (!patch->Check(error, maxlen)) {
-			DevMsg("IMod::Init_CheckPatches: \"%s\" FAIL in Check\n", this->GetName());
-			return false;
-		}
-		
-		DevMsg("IMod::Init_CheckPatches: \"%s\" OK\n", this->GetName());
-	}
-	
-	return true;
-}
-
-bool IMod::Init_SetupDetours(char *error, size_t maxlen)
-{
-	for (auto& pair : this->m_Detours) {
-		const char *name = pair.first;
-		DetourInfo& info = pair.second;
-		
-		CDetour *detour = CDetourManager::CreateDetour(info.callback, info.trampoline, name);
-		if (detour == nullptr) {
-			DevMsg("IMod::Init_SetupDetours: \"%s\" FAIL\n", this->GetName());
-			snprintf(error, maxlen, "CDetourManager::CreateDetour failed for %s", name);
-			return false;
-		}
-		
-		info.detour = detour;
-		DevMsg("IMod::Init_SetupDetours: \"%s\" OK 0x%08x\n", this->GetName(), detour);
-	}
-	
-	return true;
-}
-
-bool IMod::InvokeLoad(char *error, size_t maxlen)
+void IMod::InvokeLoad()
 {
 	DevMsg("IMod::InvokeLoad: \"%s\"\n", this->GetName());
 	
-	return this->OnLoad(error, maxlen);
+	bool ok_patch  = this->Init_CheckPatches();
+	bool ok_detour = this->Init_SetupDetours();
+	
+	if (!ok_patch || !ok_detour) {
+		this->m_bFailed = true;
+		return;
+	}
+	
+	bool ok_load = this->OnLoad();
+	if (ok_load) {
+		this->m_bLoaded = true;
+	} else {
+		this->m_bFailed = true;
+	}
 }
 
 void IMod::InvokeUnload()
@@ -81,16 +44,62 @@ void IMod::InvokeUnload()
 }
 
 
+bool IMod::Init_CheckPatches()
+{
+	bool ok = true;
+	
+	for (auto patch : this->m_Patches) {
+		if (patch->Init()) {
+			if (patch->Check()) {
+				DevMsg("IMod::Init_CheckPatches: \"%s\" OK\n", this->GetName());
+			} else {
+				DevMsg("IMod::Init_CheckPatches: \"%s\" FAIL in Check\n", this->GetName());
+				ok = false;
+			}
+		} else {
+			DevMsg("IMod::Init_CheckPatches: \"%s\" FAIL in Init\n", this->GetName());
+			ok = false;
+		}
+	}
+	
+	return ok;
+}
+
+bool IMod::Init_SetupDetours()
+{
+	bool ok = true;
+	
+	for (auto& pair : this->m_Detours) {
+		const char *name = pair.first;
+		DetourInfo& info = pair.second;
+		
+		CDetour *detour = CDetourManager::CreateDetour(info.callback, info.trampoline, name);
+		if (detour != nullptr) {
+			info.detour = detour;
+			DevMsg("IMod::Init_SetupDetours: \"%s\" OK 0x%08x\n", this->GetName(), detour);
+		} else {
+			DevMsg("IMod::Init_SetupDetours: \"%s\" FAIL\n", this->GetName());
+			ok = false;
+		}
+	}
+	
+	return ok;
+}
+
+
 void IMod::AddPatch(IPatch *patch)
 {
 	DevMsg("IMod::AddPatch: \"%s\" \"%s\" off:0x%08x len:0x%08x\n", this->GetName(),
 		patch->GetFuncName(), patch->GetFuncOffset(), patch->GetLength());
+	assert(!this->m_bLoaded);
 	
 	this->m_Patches.push_back(patch);
 }
 
 void IMod::ToggleAllPatches(bool enable)
 {
+	if (this->m_bFailed) return;
+	
 	DevMsg("IMod::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
 		(enable ? "ON" : "OFF"));
 	
@@ -119,6 +128,8 @@ void IMod::AddDetour(const char *name, void *callback, void **trampoline)
 
 void IMod::ToggleDetour(const char *name, bool enable)
 {
+	if (this->m_bFailed) return;
+	
 	DevMsg("IMod::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
 		(enable ? "ON" : "OFF"));
 	
@@ -133,6 +144,8 @@ void IMod::ToggleDetour(const char *name, bool enable)
 
 void IMod::ToggleAllDetours(bool enable)
 {
+	if (this->m_bFailed) return;
+	
 	DevMsg("IMod::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
 		(enable ? "ON" : "OFF"));
 	

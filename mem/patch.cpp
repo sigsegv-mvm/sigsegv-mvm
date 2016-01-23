@@ -2,14 +2,14 @@
 #include "extension.h"
 
 
-bool IPatch::Init(char *error, size_t maxlen)
+bool IPatch::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
 	this->m_iFuncOffset = this->GetFuncOffset();
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
 	if (this->m_pFuncAddr == nullptr) {
-		snprintf(error, maxlen, "Patch error: signature lookup failed for %s", this->m_pszFuncName);
+		DevMsg("IPatch::Init: FAIL: no addr for \"%s\"\n", this->m_pszFuncName);
 		return false;
 	}
 	
@@ -23,7 +23,7 @@ bool IPatch::Init(char *error, size_t maxlen)
 	return true;
 }
 
-bool IPatch::Check(char *error, size_t maxlen)
+bool IPatch::Check()
 {
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
 	for (int i = 0; i < this->m_iLength; ++i) {
@@ -33,7 +33,7 @@ bool IPatch::Check(char *error, size_t maxlen)
 		uint8_t v_mask = this->m_MaskVerify[i];
 		
 		if ((*mem & v_mask) != (v_byte & v_mask)) {
-			snprintf(error, maxlen, "Patch/verify failure: func %s, offset 0x%x, byte 0x%x: < byte:%02x mask:%02x | mem:%02x >",
+			DevMsg("IPatch::Check: FAIL: func \"%s\", off 0x%x, byte 0x%x: < byte:%02x mask:%02x | mem:%02x >\n",
 				this->m_pszFuncName, this->m_iFuncOffset, i, v_byte, v_mask, *mem);
 			return false;
 		}

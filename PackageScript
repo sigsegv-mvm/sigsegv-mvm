@@ -31,11 +31,11 @@ def CopyFiles(src, dest, files):
     builder.AddCopy(source_path, dest_entry)
 
 # Include files 
-CopyFiles('include', 'addons/sourcemod/scripting/include',
-  [
+#CopyFiles('include', 'addons/sourcemod/scripting/include',
+#  [
 #    'sample.inc',
-  ]
-)
+#  ]
+#)
 
 # GameData files
 CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
@@ -55,11 +55,11 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
 )
 
 # Config Files
-CopyFiles('configs', 'addons/sourcemod/configs',
-  [
+#CopyFiles('configs', 'addons/sourcemod/configs',
+#  [
 #    'configfile.cfg',
-  ]
-)
+#  ]
+#)
 
 # Copy binaries.
 for cxx_task in Extension.extensions:

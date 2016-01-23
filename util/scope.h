@@ -7,17 +7,21 @@ class RefCount
 public:
 	void Increment()
 	{
-		++m_iCount;
+		++this->m_iCount;
 	}
 	void Decrement()
 	{
-		assert(m_iCount > 0);
-		--m_iCount;
+		if (this->m_iCount > 0) {
+			--this->m_iCount;
+		} else {
+			DevWarning("RefCount::Decrement: m_iCount was %d!\n", this->m_iCount);
+			this->m_iCount = 0;
+		}
 	}
 	
 	bool NonZero() const
 	{
-		return (m_iCount != 0);
+		return (this->m_iCount != 0);
 	}
 	
 private:

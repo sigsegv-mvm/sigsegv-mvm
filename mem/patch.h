@@ -23,8 +23,8 @@ public:
 	
 	virtual bool VerifyOnly() const { return false; }
 	
-	bool Init(char *error, size_t maxlen);
-	bool Check(char *error, size_t maxlen);
+	bool Init();
+	bool Check();
 	
 	virtual void Apply();
 	virtual void UnApply();

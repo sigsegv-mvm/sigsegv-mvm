@@ -59,13 +59,20 @@ public:
 static CAddr_pszWpnEntTranslationList addr_pszWpnEntTranslationList;
 
 
+// TODO: finder for CBasePlayer::IsBot
+// (need to differentiate from CBasePlayer::IsFakeClient)
+// 8b 81 xx xx xx xx  mov eax,[ecx+m_fFlags]
+// c1 e8 xx           shr eax,log2(FL_FAKECLIENT)
+// 83 e0 01           and eax,1
+// c3                 ret
 
+
+#if 0
 /* vtable indexes (valid for windows ONLY!) */
 constexpr int VT_idx_CBaseCombatWeapon_ItemPostFrame = (0x41c / 4);
 constexpr int VT_idx_Action_Update                   = ( 0xb8 / 4);
 
 
-#if 0
 struct CAddr_CTFSniperRifle_ItemPostFrame : public IAddr_Sym
 {
 	const char *GetName() const override   { return "CTFSniperRifle::ItemPostFrame"; }

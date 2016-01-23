@@ -4,7 +4,7 @@
     <Solution>sigsegv.sln</Solution>
     <CollectionMethod>Instrumentation</CollectionMethod>
     <AllocationMethod>None</AllocationMethod>
-    <Reportname>C:\Users\jgottula\AppData\Local\Temp\Report.vsp</Reportname>
+    <Reportname>C:\Profiling\Report.vsp</Reportname>
     <AddReport>true</AddReport>
     <ResourceBasedAnalysisSelected>true</ResourceBasedAnalysisSelected>
     <UniqueReport>Timestamp</UniqueReport>
@@ -37,7 +37,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <ProjBinary>
-      <Path>Debug\sigsegv.ext.2.tf2.dll</Path>
+      <Path>Release\sigsegv.ext.2.tf2.dll</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>true</Sample>
@@ -76,13 +76,13 @@
       <IsLocalJavascript>false</IsLocalJavascript>
       <IsWindowsStoreApp>false</IsWindowsStoreApp>
       <IsWWA>false</IsWWA>
-      <LaunchProject>true</LaunchProject>
-      <OverrideProjectSettings>false</OverrideProjectSettings>
+      <LaunchProject>false</LaunchProject>
+      <OverrideProjectSettings>true</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
       <ExecutablePath>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</ExecutablePath>
       <StartupDirectory>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\</StartupDirectory>
-      <Arguments>-steam -game tf -novid -console -condebug -insecure -textmode -nosound +maxplayers 32 +developer 1 +map mvm_example
-</Arguments>
+      <Arguments>-steam -game tf -novid -console -condebug -insecure -windowed -w 1280 -h 720 +maxplayers 32 +developer 1 +map mvm_example
+ +exec cheat</Arguments>
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
       <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
@@ -95,17 +95,6 @@
       </PostinstrumentEvent>
     </Binary>
   </Binaries>
-  <Reports>
-    <Report>
-      <Path>C:\Users\jgottula\AppData\Local\Temp\Report160118.vsp</Path>
-    </Report>
-    <Report>
-      <Path>C:\Users\jgottula\AppData\Local\Temp\Report160118(1).vsp</Path>
-    </Report>
-    <Report>
-      <Path>C:\Users\jgottula\AppData\Local\Temp\Report160118(2).vsp</Path>
-    </Report>
-  </Reports>
   <Launches>
     <Binary>
       <Path>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
