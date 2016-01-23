@@ -6,6 +6,16 @@
 #include "mem/patch.h"
 
 
+class CModManager
+{
+public:
+	static void LoadAllMods();
+	static void UnloadAllMods();
+	
+	static void CC_ListMods(const CCommand& cmd);
+};
+
+
 struct DetourInfo
 {
 	void *callback;

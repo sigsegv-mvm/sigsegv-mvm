@@ -36,7 +36,6 @@ sourceFiles = [
   'link/link.cpp',
   'link/nextbot1.cpp',
   'link/nextbot2.cpp',
-  'modmanager.cpp',
   'mod.cpp',
   'mod/mod_autocollectspawncredits.cpp',
   'mod/mod_engienopush.cpp',

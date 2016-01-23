@@ -2,7 +2,7 @@
 #include "library.h"
 #include "link/link.h"
 #include "sm/detours.h"
-#include "modmanager.h"
+#include "mod.h"
 #include "addr/addr.h"
 #include "addr/prescan.h"
 #include "gameconf.h"

@@ -155,7 +155,6 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\mem\patch.cpp" />
     <ClCompile Include="..\mem\scan.cpp" />
     <ClCompile Include="..\mod.cpp" />
-    <ClCompile Include="..\modmanager.cpp" />
     <ClCompile Include="..\mod\debug_airblastbox.cpp" />
     <ClCompile Include="..\mod\debug_deflectcylinder.cpp" />
     <ClCompile Include="..\mod\debug_ehsphere.cpp" />
@@ -196,7 +195,6 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClInclude Include="..\mem\patch.h" />
     <ClInclude Include="..\mem\scan.h" />
     <ClInclude Include="..\mod.h" />
-    <ClInclude Include="..\modmanager.h" />
     <ClInclude Include="..\prop.h" />
     <ClInclude Include="..\re\nextbot.h" />
     <ClInclude Include="..\re\path.h" />
