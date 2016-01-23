@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "stub/stub.h"
+#include "util/util.h"
 
 
 /* a less strict version of TranslateWeaponEntForClass (don't return empty strings) */

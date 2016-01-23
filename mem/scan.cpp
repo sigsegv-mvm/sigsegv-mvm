@@ -1,4 +1,4 @@
-#include "util/scan.h"
+#include "mem/scan.h"
 
 
 CLibBounds::CLibBounds(Library lib)

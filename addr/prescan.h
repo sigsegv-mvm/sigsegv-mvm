@@ -2,7 +2,7 @@
 #define _INCLUDE_SIGSEGV_ADDR_PRESCAN_H_
 
 
-#include "util/scan.h"
+#include "mem/scan.h"
 
 
 class PreScan

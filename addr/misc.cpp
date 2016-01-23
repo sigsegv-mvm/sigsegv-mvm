@@ -1,4 +1,5 @@
 #include "addr/addr.h"
+#include "mem/scan.h"
 
 
 class CAddr_pszWpnEntTranslationList : public IAddr_Sym

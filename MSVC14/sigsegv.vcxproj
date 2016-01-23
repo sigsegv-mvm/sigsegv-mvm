@@ -153,6 +153,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\link\nextbot1.cpp" />
     <ClCompile Include="..\link\nextbot2.cpp" />
     <ClCompile Include="..\mem\patch.cpp" />
+    <ClCompile Include="..\mem\scan.cpp" />
     <ClCompile Include="..\mod.cpp" />
     <ClCompile Include="..\modmanager.cpp" />
     <ClCompile Include="..\mod\debug_airblastbox.cpp" />
@@ -179,7 +180,6 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\stub\tfbot.cpp" />
     <ClCompile Include="..\stub\tfplayer.cpp" />
     <ClCompile Include="..\util\backtrace.cpp" />
-    <ClCompile Include="..\util\scan.cpp" />
     <ClCompile Include="..\util\trace.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +194,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClInclude Include="..\link\vcall.h" />
     <ClInclude Include="..\mem\extract.h" />
     <ClInclude Include="..\mem\patch.h" />
+    <ClInclude Include="..\mem\scan.h" />
     <ClInclude Include="..\mod.h" />
     <ClInclude Include="..\modmanager.h" />
     <ClInclude Include="..\prop.h" />
@@ -225,7 +226,6 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClInclude Include="..\util\backtrace.h" />
     <ClInclude Include="..\util\buf.h" />
     <ClInclude Include="..\util\misc.h" />
-    <ClInclude Include="..\util\scan.h" />
     <ClInclude Include="..\util\scope.h" />
     <ClInclude Include="..\util\trace.h" />
     <ClInclude Include="..\util\util.h" />

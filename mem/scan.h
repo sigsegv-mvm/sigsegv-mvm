@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_SIGSEGV_UTIL_SCAN_H_
-#define _INCLUDE_SIGSEGV_UTIL_SCAN_H_
+#ifndef _INCLUDE_SIGSEGV_MEM_SCAN_H_
+#define _INCLUDE_SIGSEGV_MEM_SCAN_H_
 
 
 #include "library.h"

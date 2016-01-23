@@ -1,4 +1,5 @@
 #include "mem/patch.h"
+#include "mem/scan.h"
 
 
 bool IPatch::Init()

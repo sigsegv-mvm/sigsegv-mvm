@@ -8,7 +8,6 @@
 #include "util/misc.h"
 #include "util/scope.h"
 #include "util/trace.h"
-#include "util/scan.h"
 
 
 #endif

@@ -77,9 +77,6 @@
     <ClCompile Include="..\stub\tfplayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\util\scan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\mod\debug_airblastbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -135,6 +132,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\prop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mem\scan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -235,9 +235,6 @@
     <ClInclude Include="..\stub\tfweaponbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\util\scan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\abi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -275,6 +272,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\prop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mem\scan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
