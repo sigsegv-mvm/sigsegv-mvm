@@ -43,6 +43,7 @@ extern CGlobalVars *gpGlobals;
 #include <vector>
 
 /* AMTL */
+#include <amtl/am-string.h>
 
 /* Source SDK */
 #include "sdk2013/annotations.h"

@@ -16,22 +16,22 @@ public:
 	
 	/* getter/setter */
 	int GetTeamNumber() const { return this->m_iTeamNum; }
+	bool IsAlive()            { return (this->m_lifeState == LIFE_ALIVE); }
 	
 	/* thunk */
 	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);        }
 	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this);  }
-	bool IsAlive()                       { return (this->m_lifeState == LIFE_ALIVE); }
 	
 private:
-	DEF_DATAMAP(int,     m_iEFlags);
+	DEF_DATAMAP(int,    m_iEFlags);
 	DEF_DATAMAP(Vector, m_vecAbsOrigin);
 	
-	DEF_SENDPROP(int,    m_iHealth);
-	DEF_SENDPROP(char,   m_lifeState);
-	DEF_SENDPROP(int,    m_iTeamNum);
+	DEF_SENDPROP(int,  m_iHealth);
+	DEF_SENDPROP(char, m_lifeState);
+	DEF_SENDPROP(int,  m_iTeamNum);
 	
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
-	static FuncThunk<void (*)(CBaseEntity *)>                 ft_CalcAbsolutePosition;
+	static FuncThunk<void                 (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

@@ -55,18 +55,14 @@ void CMaskedScanner::CheckOne(const void *where)
 void CStringScanner::CheckOne(const void *where)
 {
 	if (strcmp((const char *)where, this->m_Str) == 0) {
-		if (((const char *)where)[-1] == '\0') {
-			this->AddMatch(where);
-		}
+		this->AddMatch(where);
 	}
 }
 
 void CStringPrefixScanner::CheckOne(const void *where)
 {
 	if (strncmp((const char *)where, this->m_Str, strlen(this->m_Str)) == 0) {
-		if (((const char *)where)[-1] == '\0') {
-			this->AddMatch(where);
-		}
+		this->AddMatch(where);
 	}
 }
 
@@ -149,4 +145,34 @@ void IScan::DoScan()
 	}
 	
 	delete[] scanners;
+}
+
+
+namespace Scan
+{
+	const char *FindUniqueConstStr(const char *str)
+	{
+		CSingleScan scan(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, ".rdata"), 1, new CStringScanner(ScanResults::ALL, str));
+		
+		if (scan.Matches().size() == 1) {
+			return (const char *)scan.Matches()[0];
+		}
+		
+		/* get aggressive: try to exclude matches that are probably a suffix */
+		if (scan.Matches().size() > 1) {
+			std::vector<const char *> matches;
+			for (auto match : scan.Matches()) {
+				const char *m_str = (const char *)match;
+				if (m_str[-1] == '\0') {
+					matches.push_back(m_str);
+				}
+			}
+			
+			if (matches.size() == 1) {
+				return matches[0];
+			}
+		}
+		
+		return nullptr;
+	}
 }

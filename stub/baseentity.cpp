@@ -9,4 +9,4 @@ IMPL_SENDPROP(char, CBaseEntity, m_lifeState, CBasePlayer);
 IMPL_SENDPROP(int,  CBaseEntity, m_iTeamNum,  CBaseEntity);
 
 FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> CBaseEntity::ft_GetNetworkable(      "CBaseEntity::GetNetworkable");
-FuncThunk<void (*)(CBaseEntity *)>                 CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
+FuncThunk<void                 (*)(CBaseEntity *)> CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");

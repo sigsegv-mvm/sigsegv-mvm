@@ -223,4 +223,10 @@ public:
 };
 
 
+namespace Scan
+{
+	const char *FindUniqueConstStr(const char *str);
+}
+
+
 #endif
