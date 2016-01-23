@@ -90,7 +90,7 @@ bool IMod::Init_SetupDetours()
 void IMod::AddPatch(IPatch *patch)
 {
 	DevMsg("IMod::AddPatch: \"%s\" \"%s\" off:[0x%05x~0x%05x] len:0x%05x\n", this->GetName(),
-		patch->GetFuncName(), patch->GetFuncOffsetMin(), patch->GetFuncOffsetMax(), patch->GetLength());
+		patch->GetFuncName(), patch->GetFuncOffMin(), patch->GetFuncOffMax(), patch->GetLength());
 	assert(!this->m_bLoaded);
 	
 	this->m_Patches.push_back(patch);

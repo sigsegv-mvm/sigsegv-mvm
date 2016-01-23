@@ -5,8 +5,8 @@
 bool IPatch::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
-	this->m_iFuncOffMin = this->GetFuncOffsetMin();
-	this->m_iFuncOffMax = this->GetFuncOffsetMax();
+	this->m_iFuncOffMin = this->GetFuncOffMin();
+	this->m_iFuncOffMax = this->GetFuncOffMax();
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
 	if (this->m_pFuncAddr == nullptr) {

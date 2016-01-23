@@ -31,8 +31,8 @@ public:
 	
 	virtual int GetLength() const final { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
-	virtual uint32_t GetFuncOffsetMin() const = 0;
-	virtual uint32_t GetFuncOffsetMax() const = 0;
+	virtual uint32_t GetFuncOffMin() const = 0;
+	virtual uint32_t GetFuncOffMax() const = 0;
 	
 protected:
 	IPatch(int len) :

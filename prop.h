@@ -190,7 +190,7 @@ class CPropAccessor
 {
 public:
 	CPropAccessor() = delete;
-	~CPropAccessor() = delete;
+//	~CPropAccessor() = delete;
 	
 	const T& operator=(const T& val) { this->Set(val); return val; }
 	operator const T&() const        { return this->Get(); }

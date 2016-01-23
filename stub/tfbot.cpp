@@ -27,7 +27,8 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
-	virtual uint32_t GetFuncOffset() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0011 + 2; }
 };
 
@@ -44,11 +45,13 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 	
 	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
+		assert(false);
 		// TODO
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
-	virtual uint32_t GetFuncOffset() const override    { /* TODO */ return 0x0000; }
+	virtual uint32_t GetFuncOffMin() const override    { /* TODO */ return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { /* TODO */ return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { /* TODO */ return 0x0011 + 2; }
 };
 

@@ -36,7 +36,8 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsValidForWanderingPopulation"; }
-	virtual uint32_t GetFuncOffset() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0007 + 2; }
 };
 
@@ -60,7 +61,8 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsBlocked"; }
-	virtual uint32_t GetFuncOffset() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0003 + 2; }
 };
 

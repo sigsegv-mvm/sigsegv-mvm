@@ -39,16 +39,16 @@ struct CPatch_UncapChargeRate_Common : public IPatch
 
 struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch_UncapChargeRate_Common
 {
-	virtual const char *GetFuncName() const override   { return "CTFSniperRifle::ItemPostFrame"; }
-	virtual uint32_t GetFuncOffsetMin() const override { return 0x0000; }
-	virtual uint32_t GetFuncOffsetMax() const override { return 0x0380; } // @ 0x026a
+	virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
+	virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override  { return 0x0380; } // @ 0x026a
 };
 
 struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Common
 {
-	virtual const char *GetFuncName() const override   { return "CTFSniperRifleClassic::ItemPostFrame"; }
-	virtual uint32_t GetFuncOffsetMin() const override { return 0x0000; }
-	virtual uint32_t GetFuncOffsetMax() const override { return 0x0280; } // @ 0x0146
+	virtual const char *GetFuncName() const override { return "CTFSniperRifleClassic::ItemPostFrame"; }
+	virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override  { return 0x0280; } // @ 0x0146
 };
 
 #elif defined _WINDOWS
@@ -91,16 +91,16 @@ struct CPatch_UncapChargeRate_Common : public IPatch
 
 struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch_UncapChargeRate_Common
 {
-	virtual const char *GetFuncName() const override   { return "CTFSniperRifle::ItemPostFrame"; }
-	virtual uint32_t GetFuncOffsetMin() const override { return 0x0000; }
-	virtual uint32_t GetFuncOffsetMax() const override { return 0x0200; } // @ 0x16e
+	virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
+	virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override  { return 0x0200; } // @ 0x16e
 };
 
 struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Common
 {
-	virtual const char *GetFuncName() const override   { return "CTFSniperRifleClassic::ItemPostFrame"; }
-	virtual uint32_t GetFuncOffsetMin() const override { return 0x0000; }
-	virtual uint32_t GetFuncOffsetMax() const override { return 0x0200; } // @ 0x162
+	virtual const char *GetFuncName() const override { return "CTFSniperRifleClassic::ItemPostFrame"; }
+	virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override  { return 0x0200; } // @ 0x162
 };
 
 #endif

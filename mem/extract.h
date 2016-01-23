@@ -3,10 +3,8 @@
 
 
 #include "util/buf.h"
+#include "mem/scan.h"
 #include "addr/addr.h"
-
-
-#warning add fuzzy functionality from IPatch (if it works)
 
 
 template<typename T>
@@ -22,7 +20,8 @@ public:
 	
 	virtual int GetLength() const final { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
-	virtual uint32_t GetFuncOffset() const = 0;
+	virtual uint32_t GetFuncOffMin() const = 0;
+	virtual uint32_t GetFuncOffMax() const = 0;
 	virtual uint32_t GetExtractOffset() const = 0;
 	
 	virtual T AdjustValue(T val) const { return val; }
@@ -38,8 +37,12 @@ private:
 	const int m_iLength;
 	
 	const char *m_pszFuncName = nullptr;
-	uint32_t m_iFuncOffset = 0;
+	uint32_t m_iFuncOffMin = 0;
+	uint32_t m_iFuncOffMax = 0;
 	uint32_t m_iExtractOffset = 0;
+	
+	bool m_bFoundOffset = false;
+	uint32_t m_iFuncOffActual = 0;
 	
 	ByteBuf m_BufExtract;
 	ByteBuf m_MaskExtract;
@@ -51,8 +54,9 @@ private:
 template<typename T>
 T IExtract<T>::Extract()
 {
+	assert(this->m_bFoundOffset);
 	T val = *reinterpret_cast<T *>((uintptr_t)this->m_pFuncAddr +
-		this->m_iFuncOffset + this->m_iExtractOffset);
+		this->m_iFuncOffActual + this->m_iExtractOffset);
 	
 	return this->AdjustValue(val);
 }
@@ -61,7 +65,8 @@ template<typename T>
 bool IExtract<T>::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
-	this->m_iFuncOffset = this->GetFuncOffset();
+	this->m_iFuncOffMin = this->GetFuncOffMin();
+	this->m_iFuncOffMax = this->GetFuncOffMax();
 	this->m_iExtractOffset = this->GetExtractOffset();
 	
 	assert(this->m_iExtractOffset + sizeof(T) <= (unsigned int)this->m_iLength);
@@ -81,17 +86,21 @@ bool IExtract<T>::Init()
 template<typename T>
 bool IExtract<T>::Check()
 {
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
-	for (int i = 0; i < this->m_iLength; ++i) {
-		uint8_t *mem = ptr + i;
-		
-		uint8_t x_byte = this->m_BufExtract[i];
-		uint8_t x_mask = this->m_MaskExtract[i];
-		
-		if ((*mem & x_mask) != (x_byte & x_mask)) {
-			return false;
-		}
+	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
+	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
+	
+	CSingleScan scan(ScanDir::FORWARD, CAddrAddrBounds((void *)addr_min, (void *)addr_max), 1,
+		new CMaskedScanner(ScanResults::ALL, this->m_BufExtract, this->m_MaskExtract));
+	
+	if (scan.Matches().size() != 1) {
+		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
+		return false;
 	}
+	
+	this->m_bFoundOffset = true;
+	this->m_iFuncOffActual = (uintptr_t)scan.Matches()[0] - (uintptr_t)this->m_pFuncAddr;
+	
+	DevMsg("IExtract::Check: OK: \"%s\": actual offset +0x%04x\n", this->m_pszFuncName, this->m_iFuncOffActual);
 	
 	return true;
 }
