@@ -1,5 +1,4 @@
 #include "mem/patch.h"
-#include "extension.h"
 
 
 bool IPatch::Init()
@@ -26,37 +25,21 @@ bool IPatch::Init()
 
 bool IPatch::Check()
 {
-	std::vector<uint32_t> matches;
-	for (uint32_t off = this->m_iFuncOffMin; off <= this->m_iFuncOffMax; ++off) {
-		if (this->CheckOne(off)) {
-			matches.push_back(off);
-		}
-	}
+	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
+	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
-	if (matches.size() != 1) {
-		DevMsg("IPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, matches.size());
+	CSingleScan scan(ScanDir::FORWARD, CAddrAddrBounds((void *)addr_min, (void *)addr_max), 1,
+		new CMaskedScanner(ScanResults::ALL, this->m_BufVerify, this->m_MaskVerify));
+	
+	if (scan.Matches().size() != 1) {
+		DevMsg("IPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
 		return false;
 	}
 	
 	this->m_bFoundOffset = true;
-	this->m_iFuncOffActual = matches[0];
+	this->m_iFuncOffActual = (uintptr_t)scan.Matches()[0] - (uintptr_t)this->m_pFuncAddr;
 	
-	return true;
-}
-
-bool IPatch::CheckOne(uint32_t off)
-{
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + off);
-	for (int i = 0; i < this->m_iLength; ++i) {
-		uint8_t *mem = ptr + i;
-		
-		uint8_t v_byte = this->m_BufVerify[i];
-		uint8_t v_mask = this->m_MaskVerify[i];
-		
-		if ((*mem & v_mask) != (v_byte & v_mask)) {
-			return false;
-		}
-	}
+	DevMsg("IPatch::Check: OK: \"%s\": actual offset +0x%04x\n", this->m_pszFuncName, this->m_iFuncOffActual);
 	
 	return true;
 }

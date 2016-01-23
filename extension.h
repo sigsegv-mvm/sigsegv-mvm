@@ -6,17 +6,6 @@
 #define maxlength maxlen
 
 
-extern IServerGameDLL *gamedll;
-extern ICvar *icvar;
-extern IEngineTrace *enginetrace;
-extern IStaticPropMgrServer *staticpropmgr;
-extern IVDebugOverlay *debugoverlay;
-
-extern CGlobalVars *gpGlobals;
-
-extern ISDKTools *g_pSDKTools;
-
-
 class CExtSigsegv : public SDKExtension, public IConCommandBaseAccessor
 {
 public:

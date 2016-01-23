@@ -1,5 +1,4 @@
 #include "link/link.h"
-#include "extension.h"
 #include "util/util.h"
 #include "stub/stub.h"
 #include "re/nextbot.h"

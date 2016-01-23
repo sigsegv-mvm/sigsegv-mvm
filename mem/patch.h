@@ -45,8 +45,6 @@ protected:
 	virtual void GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	
 private:
-	bool CheckOne(uint32_t off);
-	
 	const int m_iLength;
 	
 	const char *m_pszFuncName = nullptr;

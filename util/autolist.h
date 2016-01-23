@@ -13,8 +13,9 @@ public:
 	}
 	virtual ~AutoList()
 	{
-		assert(s_List != nullptr);
-		s_List->remove(static_cast<T *>(this));
+		if (s_List != nullptr) {
+			s_List->remove(static_cast<T *>(this));
+		}
 	}
 	
 	static const std::list<T *>& List()
@@ -51,11 +52,12 @@ public:
 	}
 	virtual ~AutoNameMap()
 	{
-		T *t = static_cast<T *>(this);
-		std::string name(t->GetName());
-		
-		assert(s_Map != nullptr);
-		assert(s_Map->erase(name) == 1);
+		if (s_Map != nullptr) {
+			T *t = static_cast<T *>(this);
+			std::string name(t->GetName());
+			
+			assert(s_Map->erase(name) == 1);
+		}
 	}
 	
 	static const std::map<std::string, T *>& Map()

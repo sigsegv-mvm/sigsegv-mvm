@@ -3,7 +3,7 @@
 
 
 #include "stub/baseanimating.h"
-#include "prop/prop.h"
+#include "prop.h"
 
 
 class CBaseCombatCharacter : public CBaseFlex {};
@@ -47,11 +47,9 @@ public:
 	// TODO: accessor for m_iszCustomModel
 	
 private:
-	PROP_STR(CTFPlayer);
-	
-	PROP_SENDPROP(int,      CTFPlayer, m_iClass);
-	PROP_SENDPROP(string_t, CTFPlayer, m_iszClassIcon);
-	PROP_SENDPROP(string_t, CTFPlayer, m_iszCustomModel);
+	DEF_SENDPROP(int,      m_iClass);
+	DEF_SENDPROP(string_t, m_iszClassIcon);
+	DEF_SENDPROP(string_t, m_iszCustomModel);
 };
 class CTFPlayerClass : public CTFPlayerClassShared {};
 
@@ -61,31 +59,27 @@ public:
 	
 	
 private:
-	PROP_STR(CTFPlayer);
-	
-	PROP_SENDPROP(float, CTFPlayer, m_flRageMeter);
-	PROP_SENDPROP(bool,  CTFPlayer, m_bRageDraining);
-	PROP_SENDPROP(bool,  CTFPlayer, m_bInUpgradeZone);
+	DEF_SENDPROP(float, m_flRageMeter);
+	DEF_SENDPROP(bool,  m_bRageDraining);
+	DEF_SENDPROP(bool,  m_bInUpgradeZone);
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
 {
 public:
-	CTFPlayerClass *GetPlayerClass()             { return reinterpret_cast<CTFPlayerClass *>(this); }
-	const CTFPlayerClass *GetPlayerClass() const { return reinterpret_cast<const CTFPlayerClass *>(this); }
+	CTFPlayerClass *GetPlayerClass()             { return m_PlayerClass; }
+	const CTFPlayerClass *GetPlayerClass() const { return m_PlayerClass; }
 	
 	bool IsPlayerClass(int iClass) const;
 	
 	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
 	
 private:
-	PROP_STR(CTFPlayer);
-	
-//	PROP_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass);
-	PROP_SENDPROP(bool, CTFPlayer, m_bIsMiniBoss);
+	DEF_SENDPROP(CTFPlayerClass, m_PlayerClass);
+	DEF_SENDPROP(bool,           m_bIsMiniBoss);
 	
 public:
-//	PROP_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared);
+	DEF_SENDPROP(CTFPlayerShared, m_Shared);
 };
 
 

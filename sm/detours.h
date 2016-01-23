@@ -32,7 +32,6 @@
 #ifndef _INCLUDE_SOURCEMOD_DETOURS_H_
 #define _INCLUDE_SOURCEMOD_DETOURS_H_
 
-#include "extension.h"
 #include <jit/jit_helpers.h>
 #include <jit/x86/x86_macros.h>
 #include <CDetour/detourhelpers.h>

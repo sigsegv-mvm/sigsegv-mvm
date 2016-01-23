@@ -2,9 +2,8 @@
 #define _INCLUDE_SIGSEGV_STUB_BASEENTITY_H_
 
 
-#include "extension.h"
 #include "link/link.h"
-#include "prop/prop.h"
+#include "prop.h"
 
 
 class CBaseEntity
@@ -24,16 +23,15 @@ public:
 	bool IsAlive()                       { return (this->m_lifeState == LIFE_ALIVE); }
 	
 private:
+	DEF_DATAMAP(int,     m_iEFlags);
+	DEF_DATAMAP(Vector, m_vecAbsOrigin);
+	
+	DEF_SENDPROP(int,    m_iHealth);
+	DEF_SENDPROP(char,   m_lifeState);
+	DEF_SENDPROP(int,    m_iTeamNum);
+	
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
 	static FuncThunk<void (*)(CBaseEntity *)>                 ft_CalcAbsolutePosition;
-	
-	PROP_STR(CBaseEntity);
-	
-	PROP_SENDPROP(int,    CBaseEntity, m_iHealth);
-	PROP_SENDPROP(char,   CBaseEntity, m_lifeState);
-	PROP_DATAMAP(int,     CBaseEntity, m_iEFlags);
-	PROP_SENDPROP(int,    CBaseEntity, m_iTeamNum);
-	PROP_SENDPROP(Vector, CBaseEntity, m_vecAbsOrigin);
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

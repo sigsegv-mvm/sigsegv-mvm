@@ -164,6 +164,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\mod\mod_robottickle.cpp" />
     <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp" />
     <ClCompile Include="..\mod\mod_stickypusher.cpp" />
+    <ClCompile Include="..\prop.cpp" />
     <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\sizeof.cpp" />
@@ -195,10 +196,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClInclude Include="..\mem\patch.h" />
     <ClInclude Include="..\mod.h" />
     <ClInclude Include="..\modmanager.h" />
-    <ClInclude Include="..\prop\datamap.h" />
-    <ClInclude Include="..\prop\extract.h" />
-    <ClInclude Include="..\prop\prop.h" />
-    <ClInclude Include="..\prop\sendprop.h" />
+    <ClInclude Include="..\prop.h" />
     <ClInclude Include="..\re\nextbot.h" />
     <ClInclude Include="..\re\path.h" />
     <ClInclude Include="..\sdk2013\annotations.h" />

@@ -2,8 +2,7 @@
 #define _INCLUDE_SIGSEGV_STUB_GAMERULES_H_
 
 
-#include "extension.h"
-#include "prop/prop.h"
+#include "prop.h"
 
 
 // CGameRules
@@ -18,9 +17,7 @@ public:
 	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
 	
 private:
-	PROP_STR(CTFGameRules);
-	
-	PROP_SENDPROP(bool, CTFGameRules, m_bPlayingMannVsMachine);
+	DEF_SENDPROP(bool, m_bPlayingMannVsMachine);
 };
 
 

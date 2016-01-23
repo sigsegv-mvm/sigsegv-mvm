@@ -6,6 +6,7 @@
 #include "addr/addr.h"
 #include "addr/prescan.h"
 #include "gameconf.h"
+#include "prop.h"
 
 
 CExtSigsegv g_Ext;
@@ -35,6 +36,8 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	if (!Link::InitAll(error, maxlen)) goto fail;
 	
 	CDetourManager::Init(g_pSM->GetScriptingEngine());
+	
+	Prop::PreloadAll();
 	
 	CModManager::LoadAllMods();
 	
@@ -71,6 +74,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 {
 	DevMsg("CExtSigsegv: compiled @ " __DATE__ " " __TIME__ "\n");
 	
+	GET_V_IFACE_ANY(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_ANY(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);

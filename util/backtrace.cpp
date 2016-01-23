@@ -3,11 +3,6 @@
 
 #if defined _LINUX || defined _OSX
 
-#include <libunwind.h>
-
-#define HAVE_DECL_BASENAME 1
-#include <libiberty/demangle.h>
-
 
 const char *try_demangle(const char *mangled)
 {

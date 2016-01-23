@@ -11,6 +11,25 @@
 #endif
 
 
+class IVEngineServer;
+class IServerGameDLL;
+class ICvar;
+class IEngineTrace;
+class IStaticPropMgrServer;
+class IVDebugOverlay;
+class CGlobalVars;
+
+
+extern IVEngineServer *engine;
+extern IServerGameDLL *gamedll;
+extern ICvar *icvar;
+extern IEngineTrace *enginetrace;
+extern IStaticPropMgrServer *staticpropmgr;
+extern IVDebugOverlay *debugoverlay;
+
+extern CGlobalVars *gpGlobals;
+
+
 /* C++ standard library */
 #include <algorithm>
 #include <functional>
@@ -42,25 +61,34 @@
 #include <iserverentity.h>
 #include <edict.h>
 #include <IEngineTrace.h>
-extern IEngineTrace *enginetrace;
 #include <IStaticPropMgr.h>
-extern IStaticPropMgrServer *staticpropmgr;
 #include <ivdebugoverlay.h>
-extern IVDebugOverlay *debugoverlay;
 #include "sdk2013/util_shared.h"
 #include <ai_activity.h>
 #include <usercmd.h>
 #include <npcevent.h>
 #include <debugoverlay_shared.h>
+#include <dt_send.h>
+#include <eiface.h>
 
 /* SourceMod */
+#include <compat_wrappers.h>
 #include <ISDKTools.h>
 #include "sm/MemoryUtils.h"
 
-/* SourceMod */
+extern SourceMod::ISDKTools *g_pSDKTools;
+
+/* this extension */
 #include <smsdk_ext.h>
 
-/* Windows */
+/* Posix specific */
+#if defined _LINUX || defined _OSX
+#include <libunwind.h>
+#define HAVE_DECL_BASENAME 1
+#include <libiberty/demangle.h>
+#endif
+
+/* Windows specific */
 #if defined _WINDOWS
 #pragma warning(disable:4091)
 #include <Dbghelp.h>
