@@ -18,12 +18,14 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 {
 	CExtract_CTFBot_m_nMission() : IExtract<int>(sizeof(s_Buf_CTFBot_m_nMission)) {}
 	
-	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
 		buf.CopyFrom(s_Buf_CTFBot_m_nMission);
 		
 		mask.SetRange(0x04 + 2, 1, 0x00);
 		mask.SetRange(0x11 + 2, 4, 0x00);
+		
+		return true;
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
@@ -35,24 +37,33 @@ struct CExtract_CTFBot_m_nMission : public IExtract<int>
 #elif defined _WINDOWS
 
 static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
-	0x00,
-	// TODO
+	0x83, 0xbf, 0x00, 0x00, 0x00, 0x00, 0x02, // +0000  cmp dword ptr [edi+0xVVVVVVVV],0x2
+	0x75, 0x00,                               // +0007  jnz 0xXX
+	0x68, 0x00, 0x00, 0x00, 0x00,             // +0009  push offset "mission_sentry_buster"
 };
 
 struct CExtract_CTFBot_m_nMission : public IExtract<int>
 {
 	CExtract_CTFBot_m_nMission() : IExtract<int>(sizeof(s_Buf_CTFBot_m_nMission)) {}
 	
-	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
-		assert(false);
-		// TODO
+		const char *str = Scan::FindUniqueConstStr("mission_sentry_buster");
+		if (str == nullptr) return false;
+		
+		buf.CopyFrom(s_Buf_CTFBot_m_nMission);
+		buf.SetDword(0x09 + 1, (uint32_t)str);
+		
+		mask.SetRange(0x00 + 2, 4, 0x00);
+		mask.SetRange(0x07 + 1, 1, 0x00);
+		
+		return true;
 	}
 	
-	virtual const char *GetFuncName() const override   { return "CTFBot::SetMission"; }
-	virtual uint32_t GetFuncOffMin() const override    { /* TODO */ return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override    { /* TODO */ return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { /* TODO */ return 0x0011 + 2; }
+	virtual const char *GetFuncName() const override   { return "CFuncNavCost::IsApplicableTo"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0200; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0000 + 2; }
 };
 
 #endif

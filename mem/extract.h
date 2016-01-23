@@ -31,7 +31,7 @@ protected:
 		m_iLength(len),
 		m_BufExtract(len), m_MaskExtract(len) {}
 	
-	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	
 private:
 	const int m_iLength;
@@ -78,7 +78,9 @@ bool IExtract<T>::Init()
 	
 	this->m_MaskExtract.SetAll(0xff);
 	
-	this->GetExtractInfo(this->m_BufExtract, this->m_MaskExtract);
+	if (!this->GetExtractInfo(this->m_BufExtract, this->m_MaskExtract)) {
+		return false;
+	}
 	
 	return true;
 }

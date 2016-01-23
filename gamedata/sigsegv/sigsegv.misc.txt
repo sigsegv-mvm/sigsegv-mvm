@@ -202,6 +202,15 @@
 					type "sym"
 					sym  "_ZN12PathFollower23SetMinLookAheadDistanceEf"
 				}
+				
+				"CFuncNavCost::IsApplicableTo"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZNK12CFuncNavCost14IsApplicableToEP20CBaseCombatCharacter"
+					unistr "mission_sniper"
+					// alt: "mission_spy"
+					// alt: "mission_sentry_buster"
+				}
 			}
 		}
 	}

@@ -28,11 +28,13 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 {
 	CExtract_CTFNavArea_m_nAttributes() : IExtract<TFNavAttributeType>(sizeof(s_Buf_CTFNavArea_m_nAttributes)) {}
 	
-	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
 		buf.CopyFrom(s_Buf_CTFNavArea_m_nAttributes);
 		
 		mask.SetRange(0x07 + 2, 4, 0x00);
+		
+		return true;
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsValidForWanderingPopulation"; }
@@ -53,11 +55,13 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 {
 	CExtract_CTFNavArea_m_nAttributes() : IExtract<TFNavAttributeType>(sizeof(s_Buf_CTFNavArea_m_nAttributes)) {}
 	
-	virtual void GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
 		buf.CopyFrom(s_Buf_CTFNavArea_m_nAttributes);
 		
 		mask.SetRange(0x03 + 2, 4, 0x00);
+		
+		return true;
 	}
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsBlocked"; }
