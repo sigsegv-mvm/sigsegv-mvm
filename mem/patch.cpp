@@ -5,7 +5,8 @@
 bool IPatch::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
-	this->m_iFuncOffset = this->GetFuncOffset();
+	this->m_iFuncOffMin = this->GetFuncOffsetMin();
+	this->m_iFuncOffMax = this->GetFuncOffsetMax();
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
 	if (this->m_pFuncAddr == nullptr) {
@@ -25,7 +26,27 @@ bool IPatch::Init()
 
 bool IPatch::Check()
 {
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
+	std::vector<uint32_t> matches;
+	for (uint32_t off = this->m_iFuncOffMin; off <= this->m_iFuncOffMax; ++off) {
+		if (this->CheckOne(off)) {
+			matches.push_back(off);
+		}
+	}
+	
+	if (matches.size() != 1) {
+		DevMsg("IPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, matches.size());
+		return false;
+	}
+	
+	this->m_bFoundOffset = true;
+	this->m_iFuncOffActual = matches[0];
+	
+	return true;
+}
+
+bool IPatch::CheckOne(uint32_t off)
+{
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + off);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		
@@ -33,8 +54,6 @@ bool IPatch::Check()
 		uint8_t v_mask = this->m_MaskVerify[i];
 		
 		if ((*mem & v_mask) != (v_byte & v_mask)) {
-			DevMsg("IPatch::Check: FAIL: func \"%s\", off 0x%x, byte 0x%x: < byte:%02x mask:%02x | mem:%02x >\n",
-				this->m_pszFuncName, this->m_iFuncOffset, i, v_byte, v_mask, *mem);
 			return false;
 		}
 	}
@@ -49,9 +68,14 @@ void IPatch::Apply()
 		return;
 	}
 	
+	if (!this->m_bFoundOffset) {
+		DevWarning("IPatch::Apply: haven't found actual offset yet!\n");
+		return;
+	}
+	
 	DevMsg("IPatch::Apply: TODO: unprotect/protect pages\n");
 	
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		
@@ -73,9 +97,14 @@ void IPatch::UnApply()
 		return;
 	}
 	
+	if (!this->m_bFoundOffset) {
+		DevWarning("IPatch::UnApply: haven't found actual offset yet!\n");
+		return;
+	}
+	
 	DevMsg("IPatch::UnApply: TODO: unprotect/protect pages\n");
 	
-	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffset);
+	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
 	for (int i = 0; i < this->m_iLength; ++i) {
 		uint8_t *mem = ptr + i;
 		

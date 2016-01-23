@@ -6,6 +6,9 @@
 #include "addr/addr.h"
 
 
+#warning add fuzzy functionality from IPatch (if it works)
+
+
 template<typename T>
 class IExtract
 {

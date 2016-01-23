@@ -31,7 +31,8 @@ public:
 	
 	virtual int GetLength() const final { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
-	virtual uint32_t GetFuncOffset() const = 0;
+	virtual uint32_t GetFuncOffsetMin() const = 0;
+	virtual uint32_t GetFuncOffsetMax() const = 0;
 	
 protected:
 	IPatch(int len) :
@@ -44,10 +45,16 @@ protected:
 	virtual void GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	
 private:
+	bool CheckOne(uint32_t off);
+	
 	const int m_iLength;
 	
 	const char *m_pszFuncName = nullptr;
-	uint32_t m_iFuncOffset = 0;
+	uint32_t m_iFuncOffMin = 0;
+	uint32_t m_iFuncOffMax = 0;
+	
+	bool m_bFoundOffset = false;
+	uint32_t m_iFuncOffActual = 0;
 	
 	ByteBuf m_BufVerify;
 	ByteBuf m_BufPatch;

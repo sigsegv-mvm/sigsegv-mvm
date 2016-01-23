@@ -8,11 +8,11 @@ builder.SetBuildFolder('package')
 # Add any folders you need to this list
 folder_list = [
   'addons/sourcemod/extensions',
-  'addons/sourcemod/scripting',
-  'addons/sourcemod/scripting/include',
+#  'addons/sourcemod/scripting',
+#  'addons/sourcemod/scripting/include',
   'addons/sourcemod/gamedata',
   'addons/sourcemod/gamedata/sigsegv',
-  'addons/sourcemod/configs',
+#  'addons/sourcemod/configs',
 ]
 
 # Create the distribution folder hierarchy.
