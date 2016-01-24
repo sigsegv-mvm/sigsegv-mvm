@@ -20,6 +20,7 @@ public:
 	
 	virtual int GetLength() const final { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
+	virtual void *GetFuncAddr() const { return nullptr; }
 	virtual uint32_t GetFuncOffMin() const = 0;
 	virtual uint32_t GetFuncOffMax() const = 0;
 	virtual uint32_t GetExtractOffset() const = 0;
@@ -65,16 +66,21 @@ template<typename T>
 bool IExtract<T>::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
+	if (this->m_pszFuncName != nullptr) {
+		this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
+	} else {
+		this->m_pFuncAddr = this->GetFuncAddr();
+	}
+	
+	if (this->m_pFuncAddr == nullptr) {
+		return false;
+	}
+	
 	this->m_iFuncOffMin = this->GetFuncOffMin();
 	this->m_iFuncOffMax = this->GetFuncOffMax();
 	this->m_iExtractOffset = this->GetExtractOffset();
 	
 	assert(this->m_iExtractOffset + sizeof(T) <= (unsigned int)this->m_iLength);
-	
-	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
-	if (this->m_pFuncAddr == nullptr) {
-		return false;
-	}
 	
 	this->m_MaskExtract.SetAll(0xff);
 	

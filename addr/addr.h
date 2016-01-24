@@ -21,6 +21,7 @@ private:
 	AddrManager() {}
 	
 	static std::map<std::string, IAddr *> s_Addrs;
+	static bool s_bLoading;
 };
 
 

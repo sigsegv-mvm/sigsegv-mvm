@@ -77,6 +77,11 @@ public:
 	
 	operator T&() const
 	{
+		/* hack: handle gnarly dependency cases where: addr >> thunk >> addr */
+//		if (this->m_pObjPtr == nullptr) {
+//			(void)this->Link(nullptr, 0);
+//		}
+		
 		assert(this->m_pObjPtr != nullptr);
 		return *m_pObjPtr;
 	}

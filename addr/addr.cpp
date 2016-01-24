@@ -30,6 +30,7 @@ void IAddr::Init()
 
 
 std::map<std::string, IAddr *> AddrManager::s_Addrs;
+bool AddrManager::s_bLoading = false;
 
 
 void AddrManager::Load()
@@ -46,17 +47,23 @@ void AddrManager::Load()
 		}
 	}
 	
+#if 0
 	/* early pass 1: vtables */
 	for (auto addr : AutoList<IAddr>::List()) {
 		if (dynamic_cast<IAddr_VTable *>(addr) != nullptr) {
 			addr->Init();
 		}
 	}
+#endif
+	
+	s_bLoading = true;
 	
 	/* main pass */
 	for (auto addr : AutoList<IAddr>::List()) {
 		addr->Init();
 	}
+	
+	s_bLoading = false;
 	
 	DevMsg("AddrManager::Load END\n");
 }
@@ -70,13 +77,18 @@ void *AddrManager::GetAddr(const char *name)
 		return nullptr;
 	}
 	
-	const IAddr *addr = (*it).second;
+	IAddr *addr = (*it).second;
+	
+	/* try to handle dependency ordering somewhat automatically */
+	if (s_bLoading && addr->GetState() == IAddr::State::INITIAL) {
+		addr->Init();
+	}
 	
 	IAddr::State state = addr->GetState();
 	assert(state != IAddr::State::INITIAL);
 	
 	if (state == IAddr::State::FAIL) {
-		DevMsg("AddrManager::GetAddr FAIL: addr for name \"%s\" couldn't resolve\n", name);
+		DevMsg("AddrManager::GetAddr FAIL: have but cannot resolve addr for name \"%s\"\n", name);
 		return nullptr;
 	}
 	
@@ -84,7 +96,7 @@ void *AddrManager::GetAddr(const char *name)
 }
 
 
-static ConCommand ccmd_addrlist("sigsegv_addrlist", &AddrManager::CC_ListAddrs,
+static ConCommand ccmd_list_addrs("sigsegv_list_addrs", &AddrManager::CC_ListAddrs,
 	"List addresses and show their status", FCVAR_NONE);
 void AddrManager::CC_ListAddrs(const CCommand& cmd)
 {

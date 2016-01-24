@@ -21,15 +21,19 @@ void CC_ListProps(const CCommand& cmd)
 			Msg("%-8s  %7s  %-*s  %s\n", kind, "INIT", len_obj, n_obj, n_mem);
 			break;
 		case IProp::State::OK:
-			Msg("%-8s  +0x%04x  %-*s  %s\n", kind, prop->GetOffset(), len_obj, n_obj, n_mem);
+		{
+			int off = -1;
+			prop->GetOffset(off);
+			Msg("%-8s  +0x%04x  %-*s  %s\n", kind, off, len_obj, n_obj, n_mem);
 			break;
+		}
 		case IProp::State::FAIL:
 			Msg("%-8s  %7s  %-*s  %s\n", kind, "FAIL", len_obj, n_obj, n_mem);
 			break;
 		}
 	}
 }
-static ConCommand ccmd_proplist("sigsegv_proplist", &CC_ListProps,
+static ConCommand ccmd_list_props("sigsegv_list_props", &CC_ListProps,
 	"List props and show their status", FCVAR_NONE);
 
 
@@ -42,6 +46,18 @@ namespace Prop
 			prop->Preload();
 		}
 		
-		engine->ServerCommand("sigsegv_proplist\n");
+		CCommand dummy;
+		CC_ListProps(dummy);
+	}
+	
+	bool FindOffset(int& off, const char *obj, const char *mem)
+	{
+		for (auto prop : AutoList<IProp>::List()) {
+			if (strcmp(obj, prop->GetObjectName()) == 0 && strcmp(mem, prop->GetMemberName()) == 0) {
+				return prop->GetOffset(off);
+			}
+		}
+		
+		return false;
 	}
 }

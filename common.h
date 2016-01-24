@@ -35,6 +35,8 @@ extern CGlobalVars *gpGlobals;
 #include <functional>
 #include <memory>
 #include <string>
+#include <type_traits>
+#include <typeinfo>
 #include <utility>
 
 /* STL */
@@ -77,7 +79,7 @@ extern CGlobalVars *gpGlobals;
 #include <ISDKTools.h>
 #include "sm/MemoryUtils.h"
 
-extern SourceMod::ISDKTools *g_pSDKTools;
+//extern SourceMod::ISDKTools *g_pSDKTools;
 
 /* this extension */
 #include <smsdk_ext.h>

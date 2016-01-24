@@ -8,6 +8,8 @@
 namespace Prop
 {
 	void PreloadAll();
+	
+	bool FindOffset(int& off, const char *obj, const char *mem);
 }
 
 
@@ -27,7 +29,7 @@ public:
 	
 	void Preload() { this->DoCalcOffset(); }
 	
-	int GetOffset();
+	bool GetOffset(int& off);
 	
 	State GetState() const { return this->m_State; }
 	
@@ -43,12 +45,16 @@ private:
 	int m_Offset = -1;
 };
 
-inline int IProp::GetOffset()
+inline bool IProp::GetOffset(int& off)
 {
 	this->DoCalcOffset();
 	
-	assert(this->m_State != State::FAIL);
-	return this->m_Offset;
+	if (this->m_State == State::FAIL) {
+		return false;
+	}
+	
+	off = this->m_Offset;
+	return true;
 }
 
 inline void IProp::DoCalcOffset()
@@ -185,30 +191,45 @@ private:
 // dtor:     NOPE
 // virtual:  NOPE
 // members:  NOPE
-template<typename T, typename IPROP, IPROP *PROP, bool NET = false>
-class CPropAccessor
+template<typename T, typename IPROP, IPROP *PROP>
+class CPropAccessor_Read
 {
 public:
-	CPropAccessor() = delete;
-//	~CPropAccessor() = delete;
+	CPropAccessor_Read() = delete;
+//	~CPropAccessor_Read() = delete;
 	
-	const T& operator=(const T& val) { this->Set(val); return val; }
-	operator const T&() const        { return this->Get(); }
+	operator const T&() const { return this->Get(); }
 	
 	/* this is questionable and probably ought to be removed */
-	operator T*() const              { return this->GetPtr(); }
+	operator T*() const { return this->GetPtr(); }
 	
-private:
+	const T& operator=(const T& val) = delete;
+	
+protected:
 	T *GetPtr() const
 	{
-		return reinterpret_cast<T *>((uintptr_t)this + PROP->GetOffset());
+		int off = -1;
+		assert(PROP->GetOffset(off));
+		
+		return reinterpret_cast<T *>((uintptr_t)this + off);
 	}
 	
 	const T& Get() const
 	{
 		return *this->GetPtr();
 	}
+};
+
+template<typename T, typename IPROP, IPROP *PROP, bool NET = false>
+class CPropAccessor_Write : public CPropAccessor_Read<T, IPROP, PROP>
+{
+public:
+	CPropAccessor_Write() = delete;
+//	~CPropAccessor_Write() = delete;
 	
+	const T& operator=(const T& val) { this->Set(val); return val; }
+	
+protected:
 	void Set(const T& val) const
 	{
 		if (NET) {
@@ -222,14 +243,26 @@ private:
 
 
 #define DEF_SENDPROP(T, P) \
-	static CProp_SendProp<T> s_prop_##P; \
-	CPropAccessor<T, CProp_SendProp<T>, &s_prop_##P, true> P
+	typedef CProp_SendProp<T> _tp_##P; \
+	static _tp_##P s_prop_##P; \
+	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, true> _ta_##P; \
+	_ta_##P P; \
+	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+
 #define DEF_DATAMAP(T, P) \
-	static CProp_DataMap<T> s_prop_##P; \
-	CPropAccessor<T, CProp_DataMap<T>, &s_prop_##P, false> P
+	typedef CProp_DataMap<T> _tp_##P; \
+	static _tp_##P s_prop_##P; \
+	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, false> _ta_##P; \
+	_ta_##P P; \
+	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+
 #define DEF_EXTRACT(T, P) \
-	static CProp_Extract<T> s_prop_##P; \
-	CPropAccessor<T, CProp_Extract<T>, &s_prop_##P, false> P
+	typedef CProp_Extract<T> _tp_##P; \
+	static _tp_##P s_prop_##P; \
+	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, false> _ta_##P; \
+	_ta_##P P; \
+	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+
 
 #define IMPL_SENDPROP(T, C, P, SC) \
 	CProp_SendProp<T> C::s_prop_##P(#C, #P, #SC)

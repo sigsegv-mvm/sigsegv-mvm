@@ -3,15 +3,16 @@
 
 
 #include "prop.h"
+#include "link/link.h"
 
 
-// CGameRules
-// CMultiplayRules
-// CTeamplayRules
-// CTeamplayRoundBasedRules
+class CGameRules {};
+class CMultiplayRules : public CGameRules {};
+class CTeamplayRules : public CMultiplayRules {};
+class CTeamplayRoundBasedRules : public CTeamplayRules {};
 
 
-class CTFGameRules
+class CTFGameRules : public CTeamplayRoundBasedRules
 {
 public:
 	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
@@ -21,10 +22,9 @@ private:
 };
 
 
-inline CTFGameRules *TFGameRules()
-{
-	return reinterpret_cast<CTFGameRules *>(g_pSDKTools->GetGameRules());
-}
+extern GlobalThunk<CGameRules *> g_pGameRules;
+inline CGameRules   *GameRules()   { return g_pGameRules; }
+inline CTFGameRules *TFGameRules() { return reinterpret_cast<CTFGameRules *>(GameRules()); }
 
 
 #endif

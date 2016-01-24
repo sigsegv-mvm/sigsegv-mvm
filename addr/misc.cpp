@@ -1,11 +1,69 @@
 #include "addr/addr.h"
 #include "mem/scan.h"
+#include "prop.h"
+#include "stub/gamerules.h"
+
+
+static constexpr uint8_t s_Buf_g_pGameRules[] = {
+	0x55,                                                       // +0000  push ebp
+	0x8b, 0xec,                                                 // +0001  mov ebp,esp
+	0x56,                                                       // +0003  push esi
+	0x8b, 0xf1,                                                 // +0004  mov esi,ecx
+	0xc7, 0x06, 0x00, 0x00, 0x00, 0x00,                         // +0006  mov dword ptr [esi],offset p_VT
+	0xc7, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // +000C  mov g_pGameRules,0x00000000
+};
+
+struct CExtract_g_pGameRules : public IExtract<uintptr_t>
+{
+	CExtract_g_pGameRules() : IExtract<uintptr_t>(sizeof(s_Buf_g_pGameRules)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+//		DevMsg("CExtract_g_pGameRules: vt   @ 0x%08x\n", this->GetVTableAddr());
+//		DevMsg("CExtract_g_pGameRules: dtor @ 0x%08x\n", (uintptr_t)this->GetFuncAddr());
+		
+		buf.CopyFrom(s_Buf_g_pGameRules);
+		buf.SetDword(0x0006 + 2, (uint32_t)this->GetVTableAddr());
+		
+		mask.SetDword(0x000c + 2, 0x00000000);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return nullptr; }
+	virtual void *GetFuncAddr() const override         { return (void *)this->GetVTableAddr()[VT_idx_CBaseGameSystemPerFrame_dtor]; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x000c + 2; }
+	
+	const uintptr_t *GetVTableAddr() const { return (const uintptr_t *)AddrManager::GetAddr("[VT] CGameRules"); }
+	static constexpr int VT_idx_CBaseGameSystemPerFrame_dtor = 0x00d;
+};
+
+
+class CAddr_g_pGameRules : public IAddr_Sym
+{
+public:
+	virtual const char *GetName() const override   { return "g_pGameRules"; }
+	virtual const char *GetSymbol() const override { return "g_pGameRules"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		CExtract_g_pGameRules extractor;
+		if (!extractor.Init())  return false;
+		if (!extractor.Check()) return false;
+		
+		addr = extractor.Extract();
+		return true;
+	}
+};
+static CAddr_g_pGameRules addr_g_pGameRules;
 
 
 class CAddr_pszWpnEntTranslationList : public IAddr_Sym
 {
 public:
-	virtual const char *GetName() const override { return "pszWpnEntTranslationList"; }
+	virtual const char *GetName() const override   { return "pszWpnEntTranslationList"; }
 	virtual const char *GetSymbol() const override { return "pszWpnEntTranslationList"; }
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
@@ -60,85 +118,75 @@ public:
 static CAddr_pszWpnEntTranslationList addr_pszWpnEntTranslationList;
 
 
+class CAddr_CTFPlayer_CanBeForcedToLaugh : public IAddr_Sym
+{
+public:
+	virtual const char *GetName() const override   { return "CTFPlayer::CanBeForcedToLaugh"; }
+	virtual const char *GetSymbol() const override { return "_ZN9CTFPlayer18CanBeForcedToLaughEv"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		static constexpr uint8_t buf[] = {
+			0xa1, 0x00, 0x00, 0x00, 0x00,             // +0000  mov eax,g_pGameRules
+			0x56,                                     // +0005  push esi
+			0x8b, 0xf1,                               // +0006  mov esi,ecx
+			0x85, 0xc0,                               // +0008  test eax,eax
+			0x74, 0x27,                               // +000A  jz L_0033
+			0x80, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x00, // +000C  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x0
+			0x74, 0x1e,                               // +0013  jz L_0033
+			0x8b, 0x06,                               // +0015  mov eax,[esi]
+			0x8b, 0x80, 0x00, 0x00, 0x00, 0x00,       // +0017  mov eax,[eax+VToff(CBasePlayer::IsBot)]
+			0xff, 0xd0,                               // +001C  call eax
+			0x84, 0xc0,                               // +001F  test al,al
+			0x74, 0x10,                               // +0021  jz L_0033
+			0x8b, 0xce,                               // +0023  mov ecx,esi
+			0xe8, 0x00, 0x00, 0x00, 0x00,             // +0025  call CBaseEntity::GetTeamNumber
+			0x83, 0xf8, 0x03,                         // +002A  cmp eax,TF_TEAM_PVE_INVADERS
+			0x75, 0x04,                               // +002D  jnz L_0033
+			0x32, 0xc0,                               // +002F  xor al,al
+			0x5e,                                     // +0031  pop esi
+			0xc3,                                     // +0032  ret
+			0xb0, 0x01,                               // +0033  mov al,1
+			0x5e,                                     // +0035  pop esi
+			0xc3,                                     // +0036  ret
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		int off_CTFGameRules_m_bPlayingMannVsMachine;
+		if (!Prop::FindOffset(off_CTFGameRules_m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
+		
+		void *addr_g_pGameRules = AddrManager::GetAddr("g_pGameRules");
+		if (addr_g_pGameRules == nullptr) return false;
+		
+		seek.SetDword(0x0000 + 1, (uint32_t)addr_g_pGameRules);
+		seek.SetDword(0x000c + 2, off_CTFGameRules_m_bPlayingMannVsMachine);
+		mask.SetDword(0x0017 + 2, 0x00000000);
+		mask.SetDword(0x0025 + 1, 0x00000000);
+		
+//		DevMsg("g_pGameRules: %08x\n", (uintptr_t)addr_g_pGameRules);
+//		DevMsg("m_bPlayingMannVsMachine: %08x\n", off_CTFGameRules_m_bPlayingMannVsMachine);
+		
+		CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 0x10, new CMaskedScanner(ScanResults::ALL, seek, mask));
+		if (scan1.Matches().size() != 1) {
+			DevMsg("Fail scan1 %u\n", scan1.Matches().size());
+			return false;
+		}
+		
+		addr = (uintptr_t)scan1.Matches()[0];
+		return true;
+	}
+};
+static CAddr_CTFPlayer_CanBeForcedToLaugh addr_CTFPlayer_CanBeForcedToLaugh;
+
+
 // TODO: finder for CBasePlayer::IsBot
 // (need to differentiate from CBasePlayer::IsFakeClient)
 // 8b 81 xx xx xx xx  mov eax,[ecx+m_fFlags]
 // c1 e8 xx           shr eax,log2(FL_FAKECLIENT)
 // 83 e0 01           and eax,1
 // c3                 ret
-
-
-#if 0
-/* vtable indexes (valid for windows ONLY!) */
-constexpr int VT_idx_CBaseCombatWeapon_ItemPostFrame = (0x41c / 4);
-constexpr int VT_idx_Action_Update                   = ( 0xb8 / 4);
-
-
-struct CAddr_CTFSniperRifle_ItemPostFrame : public IAddr_Sym
-{
-	const char *GetName() const override   { return "CTFSniperRifle::ItemPostFrame"; }
-	const char *GetSymbol() const override { return "_ZN14CTFSniperRifle13ItemPostFrameEv"; }
-	
-	bool FindAddrWin(uintptr_t& addr) const override
-	{
-		auto p_VT = (uintptr_t *)AddrManager::GetAddr("[VT] CTFSniperRifle");
-		if (p_VT == nullptr) return false;
-		
-		addr = p_VT[VT_idx_CBaseCombatWeapon_ItemPostFrame];
-		return true;
-	}
-};
-static CAddr_CTFSniperRifle_ItemPostFrame addr_CTFSniperRifle_ItemPostFrame;
-
-
-struct CAddr_CTFSniperRifleClassic_ItemPostFrame : public IAddr_Sym
-{
-	const char *GetName() const override   { return "CTFSniperRifleClassic::ItemPostFrame"; }
-	const char *GetSymbol() const override { return "_ZN21CTFSniperRifleClassic13ItemPostFrameEv"; }
-	
-	bool FindAddrWin(uintptr_t& addr) const override
-	{
-		auto p_VT = (uintptr_t *)AddrManager::GetAddr("[VT] CTFSniperRifleClassic");
-		if (p_VT == nullptr) return false;
-		
-		addr = p_VT[VT_idx_CBaseCombatWeapon_ItemPostFrame];
-		return true;
-	}
-};
-static CAddr_CTFSniperRifleClassic_ItemPostFrame addr_CTFSniperRifleClassic_ItemPostFrame;
-#endif
-
-
-#if 0
-struct CAddr_CTFBotMvMEngineerTeleportSpawn_Update : public IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff
-{
-	const char *GetName() const override       { return "CTFBotMvMEngineerTeleportSpawn::Update"; }
-	const char *GetSymbol() const override     { return "_ZN30CTFBotMvMEngineerTeleportSpawn6UpdateEP6CTFBotf"; }
-	const char *GetUniqueStr() const override  { return "teleported_mvm_bot"; }
-	const char *GetVTableName() const override { return "[VT] CTFBotMvMEngineerTeleportSpawn"; }
-	int GetVTableIndex() const override        { return VT_idx_Action_Update; }
-};
-static CAddr_CTFBotMvMEngineerTeleportSpawn_Update addr_CTFBotMvMEngineerTeleportSpawn_Update;
-
-
-struct CAddr_CTFBotMvMEngineerBuildSentryGun_Update : public IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff
-{
-	const char *GetName() const override       { return "CTFBotMvMEngineerBuildSentryGun::Update"; }
-	const char *GetSymbol() const override     { return "_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"; }
-	const char *GetUniqueStr() const override  { return "Built a sentry"; } // alt: "Placing sentry"
-	const char *GetVTableName() const override { return "[VT] CTFBotMvMEngineerBuildSentryGun"; }
-	int GetVTableIndex() const override        { return VT_idx_Action_Update; }
-};
-static CAddr_CTFBotMvMEngineerBuildSentryGun_Update addr_CTFBotMvMEngineerBuildSentryGun_Update;
-
-
-struct CAddr_CTFBotMvMEngineerBuildTeleportExit_Update : public IAddr_Func_UniqueStr_EBPBacktrack_KnownVTOff
-{
-	const char *GetName() const override       { return "CTFBotMvMEngineerBuildTeleportExit::Update"; }
-	const char *GetSymbol() const override     { return "_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"; }
-	const char *GetUniqueStr() const override  { return "Engineer.MVM_AutoBuildingTeleporter02"; }
-	const char *GetVTableName() const override { return "[VT] CTFBotMvMEngineerBuildTeleportExit"; }
-	int GetVTableIndex() const override        { return VT_idx_Action_Update; }
-};
-static CAddr_CTFBotMvMEngineerBuildTeleportExit_Update addr_CTFBotMvMEngineerBuildTeleportExit_Update;
-#endif

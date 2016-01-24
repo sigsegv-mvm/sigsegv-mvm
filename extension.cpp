@@ -20,12 +20,13 @@ IVDebugOverlay *debugoverlay;
 
 CGlobalVars *gpGlobals;
 
-ISDKTools *g_pSDKTools;
+//ISDKTools *g_pSDKTools;
 
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
-	sharesys->AddDependency(myself, "sdktools.ext", true, true);
+//	sharesys->AddDependency(myself, "sdktools.ext", true, true);
+//	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
 	
 	PreScan::DoScans();
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
@@ -59,12 +60,11 @@ void CExtSigsegv::SDK_OnUnload()
 
 void CExtSigsegv::SDK_OnAllLoaded()
 {
-	SM_GET_LATE_IFACE(SDKTOOLS, g_pSDKTools);
 }
 
 bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 {
-	SM_CHECK_IFACE(SDKTOOLS, g_pSDKTools);
+//	SM_CHECK_IFACE(SDKTOOLS, g_pSDKTools);
 	
 	return true;
 }
