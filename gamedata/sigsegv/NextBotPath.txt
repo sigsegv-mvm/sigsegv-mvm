@@ -1,0 +1,24 @@
+// NextBotPath
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"Path::Compute<CTFBotPathCost>"
+				{
+					type "sym"
+					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,45 @@
+// nav
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"CNavMesh::GetNavArea"
+				{
+					type    "func ebpprologue vprof"
+					sym     "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
+					v_name  "CNavMesh::GetNavArea"
+					v_group "NextBot"
+				}
+				
+				"CTFNavMesh::CollectBuiltObjects"
+				{
+					type "sym"
+					sym  "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
+				}
+				
+				"CTFNavArea::IsBlocked"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK10CTFNavArea9IsBlockedEib"
+					vtable "[VT] CTFNavArea"
+					idx    "0x11"
+				}
+				"CTFNavArea::IsValidForWanderingPopulation"
+				{
+					type "sym"
+					sym  "_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
+				}
+			}
+		}
+	}
+}

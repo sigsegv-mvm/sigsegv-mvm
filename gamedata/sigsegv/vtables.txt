@@ -13,6 +13,13 @@
 		{
 			"addrs"
 			{
+				"[VT] CGameRules"
+				{
+					type    "vtable"
+					sym     "_ZTV10CGameRules"
+					winrtti ".?AVCGameRules@@"
+				}
+				
 				"[VT] CBaseEntity"
 				{
 					type    "vtable"

@@ -1,4 +1,4 @@
-// sigsegv: CTFBot
+// tfbot
 
 "Games"
 {
@@ -67,6 +67,12 @@
 					type   "func ebpprologue unistr"
 					sym    "_ZN6CTFBot7AddItemEPKc"
 					unistr "CTFBotSpawner::AddItemToBot: Invalid item %s.\n"
+				}
+				
+				"CTFBotPathCost::operator()"
+				{
+					type "sym"
+					sym  "_ZNK14CTFBotPathCostclEP8CNavAreaS1_PK10CNavLadderPK13CFuncElevatorf"
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-// sigsegv: CTFBot: Behaviors
+// tfbot/behavior
 
 "Games"
 {

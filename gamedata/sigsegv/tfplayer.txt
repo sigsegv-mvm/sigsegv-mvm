@@ -1,0 +1,50 @@
+// tfplayer
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"CTFPlayer::ApplyAbsVelocityImpulse"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
+					unistr "mult_aiming_knockback_resistance"
+				}
+				"CTFPlayer::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10IsMiniBossEv"
+				}
+				"CTFPlayer::IsPlayerClass"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer13IsPlayerClassEi"
+				}
+				"CTFPlayer::ShouldGib"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer9ShouldGibERK15CTakeDamageInfo"
+					unistr "crit_kill_will_gib"
+				}
+				"CTFPlayer::SpeakConceptIfAllowed"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
+					unistr "disguiseclass:%s"
+				}
+				// CTFPlayer::TFPlayerThink
+				// warning! warning! not a straightforward ebp prologue!
+				// push ebx; mov ebx, esp
+			}
+		}
+	}
+}

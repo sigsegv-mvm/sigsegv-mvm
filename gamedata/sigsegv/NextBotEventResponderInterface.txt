@@ -1,4 +1,4 @@
-// sigsegv: NextBot: INextBotEventResponder
+// NextBotEventResponderInterface
 
 "Games"
 {

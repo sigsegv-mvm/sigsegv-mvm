@@ -1,4 +1,4 @@
-// sigsegv: Miscellaneous
+// miscellaneous
 
 "Games"
 {
@@ -65,43 +65,6 @@
 					sym  "_ZNK11CBasePlayer5IsBotEv"
 				}
 				
-				"CTFPlayer::ApplyAbsVelocityImpulse"
-				{
-					type   "func ebpprologue unistr"
-					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
-					unistr "mult_aiming_knockback_resistance"
-				}
-				"CTFPlayer::CanBeForcedToLaugh"
-				{
-					type "sym"
-					sym  "_ZN9CTFPlayer18CanBeForcedToLaughEv"
-				}
-				"CTFPlayer::IsMiniBoss"
-				{
-					type "sym"
-					sym  "_ZNK9CTFPlayer10IsMiniBossEv"
-				}
-				"CTFPlayer::IsPlayerClass"
-				{
-					type "sym"
-					sym  "_ZNK9CTFPlayer13IsPlayerClassEi"
-				}
-				"CTFPlayer::ShouldGib"
-				{
-					type   "func ebpprologue unistr"
-					sym    "_ZN9CTFPlayer9ShouldGibERK15CTakeDamageInfo"
-					unistr "crit_kill_will_gib"
-				}
-				"CTFPlayer::SpeakConceptIfAllowed"
-				{
-					type   "func ebpprologue unistr"
-					sym    "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
-					unistr "disguiseclass:%s"
-				}
-				// CTFPlayer::TFPlayerThink
-				// warning! warning! not a straightforward ebp prologue!
-				// push ebx; mov ebx, esp
-				
 				"CTFGameRules::PushAllPlayersAway"
 				{
 					type "sym"
@@ -151,56 +114,6 @@
 					datamap "CItem::m_DataMap"
 					func    "CItemComeToRest"
 					vtable  "[VT] CCurrencyPack"
-				}
-				
-				"CNavMesh::GetNavArea"
-				{
-					type    "func ebpprologue vprof"
-					sym     "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
-					v_name  "CNavMesh::GetNavArea"
-					v_group "NextBot"
-				}
-				
-				"CTFNavMesh::CollectBuiltObjects"
-				{
-					type "sym"
-					sym  "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
-				}
-				
-				"CTFNavArea::IsBlocked"
-				{
-					type   "func knownvtidx"
-					sym    "_ZNK10CTFNavArea9IsBlockedEib"
-					vtable "[VT] CTFNavArea"
-					idx    "0x11"
-				}
-				"CTFNavArea::IsValidForWanderingPopulation"
-				{
-					type "sym"
-					sym  "_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
-				}
-				
-				"CTFBotPathCost::operator()"
-				{
-					type "sym"
-					sym  "_ZNK14CTFBotPathCostclEP8CNavAreaS1_PK10CNavLadderPK13CFuncElevatorf"
-				}
-				
-				"Path::Compute<CTFBotPathCost>"
-				{
-					type "sym"
-					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
-				}
-				
-				"PathFollower::Update"
-				{
-					type "sym"
-					sym  "_ZN12PathFollower6UpdateEP8INextBot"
-				}
-				"PathFollower::SetMinLookAheadDistance"
-				{
-					type "sym"
-					sym  "_ZN12PathFollower23SetMinLookAheadDistanceEf"
 				}
 				
 				"CFuncNavCost::IsApplicableTo"

@@ -1,0 +1,20 @@
+// NextBotVisionInterface
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				
+			}
+		}
+	}
+}

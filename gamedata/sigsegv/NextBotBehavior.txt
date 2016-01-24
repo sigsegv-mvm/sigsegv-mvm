@@ -1,4 +1,4 @@
-// sigsegv: NextBot: Action<CTFBot>
+// NextBotBehavior
 
 "Games"
 {

@@ -1,4 +1,4 @@
-// sigsegv: NextBot: IContextualQuery
+// NextBotContextualQueryInterface
 
 "Games"
 {

@@ -1,4 +1,4 @@
-// sigsegv: NextBot: NextBotPlayer<CTFPlayer>
+// NextBotPlayer
 
 "Games"
 {
