@@ -13,16 +13,6 @@
 		{
 			"addrs"
 			{
-//				"UTIL_EntitiesInBox"
-//				{
-//					type "sym"
-//					sym  "_Z18UTIL_EntitiesInBoxRK6VectorS1_P20CFlaggedEntitiesEnum"
-//				}
-//				"UTIL_EntitiesInSphere"
-//				{
-//					type "sym"
-//					sym  "_Z21UTIL_EntitiesInSphereRK6VectorfP20CFlaggedEntitiesEnum"
-//				}
 				"CalcDistanceToLineSegment"
 				{
 					type "sym"

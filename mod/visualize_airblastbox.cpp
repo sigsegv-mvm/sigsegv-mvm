@@ -9,8 +9,6 @@
 #endif
 
 
-#ifdef EXPERIMENTAL
-
 namespace Mod_Visualize_AirblastBox
 {
 	ConVar cvar_duration("sigsegv_visualize_airblastbox_duration", "0.1", FCVAR_NOTIFY,
@@ -75,5 +73,3 @@ namespace Mod_Visualize_AirblastBox
 			s_Mod.SetEnabled(var.GetBool());
 		});
 }
-
-#endif

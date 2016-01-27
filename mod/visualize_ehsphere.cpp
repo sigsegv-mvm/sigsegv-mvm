@@ -9,8 +9,6 @@
 #endif
 
 
-#ifdef EXPERIMENTAL
-
 namespace Mod_Visualize_EHSphere
 {
 	ConVar cvar_duration("sigsegv_visualize_ehsphere_duration", "0.5", FCVAR_NOTIFY,
@@ -78,5 +76,3 @@ namespace Mod_Visualize_EHSphere
 			s_Mod.SetEnabled(var.GetBool());
 		});
 }
-	
-#endif
