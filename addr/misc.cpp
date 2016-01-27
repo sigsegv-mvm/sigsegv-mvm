@@ -72,6 +72,9 @@ public:
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
+		using StrScanner = CStringScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		using ArrScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 4>;
+		
 		// +0x00 ptr: "tf_weapon_shotgun"
 		// +0x04 ptr: ""
 		// +0x08 ptr: ""
@@ -84,13 +87,12 @@ public:
 		// +0x24 ptr: ""
 		// +0x28 ptr: "tf_weapon_shotgun_primary"
 		
-		auto strscan1 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun");
-		auto strscan2 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_soldier");
-		auto strscan3 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_hwg");
-		auto strscan4 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_pyro");
-		auto strscan5 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_primary");
-		CMultiScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(Library::SERVER, ".rdata"),
-			{ strscan1, strscan2, strscan3, strscan4, strscan5 });
+		auto strscan1 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun");
+		auto strscan2 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_soldier");
+		auto strscan3 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_hwg");
+		auto strscan4 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_pyro");
+		auto strscan5 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_primary");
+		CMultiScan<StrScanner> scan1({ strscan1, strscan2, strscan3, strscan4, strscan5 });
 		if (strscan1->Matches().size() != 1) { DevMsg("Fail strscan1\n"); return false; }
 		if (strscan2->Matches().size() != 1) { DevMsg("Fail strscan2\n"); return false; }
 		if (strscan3->Matches().size() != 1) { DevMsg("Fail strscan3\n"); return false; }
@@ -104,7 +106,7 @@ public:
 		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->Matches()[0]);
 		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->Matches()[0]);
 		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->Matches()[0]);
-		CSingleScan<ScanDir::FORWARD, 4> scan2(CLibSegBounds(Library::SERVER, ".data"), new CMaskedScanner(ScanResults::ALL, seek, mask));
+		CScan<ArrScanner> scan2(CLibSegBounds(Library::SERVER, ".data"), seek, mask);
 		if (scan2.Matches().size() != 1) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
 		
 		auto match = (const char **)scan2.Matches()[0];
@@ -130,6 +132,8 @@ public:
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
+		using FuncScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 0x10>;
+		
 		static constexpr uint8_t buf[] = {
 			0xa1, 0x00, 0x00, 0x00, 0x00,             // +0000  mov eax,g_pGameRules
 			0x56,                                     // +0005  push esi
@@ -175,7 +179,7 @@ public:
 //		DevMsg("g_pGameRules: %08x\n", (uintptr_t)addr_g_pGameRules);
 //		DevMsg("m_bPlayingMannVsMachine: %08x\n", off_CTFGameRules_m_bPlayingMannVsMachine);
 		
-		CSingleScan<ScanDir::FORWARD, 0x10> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CMaskedScanner(ScanResults::ALL, seek, mask));
+		CScan<FuncScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), seek, mask);
 		if (scan1.Matches().size() != 1) {
 			DevMsg("Fail scan1 %u\n", scan1.Matches().size());
 			return false;

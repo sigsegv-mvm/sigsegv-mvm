@@ -94,12 +94,12 @@ bool IExtract<T>::Init()
 template<typename T>
 bool IExtract<T>::Check()
 {
+	using ExtractScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+	
 	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
-	CSingleScan<ScanDir::FORWARD, 1> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max),
-		new CMaskedScanner(ScanResults::ALL, this->m_BufExtract, this->m_MaskExtract));
-	
+	CScan<ExtractScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufExtract, this->m_MaskExtract);
 	if (scan.Matches().size() != 1) {
 		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
 		return false;

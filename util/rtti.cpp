@@ -106,6 +106,10 @@ namespace RTTI
 		
 #elif defined _MSC_VER
 		
+		using TDScanner  = CStringPrefixScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		using COLScanner = CBasicScanner<ScanDir::REVERSE, ScanResults::FIRST, 4>;
+		using VTScanner  = CBasicScanner<ScanDir::FORWARD, ScanResults::FIRST, 4>;
+		
 		int n_total = 0;
 		int n_skip  = 0;
 		int n_add   = 0;
@@ -138,7 +142,7 @@ namespace RTTI
 		exclude.emplace_back(R"(^\.\?AVCWorkshop_.*$)");
 		
 		Prof::Begin();
-		CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(Library::SERVER, ".data"), new CStringPrefixScanner(ScanResults::ALL, ".?AV"));
+		CScan<TDScanner> scan1(CLibSegBounds(Library::SERVER, ".data"), ".?AV");
 		Prof::End("TD scan");
 		Prof::Begin();
 		for (auto match : scan1.Matches()) {
@@ -176,8 +180,8 @@ namespace RTTI
 		
 		
 		Prof::Begin();
-		std::map<IScanner *, std::string> scannermap_COL;
-		std::vector<IScanner *> scanners_COL;
+		std::map<COLScanner *, std::string> scannermap_COL;
+		std::vector<COLScanner *> scanners_COL;
 		for (const auto& pair : s_RTTI) {
 			auto name = pair.first;
 			auto p_TD = pair.second;
@@ -189,15 +193,14 @@ namespace RTTI
 				const_cast<_TypeDescriptor *>(p_TD),
 			};
 			
-			IScanner *scanner = new CBasicScanner(ScanResults::FIRST, (const void *)&seek_COL, 0x10);
+			auto scanner = new COLScanner(CLibSegBounds(Library::SERVER, ".rdata"), (const void *)&seek_COL, 0x10);
 			
 			scanners_COL.push_back(scanner);
 			scannermap_COL[scanner] = name;
 		}
 		Prof::End("COL pre");
 		Prof::Begin();
-		//CMultiScan<ScanDir::REVERSE, 4> scan_COL(CLibSegBounds(Library::SERVER, ".rdata"), scanners_COL);
-		CThreadedScan<ScanDir::REVERSE, 4, 4> scan_COL(CLibSegBounds(Library::SERVER, ".rdata"), scanners_COL);
+		CMultiScan<COLScanner> scan_COL(scanners_COL);
 		Prof::End("COL scan");
 		
 		Prof::Begin();
@@ -217,21 +220,20 @@ namespace RTTI
 		
 		
 		Prof::Begin();
-		std::map<IScanner *, std::string> scannermap_VT;
-		std::vector<IScanner *> scanners_VT;
+		std::map<VTScanner *, std::string> scannermap_VT;
+		std::vector<VTScanner *> scanners_VT;
 		for (const auto& pair : results_COL) {
 			auto name  = pair.first;
 			auto p_COL = pair.second;
 			
-			IScanner *scanner = new CBasicScanner(ScanResults::FIRST, (const void *)&p_COL, 0x4);
+			auto scanner = new VTScanner(CLibSegBounds(Library::SERVER, ".rdata"), (const void *)&p_COL, 0x4);
 			
 			scanners_VT.push_back(scanner);
 			scannermap_VT[scanner] = name;
 		}
 		Prof::End("VT pre");
 		Prof::Begin();
-		//CMultiScan<ScanDir::FORWARD, 4> scan_VT(CLibSegBounds(Library::SERVER, ".rdata"), scanners_VT);
-		CThreadedScan<ScanDir::FORWARD, 4, 4> scan_VT(CLibSegBounds(Library::SERVER, ".rdata"), scanners_VT);
+		CMultiScan<VTScanner> scan_VT(scanners_VT);
 		Prof::End("VT scan");
 		
 		Prof::Begin();
