@@ -48,6 +48,7 @@ public:
 	static const LibInfo& GetInfo(Library lib);
 	
 	static void *FindSym(Library lib, const char *sym);
+	static void ForEachSym(Library lib, void (*functor)(Symbol *));
 	
 private:
 	LibMgr() {}

@@ -48,7 +48,7 @@
 #define DETOUR_STATIC_CALL(name) (Actual_##name)
 
 #define DETOUR_DECL_STATIC(ret, name, ...) \
-	static CDetour *detour_##name = nullptr; \
+	CDetour *detour_##name = nullptr; \
 	static ret (*Actual_##name)(__VA_ARGS__) = nullptr; \
 	static ret Detour_##name(__VA_ARGS__)
 

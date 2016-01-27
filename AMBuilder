@@ -25,6 +25,7 @@ sourceFiles = [
   'prop.cpp',
   'util/trace.cpp',
   'util/backtrace.cpp',
+  'util/rtti.cpp',
   'stub/baseentity.cpp',
   'stub/gamerules.cpp',
   'stub/misc.cpp',
@@ -43,9 +44,10 @@ sourceFiles = [
   'mod/mod_stickypusher.cpp',
   'mod/mod_robottickle.cpp',
   'mod/mod_botmulticlassitem.cpp',
-  'mod/debug_airblastbox.cpp',
-  'mod/debug_deflectcylinder.cpp',
-  'mod/debug_ehsphere.cpp',
+  'mod/mod_robotheadnoslide.cpp',
+  'mod/visualize_airblastbox.cpp',
+  'mod/visualize_deflectcylinder.cpp',
+  'mod/visualize_ehsphere.cpp',
 ]
 
 ###############

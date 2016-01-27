@@ -67,8 +67,10 @@ private:
 class CTFPlayer : public CBaseMultiplayerPlayer
 {
 public:
-	CTFPlayerClass *GetPlayerClass()             { return m_PlayerClass; }
-	const CTFPlayerClass *GetPlayerClass() const { return m_PlayerClass; }
+	static const char *GetRTTIAddrName() { return "[RTTI] CTFPlayer"; }
+	
+	CTFPlayerClass *GetPlayerClass()             { return m_PlayerClass.GetPtr(); }
+	const CTFPlayerClass *GetPlayerClass() const { return m_PlayerClass.GetPtr(); }
 	
 	bool IsPlayerClass(int iClass) const;
 	
@@ -81,6 +83,11 @@ private:
 public:
 	DEF_SENDPROP(CTFPlayerShared, m_Shared);
 };
+
+
+// TODO: ToBasePlayer
+// TODO: ToTFPlayer
+// (WARNING: DON'T ASSUME THAT DYNAMIC CASTS ARE SAFE!)
 
 
 #endif

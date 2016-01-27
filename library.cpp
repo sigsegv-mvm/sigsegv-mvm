@@ -102,6 +102,13 @@ void *LibMgr::FindSym(Library lib, const char *sym)
 	return g_MemUtils.ResolveSymbol(handle, sym);
 }
 
+void LibMgr::ForEachSym(Library lib, void (*functor)(Symbol *))
+{
+	void *handle = s_LibHandles.at(lib);
+	assert(handle != nullptr);
+	g_MemUtils.ForEachSymbol(handle, functor);
+}
+
 
 #if defined _LINUX || defined _OSX
 

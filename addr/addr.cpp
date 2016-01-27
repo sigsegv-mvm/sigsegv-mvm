@@ -3,6 +3,14 @@
 #include "abi.h"
 
 
+#if defined __GNUC__
+#warning TODO: refactor prologue-finding code into a shared block somewhere
+#warning TODO: make prologue-finding code look for the closest aligned ebp prologue *OR* ebx/ebp prologue
+#warning (ensure that ScanResults::FIRST with two scanners will short-circuit properly)
+#warning TODO: increase arbitrary 0x1000 limit in prologue-finding code
+#endif
+
+
 void IAddr::Init()
 {
 	if (this->m_State != State::INITIAL) {
@@ -143,6 +151,7 @@ bool IAddr_VTable::FindAddrLinux(uintptr_t& addr) const
 
 bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
 {
+#if 0
 	/* STEP 1: get ptr to _TypeDescriptor by finding typeinfo name string */
 	std::vector<const void *> scan1_matches;
 	for (auto match : PreScan::WinRTTI_Server()) {
@@ -189,6 +198,8 @@ bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
 	
 	addr = (uintptr_t)p_VT;
 	return true;
+#endif
+	return false;
 }
 
 
@@ -200,7 +211,7 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".data"), 4, new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
+	CSingleScan<ScanDir::FORWARD, 4> scan1(CLibSegBounds(this->GetLibrary(), ".data"), new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
 	struct GetDataDescMap { uint8_t buf[6]; };
 	std::vector<IScanner *> scanners;
 	for (auto match : scan1.Matches()) {
@@ -212,7 +223,7 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 		scanners.push_back(new CBasicScanner(ScanResults::ALL, (const void *)&gddm, 0x6));
 	}
 	
-	CMultiScan scan2(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 0x10, scanners);
+	CMultiScan<ScanDir::FORWARD, 0x10> scan2(CLibSegBounds(this->GetLibrary(), ".text"), scanners);
 	std::vector<const void *> results;
 	for (auto scanner : scanners) {
 		if (scanner->Matches().size() == 1) {
@@ -307,7 +318,7 @@ bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::ALL, (const void *)&p_ref, 0x4));
+	CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CBasicScanner(ScanResults::ALL, (const void *)&p_ref, 0x4));
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": found %u refs to ostensibly unique symbol\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -318,7 +329,7 @@ bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 		0x55,       // +0000  push ebp
 		0x8b, 0xec, // +0001  mov ebp,esp
 	};
-	CSingleScan scan2(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	CSingleScan<ScanDir::FORWARD, 0x10> scan2(CAddrOffBounds(p_in_func, -0x1000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
@@ -338,7 +349,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
+	CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -349,7 +360,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 		0x55,       // +0000  push ebp
 		0x8b, 0xec, // +0001  mov ebp,esp
 	};
-	CSingleScan scan2(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
@@ -369,7 +380,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 		return false;
 	}
 	
-	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
+	CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CBasicScanner(ScanResults::ALL, (const void *)&p_str, 0x4));
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -380,7 +391,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 		0x55,       // +0000  push ebp
 		0x8b, 0xec, // +0001  mov ebp,esp
 	};
-	CSingleScan scan2(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
@@ -424,7 +435,7 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 	};
 	*(const char **)(vprof + 0x01) = p_name;
 	*(const char **)(vprof + 0x06) = p_group;
-	CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 1, new CBasicScanner(ScanResults::FIRST, (const void *)vprof, sizeof(vprof)));
+	CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CBasicScanner(ScanResults::FIRST, (const void *)vprof, sizeof(vprof)));
 	if (scan1.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate VPROF_BUDGET\n", this->GetName());
 		return false;
@@ -435,7 +446,7 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 		0x55,       // +0000  push ebp
 		0x8b, 0xec, // +0001  mov ebp,esp
 	};
-	CSingleScan scan2(ScanDir::REVERSE, CAddrOffBounds(p_in_func, -0x1000), 0x10, new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
 	if (scan2.Matches().size() != 1) {
 		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;

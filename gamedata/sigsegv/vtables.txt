@@ -13,6 +13,10 @@
 		{
 			"addrs"
 			{
+				// TODO:
+				// remove the need for this file
+				// and make vtable addr finding automatic
+				
 				"[VT] CGameRules"
 				{
 					type    "vtable"

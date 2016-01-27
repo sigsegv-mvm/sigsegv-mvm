@@ -85,7 +85,7 @@ public:
 		auto strscan3 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_hwg");
 		auto strscan4 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_pyro");
 		auto strscan5 = new CStringScanner(ScanResults::ALL, "tf_weapon_shotgun_primary");
-		CMultiScan scan1(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, ".rdata"), 1,
+		CMultiScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(Library::SERVER, ".rdata"),
 			{ strscan1, strscan2, strscan3, strscan4, strscan5 });
 		if (strscan1->Matches().size() != 1) { DevMsg("Fail strscan1\n"); return false; }
 		if (strscan2->Matches().size() != 1) { DevMsg("Fail strscan2\n"); return false; }
@@ -100,7 +100,7 @@ public:
 		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->Matches()[0]);
 		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->Matches()[0]);
 		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->Matches()[0]);
-		CSingleScan scan2(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, ".data"), 4, new CMaskedScanner(ScanResults::ALL, seek, mask));
+		CSingleScan<ScanDir::FORWARD, 4> scan2(CLibSegBounds(Library::SERVER, ".data"), new CMaskedScanner(ScanResults::ALL, seek, mask));
 		if (scan2.Matches().size() != 1) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
 		
 		auto match = (const char **)scan2.Matches()[0];
@@ -171,7 +171,7 @@ public:
 //		DevMsg("g_pGameRules: %08x\n", (uintptr_t)addr_g_pGameRules);
 //		DevMsg("m_bPlayingMannVsMachine: %08x\n", off_CTFGameRules_m_bPlayingMannVsMachine);
 		
-		CSingleScan scan1(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".text"), 0x10, new CMaskedScanner(ScanResults::ALL, seek, mask));
+		CSingleScan<ScanDir::FORWARD, 0x10> scan1(CLibSegBounds(this->GetLibrary(), ".text"), new CMaskedScanner(ScanResults::ALL, seek, mask));
 		if (scan1.Matches().size() != 1) {
 			DevMsg("Fail scan1 %u\n", scan1.Matches().size());
 			return false;

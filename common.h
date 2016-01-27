@@ -18,6 +18,7 @@ class IEngineTrace;
 class IStaticPropMgrServer;
 class IVDebugOverlay;
 class CGlobalVars;
+class CBaseEntityList;
 
 
 extern IVEngineServer *engine;
@@ -28,13 +29,17 @@ extern IStaticPropMgrServer *staticpropmgr;
 extern IVDebugOverlay *debugoverlay;
 
 extern CGlobalVars *gpGlobals;
+extern CBaseEntityList *g_pEntityList;
 
 
 /* C++ standard library */
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <mutex>
+#include <regex>
 #include <string>
+#include <thread>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
@@ -46,6 +51,9 @@ extern CGlobalVars *gpGlobals;
 
 /* AMTL */
 #include <amtl/am-string.h>
+
+/* Boost */
+//#include <boost/thread.hpp>
 
 /* Source SDK */
 #include "sdk2013/annotations.h"

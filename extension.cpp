@@ -7,6 +7,7 @@
 #include "addr/prescan.h"
 #include "gameconf.h"
 #include "prop.h"
+#include "util/rtti.h"
 
 
 CExtSigsegv g_Ext;
@@ -19,6 +20,7 @@ IStaticPropMgrServer *staticpropmgr;
 IVDebugOverlay *debugoverlay;
 
 CGlobalVars *gpGlobals;
+CBaseEntityList *g_pEntityList;
 
 //ISDKTools *g_pSDKTools;
 
@@ -28,10 +30,13 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 //	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 //	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
 	
+	g_pEntityList = reinterpret_cast<CBaseEntityList *>(gamehelpers->GetGlobalEntityList());
+	
 	PreScan::DoScans();
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
 	
 	LibMgr::Load();
+	RTTI::PreLoad(); goto fail; // REMOVE ME
 	AddrManager::Load();
 	
 	if (!Link::InitAll(error, maxlen)) goto fail;

@@ -40,6 +40,7 @@ def CopyFiles(src, dest, files):
 # GameData files
 CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
   [
+    'rtti.txt',
     'vtables.txt',
     'datamaps.txt',
     'globals.txt',

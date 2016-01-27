@@ -221,6 +221,19 @@ public:
 
 		return kvs;
 	}
+	
+	void ForEachSymbol(void (*functor)(Symbol *))
+	{
+		for (uint32_t i = 0; i < nbuckets; ++i) {
+			Symbol *sym = buckets[i];
+			
+			while (sym != nullptr) {
+				functor(sym);
+				sym = sym->tbl_next;
+			}
+		}
+	}
+	
 private:
 	uint32_t nbuckets;
 	uint32_t nused;

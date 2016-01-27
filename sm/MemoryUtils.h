@@ -32,12 +32,12 @@
 
 #include <sp_vm_types.h>
 #include <sm_platform.h>
-#if defined PLATFORM_LINUX || defined PLATFORM_APPLE
+//#if defined PLATFORM_LINUX || defined PLATFORM_APPLE
 #include <sh_vector.h>
 #include "sm_symtable.h"
 
 using namespace SourceHook;
-#endif
+//#endif
 
 #ifdef PLATFORM_APPLE
 #include <CoreServices/CoreServices.h>
@@ -65,6 +65,7 @@ public:
 	~MemoryUtils();
 	void *ResolveSymbol(void *handle, const char *symbol);
 	bool GetLibraryInfo(const void *libPtr, DynLibInfo &lib);
+	void ForEachSymbol(void *handle, void (*functor)(Symbol *));
 #if defined PLATFORM_LINUX || defined PLATFORM_APPLE
 private:
 	CVector<LibSymbolTable *> m_SymTables;

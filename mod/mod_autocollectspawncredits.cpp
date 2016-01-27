@@ -5,50 +5,53 @@
 #include "re/nextbot.h"
 
 
-static RefCount rc_CCurrencyPack_ComeToRest;
-DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest, void)
+namespace Mod_AutoCollectSpawnCredits
 {
-	SCOPED_INCREMENT(rc_CCurrencyPack_ComeToRest);
-	return DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
-}
-
-DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
-{
-	CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
+	RefCount rc_CCurrencyPack_ComeToRest;
+	DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest)
+	{
+		SCOPED_INCREMENT(rc_CCurrencyPack_ComeToRest);
+		return DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
+	}
 	
-	if (area != nullptr && rc_CCurrencyPack_ComeToRest.NonZero()) {
-		TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
+	DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
+	{
+		CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
 		
-		if ((attr & BLUE_SPAWN_ROOM) != 0) {
-//			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
-			return nullptr;
+		if (area != nullptr && rc_CCurrencyPack_ComeToRest.NonZero()) {
+			TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
+			
+			if ((attr & BLUE_SPAWN_ROOM) != 0) {
+	//			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
+				return nullptr;
+			}
 		}
+		
+		return area;
 	}
 	
-	return area;
+	
+	class CMod : public IMod
+	{
+	public:
+		CMod() : IMod("AutoCollectSpawnCredits")
+		{
+			MOD_ADD_DETOUR_MEMBER(CCurrencyPack, ComeToRest);
+			MOD_ADD_DETOUR_MEMBER(CNavMesh, GetNavArea);
+		}
+		
+		void SetEnabled(bool enable)
+		{
+			this->ToggleAllDetours(enable);
+		}
+	};
+	CMod s_Mod;
+	
+	
+	ConVar cvar_enable("sigsegv_autocollectspawncredits_enable", "0", FCVAR_NOTIFY,
+		"Mod: auto-collect credits that land in the bots' spawn area",
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
+			ConVarRef var(pConVar);
+			s_Mod.SetEnabled(var.GetBool());
+		});
 }
-
-
-class CMod_AutoCollectSpawnCredits : public IMod
-{
-public:
-	CMod_AutoCollectSpawnCredits() : IMod("AutoCollectSpawnCredits")
-	{
-		MOD_ADD_DETOUR_MEMBER(CCurrencyPack, ComeToRest);
-		MOD_ADD_DETOUR_MEMBER(CNavMesh, GetNavArea);
-	}
-	
-	void SetEnabled(bool enable)
-	{
-		this->ToggleAllDetours(enable);
-	}
-};
-static CMod_AutoCollectSpawnCredits s_Mod;
-
-
-static ConVar cvar_enable("sigsegv_autocollectspawncredits_enable", "0", FCVAR_NOTIFY,
-	"Mod: auto-collect credits that land in the bots' spawn area",
-	[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-		ConVarRef var(pConVar);
-		s_Mod.SetEnabled(var.GetBool());
-	});

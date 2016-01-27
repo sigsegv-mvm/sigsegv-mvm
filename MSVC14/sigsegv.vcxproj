@@ -15,6 +15,7 @@
     <RootNamespace>sigsegv</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>sigsegv</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -55,6 +56,12 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sigsegv.ext.2.tf2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sigsegv.ext.2.tf2</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Binary\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Binary\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
@@ -91,8 +98,8 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)\sigsegv.ext.2.tf2.dll $(SolutionDir)\..\build\package\addons\sourcemod\extensions\
-copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,8 +135,8 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)\sigsegv.ext.2.tf2.dll $(SolutionDir)\..\build\package\addons\sourcemod\extensions\
-copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\sourcemod\extensions\</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -155,15 +162,16 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\mem\patch.cpp" />
     <ClCompile Include="..\mem\scan.cpp" />
     <ClCompile Include="..\mod.cpp" />
-    <ClCompile Include="..\mod\debug_airblastbox.cpp" />
-    <ClCompile Include="..\mod\debug_deflectcylinder.cpp" />
-    <ClCompile Include="..\mod\debug_ehsphere.cpp" />
     <ClCompile Include="..\mod\mod_autocollectspawncredits.cpp" />
     <ClCompile Include="..\mod\mod_botmulticlassitem.cpp" />
     <ClCompile Include="..\mod\mod_engienopush.cpp" />
+    <ClCompile Include="..\mod\mod_robotheadnoslide.cpp" />
     <ClCompile Include="..\mod\mod_robottickle.cpp" />
     <ClCompile Include="..\mod\mod_sniperchargeuncap.cpp" />
     <ClCompile Include="..\mod\mod_stickypusher.cpp" />
+    <ClCompile Include="..\mod\visualize_airblastbox.cpp" />
+    <ClCompile Include="..\mod\visualize_deflectcylinder.cpp" />
+    <ClCompile Include="..\mod\visualize_ehsphere.cpp" />
     <ClCompile Include="..\prop.cpp" />
     <ClCompile Include="..\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\sdk\smsdk_ext.cpp" />
@@ -179,6 +187,7 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClCompile Include="..\stub\tfbot.cpp" />
     <ClCompile Include="..\stub\tfplayer.cpp" />
     <ClCompile Include="..\util\backtrace.cpp" />
+    <ClCompile Include="..\util\rtti.cpp" />
     <ClCompile Include="..\util\trace.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -224,11 +233,22 @@ copy $(TargetDir)\sigsegv.ext.2.tf2.pdb $(SolutionDir)\..\build\package\addons\s
     <ClInclude Include="..\util\backtrace.h" />
     <ClInclude Include="..\util\buf.h" />
     <ClInclude Include="..\util\misc.h" />
+    <ClInclude Include="..\util\rtti.h" />
     <ClInclude Include="..\util\scope.h" />
     <ClInclude Include="..\util\trace.h" />
     <ClInclude Include="..\util\util.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\boost.1.60.0.0\build\native\boost.targets" Condition="Exists('packages\boost.1.60.0.0\build\native\boost.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\boost.1.60.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost.1.60.0.0\build\native\boost.targets'))" />
+  </Target>
 </Project>

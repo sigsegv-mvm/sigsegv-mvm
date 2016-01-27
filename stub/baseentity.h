@@ -15,23 +15,29 @@ public:
 	bool IsEFlagSet(int nEFlagMask) const;
 	
 	/* getter/setter */
-	int GetTeamNumber() const { return this->m_iTeamNum; }
-	bool IsAlive()            { return (this->m_lifeState == LIFE_ALIVE); }
+	int GetTeamNumber() const            { return this->m_iTeamNum; }
+	int GetHealth() const                { return this->m_iHealth; }
+	bool IsAlive() const                 { return (this->m_lifeState == LIFE_ALIVE); }
+	CBaseEntity *GetGroundEntity() const { return this->m_hGroundEntity; }
 	
 	/* thunk */
-	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this);        }
-	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this);  }
+	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this); }
+	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this); }
+	bool IsPlayer() const                { return (vt_IsPlayer.Get(this))(this); }
 	
 private:
 	DEF_DATAMAP(int,    m_iEFlags);
 	DEF_DATAMAP(Vector, m_vecAbsOrigin);
 	
-	DEF_SENDPROP(int,  m_iHealth);
-	DEF_SENDPROP(char, m_lifeState);
-	DEF_SENDPROP(int,  m_iTeamNum);
+	DEF_SENDPROP(int,                  m_iTeamNum);
+	DEF_SENDPROP(int,                  m_iHealth);
+	DEF_SENDPROP(char,                 m_lifeState);
+	DEF_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
 	static FuncThunk<void                 (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
+	
+	static VFuncThunk<bool (*)(const CBaseEntity *)> vt_IsPlayer;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

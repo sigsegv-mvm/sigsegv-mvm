@@ -1,0 +1,36 @@
+// rtti
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				// TODO:
+				// remove the need for this file
+				// and make rtti addr finding automatic
+				
+				"[RTTI] CTFPlayer"
+				{
+					type   "rtti"
+					sym    "_ZTI9CTFPlayer"
+					winstr ".?AVCTFPlayer@@"
+				}
+				
+				"[RTTI] CTFBot"
+				{
+					type   "rtti"
+					sym    "_ZTI6CTFBot"
+					winstr ".?AVCTFBot@@"
+				}
+			}
+		}
+	}
+}

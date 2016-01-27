@@ -43,20 +43,20 @@
 //					uniref "pszWpnEntTranslationList"
 //				}
 				
-				"CBaseEntity::GetNetworkable"
-				{
-					type "sym"
-					sym  "_ZN11CBaseEntity14GetNetworkableEv"
-				}
 				"CBaseEntity::CalcAbsolutePosition"
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity20CalcAbsolutePositionEv"
 				}
-				"CBaseEntity::IsAlive"
+				"CBaseEntity::GetNetworkable"
 				{
 					type "sym"
-					sym  "_ZN11CBaseEntity7IsAliveEv"
+					sym  "_ZN11CBaseEntity14GetNetworkableEv"
+				}
+				"CBaseEntity::IsPlayer"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity8IsPlayerEv"
 				}
 				
 				"CBasePlayer::IsBot"

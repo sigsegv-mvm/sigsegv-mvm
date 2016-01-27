@@ -568,3 +568,101 @@ bool MemoryUtils::GetLibraryInfo(const void *libPtr, DynLibInfo &lib)
 
 	return true;
 }
+
+void MemoryUtils::ForEachSymbol(void *handle, void (*functor)(Symbol *))
+{
+	/* do a bogus symbol lookup to force everything into the symbol table cache */
+	assert(ResolveSymbol(handle, "________________") == nullptr);
+	
+#ifdef PLATFORM_LINUX
+	struct link_map *dlmap;
+	LibSymbolTable *libtable;
+	SymbolTable *table;
+
+	dlmap = (struct link_map *)handle;
+	table = NULL;
+	
+	/* See if we already have a symbol table for this library */
+	for (size_t i = 0; i < m_SymTables.size(); i++)
+	{
+		libtable = m_SymTables[i];
+		if (libtable->lib_base == dlmap->l_addr)
+		{
+			table = &libtable->table;
+			break;
+		}
+	}
+
+	/* If we don't have a symbol table for this library, then create one */
+	if (table == NULL)
+	{
+		libtable = new LibSymbolTable();
+		libtable->table.Initialize();
+		libtable->lib_base = dlmap->l_addr;
+		libtable->last_pos = 0;
+		table = &libtable->table;
+		m_SymTables.push_back(libtable);
+	}
+	
+	table->ForEachSymbol(functor);
+#elif defined PLATFORM_APPLE
+	uintptr_t dlbase;
+	uint32_t image_count;
+	LibSymbolTable *libtable;
+	SymbolTable *table;
+	Symbol *symbol_entry;
+	
+	dlbase = 0;
+	image_count = m_ImageList->infoArrayCount;
+	table = NULL;
+	
+	/* Loop through mach-o images in process.
+	 * We can skip index 0 since that is just the executable.
+	 */
+	for (uint32_t i = 1; i < image_count; i++)
+	{
+		const struct dyld_image_info &info = m_ImageList->infoArray[i];
+		
+		/* "Load" each one until we get a matching handle */
+		void *h = dlopen(info.imageFilePath, RTLD_NOLOAD);
+		if (h == handle)
+		{
+			dlbase = (uintptr_t)info.imageLoadAddress;
+			dlclose(h);
+			break;
+		}
+		
+		dlclose(h);
+	}
+	
+	if (!dlbase)
+	{
+		/* Uh oh, we couldn't find a matching handle */
+		return;
+	}
+	
+	/* See if we already have a symbol table for this library */
+	for (size_t i = 0; i < m_SymTables.size(); i++)
+	{
+		libtable = m_SymTables[i];
+		if (libtable->lib_base == dlbase)
+		{
+			table = &libtable->table;
+			break;
+		}
+	}
+	
+	/* If we don't have a symbol table for this library, then create one */
+	if (table == NULL)
+	{
+		libtable = new LibSymbolTable();
+		libtable->table.Initialize();
+		libtable->lib_base = dlbase;
+		libtable->last_pos = 0;
+		table = &libtable->table;
+		m_SymTables.push_back(libtable);
+	}
+	
+	table->ForEachSymbol(functor);
+#endif
+}

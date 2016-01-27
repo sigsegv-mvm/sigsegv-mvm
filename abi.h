@@ -78,5 +78,18 @@ struct __RTTI_CompleteObjectLocator
 #pragma warning(default:4200)
 #endif
 
+#if defined _MSC_VER
+/* from VC/crt/src/vcruntime/rtti.cpp */
+extern "C" PVOID __CLRCALL_OR_CDECL __RTDynamicCast (
+	PVOID inptr,
+	LONG VfDelta,
+//	const _TypeDescriptor *SrcType,
+//	const _TypeDescriptor *TargetType,
+	PVOID SrcType,
+	PVOID TargetType,
+	BOOL isReference
+	) throw(...);
+#endif
+
 
 #endif

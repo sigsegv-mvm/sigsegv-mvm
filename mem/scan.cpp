@@ -30,14 +30,14 @@ void IScanner::AddMatch(const void *match)
 
 void CBasicScanner::CheckOne(const void *where)
 {
-	if (memcmp(where, this->m_Seek, this->m_Len) == 0) {
+	if (memcmp(where, this->m_Seek, this->GetBufLen()) == 0) {
 		this->AddMatch(where);
 	}
 }
 
 void CMaskedScanner::CheckOne(const void *where)
 {
-	int len = this->m_Seek.GetSize();
+	int len = this->GetBufLen();
 	
 	for (int i = 0; i < len; ++i) {
 		uint8_t b_mem  = *((uint8_t *)where + i);
@@ -61,90 +61,9 @@ void CStringScanner::CheckOne(const void *where)
 
 void CStringPrefixScanner::CheckOne(const void *where)
 {
-	if (strncmp((const char *)where, this->m_Str, strlen(this->m_Str)) == 0) {
+	if (strncmp((const char *)where, this->m_Str, this->GetBufLen() - 1) == 0) {
 		this->AddMatch(where);
 	}
-}
-
-
-void IScan::DoScan()
-{
-	bool fwd;
-	switch (this->m_Dir) {
-	case ScanDir::FORWARD:
-		fwd = true;
-		break;
-	case ScanDir::REVERSE:
-		fwd = false;
-		break;
-	default:
-		assert(false);
-	}
-	
-	for (auto scanner : this->m_Scanners) {
-		scanner->Reset();
-	}
-	
-	int align = this->m_Align;
-	
-	const uint8_t *p_low  = (const uint8_t *)this->m_Bounds.GetLowerBound();
-	const uint8_t *p_high = (const uint8_t *)this->m_Bounds.GetUpperBound();
-	
-	const uint8_t *ptr = (fwd ? p_low : p_high - align);
-	const uint8_t *end = (fwd ? p_high : p_low - align);
-	
-	uintptr_t rem = (uintptr_t)ptr % align;
-	if (rem != 0) {
-		if (fwd) {
-			ptr += (align - rem);
-		} else {
-			ptr -= rem;
-		}
-	}
-	
-	int incr = (fwd ? align : -align);
-	
-//	DevMsg("IScan::DoScan: ptr 0x%08x, end 0x%08x, incr %c0x%08x\n", (uintptr_t)ptr, (uintptr_t)end, (fwd ? '+' : '-'), align);
-	
-	/* use an array because std::vector is horrendously slow here */
-	int num_scanners = this->m_Scanners.size();
-	IScanner **scanners = new IScanner *[num_scanners];
-	for (int i = 0; i < num_scanners; ++i) {
-		scanners[i] = this->m_Scanners[i];
-	}
-	
-	while (fwd ? (ptr < end) : (ptr > end)) {
-//		bool all_done = false;
-		
-		for (int i = 0; i < num_scanners; ++i) {
-			IScanner *scanner = scanners[i];
-			
-			if (scanner->IsDone()) {
-				continue;
-			}
-			
-			if (ptr + scanner->GetBufLen() <= p_high) {
-				scanner->CheckOne(ptr);
-#if 0
-				
-				if (scanner->IsDone()) {
-					scanners.erase(scanner);
-					if (scanners.empty()) {
-						all_done = true;
-					}
-				}
-#endif
-			}
-		}
-		
-//		if (all_done) {
-//			break;
-//		}
-		
-		ptr += incr;
-	}
-	
-	delete[] scanners;
 }
 
 
@@ -152,7 +71,7 @@ namespace Scan
 {
 	const char *FindUniqueConstStr(const char *str)
 	{
-		CSingleScan scan(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, ".rdata"), 1, new CStringScanner(ScanResults::ALL, str));
+		CSingleScan<ScanDir::FORWARD, 1> scan(CLibSegBounds(Library::SERVER, ".rdata"), new CStringScanner(ScanResults::ALL, str));
 		
 		if (scan.Matches().size() == 1) {
 			return (const char *)scan.Matches()[0];

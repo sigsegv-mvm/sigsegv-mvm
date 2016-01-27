@@ -41,9 +41,22 @@
 					sym    "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
 					unistr "disguiseclass:%s"
 				}
-				// CTFPlayer::TFPlayerThink
-				// warning! warning! not a straightforward ebp prologue!
-				// push ebx; mov ebx, esp
+				"CTFPlayer::TFPlayerThink"
+				{
+					// weird function with dual ebx/ebp frame pointers for 16-byte alignment
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer13TFPlayerThinkEv"
+					unistr "Heal Target: ClipSize Data Limit Exceeded: %d (max 500)\n"
+					// alt: "disguise_as_dispenser_on_crouch"
+					// alt: "#TF_Powerup_Supernova_Deploy"
+					// alt: "respawn_ghost"
+					// alt: "reviver"
+					// alt: "sticky_jump_landed"
+					// alt: "rocket_jump_landed"
+					// alt: "head_scale"
+					// alt: "torso_scale"
+					// alt: "hand_scale"
+				}
 			}
 		}
 	}

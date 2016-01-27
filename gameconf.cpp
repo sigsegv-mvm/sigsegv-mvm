@@ -5,6 +5,7 @@
 
 
 static const char *const configs[] = {
+	"sigsegv/rtti",
 	"sigsegv/vtables",
 	"sigsegv/datamaps",
 	"sigsegv/globals",

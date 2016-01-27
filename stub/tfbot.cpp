@@ -75,3 +75,22 @@ FuncThunk<ILocomotion * (*)(const CTFBot *)> CTFBot::ft_GetLocomotionInterface("
 FuncThunk<IBody *       (*)(const CTFBot *)> CTFBot::ft_GetBodyInterface      ("CTFBot::GetBodyInterface");
 FuncThunk<IVision *     (*)(const CTFBot *)> CTFBot::ft_GetVisionInterface    ("CTFBot::GetVisionInterface");
 FuncThunk<IIntention *  (*)(const CTFBot *)> CTFBot::ft_GetIntentionInterface ("CTFBot::GetIntentionInterface");
+
+
+#if defined __GNUC__
+#warning remove me
+#endif
+#if 0
+#include "re/nextbot.h"
+#include "util/dynamic_cast.h"
+void TEST_REMOVE_ME(CBaseEntity *ent)
+{
+	printf("%s", typeid(CTFPlayer).name());
+	printf("%s", typeid(Action<CTFBot>).name());
+	
+	
+	//#warning remove me!
+//	CTFPlayer *player/* = rtti_cast<CTFPlayer *>(ent)*/;
+//	CTFBot *bot = rtti_cast<CTFBot *>(player);
+}
+#endif

@@ -2,9 +2,9 @@
 <VSPerformanceSession Version="1.00">
   <Options>
     <Solution>sigsegv.sln</Solution>
-    <CollectionMethod>Instrumentation</CollectionMethod>
+    <CollectionMethod>Sampling</CollectionMethod>
     <AllocationMethod>None</AllocationMethod>
-    <Reportname>C:\Profiling\Instrumentation.vsp</Reportname>
+    <Reportname>C:\Profiling\Sampling.vsp</Reportname>
     <AddReport>true</AddReport>
     <ResourceBasedAnalysisSelected>true</ResourceBasedAnalysisSelected>
     <UniqueReport>Timestamp</UniqueReport>
@@ -14,8 +14,6 @@
     <SysCallCount>10</SysCallCount>
     <SamplingCounter Name="" ReloadValue="00000000000f4240" DisplayName="" />
     <RelocateBinaries>false</RelocateBinaries>
-    <BinaryLocation>
-    </BinaryLocation>
     <HardwareCounters EnableHWCounters="false" />
     <EtwSettings />
     <PdhSettings>
@@ -32,24 +30,40 @@
   <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
   <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
   <PreinstrumentEvent>
-    <InstrEventProgram>
-    </InstrEventProgram>
-    <InstrEventArguments>
-    </InstrEventArguments>
-    <InstrEventDescription>
-    </InstrEventDescription>
     <InstrEventExclude>false</InstrEventExclude>
   </PreinstrumentEvent>
   <PostinstrumentEvent>
-    <InstrEventProgram>
-    </InstrEventProgram>
-    <InstrEventArguments>
-    </InstrEventArguments>
-    <InstrEventDescription>
-    </InstrEventDescription>
     <InstrEventExclude>false</InstrEventExclude>
   </PostinstrumentEvent>
   <Binaries>
+    <Binary>
+      <Path>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
+      <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
+      <Instrument>true</Instrument>
+      <Sample>false</Sample>
+      <ExternalWebsite>false</ExternalWebsite>
+      <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
+      <IsLocalJavascript>false</IsLocalJavascript>
+      <IsWindowsStoreApp>false</IsWindowsStoreApp>
+      <IsWWA>false</IsWWA>
+      <LaunchProject>false</LaunchProject>
+      <OverrideProjectSettings>true</OverrideProjectSettings>
+      <LaunchMethod>Executable</LaunchMethod>
+      <ExecutablePath>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</ExecutablePath>
+      <StartupDirectory>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\</StartupDirectory>
+      <Arguments>-steam -game tf -novid -console -condebug -insecure -windowed -w 1280 -h 720 +maxplayers 32 +developer 1 +map mvm_example
+ +exec cheat</Arguments>
+      <NetAppHost>IIS</NetAppHost>
+      <NetBrowser>InternetExplorer</NetBrowser>
+      <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
+      <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
+      <PreinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PreinstrumentEvent>
+      <PostinstrumentEvent>
+        <InstrEventExclude>false</InstrEventExclude>
+      </PostinstrumentEvent>
+    </Binary>
     <ProjBinary>
       <Path>Binary\sigsegv.ext.2.tf2.dll</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
@@ -68,7 +82,7 @@
       </Arguments>
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
-      <ExcludeSmallFuncs>false</ExcludeSmallFuncs>
+      <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
       <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
       <PreinstrumentEvent>
         <InstrEventExclude>false</InstrEventExclude>
@@ -80,34 +94,6 @@
       <ProjPath>sigsegv.vcxproj</ProjPath>
       <ProjName>sigsegv</ProjName>
     </ProjBinary>
-    <Binary>
-      <Path>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
-      <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
-      <Instrument>false</Instrument>
-      <Sample>true</Sample>
-      <ExternalWebsite>false</ExternalWebsite>
-      <InteractionProfilingEnabled>false</InteractionProfilingEnabled>
-      <IsLocalJavascript>false</IsLocalJavascript>
-      <IsWindowsStoreApp>false</IsWindowsStoreApp>
-      <IsWWA>false</IsWWA>
-      <LaunchProject>false</LaunchProject>
-      <OverrideProjectSettings>true</OverrideProjectSettings>
-      <LaunchMethod>Executable</LaunchMethod>
-      <ExecutablePath>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</ExecutablePath>
-      <StartupDirectory>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\</StartupDirectory>
-      <Arguments>-steam -game tf -novid -console -condebug -insecure -windowed -w 1280 -h 720 +maxplayers 32 +developer 1 +map mvm_example
- +exec cheat</Arguments>
-      <NetAppHost>IIS</NetAppHost>
-      <NetBrowser>InternetExplorer</NetBrowser>
-      <ExcludeSmallFuncs>false</ExcludeSmallFuncs>
-      <JScriptProfilingEnabled>false</JScriptProfilingEnabled>
-      <PreinstrumentEvent>
-        <InstrEventExclude>false</InstrEventExclude>
-      </PreinstrumentEvent>
-      <PostinstrumentEvent>
-        <InstrEventExclude>false</InstrEventExclude>
-      </PostinstrumentEvent>
-    </Binary>
   </Binaries>
   <Launches>
     <Binary>

@@ -192,76 +192,97 @@ private:
 // virtual:  NOPE
 // members:  NOPE
 template<typename T, typename IPROP, IPROP *PROP>
-class CPropAccessor_Read
+class CPropAccessor_Base
 {
 public:
-	CPropAccessor_Read() = delete;
-//	~CPropAccessor_Read() = delete;
+	CPropAccessor_Base() = delete;
 	
-	operator const T&() const { return this->Get(); }
-	
-	/* this is questionable and probably ought to be removed */
-	operator T*() const { return this->GetPtr(); }
-	
-	const T& operator=(const T& val) = delete;
-	
-protected:
 	T *GetPtr() const
 	{
 		int off = -1;
 		assert(PROP->GetOffset(off));
-		
 		return reinterpret_cast<T *>((uintptr_t)this + off);
 	}
-	
-	const T& Get() const
-	{
-		return *this->GetPtr();
-	}
 };
+
+
+template<typename T, typename IPROP, IPROP *PROP>
+class CPropAccessor_Read : public CPropAccessor_Base<T, IPROP, PROP>
+{
+public:
+	CPropAccessor_Read() = delete;
+	
+	operator const T&() const { return *this->GetPtr(); }
+	const T& operator=(const T& val) = delete;
+};
+/* specialization for CHandle<U> */
+template<typename U, typename IPROP, IPROP *PROP>
+class CPropAccessor_Read<CHandle<U>, IPROP, PROP> : public CPropAccessor_Base<CHandle<U>, IPROP, PROP>
+{
+public:
+	CPropAccessor_Read() = delete;
+	
+	operator U*() const { return *this->GetPtr(); }
+	U* operator=(U* val) = delete;
+};
+
 
 template<typename T, typename IPROP, IPROP *PROP, bool NET = false>
 class CPropAccessor_Write : public CPropAccessor_Read<T, IPROP, PROP>
 {
 public:
 	CPropAccessor_Write() = delete;
-//	~CPropAccessor_Write() = delete;
 	
-	const T& operator=(const T& val) { this->Set(val); return val; }
-	
-protected:
-	void Set(const T& val) const
+	const T& operator=(const T& val)
 	{
 		if (NET) {
 			/* TODO: update network state */
 			assert(false);
 		}
-		
 		*this->GetPtr() = val;
+		return val;
+	}
+};
+/* specialization for CHandle<U> */
+template<typename U, typename IPROP, IPROP *PROP, bool NET>
+class CPropAccessor_Write<CHandle<U>, IPROP, PROP, NET> : public CPropAccessor_Read<CHandle<U>, IPROP, PROP>
+{
+public:
+	CPropAccessor_Write() = delete;
+	
+	U* operator=(U* val)
+	{
+		if (NET) {
+			/* TODO: update network state */
+			assert(false);
+		}
+		*this->GetPtr() = val;
+		return val;
 	}
 };
 
 
 #define DEF_SENDPROP(T, P) \
-	typedef CProp_SendProp<T> _tp_##P; \
-	static _tp_##P s_prop_##P; \
-	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, true> _ta_##P; \
-	_ta_##P P; \
-	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+	typedef CProp_SendProp<T> _type_prop_##P; \
+	static _type_prop_##P s_prop_##P; \
+	/*typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, true> _type_accessor_##P;*/ \
+	typedef CPropAccessor_Read<T, _type_prop_##P, &s_prop_##P> _type_accessor_##P; \
+	_type_accessor_##P P; \
+	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
 #define DEF_DATAMAP(T, P) \
-	typedef CProp_DataMap<T> _tp_##P; \
-	static _tp_##P s_prop_##P; \
-	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, false> _ta_##P; \
-	_ta_##P P; \
-	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+	typedef CProp_DataMap<T> _type_prop_##P; \
+	static _type_prop_##P s_prop_##P; \
+	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, false> _type_accessor_##P; \
+	_type_accessor_##P P; \
+	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
 #define DEF_EXTRACT(T, P) \
-	typedef CProp_Extract<T> _tp_##P; \
-	static _tp_##P s_prop_##P; \
-	typedef CPropAccessor_Write<T, _tp_##P, &s_prop_##P, false> _ta_##P; \
-	_ta_##P P; \
-	static_assert(std::is_empty<_ta_##P>::value, "Prop accessor isn't an empty type")
+	typedef CProp_Extract<T> _type_prop_##P; \
+	static _type_prop_##P s_prop_##P; \
+	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, false> _type_accessor_##P; \
+	_type_accessor_##P P; \
+	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
 
 #define IMPL_SENDPROP(T, C, P, SC) \

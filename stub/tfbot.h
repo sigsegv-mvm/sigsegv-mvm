@@ -18,6 +18,8 @@ class NextBotPlayer : public T {};
 class CTFBot : public NextBotPlayer<CTFPlayer>
 {
 public:
+	static const char *GetRTTIAddrName() { return "[RTTI] CTFBot"; }
+	
 	int GetMission() const { return this->m_nMission; }
 	
 	/* thunk */
@@ -61,6 +63,10 @@ private:
 	static FuncThunk<IVision * (*)(const CTFBot *)>     ft_GetVisionInterface;
 	static FuncThunk<IIntention * (*)(const CTFBot *)>  ft_GetIntentionInterface;
 };
+
+
+// TODO: ToTFBot
+// (WARNING: DON'T ASSUME THAT DYNAMIC CASTS ARE SAFE!)
 
 
 #endif

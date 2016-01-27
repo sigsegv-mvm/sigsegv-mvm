@@ -97,7 +97,7 @@ bool IExtract<T>::Check()
 	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
-	CSingleScan scan(ScanDir::FORWARD, CAddrAddrBounds((void *)addr_min, (void *)addr_max), 1,
+	CSingleScan<ScanDir::FORWARD, 1> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max),
 		new CMaskedScanner(ScanResults::ALL, this->m_BufExtract, this->m_MaskExtract));
 	
 	if (scan.Matches().size() != 1) {
