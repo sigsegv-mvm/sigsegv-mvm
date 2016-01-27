@@ -4,12 +4,6 @@
 #include "util/rtti.h"
 
 
-#if defined __GNUC__
-#warning TODO: make prologue-finding code look for the closest aligned ebp prologue *OR* ebx/ebp prologue
-#warning (ensure that ScanResults::FIRST with two scanners will short-circuit properly)
-#endif
-
-
 void IAddr::Init()
 {
 	if (this->m_State != State::INITIAL) {

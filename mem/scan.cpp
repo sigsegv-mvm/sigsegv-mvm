@@ -95,17 +95,41 @@ namespace Scan
 		return nullptr;
 	}
 	
+#if defined __GNUC__
+#warning use a threaded double scan in FindFuncPrologue
+#endif
 	const void *FindFuncPrologue(const void *p_in_func)
 	{
-		constexpr uint8_t prologue[] = {
+		/* normal EBP frame */
+		constexpr uint8_t ebp_prologue[] = {
 			0x55,       // +0000  push ebp
 			0x8b, 0xec, // +0001  mov ebp,esp
 		};
+		CSingleScan<ScanDir::REVERSE, 0x10> scan_ebp(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)ebp_prologue, sizeof(ebp_prologue)));
 		
-		CSingleScan<ScanDir::REVERSE, 0x10> scan(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+		/* uncommon EBX/EBP frame (for 16-byte alignment) */
+		constexpr uint8_t ebx_prologue[] = {
+			0x53,                   // +0000  push ebx
+			0x8b, 0xdc,             // +0001  mov ebx,esp
+			0x83, 0xec, 0x08,       // +0003  sub esp,8
+			0x83, 0xe4, 0xf0,       // +0006  and esp,0xfffffff0
+			0x83, 0xc4, 0x04,       // +0009  add esp,4
+			0x55,                   // +000C  push ebp
+			0x8b, 0x6b, 0x04,       // +000D  mov ebp,[ebx+4]
+			0x89, 0x6c, 0x24, 0x04, // +0010  mov [esp+4],ebp
+			0x8b, 0xec,             // +0014  mov ebp,esp
+		};
+		CSingleScan<ScanDir::REVERSE, 0x10> scan_ebx(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)ebx_prologue, sizeof(ebx_prologue)));
 		
-		if (scan.Matches().size() == 1) {
-			return scan.Matches()[0];
+		bool found_ebp = (scan_ebp.Matches().size() == 1);
+		bool found_ebx = (scan_ebx.Matches().size() == 1);
+		
+		if (found_ebp && found_ebx) {
+			return Max(scan_ebp.Matches()[0], scan_ebx.Matches()[0]);
+		} else if (found_ebp) {
+			return scan_ebp.Matches()[0];
+		} else if (found_ebx) {
+			return scan_ebx.Matches()[0];
 		} else {
 			return nullptr;
 		}
