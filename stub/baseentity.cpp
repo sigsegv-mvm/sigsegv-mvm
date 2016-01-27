@@ -12,4 +12,4 @@ IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hGroundEntity, CBasePlayer);
 FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> CBaseEntity::ft_GetNetworkable(      "CBaseEntity::GetNetworkable");
 FuncThunk<void                 (*)(CBaseEntity *)> CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
 
-VFuncThunk<bool (*)(const CBaseEntity *)> CBaseEntity::vt_IsPlayer("[VT] CBaseEntity", "CBaseEntity::IsPlayer");
+VFuncThunk<CBaseEntity, bool (*)(const CBaseEntity *)> CBaseEntity::vt_IsPlayer("CBaseEntity::IsPlayer");

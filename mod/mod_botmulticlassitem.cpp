@@ -111,7 +111,7 @@ namespace Mod_BotMultiClassItem
 	
 	DETOUR_DECL_STATIC(CBaseEntity *, CreateEntityByName, const char *className, int iForceEdictIndex)
 	{
-		if (rc_CTFBot_AddItem.NonZero()) {
+		if (rc_CTFBot_AddItem > 0) {
 			className = TranslateWeaponEntForClass_improved(className, bot_classnum);
 		}
 		

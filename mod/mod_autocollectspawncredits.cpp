@@ -18,7 +18,7 @@ namespace Mod_AutoCollectSpawnCredits
 	{
 		CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
 		
-		if (area != nullptr && rc_CCurrencyPack_ComeToRest.NonZero()) {
+		if (area != nullptr && rc_CCurrencyPack_ComeToRest > 0) {
 			TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
 			
 			if ((attr & BLUE_SPAWN_ROOM) != 0) {
@@ -37,7 +37,7 @@ namespace Mod_AutoCollectSpawnCredits
 		CMod() : IMod("AutoCollectSpawnCredits")
 		{
 			MOD_ADD_DETOUR_MEMBER(CCurrencyPack, ComeToRest);
-			MOD_ADD_DETOUR_MEMBER(CNavMesh, GetNavArea);
+			MOD_ADD_DETOUR_MEMBER(CNavMesh,      GetNavArea);
 		}
 		
 		void SetEnabled(bool enable)

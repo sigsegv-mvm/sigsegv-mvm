@@ -31,7 +31,7 @@ namespace Mod_EngieNoPush
 	/* would prefer to detour CTFGameRules::PushAllPlayersAway, but it's hard to reliably locate on Windows */
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAbsVelocityImpulse, const Vector *v1)
 	{
-		if (rc_TeleSpawn_Update.NonZero() || rc_BuildSentry_Update.NonZero() || rc_BuildTele_Update.NonZero()) {
+		if (rc_TeleSpawn_Update > 0 || rc_BuildSentry_Update > 0 || rc_BuildTele_Update > 0) {
 			return;
 		}
 		
@@ -44,10 +44,10 @@ namespace Mod_EngieNoPush
 	public:
 		CMod() : IMod("EngieNoPush")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerTeleportSpawn, Update);
-			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildSentryGun, Update);
+			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerTeleportSpawn,     Update);
+			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildSentryGun,    Update);
 			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildTeleportExit, Update);
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer, ApplyAbsVelocityImpulse);
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer,                          ApplyAbsVelocityImpulse);
 		}
 		
 		void SetEnabled(bool enable)

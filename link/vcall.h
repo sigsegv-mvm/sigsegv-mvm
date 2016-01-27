@@ -4,10 +4,11 @@
 
 #include "link/link.h"
 #include "abi.h"
+#include "util/rtti.h"
 
 
 // virtual void CFoo::FBar()
-// T:        function type
+// FUNC:     function type
 // n_vtable: signature for "`vtable for'CFoo"
 // n_func:   signature for "CFoo::FBar"
 
@@ -17,59 +18,56 @@
 // windows: adjust vtable by subtracting 8
 
 
-template<typename T>
+template<class T, typename FUNC>
 class VFuncThunk : public ILinkage
 {
 public:
-	VFuncThunk(const char *n_vtable, const char *n_func) :
-		m_pszVTName(n_vtable), m_pszFuncName(n_func) {}
+	VFuncThunk(const char *n_func) :
+		m_pszFuncName(n_func) {}
 	
-	virtual bool Link(char *error, size_t maxlen) override;
+	virtual bool Link() override;
 	
-	//const T& operator*() const;
-	const T& Get(const void *_this) const;
+	//const FUNC& operator*() const;
+	const FUNC& Get(const void *_this) const;
 	
 private:
-	const char *m_pszVTName;
 	const char *m_pszFuncName;
 	
 	int m_iVTIndex = -1;
 };
 
 
-template<typename T>
-inline const T& VFuncThunk<T>::Get(const void *_this) const
+template<class T, typename FUNC>
+inline const FUNC& VFuncThunk<T, FUNC>::Get(const void *_this) const
 {
 	assert(this->m_iVTIndex != -1);
 	
-	T *const pVTable = *reinterpret_cast<T *const *>(_this);
+	FUNC *const pVTable = *reinterpret_cast<FUNC *const *>(_this);
 	return pVTable[this->m_iVTIndex];
 }
 
 
-template<typename T>
-inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
+template<class T, typename FUNC>
+inline bool VFuncThunk<T, FUNC>::Link()
 {
-	T *pVT = nullptr;
-	T pFunc = nullptr;
+	FUNC *pVT = nullptr;
+	FUNC pFunc = nullptr;
 	
 	if (this->m_iVTIndex == -1) {
-		pVT = (T *)AddrManager::GetAddr(this->m_pszVTName);
+		pVT = (FUNC *)RTTI::GetVTable<T>();
 		if (pVT == nullptr) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszVTName);
+			DevMsg("VFuncThunk::Link FAIL \"%s\": can't find vtable\n", this->m_pszFuncName);
 			return false;
 		}
 		
-		pFunc = (T)AddrManager::GetAddr(this->m_pszFuncName);
+		pFunc = (FUNC)AddrManager::GetAddr(this->m_pszFuncName);
 		if (pFunc == nullptr) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
+			DevMsg("VFuncThunk::Link FAIL \"%s\": can't find func addr\n", this->m_pszFuncName);
 			return false;
 		}
 		
 #if defined __GNUC__
-		pVT = (T *)((uintptr_t)pVT + offsetof(vtable, vfptrs));
+		pVT = (FUNC *)((uintptr_t)pVT + offsetof(vtable, vfptrs));
 #endif
 		
 		bool found = false;
@@ -82,8 +80,7 @@ inline bool VFuncThunk<T>::Link(char *error, size_t maxlen)
 		}
 		
 		if (!found) {
-			DevMsg("VFuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-			snprintf(error, maxlen, "VFuncThunk linkage error: vtable lookup failed for \"%s\"", this->m_pszFuncName);
+			DevMsg("VFuncThunk::Link FAIL \"%s\": can't find func ptr in vtable\n", this->m_pszFuncName);
 			return false;
 		}
 	}

@@ -37,7 +37,7 @@ private:
 	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
 	static FuncThunk<void                 (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
 	
-	static VFuncThunk<bool (*)(const CBaseEntity *)> vt_IsPlayer;
+	static VFuncThunk<CBaseEntity, bool (*)(const CBaseEntity *)> vt_IsPlayer;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

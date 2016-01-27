@@ -14,7 +14,7 @@ public:
 	bool IsBot() const { return (vt_IsBot.Get(this))(this); }
 	
 private:
-	static VFuncThunk<bool (*)(const CBasePlayer *)> vt_IsBot;
+	static VFuncThunk<CBasePlayer, bool (*)(const CBasePlayer *)> vt_IsBot;
 };
 
 class CBaseMultiplayerPlayer : public CBasePlayer {};
@@ -67,8 +67,6 @@ private:
 class CTFPlayer : public CBaseMultiplayerPlayer
 {
 public:
-	static const char *GetRTTIAddrName() { return "[RTTI] CTFPlayer"; }
-	
 	CTFPlayerClass *GetPlayerClass()             { return m_PlayerClass.GetPtr(); }
 	const CTFPlayerClass *GetPlayerClass() const { return m_PlayerClass.GetPtr(); }
 	

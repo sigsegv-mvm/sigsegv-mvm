@@ -100,33 +100,6 @@ private:
 #endif
 
 
-class IAddr_VTable : public IAddr_Sym
-{
-public:
-	virtual bool FindAddrLinux(uintptr_t& addr) const override;
-	virtual bool FindAddrWin(uintptr_t& addr) const override;
-	
-protected:
-	virtual const char *GetWinRTTIStr() const = 0;
-};
-
-class CAddr_VTable : public IAddr_VTable
-{
-public:
-	CAddr_VTable(const std::string& name, const std::string& sym, const std::string& rtti) :
-		m_strName(name), m_strSymbol(sym), m_strWinRTTIStr(rtti) {}
-	
-	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
-	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
-	virtual const char *GetWinRTTIStr() const override { return this->m_strWinRTTIStr.c_str(); }
-	
-private:
-	std::string m_strName;
-	std::string m_strSymbol;
-	std::string m_strWinRTTIStr;
-};
-
-
 class IAddr_DataDescMap : public IAddr_Sym
 {
 public:

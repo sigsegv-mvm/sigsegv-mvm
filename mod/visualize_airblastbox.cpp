@@ -33,9 +33,12 @@ namespace Mod_Visualize_AirblastBox
 		return DETOUR_MEMBER_CALL(CTFWeaponBase_DeflectProjectiles)();
 	}
 	
-	DETOUR_DECL_STATIC(int, UTIL_EntitiesInBox, const Vector& mins, const Vector& maxs, CFlaggedEntitiesEnum *pEnum)
+	/* UTIL_EntitiesInBox forwards call to partition->EnumerateElementsInBox */
+	RefCount rc_EnumerateElementsInBox;
+	DETOUR_DECL_MEMBER(void, ISpatialPartition_EnumerateElementsInBox, SpatialPartitionListMask_t listMask, const Vector& mins, const Vector& maxs, bool coarseTest, IPartitionEnumerator *pIterator)
 	{
-		if (rc_CTFWeaponBase_DeflectProjectiles.NonZero()) {
+		SCOPED_INCREMENT(rc_EnumerateElementsInBox);
+		if (rc_CTFWeaponBase_DeflectProjectiles > 0 && rc_EnumerateElementsInBox <= 1) {
 			NDebugOverlay::Box(vec3_origin, mins, maxs,
 				cvar_color_r.GetInt(),
 				cvar_color_g.GetInt(),
@@ -44,7 +47,7 @@ namespace Mod_Visualize_AirblastBox
 				cvar_duration.GetFloat());
 		}
 		
-		return DETOUR_STATIC_CALL(UTIL_EntitiesInBox)(mins, maxs, pEnum);
+		return DETOUR_MEMBER_CALL(ISpatialPartition_EnumerateElementsInBox)(listMask, mins, maxs, coarseTest, pIterator);
 	}
 	
 	
@@ -53,8 +56,8 @@ namespace Mod_Visualize_AirblastBox
 	public:
 		CMod() : IMod("Visualize_AirblastBox")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase, DeflectProjectiles);
-			MOD_ADD_DETOUR_GLOBAL(UTIL_EntitiesInBox);
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase,     DeflectProjectiles);
+			MOD_ADD_DETOUR_MEMBER(ISpatialPartition, EnumerateElementsInBox);
 		}
 		
 		void SetEnabled(bool enable)

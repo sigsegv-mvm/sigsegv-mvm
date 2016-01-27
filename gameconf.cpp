@@ -5,8 +5,6 @@
 
 
 static const char *const configs[] = {
-	"sigsegv/rtti",
-	"sigsegv/vtables",
 	"sigsegv/datamaps",
 	"sigsegv/globals",
 	"sigsegv/NextBotKnownEntity",
@@ -213,29 +211,6 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Sym()
 	auto addr = new CAddr_Sym(name, sym);
 //	DevMsg("new CAddr_Sym(name:\"%s\", sym:\"%s\") @ 0x%08x\n",
 //		addr->GetName(), addr->GetSymbol(), (uintptr_t)addr);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
-	return SMCResult_Continue;
-}
-
-SMCResult CSigsegvGameConf::AddrEntry_Load_VTable()
-{
-	const auto& name = this->m_AddrEntry_State.m_Name;
-	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
-	
-	for (const std::string& key : { "sym", "winrtti" }) {
-		if (kv.find(key) == kv.end()) {
-			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
-			return SMCResult_HaltFail;
-		}
-	}
-	
-	const auto& sym     = kv.at("sym");
-	const auto& winrtti = kv.at("winrtti");
-	
-	auto addr = new CAddr_VTable(name, sym, winrtti);
-//	DevMsg("new CAddr_VTable(name:\"%s\", sym:\"%s\", winrtti:\"%s\") @ 0x%08x\n",
-//		addr->GetName(), addr->GetSymbol(), addr->GetWinRTTIStr(), (uintptr_t)addr);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
 	
 	return SMCResult_Continue;

@@ -11,27 +11,26 @@ class ILinkage : public AutoList<ILinkage>
 public:
 	virtual ~ILinkage() {}
 	
-	virtual bool Link(char *error, size_t maxlen) = 0;
+	virtual bool Link() = 0;
 	
 protected:
 	ILinkage() {}
 };
 
 
-template<typename T>
+template<typename FUNC>
 class FuncThunk : public ILinkage
 {
 public:
 	FuncThunk(const char *n_func) :
 		m_pszFuncName(n_func) {}
 	
-	virtual bool Link(char *error, size_t maxlen) override
+	virtual bool Link() override
 	{
 		if (this->m_pFuncPtr == nullptr) {
-			this->m_pFuncPtr = (T)AddrManager::GetAddr(this->m_pszFuncName);
+			this->m_pFuncPtr = (FUNC)AddrManager::GetAddr(this->m_pszFuncName);
 			if (this->m_pFuncPtr == nullptr) {
-				DevMsg("FuncThunk::Link FAIL \"%s\"\n", this->m_pszFuncName);
-				snprintf(error, maxlen, "FuncThunk linkage error: signature lookup failed for \"%s\"", this->m_pszFuncName);
+				DevMsg("FuncThunk::Link FAIL \"%s\": can't find func addr\n", this->m_pszFuncName);
 				return false;
 			}
 		}
@@ -40,7 +39,7 @@ public:
 		return true;
 	}
 	
-	const T& operator*() const
+	const FUNC& operator*() const
 	{
 		assert(this->m_pFuncPtr != nullptr);
 		return this->m_pFuncPtr;
@@ -49,7 +48,7 @@ public:
 private:
 	const char *m_pszFuncName;
 	
-	T m_pFuncPtr = nullptr;
+	FUNC m_pFuncPtr = nullptr;
 };
 
 
@@ -60,13 +59,12 @@ public:
 	GlobalThunk(const char *n_obj) :
 		m_pszObjName(n_obj) {}
 	
-	virtual bool Link(char *error, size_t maxlen) override
+	virtual bool Link() override
 	{
 		if (this->m_pObjPtr == nullptr) {
 			this->m_pObjPtr = (T *)AddrManager::GetAddr(this->m_pszObjName);
 			if (this->m_pObjPtr == nullptr) {
-				DevMsg("GlobalThunk::Link FAIL \"%s\"\n", this->m_pszObjName);
-				snprintf(error, maxlen, "GlobalThunk linkage error: signature lookup failed for \"%s\"", this->m_pszObjName);
+				DevMsg("GlobalThunk::Link FAIL \"%s\": can't find global addr\n", this->m_pszObjName);
 				return false;
 			}
 		}
@@ -103,7 +101,7 @@ private:
 
 namespace Link
 {
-	bool InitAll(char *error, size_t maxlen);
+	bool InitAll();
 }
 
 

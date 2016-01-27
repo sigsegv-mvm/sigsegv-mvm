@@ -31,7 +31,7 @@
 				{
 					type   "func knownvtidx"
 					sym    "_ZNK10CTFNavArea9IsBlockedEib"
-					vtable "[VT] CTFNavArea"
+					vtable ".?AVCTFNavArea@@"
 					idx    "0x11"
 				}
 				"CTFNavArea::IsValidForWanderingPopulation"

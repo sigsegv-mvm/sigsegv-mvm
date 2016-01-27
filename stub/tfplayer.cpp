@@ -1,7 +1,7 @@
 #include "stub/tfplayer.h"
 
 
-VFuncThunk<bool (*)(const CBasePlayer *)> CBasePlayer::vt_IsBot("[VT] CBasePlayer", "CBasePlayer::IsBot");
+VFuncThunk<CBasePlayer, bool (*)(const CBasePlayer *)> CBasePlayer::vt_IsBot("CBasePlayer::IsBot");
 
 
 IMPL_SENDPROP(int,      CTFPlayerClassShared, m_iClass,         CTFPlayer);

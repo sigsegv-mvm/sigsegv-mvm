@@ -33,11 +33,14 @@ namespace Mod_Visualize_EHSphere
 		DETOUR_MEMBER_CALL(CTFSniperRifle_ExplosiveHeadShot)(player1, player2);
 	}
 	
-	DETOUR_DECL_STATIC(int, UTIL_EntitiesInSphere, const Vector& center, float radius, CFlaggedEntitiesEnum *pEnum)
+	/* UTIL_EntitiesInSphere forwards call to partition->EnumerateElementsInSphere */
+	RefCount rc_EnumerateElementsInSphere;
+	DETOUR_DECL_MEMBER(void, ISpatialPartition_EnumerateElementsInSphere, SpatialPartitionListMask_t listMask, const Vector& origin, float radius, bool coarseTest, IPartitionEnumerator *pIterator)
 	{
-		if (rc_CTFSniperRifle_ExplosiveHeadShot.NonZero()) {
+		SCOPED_INCREMENT(rc_EnumerateElementsInSphere);
+		if (rc_CTFSniperRifle_ExplosiveHeadShot > 0 && rc_EnumerateElementsInSphere <= 1) {
 			for (int i = 0; i < 8; ++i) {
-				NDebugOverlay::Sphere(center, QAngle(0.0f, (float)i * 22.5f, 0.0f), radius,
+				NDebugOverlay::Sphere(origin, QAngle(0.0f, (float)i * 22.5f, 0.0f), radius,
 					cvar_color_r.GetInt(),
 					cvar_color_g.GetInt(),
 					cvar_color_b.GetInt(),
@@ -47,7 +50,7 @@ namespace Mod_Visualize_EHSphere
 			}
 		}
 		
-		return DETOUR_STATIC_CALL(UTIL_EntitiesInSphere)(center, radius, pEnum);
+		return DETOUR_MEMBER_CALL(ISpatialPartition_EnumerateElementsInSphere)(listMask, origin, radius, coarseTest, pIterator);
 	}
 	
 	
@@ -56,8 +59,8 @@ namespace Mod_Visualize_EHSphere
 	public:
 		CMod() : IMod("Visualize_EHSphere")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle, ExplosiveHeadShot);
-			MOD_ADD_DETOUR_GLOBAL(UTIL_EntitiesInSphere);
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle,    ExplosiveHeadShot);
+			MOD_ADD_DETOUR_MEMBER(ISpatialPartition, EnumerateElementsInSphere);
 		}
 		
 		void SetEnabled(bool enable)

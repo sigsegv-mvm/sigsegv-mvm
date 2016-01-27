@@ -1,6 +1,7 @@
 #include "addr/addr.h"
 #include "addr/prescan.h"
 #include "abi.h"
+#include "util/rtti.h"
 
 
 #if defined __GNUC__
@@ -138,71 +139,6 @@ bool IAddr_Sym::FindAddrLinux(uintptr_t& addr) const
 }
 
 
-bool IAddr_VTable::FindAddrLinux(uintptr_t& addr) const
-{
-	bool result = IAddr_Sym::FindAddrLinux(addr);
-	
-	if (result) {
-		addr += offsetof(vtable, vfptrs);
-	}
-	
-	return result;
-}
-
-bool IAddr_VTable::FindAddrWin(uintptr_t& addr) const
-{
-#if 0
-	/* STEP 1: get ptr to _TypeDescriptor by finding typeinfo name string */
-	std::vector<const void *> scan1_matches;
-	for (auto match : PreScan::WinRTTI_Server()) {
-		if (strcmp((const char *)match, this->GetWinRTTIStr()) == 0) {
-			scan1_matches.push_back(match);
-		}
-	}
-	if (scan1_matches.size() == 0) {
-		DevMsg("IAddr_VTable: \"%s\": could not find RTTI string\n", this->GetName());
-		return false;
-	}
-	if (scan1_matches.size() > 1) {
-		DevMsg("IAddr_VTable: \"%s\": too many matches (%u) for RTTI string\n", this->GetName(), scan1_matches.size());
-	}
-	auto *p_TD = (_TypeDescriptor *)((uintptr_t)scan1_matches[0] - offsetof(_TypeDescriptor, name));
-	
-	/* STEP 2: get ptr to __RTTI_CompleteObjectLocator by finding references to the _TypeDescriptor */
-	__RTTI_CompleteObjectLocator seek_COL = {
-		0x00000000,
-		0x00000000,
-		0x00000000,
-		p_TD,
-	};
-	CSingleScan scan2(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".rdata"), 4, new CBasicScanner(ScanResults::ALL, (const void *)&seek_COL, 0x10));
-	if (scan2.Matches().size() == 0) {
-		DevMsg("IAddr_VTable: \"%s\": could not find ref to _TypeDescriptor\n", this->GetName());
-		return false;
-	}
-	if (scan2.Matches().size() > 1) {
-		DevMsg("IAddr_VTable: \"%s\": too many refs (%u) to _TypeDescriptor\n", this->GetName(), scan2.Matches().size());
-	}
-	auto *p_COL = (__RTTI_CompleteObjectLocator *)scan2.Matches()[0];
-	
-	/* STEP 3: get ptr to the vtable itself by finding references to the __RTTI_CompleteObjectLocator */
-	CSingleScan scan3(ScanDir::FORWARD, CLibSegBounds(this->GetLibrary(), ".rdata"), 4, new CBasicScanner(ScanResults::ALL, (const void *)&p_COL, 0x4));
-	if (scan3.Matches().size() == 0) {
-		DevMsg("IAddr_VTable: \"%s\": could not find ref to __RTTI_CompleteObjectLocator\n", this->GetName());
-		return false;
-	}
-	if (scan3.Matches().size() > 1) {
-		DevMsg("IAddr_VTable: \"%s\": too many refs (%u) to __RTTI_CompleteObjectLocator\n", this->GetName(), scan3.Matches().size());
-	}
-	auto p_VT = (void **)((uintptr_t)scan3.Matches()[0] + 0x4);
-	
-	addr = (uintptr_t)p_VT;
-	return true;
-#endif
-	return false;
-}
-
-
 bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 {
 	const char *p_str = Scan::FindUniqueConstStr(this->GetClassName());
@@ -242,13 +178,13 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 {
-	auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
+	auto p_VT = RTTI::GetVTable(this->GetVTableName());
 	if (p_VT == nullptr) {
 		DevMsg("IAddr_Func_KnownVTIdx: \"%s\": no addr for vtable\n", this->GetName());
 		return false;
 	}
 	
-	addr = p_VT[this->GetVTableIndex()];
+	addr = (uintptr_t)p_VT[this->GetVTableIndex()];
 	return true;
 }
 
@@ -299,13 +235,13 @@ bool IAddr_Func_DataMap_VThunk::FindAddrWin(uintptr_t& addr) const
 	}
 	uint32_t vt_idx = vt_off / 4;
 	
-	auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
+	auto p_VT = RTTI::GetVTable(this->GetVTableName());
 	if (p_VT == nullptr) {
 		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": no addr for vtable\n", this->GetName());
 		return false;
 	}
 	
-	addr = p_VT[vt_idx];
+	addr = (uintptr_t)p_VT[vt_idx];
 	return true;
 }
 
@@ -398,13 +334,13 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 	}
 	auto p_func = (uintptr_t)scan2.Matches()[0];
 	
-	auto p_VT = (const uintptr_t *)AddrManager::GetAddr(this->GetVTableName());
+	auto p_VT = RTTI::GetVTable(this->GetVTableName());
 	if (p_VT == nullptr) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": no addr for vtable\n", this->GetName());
 		return false;
 	}
 	
-	uintptr_t vfptr = p_VT[this->GetVTableIndex()];
+	auto vfptr = (uintptr_t)p_VT[this->GetVTableIndex()];
 	if (vfptr != p_func) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": func addr (0x%08x) doesn't match vtable entry (0x%08x)\n", this->GetName(), p_func, vfptr);
 		return false;

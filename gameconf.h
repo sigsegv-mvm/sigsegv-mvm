@@ -45,7 +45,6 @@ private:
 	
 	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
 		{ "sym",                                &CSigsegvGameConf::AddrEntry_Load_Sym },
-		{ "vtable",                             &CSigsegvGameConf::AddrEntry_Load_VTable },
 		{ "datamap",                            &CSigsegvGameConf::AddrEntry_Load_DataDescMap },
 		{ "func knownvtidx",                    &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
 		{ "func datamap vthunk",                &CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk },

@@ -5,6 +5,8 @@
 class RefCount
 {
 public:
+	operator const int&() const { return this->m_iCount; }
+	
 	void Increment()
 	{
 		++this->m_iCount;
@@ -17,11 +19,6 @@ public:
 			DevWarning("RefCount::Decrement: m_iCount was %d!\n", this->m_iCount);
 			this->m_iCount = 0;
 		}
-	}
-	
-	bool NonZero() const
-	{
-		return (this->m_iCount != 0);
 	}
 	
 private:

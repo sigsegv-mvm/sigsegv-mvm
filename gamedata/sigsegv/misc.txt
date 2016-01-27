@@ -13,16 +13,16 @@
 		{
 			"addrs"
 			{
-				"UTIL_EntitiesInBox"
-				{
-					type "sym"
-					sym  "_Z18UTIL_EntitiesInBoxRK6VectorS1_P20CFlaggedEntitiesEnum"
-				}
-				"UTIL_EntitiesInSphere"
-				{
-					type "sym"
-					sym  "_Z21UTIL_EntitiesInSphereRK6VectorfP20CFlaggedEntitiesEnum"
-				}
+//				"UTIL_EntitiesInBox"
+//				{
+//					type "sym"
+//					sym  "_Z18UTIL_EntitiesInBoxRK6VectorS1_P20CFlaggedEntitiesEnum"
+//				}
+//				"UTIL_EntitiesInSphere"
+//				{
+//					type "sym"
+//					sym  "_Z21UTIL_EntitiesInSphereRK6VectorfP20CFlaggedEntitiesEnum"
+//				}
 				"CalcDistanceToLineSegment"
 				{
 					type "sym"
@@ -73,8 +73,9 @@
 				
 				"CTFWeaponBase::DeflectProjectiles"
 				{
-					type "sym"
-					sym  "_ZN13CTFWeaponBase18DeflectProjectilesEv"
+					type   "func ebpprologue unistr"
+					sym    "_ZN13CTFWeaponBase18DeflectProjectilesEv"
+					unistr "victim:0"
 				}
 				
 				"CTFMinigun::AttackEnemyProjectiles"
@@ -113,7 +114,7 @@
 					sym     "_ZN13CCurrencyPack10ComeToRestEv"
 					datamap "CItem::m_DataMap"
 					func    "CItemComeToRest"
-					vtable  "[VT] CCurrencyPack"
+					vtable  ".?AVCCurrencyPack@@"
 				}
 				
 				"CFuncNavCost::IsApplicableTo"

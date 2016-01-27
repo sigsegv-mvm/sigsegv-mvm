@@ -14,6 +14,7 @@
 class IVEngineServer;
 class IServerGameDLL;
 class ICvar;
+class ISpatialPartition;
 class IEngineTrace;
 class IStaticPropMgrServer;
 class IVDebugOverlay;
@@ -24,6 +25,7 @@ class CBaseEntityList;
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
 extern ICvar *icvar;
+extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 extern IVDebugOverlay *debugoverlay;
@@ -81,6 +83,7 @@ extern CBaseEntityList *g_pEntityList;
 #include <debugoverlay_shared.h>
 #include <dt_send.h>
 #include <eiface.h>
+#include <ispatialpartition.h>
 
 /* SourceMod */
 #include <compat_wrappers.h>

@@ -3,12 +3,6 @@
 #include "mem/scan.h"
 
 
-#if defined __GNUC__
-#warning TODO: find/replace all cases of "[VT]" and "[RTTI]"
-#warning TODO: remove all cases of GetRTTIAddrName
-#endif
-
-
 #if defined _MSC_VER
 class Prof
 {
@@ -117,6 +111,7 @@ namespace RTTI
 		int n_add   = 0;
 		
 		std::vector<std::regex> exclude;
+		exclude.emplace_back(R"(^.*@std@@$)");
 		exclude.emplace_back(R"(^.*@CryptoPP@@$)");
 		exclude.emplace_back(R"(^.*@protobuf@google@@$)");
 		exclude.emplace_back(R"(^.*@GCSDK@@$)");
@@ -124,9 +119,23 @@ namespace RTTI
 		exclude.emplace_back(R"(^\.\?AV\?\$CGC.*$)");
 		exclude.emplace_back(R"(^\.\?AVCMsg.*$)");
 		exclude.emplace_back(R"(^\.\?AVCSO.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CCallback.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CCallResult.*$)");
 		exclude.emplace_back(R"(^\.\?AV\?\$CUtl\w+DataOps.*$)");
 		exclude.emplace_back(R"(^\.\?AV\?\$CEntityFactory@.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CEntityDataInstantiator@.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CEntityClassList@.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CFmtStrN.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CUtlVector.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CCopyableUtlVector.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CFunctor.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CMemberFunctor.*$)");
 		exclude.emplace_back(R"(^\.\?AVNetworkVar_.*$)");
+		exclude.emplace_back(R"(^\.\?AVCAI_.*$)");
+		exclude.emplace_back(R"(^\.\?AV\?\$CAI_.*$)");
+		exclude.emplace_back(R"(^\.\?AVCEconTool_.*$)");
+		exclude.emplace_back(R"(^\.\?AVCTFQuest.*$)");
+		exclude.emplace_back(R"(^\.\?AVCWorkshop_.*$)");
 		
 		Prof::Begin();
 		CSingleScan<ScanDir::FORWARD, 1> scan1(CLibSegBounds(Library::SERVER, ".data"), new CStringPrefixScanner(ScanResults::ALL, ".?AV"));
@@ -238,6 +247,30 @@ namespace RTTI
 		//	DevMsg("\"%s\" VT @ %08x\n", name.c_str(), (uintptr_t)s_VT[name]);
 		}
 		Prof::End("VT post");
+		
+		
+		std::multimap<uintptr_t, std::string> addrmap;
+		for (const auto& pair : s_RTTI) {
+			addrmap.emplace((uintptr_t)pair.second, "TD   " + pair.first);
+		}
+		for (const auto& pair : results_COL) {
+			addrmap.emplace((uintptr_t)pair.second, "COL  " + pair.first);
+		}
+		for (const auto& pair : s_VT) {
+			addrmap.emplace((uintptr_t)pair.second, "VT   " + pair.first);
+		}
+		
+		const LibInfo& info = LibMgr::GetInfo(Library::SERVER);
+		for (const auto& pair : info.segs) {
+			const SegInfo& seg = pair.second;
+			
+			addrmap.emplace(info.baseaddr + seg.off, "SEG< " + pair.first);
+			addrmap.emplace(info.baseaddr + seg.off + seg.len, ">SEG " + pair.first);
+		}
+		
+		for (const auto& pair : addrmap) {
+			DevMsg("%08x %s\n", pair.first - info.baseaddr, pair.second.c_str());
+		}
 		
 #endif
 		

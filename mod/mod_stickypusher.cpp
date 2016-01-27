@@ -68,7 +68,7 @@ namespace Mod_StickyPusher
 	
 	DETOUR_DECL_MEMBER(bool, CSpawnLocation_Parse, KeyValues *kv)
 	{
-		if (rc_CMissionPopulator_Parse.NonZero()) {
+		if (rc_CMissionPopulator_Parse > 0) {
 			if (V_stricmp(kv->GetName(), "Objective") == 0 &&
 				V_stricmp(kv->GetString(), "PushStickies") == 0) {
 				int *p_m_Objective = (int *)((uintptr_t)this - (offsetof(CMissionPopulator, m_Where) -
@@ -120,7 +120,7 @@ namespace Mod_StickyPusher
 		CMod() : IMod("StickyPusher")
 		{
 			MOD_ADD_DETOUR_MEMBER(CMissionPopulator, Parse);
-			MOD_ADD_DETOUR_MEMBER(CSpawnLocation, Parse);
+			MOD_ADD_DETOUR_MEMBER(CSpawnLocation,    Parse);
 			
 			MOD_ADD_DETOUR_MEMBER(CMissionPopulator, Update);
 			

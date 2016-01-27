@@ -15,6 +15,7 @@ SMEXT_LINK(&g_Ext);
 
 
 ICvar *icvar;
+ISpatialPartition *partition;
 IEngineTrace *enginetrace;
 IStaticPropMgrServer *staticpropmgr;
 IVDebugOverlay *debugoverlay;
@@ -36,10 +37,10 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
 	
 	LibMgr::Load();
-	RTTI::PreLoad(); goto fail; // REMOVE ME
+	RTTI::PreLoad();
 	AddrManager::Load();
 	
-	if (!Link::InitAll(error, maxlen)) goto fail;
+	if (!Link::InitAll()) goto fail;
 	
 	CDetourManager::Init(g_pSM->GetScriptingEngine());
 	
@@ -86,6 +87,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	g_pCVar = icvar;
 	ConVar_Register(0, this);
 	
+	GET_V_IFACE_ANY(GetEngineFactory, partition, ISpatialPartition, INTERFACEVERSION_SPATIALPARTITION);
 	GET_V_IFACE_ANY(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_V_IFACE_ANY(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
 	

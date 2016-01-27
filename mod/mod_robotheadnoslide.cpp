@@ -16,7 +16,7 @@ namespace Mod_RobotHeadNoSlide
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAbsVelocityImpulse, const Vector *v1)
 	{
-		if (rc_TFPlayerThink.NonZero() && v1->z == 100.0f &&
+		if (rc_TFPlayerThink > 0 && v1->z == 100.0f &&
 			TFGameRules() && TFGameRules()->IsMannVsMachineMode()) {
 			CTFPlayer *player = reinterpret_cast<CTFPlayer *>(this);
 			

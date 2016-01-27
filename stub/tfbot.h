@@ -18,8 +18,6 @@ class NextBotPlayer : public T {};
 class CTFBot : public NextBotPlayer<CTFPlayer>
 {
 public:
-	static const char *GetRTTIAddrName() { return "[RTTI] CTFBot"; }
-	
 	int GetMission() const { return this->m_nMission; }
 	
 	/* thunk */

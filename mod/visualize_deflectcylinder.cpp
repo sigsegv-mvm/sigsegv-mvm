@@ -52,10 +52,13 @@ namespace Mod_Visualize_DeflectCylinder
 		return result;
 	}
 	
-	DETOUR_DECL_STATIC(int, UTIL_EntitiesInSphere, const Vector& center, float radius, CFlaggedEntitiesEnum *pEnum)
+	/* UTIL_EntitiesInSphere forwards call to partition->EnumerateElementsInSphere */
+	RefCount rc_EnumerateElementsInSphere;
+	DETOUR_DECL_MEMBER(void, ISpatialPartition_EnumerateElementsInSphere, SpatialPartitionListMask_t listMask, const Vector& origin, float radius, bool coarseTest, IPartitionEnumerator *pIterator)
 	{
-		if (rc_CTFMinigun_AttackProjectiles.NonZero() && cvar_sphere_enable.GetBool()) {
-			NDebugOverlay::Sphere(center, QAngle(0.0f, 0.0f, 0.0f), radius,
+		SCOPED_INCREMENT(rc_EnumerateElementsInSphere);
+		if (rc_CTFMinigun_AttackProjectiles > 0 && rc_EnumerateElementsInSphere <= 1 && cvar_sphere_enable.GetBool()) {
+			NDebugOverlay::Sphere(origin, QAngle(0.0f, 0.0f, 0.0f), radius,
 				cvar_sphere_color_r.GetInt(),
 				cvar_sphere_color_g.GetInt(),
 				cvar_sphere_color_b.GetInt(),
@@ -63,7 +66,7 @@ namespace Mod_Visualize_DeflectCylinder
 				false,
 				cvar_duration.GetFloat());
 			
-			NDebugOverlay::Sphere(center, QAngle(0.0f, 30.0f, 0.0f), radius,
+			NDebugOverlay::Sphere(origin, QAngle(0.0f, 30.0f, 0.0f), radius,
 				cvar_sphere_color_r.GetInt(),
 				cvar_sphere_color_g.GetInt(),
 				cvar_sphere_color_b.GetInt(),
@@ -71,7 +74,7 @@ namespace Mod_Visualize_DeflectCylinder
 				false,
 				cvar_duration.GetFloat());
 			
-			NDebugOverlay::Sphere(center, QAngle(0.0f, 60.0f, 0.0f), radius,
+			NDebugOverlay::Sphere(origin, QAngle(0.0f, 60.0f, 0.0f), radius,
 				cvar_sphere_color_r.GetInt(),
 				cvar_sphere_color_g.GetInt(),
 				cvar_sphere_color_b.GetInt(),
@@ -80,14 +83,14 @@ namespace Mod_Visualize_DeflectCylinder
 				cvar_duration.GetFloat());
 		}
 		
-		return DETOUR_STATIC_CALL(UTIL_EntitiesInSphere)(center, radius, pEnum);
+		return DETOUR_MEMBER_CALL(ISpatialPartition_EnumerateElementsInSphere)(listMask, origin, radius, coarseTest, pIterator);
 	}
 	
 	DETOUR_DECL_STATIC(float, CalcDistanceToLineSegment, const Vector& P, const Vector& vLineA, const Vector& vLineB, float *t)
 	{
 		float dist = DETOUR_STATIC_CALL(CalcDistanceToLineSegment)(P, vLineA, vLineB, t);
 		
-		if (rc_CTFMinigun_AttackProjectiles.NonZero()) {
+		if (rc_CTFMinigun_AttackProjectiles > 0) {
 			float radius = (is_MiniBoss ? 56.0f : 38.0f);
 			bool is_inside = (dist <= radius);
 			
@@ -136,9 +139,9 @@ namespace Mod_Visualize_DeflectCylinder
 	public:
 		CMod() : IMod("Visualize_DeflectCylinder")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFMinigun, AttackEnemyProjectiles);
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer, IsMiniBoss);
-			MOD_ADD_DETOUR_GLOBAL(UTIL_EntitiesInSphere);
+			MOD_ADD_DETOUR_MEMBER(CTFMinigun,        AttackEnemyProjectiles);
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer,         IsMiniBoss);
+			MOD_ADD_DETOUR_MEMBER(ISpatialPartition, EnumerateElementsInSphere);
 			MOD_ADD_DETOUR_GLOBAL(CalcDistanceToLineSegment);
 		}
 		

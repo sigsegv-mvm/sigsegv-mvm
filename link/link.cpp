@@ -8,12 +8,12 @@
 
 namespace Link
 {
-	bool InitAll(char *error, size_t maxlen)
+	bool InitAll()
 	{
 		DevMsg("Link::InitAll BEGIN\n");
 		
 		for (auto link : AutoList<ILinkage>::List()) {
-			if (!link->Link(error, maxlen)) {
+			if (!link->Link()) {
 #if !defined LINK_NONFATAL
 				DevMsg("Link::InitAll FAIL\n");
 				return false;

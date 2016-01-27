@@ -2,6 +2,7 @@
 #include "mem/scan.h"
 #include "prop.h"
 #include "stub/gamerules.h"
+#include "util/rtti.h"
 
 
 static constexpr uint8_t s_Buf_g_pGameRules[] = {
@@ -22,8 +23,11 @@ struct CExtract_g_pGameRules : public IExtract<uintptr_t>
 //		DevMsg("CExtract_g_pGameRules: vt   @ 0x%08x\n", this->GetVTableAddr());
 //		DevMsg("CExtract_g_pGameRules: dtor @ 0x%08x\n", (uintptr_t)this->GetFuncAddr());
 		
+		auto ptr_vt = this->GetVTableAddr();
+		if (ptr_vt == nullptr) return false;
+		
 		buf.CopyFrom(s_Buf_g_pGameRules);
-		buf.SetDword(0x0006 + 2, (uint32_t)this->GetVTableAddr());
+		buf.SetDword(0x0006 + 2, (uint32_t)ptr_vt);
 		
 		mask.SetDword(0x000c + 2, 0x00000000);
 		
@@ -36,7 +40,7 @@ struct CExtract_g_pGameRules : public IExtract<uintptr_t>
 	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x000c + 2; }
 	
-	const uintptr_t *GetVTableAddr() const { return (const uintptr_t *)AddrManager::GetAddr("[VT] CGameRules"); }
+	const void **GetVTableAddr() const { return RTTI::GetVTable<CGameRules>(); }
 	static constexpr int VT_idx_CBaseGameSystemPerFrame_dtor = 0x00d;
 };
 
@@ -190,3 +194,55 @@ static CAddr_CTFPlayer_CanBeForcedToLaugh addr_CTFPlayer_CanBeForcedToLaugh;
 // c1 e8 xx           shr eax,log2(FL_FAKECLIENT)
 // 83 e0 01           and eax,1
 // c3                 ret
+
+
+class IAddr_InterfaceVFunc : public IAddr
+{
+public:
+	virtual bool FindAddrLinux(uintptr_t& addr) const override
+	{
+		const uintptr_t *vtable = *(const uintptr_t **)(this->GetInterfacePtr());
+		addr = vtable[this->GetVTableIndexLinux()];
+		return true;
+	}
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		const uintptr_t *vtable = *(const uintptr_t **)(this->GetInterfacePtr());
+		addr = vtable[this->GetVTableIndexWin()];
+		return true;
+	}
+	
+	virtual const void *GetInterfacePtr() const = 0;
+	virtual int GetVTableIndexLinux() const = 0;
+	virtual int GetVTableIndexWin() const = 0;
+};
+
+class CAddr_InterfaceVFunc : public IAddr_InterfaceVFunc
+{
+public:
+	CAddr_InterfaceVFunc(const void *p_iface, const std::string& n_iface, const std::string& n_func, int vti_linux, int vti_win) :
+		m_pIFace(p_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdxLinux(vti_linux), m_iVTIdxWin(vti_win) {}
+	
+	virtual const char *GetName() const override         { return (this->m_strIFaceName + "::" + this->m_strFuncName).c_str(); }
+	virtual const void *GetInterfacePtr() const override { return this->m_pIFace; }
+	virtual int GetVTableIndexLinux() const override     { return this->m_iVTIdxLinux; }
+	virtual int GetVTableIndexWin() const override       { return this->m_iVTIdxWin; }
+	
+private:
+	const void *m_pIFace;
+	std::string m_strIFaceName;
+	std::string m_strFuncName;
+	int m_iVTIdxLinux;
+	int m_iVTIdxWin;
+};
+
+
+class CAddr_ISpatialPartition : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_ISpatialPartition(const std::string& n_func, int vti_linux, int vti_win) :
+		CAddr_InterfaceVFunc((const void *)partition, "ISpatialPartition", n_func, vti_linux, vti_win) {}
+};
+static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox(   "EnumerateElementsInBox",    0x0e, 0x0d);
+static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", 0x0f, 0x0e);

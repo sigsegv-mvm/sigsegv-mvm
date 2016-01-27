@@ -28,7 +28,7 @@
 					// alt: "Announcer.MVM_First_Engineer_Teleport_Spawned"
 					// alt: "Announcer.MVM_Another_Engineer_Teleport_Spawned"
 					// alt: "Cannot teleport to hint as m_hintEntity is NULL"
-					vtable "[VT] CTFBotMvMEngineerTeleportSpawn"
+					vtable ".?AVCTFBotMvMEngineerTeleportSpawn@@"
 					idx    "0x2e"
 				}
 				
@@ -38,7 +38,7 @@
 					sym    "_ZN31CTFBotMvMEngineerBuildSentryGun6UpdateEP6CTFBotf"
 					unistr "Built a sentry"
 					// alt: "Placing sentry"
-					vtable "[VT] CTFBotMvMEngineerBuildSentryGun"
+					vtable ".?AVCTFBotMvMEngineerBuildSentryGun@@"
 					idx    "0x2e"
 				}
 				
@@ -47,7 +47,7 @@
 					type   "func ebpprologue unistr knownvtidx"
 					sym    "_ZN34CTFBotMvMEngineerBuildTeleportExit6UpdateEP6CTFBotf"
 					unistr "Engineer.MVM_AutoBuildingTeleporter02"
-					vtable "[VT] CTFBotMvMEngineerBuildTeleportExit"
+					vtable ".?AVCTFBotMvMEngineerBuildTeleportExit@@"
 					idx    "0x2e"
 				}
 			}
