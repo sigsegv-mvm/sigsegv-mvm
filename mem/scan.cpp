@@ -94,4 +94,20 @@ namespace Scan
 		
 		return nullptr;
 	}
+	
+	const void *FindFuncPrologue(const void *p_in_func)
+	{
+		constexpr uint8_t prologue[] = {
+			0x55,       // +0000  push ebp
+			0x8b, 0xec, // +0001  mov ebp,esp
+		};
+		
+		CSingleScan<ScanDir::REVERSE, 0x10> scan(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
+		
+		if (scan.Matches().size() == 1) {
+			return scan.Matches()[0];
+		} else {
+			return nullptr;
+		}
+	}
 }

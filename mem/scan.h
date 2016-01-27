@@ -300,6 +300,7 @@ private:
 namespace Scan
 {
 	const char *FindUniqueConstStr(const char *str);
+	const void *FindFuncPrologue(const void *p_in_func);
 }
 
 

@@ -5,10 +5,8 @@
 
 
 #if defined __GNUC__
-#warning TODO: refactor prologue-finding code into a shared block somewhere
 #warning TODO: make prologue-finding code look for the closest aligned ebp prologue *OR* ebx/ebp prologue
 #warning (ensure that ScanResults::FIRST with two scanners will short-circuit properly)
-#warning TODO: increase arbitrary 0x1000 limit in prologue-finding code
 #endif
 
 
@@ -261,18 +259,13 @@ bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 	}
 	auto p_in_func = (const char **)scan1.Matches()[0];
 	
-	constexpr uint8_t prologue[] = {
-		0x55,       // +0000  push ebp
-		0x8b, 0xec, // +0001  mov ebp,esp
-	};
-	CSingleScan<ScanDir::FORWARD, 0x10> scan2(CAddrOffBounds(p_in_func, -0x1000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
-	if (scan2.Matches().size() != 1) {
+	auto p_func = Scan::FindFuncPrologue(p_in_func);
+	if (p_func == nullptr) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
 	}
-	auto p_func = (uintptr_t)scan2.Matches()[0];
 	
-	addr = p_func;
+	addr = (uintptr_t)p_func;
 	return true;
 }
 
@@ -292,18 +285,13 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 	}
 	auto p_in_func = (const char **)scan1.Matches()[0];
 	
-	constexpr uint8_t prologue[] = {
-		0x55,       // +0000  push ebp
-		0x8b, 0xec, // +0001  mov ebp,esp
-	};
-	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
-	if (scan2.Matches().size() != 1) {
+	auto p_func = Scan::FindFuncPrologue(p_in_func);
+	if (p_func == nullptr) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
 	}
-	auto p_func = (uintptr_t)scan2.Matches()[0];
 	
-	addr = p_func;
+	addr = (uintptr_t)p_func;
 	return true;
 }
 
@@ -323,16 +311,11 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 	}
 	auto p_in_func = (const char **)scan1.Matches()[0];
 	
-	constexpr uint8_t prologue[] = {
-		0x55,       // +0000  push ebp
-		0x8b, 0xec, // +0001  mov ebp,esp
-	};
-	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
-	if (scan2.Matches().size() != 1) {
+	auto p_func = Scan::FindFuncPrologue(p_in_func);
+	if (p_func == nullptr) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
 	}
-	auto p_func = (uintptr_t)scan2.Matches()[0];
 	
 	auto p_VT = RTTI::GetVTable(this->GetVTableName());
 	if (p_VT == nullptr) {
@@ -340,13 +323,13 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 		return false;
 	}
 	
-	auto vfptr = (uintptr_t)p_VT[this->GetVTableIndex()];
+	auto vfptr = p_VT[this->GetVTableIndex()];
 	if (vfptr != p_func) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": func addr (0x%08x) doesn't match vtable entry (0x%08x)\n", this->GetName(), p_func, vfptr);
 		return false;
 	}
 	
-	addr = p_func;
+	addr = (uintptr_t)p_func;
 	return true;
 }
 
@@ -378,17 +361,12 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 	}
 	auto p_in_func = scan1.Matches()[0];
 	
-	constexpr uint8_t prologue[] = {
-		0x55,       // +0000  push ebp
-		0x8b, 0xec, // +0001  mov ebp,esp
-	};
-	CSingleScan<ScanDir::REVERSE, 0x10> scan2(CAddrOffBounds(p_in_func, -0x10000), new CBasicScanner(ScanResults::FIRST, (const void *)prologue, sizeof(prologue)));
-	if (scan2.Matches().size() != 1) {
+	auto p_func = Scan::FindFuncPrologue(p_in_func);
+	if (p_func == nullptr) {
 		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate EBP prologue\n", this->GetName());
 		return false;
 	}
-	auto p_func = (uintptr_t)scan2.Matches()[0];
 	
-	addr = p_func;
+	addr = (uintptr_t)p_func;
 	return true;
 }
