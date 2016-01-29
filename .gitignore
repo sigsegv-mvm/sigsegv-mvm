@@ -3,6 +3,7 @@ MSVC14/Debug/
 MSVC14/Release/
 MSVC14/Binary/
 MSVC14/packages/
+MSVC14/ipch/
 MSVC14/*.suo
 MSVC14/*.user
 MSVC14/*.opendb
