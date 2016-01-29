@@ -82,8 +82,11 @@ void IMod::InvokeUnload()
 	for (auto& pair : this->m_Detours) {
 		DetourInfo& info = pair.second;
 		
-		info.detour->DisableDetour();
-		info.detour->Destroy();
+		if (info.detour != nullptr) {
+			info.detour->DisableDetour();
+			info.detour->Destroy();
+			info.detour = nullptr;
+		}
 	}
 	this->m_Detours.clear();
 }
