@@ -191,7 +191,7 @@ private:
 // dtor:     NOPE
 // virtual:  NOPE
 // members:  NOPE
-template<typename T, typename IPROP, IPROP *PROP, size_t *ADJUST>
+template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST>
 class CPropAccessor_Base
 {
 public:
@@ -209,7 +209,7 @@ public:
 };
 
 
-template<typename T, typename IPROP, IPROP *PROP, size_t *ADJUST>
+template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST>
 class CPropAccessor_Read : public CPropAccessor_Base<T, IPROP, PROP, ADJUST>
 {
 public:
@@ -219,7 +219,7 @@ public:
 	const T& operator=(const T& val) = delete;
 };
 /* specialization for CHandle<U> */
-template<typename U, typename IPROP, IPROP *PROP, size_t *ADJUST>
+template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST>
 class CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST> : public CPropAccessor_Base<CHandle<U>, IPROP, PROP, ADJUST>
 {
 public:
@@ -230,7 +230,7 @@ public:
 };
 
 
-template<typename T, typename IPROP, IPROP *PROP, size_t *ADJUST, bool NET = false>
+template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET = false>
 class CPropAccessor_Write : public CPropAccessor_Read<T, IPROP, PROP, ADJUST>
 {
 public:
@@ -247,7 +247,7 @@ public:
 	}
 };
 /* specialization for CHandle<U> */
-template<typename U, typename IPROP, IPROP *PROP, size_t *ADJUST, bool NET>
+template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET>
 class CPropAccessor_Write<CHandle<U>, IPROP, PROP, ADJUST, NET> : public CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST>
 {
 public:
@@ -268,8 +268,8 @@ public:
 #define DEF_SENDPROP(T, P) \
 	typedef CProp_SendProp<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
-	static size_t _adj_##P; \
-	/*typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, _adj_##P, true> _type_accessor_##P;*/ \
+	const static size_t _adj_##P; \
+	/*typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, true> _type_accessor_##P;*/ \
 	typedef CPropAccessor_Read<T, _type_prop_##P, &s_prop_##P, &_adj_##P> _type_accessor_##P; \
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
@@ -277,7 +277,7 @@ public:
 #define DEF_DATAMAP(T, P) \
 	typedef CProp_DataMap<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
-	static size_t _adj_##P; \
+	const static size_t _adj_##P; \
 	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, false> _type_accessor_##P; \
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
@@ -285,20 +285,20 @@ public:
 #define DEF_EXTRACT(T, P) \
 	typedef CProp_Extract<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
-	static size_t _adj_##P; \
+	const static size_t _adj_##P; \
 	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, false> _type_accessor_##P; \
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
 
 #define IMPL_SENDPROP(T, C, P, SC) \
-	size_t C::_adj_##P = offsetof(C, P); \
+	const size_t C::_adj_##P = offsetof(C, P); \
 	CProp_SendProp<T> C::s_prop_##P(#C, #P, #SC)
 #define IMPL_DATAMAP(T, C, P) \
-	size_t C::_adj_##P = offsetof(C, P); \
+	const size_t C::_adj_##P = offsetof(C, P); \
 	CProp_DataMap<T> C::s_prop_##P(#C, #P)
 #define IMPL_EXTRACT(T, C, P, X) \
-	size_t C::_adj_##P = offsetof(C, P); \
+	const size_t C::_adj_##P = offsetof(C, P); \
 	CProp_Extract<T> C::s_prop_##P(#C, #P, X)
 
 
