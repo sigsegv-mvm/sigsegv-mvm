@@ -10,6 +10,8 @@ void IAddr::Init()
 		return;
 	}
 	
+	this->m_State = State::LOADING;
+	
 #if defined _LINUX
 	bool result = this->FindAddrLinux(this->m_iAddr);
 #elif defined _OSX
@@ -87,6 +89,7 @@ void *AddrManager::GetAddr(const char *name)
 	
 	IAddr::State state = addr->GetState();
 	assert(state != IAddr::State::INITIAL);
+	assert(state != IAddr::State::LOADING);
 	
 	if (state == IAddr::State::FAIL) {
 		DevMsg("AddrManager::GetAddr FAIL: have but cannot resolve addr for name \"%s\"\n", name);

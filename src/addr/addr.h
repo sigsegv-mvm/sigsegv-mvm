@@ -31,6 +31,7 @@ public:
 	enum class State : int
 	{
 		INITIAL,
+		LOADING,
 		OK,
 		FAIL,
 	};
