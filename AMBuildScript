@@ -294,8 +294,8 @@ class ExtensionConfig(object):
 
   def ConfigureForExtension(self, context, compiler):
     compiler.includes += [
-      os.path.join(context.currentSourcePath),
-      os.path.join(context.currentSourcePath, 'sdk'),
+      os.path.join(context.currentSourcePath, 'src'),
+      os.path.join(context.currentSourcePath, 'src', 'sdk'),
       os.path.join(self.sm_root, 'public'),
       os.path.join(self.sm_root, 'public', 'extensions'),
       os.path.join(self.sm_root, 'sourcepawn', 'include'),

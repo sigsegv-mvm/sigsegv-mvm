@@ -5,4 +5,6 @@ MSVC14/Binary/
 MSVC14/packages/
 MSVC14/*.suo
 MSVC14/*.user
+MSVC14/*.opendb
+MSVC14/*.sdf
 MSVC14/.vs

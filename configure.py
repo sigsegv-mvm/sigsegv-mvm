@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 # vim: set sts=2 ts=8 sw=2 tw=99 et:
 API_VERSION = '2.1'
 

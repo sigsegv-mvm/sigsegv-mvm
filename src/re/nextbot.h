@@ -27,16 +27,16 @@ template<class T> class Action;
 // TODO: NextBot/Path/Path.h
 // TODO: NextBot/Path/PathFollower.h
 // TODO: NextBot/Path/ChasePath.h
-#include "mvm-reversed/server/NextBot/NextBotKnownEntity.h"
-#include "mvm-reversed/server/NextBot/NextBotEventResponderInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotContextualQueryInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotComponentInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotIntentionInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotBodyInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotLocomotionInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotVisionInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotInterface.h"
-#include "mvm-reversed/server/NextBot/NextBotBehavior.h"
+#include "../mvm-reversed/server/NextBot/NextBotKnownEntity.h"
+#include "../mvm-reversed/server/NextBot/NextBotEventResponderInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotContextualQueryInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotComponentInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotIntentionInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotBodyInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotLocomotionInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotVisionInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotInterface.h"
+#include "../mvm-reversed/server/NextBot/NextBotBehavior.h"
 // TODO: NextBot/Player/PlayerBody.h
 // TODO: NextBot/Player/PlayerLocomotion.h
 

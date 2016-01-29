@@ -5,49 +5,49 @@ projectName = 'sigsegv'
 
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
-#  'common.h',
-  '../sourcemod/public/asm/asm.c',
-  'sm/detours.cpp',
-  'sm/MemoryUtils.cpp',
-  'sdk2013/debugoverlay_shared.cpp',
-#  'common.cpp',
-  'sizeof.cpp',
-  'extension.cpp',
-  'gameconf.cpp',
-  'library.cpp',
-  'addr/addr.cpp',
-  'addr/prescan.cpp',
-  'addr/misc.cpp',
-  'addr/vtable.cpp',
-  'addr/nextbot.cpp',
-  'mem/patch.cpp',
-  'mem/scan.cpp',
-  'prop.cpp',
-  'util/trace.cpp',
-  'util/backtrace.cpp',
-  'util/rtti.cpp',
-  'stub/baseentity.cpp',
-  'stub/gamerules.cpp',
-  'stub/misc.cpp',
-  'stub/nav.cpp',
-  'stub/path.cpp',
-  'stub/populators.cpp',
-  'stub/tfplayer.cpp',
-  'stub/tfbot.cpp',
-  'link/link.cpp',
-  'link/nextbot1.cpp',
-  'link/nextbot2.cpp',
-  'mod.cpp',
-  'mod/mod_autocollectspawncredits.cpp',
-  'mod/mod_engienopush.cpp',
-  'mod/mod_sniperchargeuncap.cpp',
-  'mod/mod_stickypusher.cpp',
-  'mod/mod_robottickle.cpp',
-  'mod/mod_botmulticlassitem.cpp',
-  'mod/mod_robotheadnoslide.cpp',
-  'mod/visualize_airblastbox.cpp',
-  'mod/visualize_deflectcylinder.cpp',
-  'mod/visualize_ehsphere.cpp',
+  'src/common.h',
+  os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c'),
+  'src/sm/detours.cpp',
+  'src/sm/MemoryUtils.cpp',
+  'src/sdk2013/debugoverlay_shared.cpp',
+  'src/common.cpp',
+  'src/sizeof.cpp',
+  'src/extension.cpp',
+  'src/gameconf.cpp',
+  'src/library.cpp',
+  'src/addr/addr.cpp',
+  'src/addr/prescan.cpp',
+  'src/addr/misc.cpp',
+  'src/addr/vtable.cpp',
+  'src/addr/nextbot.cpp',
+  'src/mem/patch.cpp',
+  'src/mem/scan.cpp',
+  'src/prop.cpp',
+  'src/util/trace.cpp',
+  'src/util/backtrace.cpp',
+  'src/util/rtti.cpp',
+  'src/stub/baseentity.cpp',
+  'src/stub/gamerules.cpp',
+  'src/stub/misc.cpp',
+  'src/stub/nav.cpp',
+  'src/stub/path.cpp',
+  'src/stub/populators.cpp',
+  'src/stub/tfplayer.cpp',
+  'src/stub/tfbot.cpp',
+  'src/link/link.cpp',
+  'src/link/nextbot1.cpp',
+  'src/link/nextbot2.cpp',
+  'src/mod.cpp',
+  'src/mod/mod_autocollectspawncredits.cpp',
+  'src/mod/mod_engienopush.cpp',
+  'src/mod/mod_sniperchargeuncap.cpp',
+  'src/mod/mod_stickypusher.cpp',
+  'src/mod/mod_robottickle.cpp',
+  'src/mod/mod_botmulticlassitem.cpp',
+  'src/mod/mod_robotheadnoslide.cpp',
+  'src/mod/visualize_airblastbox.cpp',
+  'src/mod/visualize_deflectcylinder.cpp',
+  'src/mod/visualize_ehsphere.cpp',
 ]
 
 ###############
@@ -56,123 +56,22 @@ sourceFiles = [
 
 project = Extension.HL2Project(builder, projectName + '.ext')
 
-if os.path.isfile(os.path.join(builder.currentSourcePath, 'sdk', 'smsdk_ext.cpp')):
+if os.path.isfile(os.path.join(builder.currentSourcePath, 'src', 'sdk', 'smsdk_ext.cpp')):
   # Use the copy included in the project
-  project.sources += [os.path.join('sdk', 'smsdk_ext.cpp')]
+  project.sources += [os.path.join('src', 'sdk', 'smsdk_ext.cpp')]
 else:
   # Use the copy included with SM 1.6 and newer
   project.sources += [os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp')]
 
 project.sources += sourceFiles
-  
+
 for sdk_name in Extension.sdks:
   sdk = Extension.sdks[sdk_name]
   
   binary = Extension.HL2Config(project, projectName + '.ext.' + sdk.ext, sdk)
 
-#project.weak_deps += builder.AddCommand(
-#  argv    = [ 'echo', 'hello' ],
-#  inputs  = [ os.path.join(builder.sourcePath, 'PCH.mak') ],
-#  outputs = [ 'common.h' ],
-#)
 
-
-# from ambuild2.frontend.v2_1.cpp.builders import ObjectFileBase
-# from ambuild2.frontend.v2_1.cpp.builders import ObjectArgvBuilder
-# 
-# class PCHFile(ObjectFileBase):
-#   def __init__(self, folderNode, compiler, sourceFile, outputFile, argv):
-#     super(ObjectFile, self).__init__(folderNode, compiler, sourceFile, outputFile)
-#     self.argv = argv
-#     self.behavior = compiler.vendor.behavior
-# 
-#   @property
-#   def type(self):
-#     return 'pcheader'
-# 
-# 
-# class ImprovedObjectArgvBuilder(ObjectArgvBuilder):
-#   def __init__(self):
-#     super(ImprovedObjectArgvBuilder, self).__init__()
-#   
-#   def buildItem(self, sourceName, sourceFile):
-#     sourceNameSansExtension, extension = os.path.splitext(sourceName)
-#     encodedName = NameForObjectFile(sourceNameSansExtension)
-#     if extension == '.gch':
-#       return self.buildPchItem(sourceFile, encodedName)
-#     return super(ImprovedObjectArgvBuilder, self).buildItem(self, sourceName, sourceFile)
-#   
-#   def buildPchItem(self, sourceFile, encodedName):
-#     argv = self.cxx_argv[:]
-#     self.used_cxx = True
-#     objectFile = encodedName + '.gch'
-#     argv += self.vendor.objectArgs(sourceFile, objectFile)
-#     return PCHFile(self.localFolderNode, self.compiler, sourceFile, objectFile, argv)
-# 
-# 
-# from ambuild2.frontend.v2_1.cpp.builders import BinaryBuilder
-# 
-# class ImprovedBinaryBuilder(BinaryBuilder):
-#   def __init__(self, compiler, name):
-#     super(ImprovedBinaryBuilder, self).__init__(compiler, name)
-#   
-#   def buildModule(self, cx, module):
-#     localFolder, outputFolder, outputPath = self.computeModuleFolders(cx, module)
-#     localFolderNode = cx.AddFolder(localFolder)
-#     
-#     builder = ImprovedObjectArgvBuilder()
-#     builder.setOutputs(localFolderNode, outputFolder, outputPath)
-#     builder.setCompiler(module.compiler)
-#     
-#     for item in module.sources:
-#       if os.path.isabs(item):
-#         sourceFile = item
-#       else:
-#         sourceFile = os.path.join(module.context.currentSourcePath, item)
-#       sourceFile = os.path.normpath(sourceFile)
-#       
-#       self.objects.append(builder.buildItem(item, sourceFile))
-#     
-#     if builder.used_cxx:
-#       self.used_cxx_ = True
-
-#cmd, pch_builder = builder.Add(PCHBuilder(binary.compiler, 'pch'))
-#binary.compiler.sourcedeps += [ pch_builder ]
-
-
-pch_makefile = os.path.join(builder.sourcePath, 'PCH.mak')
-pch_input    = os.path.join(builder.sourcePath, 'common.h')
-pch_output   = 'common.h.gch'
-
-pch_flags = binary.compiler.cxx_argv[:]
-pch_flags += binary.compiler.cflags
-if binary.compiler.symbol_files is not None:
-  pch_flags += binary.compiler.vendor.debugInfoArgv
-pch_flags += binary.compiler.cxxflags
-pch_flags += [binary.compiler.vendor.definePrefix + define for define in binary.compiler.defines]
-pch_flags += [binary.compiler.vendor.definePrefix + define for define in binary.compiler.cxxdefines]
-for include in binary.compiler.includes + binary.compiler.cxxincludes:
-  pch_flags += binary.compiler.vendor.formatInclude('', include)
-
-
-builder.AddConfigureFile(pch_makefile)
-
-cmd, pch = builder.AddCommand(
-  argv    = [ 'make',
-              '-f', pch_makefile,
-              'INFILE={}'.format(pch_input),
-              'OUTFILE={}'.format(pch_output),
-              'CXX={}'.format(' '.join(pch_flags)),
-            ],
-  inputs  = [ pch_input ],
-  outputs = [ pch_output ],
-)
-binary.compiler.sourcedeps += [ cmd ]
-binary.compiler.sourcedeps += pch
-#binary.weak_deps += pch
-
-#binary.compiler.includes += [ os.getcwd() ]
-binary.compiler.cflags += [ '-I', os.getcwd(), '-include', 'common.h' ]
+binary.compiler.cflags += [ '-include', 'common.h' ]
 
 binary.compiler.linkflags += [ '-lunwind', '-lunwind-x86', '-liberty' ]
 
