@@ -251,6 +251,7 @@ namespace RTTI
 		Prof::End("VT post");
 		
 		
+#if 0
 		std::multimap<uintptr_t, std::string> addrmap;
 		for (const auto& pair : s_RTTI) {
 			addrmap.emplace((uintptr_t)pair.second, "TD   " + pair.first);
@@ -273,6 +274,7 @@ namespace RTTI
 		for (const auto& pair : addrmap) {
 			DevMsg("%08x %s\n", pair.first - info.baseaddr, pair.second.c_str());
 		}
+#endif
 		
 #endif
 		

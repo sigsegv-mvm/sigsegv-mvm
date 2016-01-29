@@ -372,39 +372,39 @@ private:
 template<class SCANNER>
 inline void CMultiScan<SCANNER>::DoScans()
 {
-	DevMsg("CMultiScan: BEGIN\n");
+//	DevMsg("CMultiScan: BEGIN\n");
 	
 	unsigned int n_threads = Max(1U, std::thread::hardware_concurrency());
 	n_threads = Min(n_threads, this->m_Scanners.size());
 	
 	std::vector<std::thread> threads;
 	for (unsigned int i = 0; i < n_threads; ++i) {
-		DevMsg("CMultiScan: SPAWN T#%d\n", i);
+//		DevMsg("CMultiScan: SPAWN T#%d\n", i);
 		threads.emplace_back(&CMultiScan<SCANNER>::Worker, this, i);
 	}
 	
 	for (unsigned int i = 0; i < n_threads; ++i) {
 		threads[i].join();
-		DevMsg("CMultiScan: JOIN  %#%d\n", i);
+//		DevMsg("CMultiScan: JOIN  T#%d\n", i);
 	}
 	
-	DevMsg("CMultiScan: END\n");
+//	DevMsg("CMultiScan: END\n");
 }
 
 template<class SCANNER>
 inline void CMultiScan<SCANNER>::Worker(int id)
 {
-	DevMsg("CMultiScan: W#%d BEGIN\n", id);
+//	DevMsg("CMultiScan: W#%d BEGIN\n", id);
 	
 	SCANNER *scanner;
 	while ((scanner = this->GetTask()) != nullptr) {
-		DevMsg("CMultiScan: W#%d SCAN BEGIN %08x\n", id, (uintptr_t)scanner);
+//		DevMsg("CMultiScan: W#%d SCAN BEGIN %08x\n", id, (uintptr_t)scanner);
 		auto scan = new CScan<SCANNER>(scanner);
-		DevMsg("CMultiScan: W#%d SCAN END   %08x\n", id, (uintptr_t)scanner);
+//		DevMsg("CMultiScan: W#%d SCAN END   %08x\n", id, (uintptr_t)scanner);
 		this->SubmitTask(scan);
 	}
 	
-	DevMsg("CMultiScan: W#%d END\n", id);
+//	DevMsg("CMultiScan: W#%d END\n", id);
 }
 
 template<class SCANNER>
