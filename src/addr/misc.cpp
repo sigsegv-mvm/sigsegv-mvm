@@ -225,16 +225,16 @@ public:
 class CAddr_InterfaceVFunc : public IAddr_InterfaceVFunc
 {
 public:
-	CAddr_InterfaceVFunc(const void *p_iface, const std::string& n_iface, const std::string& n_func, int vti_linux, int vti_win) :
-		m_pIFace(p_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdxLinux(vti_linux), m_iVTIdxWin(vti_win) {}
+	CAddr_InterfaceVFunc(const void **pp_iface, const std::string& n_iface, const std::string& n_func, int vti_linux, int vti_win) :
+		m_ppIFace(pp_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdxLinux(vti_linux), m_iVTIdxWin(vti_win) {}
 	
 	virtual const char *GetName() const override         { return (this->m_strIFaceName + "::" + this->m_strFuncName).c_str(); }
-	virtual const void *GetInterfacePtr() const override { return this->m_pIFace; }
+	virtual const void *GetInterfacePtr() const override { return *this->m_ppIFace; }
 	virtual int GetVTableIndexLinux() const override     { return this->m_iVTIdxLinux; }
 	virtual int GetVTableIndexWin() const override       { return this->m_iVTIdxWin; }
 	
 private:
-	const void *m_pIFace;
+	const void **m_ppIFace;
 	std::string m_strIFaceName;
 	std::string m_strFuncName;
 	int m_iVTIdxLinux;
@@ -246,7 +246,7 @@ class CAddr_ISpatialPartition : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_ISpatialPartition(const std::string& n_func, int vti_linux, int vti_win) :
-		CAddr_InterfaceVFunc((const void *)partition, "ISpatialPartition", n_func, vti_linux, vti_win) {}
+		CAddr_InterfaceVFunc((const void **)&partition, "ISpatialPartition", n_func, vti_linux, vti_win) {}
 };
 static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox(   "EnumerateElementsInBox",    0x0e, 0x0d);
 static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", 0x0f, 0x0e);
