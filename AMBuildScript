@@ -273,9 +273,9 @@ class ExtensionConfig(object):
   def configure_linux(self, cxx):
     cxx.defines += ['_LINUX', 'POSIX']
     cxx.linkflags += ['-Wl,--exclude-libs,ALL', '-lm']
-    if cxx.vendor == 'gcc':
-      cxx.linkflags += ['-static-libgcc']
-    elif cxx.vendor == 'clang':
+    if 'gcc' in cxx.version.vendor_name:
+      cxx.linkflags += ['-static-libgcc', '-static-libstdc++']
+    elif 'clang' in cxx.version.vendor_name:
       cxx.linkflags += ['-lgcc_eh']
 
   def configure_mac(self, cxx):
