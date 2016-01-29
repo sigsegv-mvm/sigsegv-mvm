@@ -76,7 +76,7 @@ namespace RTTI
 					len = Min(len, sizeof(name) - 1);
 					
 					memcpy(name, buf + 4, len);
-					name[sym->length] = '\0';
+					name[len] = '\0';
 					
 					if (is_rtti) {
 						std::string key(name);

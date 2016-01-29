@@ -36,8 +36,8 @@ inline TO rtti_cast(const FROM ptr)
 		return nullptr;
 	}
 	
-	auto rtti_from = RTTI::GetRTTI<std::remove_pointer<FROM>::type>();
-	auto rtti_to   = RTTI::GetRTTI<std::remove_pointer<TO>::type>();
+	auto rtti_from = RTTI::GetRTTI<typename std::remove_pointer<FROM>::type>();
+	auto rtti_to   = RTTI::GetRTTI<typename std::remove_pointer<TO>::type>();
 	
 	assert(rtti_from != nullptr);
 	assert(rtti_to   != nullptr);
