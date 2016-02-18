@@ -475,10 +475,6 @@ bool SDKExtension::SDK_OnMetamodPauseChange(bool paused, char *error, size_t max
 
 /* Overload a few things to prevent libstdc++ linking */
 #if defined __linux__ || defined __APPLE__
-extern "C" void __cxa_pure_virtual(void)
-{
-}
-
 void *operator new(size_t size)
 {
 	return malloc(size);

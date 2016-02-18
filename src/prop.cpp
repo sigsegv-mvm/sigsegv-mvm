@@ -33,7 +33,7 @@ void CC_ListProps(const CCommand& cmd)
 		}
 	}
 }
-static ConCommand ccmd_list_props("sigsegv_list_props", &CC_ListProps,
+static ConCommand ccmd_list_props("sig_list_props", &CC_ListProps,
 	"List props and show their status", FCVAR_NONE);
 
 

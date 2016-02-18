@@ -13,7 +13,21 @@
 		{
 			"addrs"
 			{
-				
+				"CTFBotVision::CollectPotentiallyVisibleEntities"
+				{
+					type "sym"
+					sym  "_ZN12CTFBotVision33CollectPotentiallyVisibleEntitiesEP10CUtlVectorIP11CBaseEntity10CUtlMemoryIS2_iEE"
+				}
+				"CTFBotVision::IsIgnored"
+				{
+					type "sym"
+					sym  "_ZNK12CTFBotVision9IsIgnoredEP11CBaseEntity"
+				}
+				"CTFBotVision::IsVisibleEntityNoticed"
+				{
+					type "sym"
+					sym  "_ZNK12CTFBotVision22IsVisibleEntityNoticedEP11CBaseEntity"
+				}
 			}
 		}
 	}

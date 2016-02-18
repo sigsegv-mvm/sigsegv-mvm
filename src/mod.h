@@ -64,12 +64,10 @@ private:
 };
 
 
-#define MOD_ADD_DETOUR_MEMBER(obj, func) \
-	this->AddDetour(#obj "::" #func, GET_MEMBER_CALLBACK(obj##_##func), GET_MEMBER_TRAMPOLINE(obj##_##func))
-#define MOD_ADD_DETOUR_STATIC(obj, func) \
-	this->AddDetour(#obj "::" #func, GET_STATIC_CALLBACK(obj##_##func), GET_STATIC_TRAMPOLINE(obj##_##func))
-#define MOD_ADD_DETOUR_GLOBAL(func) \
-	this->AddDetour(#func, GET_STATIC_CALLBACK(func), GET_STATIC_TRAMPOLINE(func))
+#define MOD_ADD_DETOUR_MEMBER(detour, addr) \
+	this->AddDetour(addr, GET_MEMBER_CALLBACK(detour), GET_MEMBER_TRAMPOLINE(detour))
+#define MOD_ADD_DETOUR_STATIC(detour, addr) \
+	this->AddDetour(addr, GET_STATIC_CALLBACK(detour), GET_STATIC_TRAMPOLINE(detour))
 
 
 #endif

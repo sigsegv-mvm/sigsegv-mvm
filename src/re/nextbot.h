@@ -7,10 +7,12 @@
 #endif
 
 
-#include "stub/stub.h"
+#include "stub/tfplayer.h"
+#include "stub/nav.h"
 #include "util/util.h"
 
 
+class CTFBot;
 class INextBot;
 class Path;
 class PathFollower;
@@ -24,9 +26,6 @@ class NextBotCombatCharacter;
 template<class T> class Action;
 #define CUtlVectorAutoPurge CUtlVector
 
-// TODO: NextBot/Path/Path.h
-// TODO: NextBot/Path/PathFollower.h
-// TODO: NextBot/Path/ChasePath.h
 #include "../mvm-reversed/server/NextBot/NextBotKnownEntity.h"
 #include "../mvm-reversed/server/NextBot/NextBotEventResponderInterface.h"
 #include "../mvm-reversed/server/NextBot/NextBotContextualQueryInterface.h"

@@ -20,7 +20,7 @@ void CModManager::UnloadAllMods()
 }
 
 
-static ConCommand ccmd_list_mods("sigsegv_list_mods", &CModManager::CC_ListMods,
+static ConCommand ccmd_list_mods("sig_list_mods", &CModManager::CC_ListMods,
 	"List mods and show their status", FCVAR_NONE);
 void CModManager::CC_ListMods(const CCommand& cmd)
 {

@@ -4,8 +4,10 @@
 
 enum class Library : int
 {
+	INVALID,
 	SERVER,
 	ENGINE,
+	TIER0,
 };
 
 
@@ -49,6 +51,11 @@ public:
 	
 	static void *FindSym(Library lib, const char *sym);
 	static void ForEachSym(Library lib, void (*functor)(Symbol *));
+	
+	static Library WhichLibAtAddr(void *ptr);
+	
+	static Library FromString(const char *str);
+	static const char *ToString(Library lib);
 	
 private:
 	LibMgr() {}

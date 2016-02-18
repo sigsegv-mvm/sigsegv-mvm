@@ -1,4 +1,5 @@
 #include "gameconf.h"
+#include "addr/standard.h"
 
 
 #define DEBUG_GC 0
@@ -20,7 +21,7 @@ static const char *const configs[] = {
 	"sigsegv/NextBotPlayerBody",
 	"sigsegv/NextBotPlayerLocomotion",
 	"sigsegv/NextBotPath",
-	"sigsegv/NextBotPathFollower",
+	"sigsegv/NextBotPathFollow",
 	"sigsegv/NextBotChasePath",
 	"sigsegv/population",
 	"sigsegv/nav",
@@ -30,6 +31,7 @@ static const char *const configs[] = {
 	"sigsegv/tfbot_vision",
 	"sigsegv/tfbot_behavior",
 	"sigsegv/misc",
+	"sigsegv/debugoverlay",
 	nullptr,
 };
 
@@ -194,6 +196,16 @@ SMCResult CSigsegvGameConf::AddrEntry_End()
 }
 
 
+void CSigsegvGameConf::AddrEntry_Load_Common(IAddr *addr)
+{
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	if (kv.find("lib") != kv.end()) {
+		addr->SetLibrary(LibMgr::FromString(kv.at("lib").c_str()));
+	}
+}
+
+
 SMCResult CSigsegvGameConf::AddrEntry_Load_Sym()
 {
 	const auto& name = this->m_AddrEntry_State.m_Name;
@@ -208,11 +220,31 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Sym()
 	
 	const auto& sym = kv.at("sym");
 	
-	auto addr = new CAddr_Sym(name, sym);
-//	DevMsg("new CAddr_Sym(name:\"%s\", sym:\"%s\") @ 0x%08x\n",
-//		addr->GetName(), addr->GetSymbol(), (uintptr_t)addr);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
+	auto a = new CAddr_Sym(name, sym);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Fixed()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
 	
+	for (const std::string& key : { "sym", "addr", "build" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym = kv.at("sym");
+	int addr        = stoi(kv.at("addr"), nullptr, 0);
+	int build       = stoi(kv.at("build"), nullptr, 0);
+	
+	auto a = new CAddr_FixedAddr(name, sym, addr, build);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -228,12 +260,12 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_DataDescMap()
 		}
 	}
 	
-	const auto& sym     = kv.at("sym");
+	const auto& sym    = kv.at("sym");
 	const auto& c_name = kv.at("class");
 	
-	auto addr = new CAddr_DataDescMap(name, sym, c_name);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_DataDescMap(name, sym, c_name);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -253,9 +285,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx()
 	const auto& vtable = kv.at("vtable");
 	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
-	auto addr = new CAddr_Func_KnownVTIdx(name, sym, vtable, idx);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_KnownVTIdx(name, sym, vtable, idx);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -276,9 +308,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk()
 	const auto& f_name  = kv.at("func");
 	const auto& vtable  = kv.at("vtable");
 	
-	auto addr = new CAddr_Func_DataMap_VThunk(name, sym, dm_name, f_name, vtable);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_DataMap_VThunk(name, sym, dm_name, f_name, vtable);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -297,9 +329,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueRef()
 	const auto& sym    = kv.at("sym");
 	const auto& uniref = kv.at("uniref");
 	
-	auto addr = new CAddr_Func_EBPPrologue_UniqueRef(name, sym, uniref);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_EBPPrologue_UniqueRef(name, sym, uniref);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -318,9 +350,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr()
 	const auto& sym    = kv.at("sym");
 	const auto& unistr = kv.at("unistr");
 	
-	auto addr = new CAddr_Func_EBPPrologue_UniqueStr(name, sym, unistr);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_EBPPrologue_UniqueStr(name, sym, unistr);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -341,9 +373,9 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx
 	const auto& vtable = kv.at("vtable");
 	int idx            = stoi(kv.at("idx"), nullptr, 0);
 	
-	auto addr = new CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx(name, sym, unistr, vtable, idx);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx(name, sym, unistr, vtable, idx);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }
 
@@ -363,8 +395,8 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf()
 	const auto& v_name  = kv.at("v_name");
 	const auto& v_group = kv.at("v_group");
 	
-	auto addr = new CAddr_Func_EBPPrologue_VProf(name, sym, v_name, v_group);
-	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(addr));
-	
+	auto a = new CAddr_Func_EBPPrologue_VProf(name, sym, v_name, v_group);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
 }

@@ -1,0 +1,154 @@
+// debug overlay
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"NDebugOverlay::Box"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay3BoxERK6VectorS2_S2_iiiif"
+				}
+				"NDebugOverlay::BoxDirection"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay12BoxDirectionERK6VectorS2_S2_S2_iiiif"
+				}
+				"NDebugOverlay::BoxAngles"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay9BoxAnglesERK6VectorS2_S2_RK6QAngleiiiif"
+				}
+				"NDebugOverlay::SweptBox"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay8SweptBoxERK6VectorS2_S2_S2_RK6QAngleiiiif"
+				}
+				"NDebugOverlay::EntityBounds"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay12EntityBoundsEPK11CBaseEntityiiiif"
+				}
+				"NDebugOverlay::Line"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay4LineERK6VectorS2_iiibf"
+				}
+				"NDebugOverlay::Triangle"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay8TriangleERK6VectorS2_S2_iiiibf"
+				}
+				"NDebugOverlay::EntityText"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay10EntityTextEiiPKcfiiii"
+				}
+				"NDebugOverlay::EntityTextAtPosition"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay20EntityTextAtPositionERK6VectoriPKcfiiii"
+				}
+				"NDebugOverlay::Grid"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay4GridERK6Vector"
+				}
+				"NDebugOverlay::Text"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay4TextERK6VectorPKcbf"
+				}
+				"NDebugOverlay::ScreenText"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay10ScreenTextEffPKciiiif"
+				}
+				"NDebugOverlay::Cross3D_ext"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay7Cross3DERK6VectorS2_S2_iiibf"
+				}
+				"NDebugOverlay::Cross3D_size"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay7Cross3DERK6Vectorfiiibf"
+				}
+				"NDebugOverlay::Cross3DOriented_ang"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay15Cross3DOrientedERK6VectorRK6QAnglefiiibf"
+				}
+				"NDebugOverlay::Cross3DOriented_mat"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay15Cross3DOrientedERK11matrix3x4_tfibf"
+				}
+				"NDebugOverlay::DrawTickMarkedLine"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay18DrawTickMarkedLineERK6VectorS2_fiiiibf"
+				}
+				"NDebugOverlay::DrawGroundCrossHairOverlay"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay26DrawGroundCrossHairOverlayEv"
+				}
+				"NDebugOverlay::HorzArrow"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay9HorzArrowERK6VectorS2_fiiiibf"
+				}
+				"NDebugOverlay::YawArrow"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay8YawArrowERK6Vectorfffiiiibf"
+				}
+				"NDebugOverlay::VertArrow"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay9VertArrowERK6VectorS2_fiiiibf"
+				}
+				"NDebugOverlay::Axis"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay4AxisERK6VectorRK6QAnglefbf"
+				}
+				"NDebugOverlay::Sphere"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay6SphereERK6Vectorfiiibf"
+				}
+				"NDebugOverlay::Circle"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay6CircleERK6VectorRK6QAnglefiiiibf"
+				}
+				"NDebugOverlay::Circle_ang"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay6CircleERK6Vectorfiiiibf"
+				}
+				"NDebugOverlay::Circle_axes"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay6CircleERK6VectorS2_S2_fiiiibf"
+				}
+				"NDebugOverlay::Sphere_ang"
+				{
+					type "sym"
+					sym  "_ZN13NDebugOverlay6SphereERK6VectorRK6QAnglefiiiibf"
+				}
+			}
+		}
+	}
+}

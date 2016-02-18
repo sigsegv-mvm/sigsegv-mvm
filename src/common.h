@@ -17,10 +17,10 @@ class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
 class IStaticPropMgrServer;
-class IVDebugOverlay;
+//class IVDebugOverlay;
+class IGameEventManager2;
 class CGlobalVars;
 class CBaseEntityList;
-
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
@@ -28,7 +28,8 @@ extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
-extern IVDebugOverlay *debugoverlay;
+extern IGameEventManager2 *gameeventmanager;
+//extern IVDebugOverlay *debugoverlay;
 
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
@@ -58,6 +59,7 @@ extern CBaseEntityList *g_pEntityList;
 //#include <boost/thread.hpp>
 
 /* Source SDK */
+#include <string_t.h>
 #include "sdk2013/annotations.h"
 #include "sdk2013/basetypes.h"
 #include <tier0/dbg.h>
@@ -84,6 +86,13 @@ extern CBaseEntityList *g_pEntityList;
 #include <dt_send.h>
 #include <eiface.h>
 #include <ispatialpartition.h>
+#include <random.h>
+#include <ai_activity.h>
+#include <igameevents.h>
+#include <inetmessage.h>
+#include <inetchannel.h>
+
+/* MetaMod */
 
 /* SourceMod */
 #include <compat_wrappers.h>
@@ -107,6 +116,14 @@ extern CBaseEntityList *g_pEntityList;
 #pragma warning(disable:4091)
 #include <Dbghelp.h>
 #pragma warning(default:4091)
+#endif
+
+/* Capstone */
+#include <capstone.h>
+
+/* namespace clash between Windows CreateEvent macro and IGameEventManager2::CreateEvent */
+#if defined CreateEvent
+#undef CreateEvent
 #endif
 
 #endif

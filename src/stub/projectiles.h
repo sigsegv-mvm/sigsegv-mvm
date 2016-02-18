@@ -1,0 +1,77 @@
+#ifndef _INCLUDE_SIGSEGV_STUB_PROJECTILES_H_
+#define _INCLUDE_SIGSEGV_STUB_PROJECTILES_H_
+
+
+#include "link/link.h"
+#include "stub/baseanimating.h"
+
+
+class CBaseProjectile : public CBaseAnimating {};
+
+class CBaseGrenade : public CBaseProjectile {};
+class CThrownGrenade : public CBaseGrenade {};
+class CBaseGrenadeConcussion : public CBaseGrenade {};
+class CBaseGrenadeContact : public CBaseGrenade {};
+class CBaseGrenadeTimed : public CBaseGrenade {};
+
+class CTFBaseProjectile : public CBaseProjectile {};
+
+class CTFBaseRocket  : public CBaseProjectile {};
+class CTFFlameRocket : public CTFBaseRocket {};
+
+class CTFProjectile_Syringe : public CTFBaseProjectile {};
+class CTFProjectile_EnergyRing : public CTFBaseProjectile {};
+class CTFProjectile_Rocket : public CTFBaseRocket {};
+class CTFProjectile_SentryRocket : public CTFProjectile_Rocket {};
+class CTFProjectile_Flare : public CTFBaseRocket {};
+class CTFProjectile_EnergyBall : public CTFBaseRocket {};
+
+class CTFProjectile_Arrow : public CTFBaseRocket {};
+class CTFProjectile_HealingBolt : public CTFProjectile_Arrow {};
+class CTFProjectile_GrapplingHook : public CTFProjectile_Arrow {};
+
+class CTFWeaponBaseGrenadeProj : public CBaseGrenade
+{
+public:
+	DECL_SENDPROP(bool, m_bCritical);
+};
+
+class CTFGrenadePipebombProjectile : public CTFWeaponBaseGrenadeProj {};
+class CTFWeaponBaseMerasmusGrenade : public CTFWeaponBaseGrenadeProj {};
+
+class CTFProjectile_Jar : public CTFGrenadePipebombProjectile {};
+class CTFProjectile_JarMilk : public CTFProjectile_Jar {};
+class CTFProjectile_Cleaver : public CTFProjectile_Jar {};
+
+class CTFProjectile_Throwable : public CTFProjectile_Jar {};
+class CTFProjectile_ThrowableBreadMonster : public CTFProjectile_Throwable {};
+class CTFProjectile_ThrowableBrick : public CTFProjectile_Throwable {};
+class CTFProjectile_ThrowableRepel : public CTFProjectile_Throwable {};
+
+class CTFStunBall : public CTFGrenadePipebombProjectile {};
+class CTFBall_Ornament : public CTFStunBall {};
+
+class CTFProjectile_SpellFireball : public CTFProjectile_Rocket {};
+class CTFProjectile_SpellBats : public CTFProjectile_Jar {};
+class CTFProjectile_SpellMirv : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellMeteorShower : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellPumpkin : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellTransposeTeleport : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellSpawnBoss : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellSpawnZombie : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellSpawnHorde : public CTFProjectile_SpellBats {};
+class CTFProjectile_SpellLightningOrb : public CTFProjectile_SpellFireball {};
+class CTFProjectile_SpellKartOrb : public CTFProjectile_SpellFireball {};
+class CTFProjectile_SpellKartBats : public CTFProjectile_SpellBats {};
+
+
+class IBaseProjectileAutoList
+{
+public:
+	static const CUtlVector<IBaseProjectileAutoList *>& AutoList() { return m_IBaseProjectileAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<IBaseProjectileAutoList *>> m_IBaseProjectileAutoListAutoList;
+};
+
+
+#endif

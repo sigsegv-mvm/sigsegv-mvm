@@ -21,13 +21,13 @@ CLibSegBounds::CLibSegBounds(Library lib, const char *seg)
 
 namespace Scan
 {
-	const char *FindUniqueConstStr(const char *str)
+	const char *FindUniqueConstStr(Library lib, const char *str)
 	{
 		using StrScanner = CStringScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
 		
-		CScan<StrScanner> scan(CLibSegBounds(Library::SERVER, ".rdata"), str);
-		if (scan.Matches().size() == 1) {
-			return (const char *)scan.Matches()[0];
+		CScan<StrScanner> scan(CLibSegBounds(lib, ".rdata"), str);
+		if (scan.ExactlyOneMatch()) {
+			return (const char *)scan.FirstMatch();
 		}
 		
 		/* get aggressive: try to exclude matches that are probably a suffix */
@@ -48,9 +48,7 @@ namespace Scan
 		return nullptr;
 	}
 	
-#if defined __GNUC__
-#warning use a threaded double scan in FindFuncPrologue
-#endif
+	// TODO: use a CMultiScan in FindFuncPrologue
 	const void *FindFuncPrologue(const void *p_in_func)
 	{
 		using PrologueScanner = CBasicScanner<ScanDir::REVERSE, ScanResults::FIRST, 0x10>;
@@ -76,24 +74,22 @@ namespace Scan
 		};
 		CScan<PrologueScanner> scan_ebx(CAddrOffBounds(p_in_func, -0x10000), (const void *)ebx_prologue, sizeof(ebx_prologue));
 		
-		bool found_ebp = (scan_ebp.Matches().size() == 1);
-		bool found_ebx = (scan_ebx.Matches().size() == 1);
+		bool found_ebp = (scan_ebp.ExactlyOneMatch());
+		bool found_ebx = (scan_ebx.ExactlyOneMatch());
 		
 		if (found_ebp && found_ebx) {
-			return Max(scan_ebp.Matches()[0], scan_ebx.Matches()[0]);
+			return Max(scan_ebp.FirstMatch(), scan_ebx.FirstMatch());
 		} else if (found_ebp) {
-			return scan_ebp.Matches()[0];
+			return scan_ebp.FirstMatch();
 		} else if (found_ebx) {
-			return scan_ebx.Matches()[0];
+			return scan_ebx.FirstMatch();
 		} else {
 			return nullptr;
 		}
 	}
 	
-#if defined __GNUC__
-#warning TODO: make a convenience function that takes a std::vector<const char *>
-#warning and returns a std::map<std::string, const void *>
-#warning and internally does a CMultiScan for string constants and sets the map appropriately
-#warning (use this in CAddr_pszWpnEntTranslationList)
-#endif
+	// TODO: make a convenience class which takes a std::vector<const char *>
+	// and exposes a std::map<std::string, const void *>, which internally does
+	// a CMultiScan for string constants and sets the map appropriately
+	// (use this in CAddr_pszWpnEntTranslationList)
 }

@@ -18,7 +18,7 @@ public:
 	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
 	
 private:
-	DEF_SENDPROP(bool, m_bPlayingMannVsMachine);
+	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
 };
 
 

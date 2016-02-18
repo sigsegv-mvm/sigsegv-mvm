@@ -536,6 +536,12 @@ private:
 	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
 };
 
+// work-around since client header doesn't like inlined gpGlobals->curtime
+inline float IntervalTimer::Now( void ) const
+{
+	return gpGlobals->curtime;
+}
+
 
 //--------------------------------------------------------------------------------------------------------------
 /**
@@ -598,6 +604,12 @@ private:
 	float m_timestamp;
 	virtual float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
 };
+
+// work-around since client header doesn't like inlined gpGlobals->curtime
+inline float CountdownTimer::Now( void ) const
+{
+	return gpGlobals->curtime;
+}
 
 class RealTimeCountdownTimer : public CountdownTimer
 {

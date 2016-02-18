@@ -13,10 +13,12 @@
 		{
 			"addrs"
 			{
-				"Path::Compute<CTFBotPathCost>"
+				"Path::Compute_vec<CTFBotPathCost>"
 				{
-					type "sym"
-					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+					type  "fixed"
+					sym   "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+					addr  "0x4e3ab0"
+					build "3283568"
 				}
 			}
 		}

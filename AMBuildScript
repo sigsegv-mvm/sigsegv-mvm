@@ -187,16 +187,22 @@ class ExtensionConfig(object):
 #      '-Q',
       '-Winvalid-pch',
       '-rdynamic',
+      '-ggdb3',
+#      '-pthread',
     ]
     cxx.cxxflags += [
       '-std=c++11',
       '-fno-exceptions',
       '-fno-threadsafe-statics',
-      '-Wno-non-virtual-dtor',
-      '-Wno-overloaded-virtual',
+#      '-Wno-non-virtual-dtor',
+#      '-Wno-overloaded-virtual',
       '-fvisibility-inlines-hidden',
+      '-Wno-invalid-offsetof',
     ]
-    cxx.linkflags += ['-m32']
+    cxx.linkflags += [
+      '-m32',
+      '-Wl,--no-undefined',
+    ]
 
     have_gcc = ('gcc' in cxx.version.vendor_name)
     have_clang = ('clang' in cxx.version.vendor_name)
@@ -272,7 +278,12 @@ class ExtensionConfig(object):
 
   def configure_linux(self, cxx):
     cxx.defines += ['_LINUX', 'POSIX']
-    cxx.linkflags += ['-Wl,--exclude-libs,ALL', '-lm']
+    cxx.linkflags += [
+      '-Wl,--exclude-libs,ALL',
+      '-lm',
+      '-lpthread',
+      '-ldl',
+    ]
     if 'gcc' in cxx.version.vendor_name:
       cxx.linkflags += ['-static-libgcc', '-static-libstdc++']
     elif 'clang' in cxx.version.vendor_name:
@@ -296,6 +307,7 @@ class ExtensionConfig(object):
     compiler.includes += [
       os.path.join(context.currentSourcePath, 'src'),
       os.path.join(context.currentSourcePath, 'src', 'sdk'),
+      os.path.join(context.currentSourcePath, 'libs', 'capstone', 'include'),
       os.path.join(self.sm_root, 'public'),
       os.path.join(self.sm_root, 'public', 'extensions'),
       os.path.join(self.sm_root, 'sourcepawn', 'include'),

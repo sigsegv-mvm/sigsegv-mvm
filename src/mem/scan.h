@@ -104,13 +104,8 @@ public:
 	const IBounds& GetBounds() const { return this->m_Bounds; }
 	int GetLen() const               { return this->m_Len; }
 	
-#if defined __GNUC__
-#warning TODO: find/replace all instances where we should be using GetFirstMatch
-#warning TODO: find/replace all instances where we should be using ExactlyOneMatch
-#endif
-	
 	const std::vector<const void *>& Matches() const { return this->m_Matches; }
-	const void *GetFirstMatch() const                { return this->m_Matches[0]; }
+	const void *FirstMatch() const                   { return this->m_Matches[0]; }
 	bool ExactlyOneMatch() const                     { return (this->m_Matches.size() == 1); }
 	
 protected:
@@ -160,11 +155,29 @@ inline bool CBasicScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 }
 
 
-#if defined __GNUC__
-#warning TODO: make something similar to CBasicScanner that has a typename parameter
-#warning and which looks for something like a single pointer in memory
-#warning TODO: then replace all the cases where we abuse CBasicScanner with &whatever, with this
-#endif
+template<ScanDir DIR, ScanResults RTYPE, int ALIGN, typename T>
+class CTypeScanner : public IScanner<DIR, RTYPE, ALIGN>
+{
+public:
+	CTypeScanner(const IBounds& bounds, const T& seek) :
+		IScanner<DIR, RTYPE, ALIGN>(bounds, sizeof(T)), m_Seek(seek) {}
+	
+	bool CheckOne(const void *where);
+	
+private:
+	const T m_Seek;
+};
+
+template<ScanDir DIR, ScanResults RTYPE, int ALIGN, typename T>
+inline bool CTypeScanner<DIR, RTYPE, ALIGN, T>::CheckOne(const void *where)
+{
+	if (*reinterpret_cast<const T *>(where) == this->m_Seek) {
+		this->AddMatch(where);
+		return true;
+	} else {
+		return false;
+	}
+}
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
@@ -254,11 +267,38 @@ inline bool CMaskedScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 }
 
 
-// SCANS =======================================================================
+template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
+class CCallScanner : public IScanner<DIR, RTYPE, ALIGN>
+{
+public:
+	CCallScanner(const IBounds& bounds, uint32_t target) :
+		IScanner<DIR, RTYPE, ALIGN>(bounds, sizeof(target)), m_Target(target) {}
+	
+	bool CheckOne(const void *where);
+	
+private:
+	const uint32_t m_Target;
+};
 
-#if defined __GNUC__
-#warning TODO: use unique_ptr in CScan instead of manually deleting
-#endif
+template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
+inline bool CCallScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
+{
+	auto p_opcode = reinterpret_cast<const uint8_t *>(where);
+	auto p_offset = reinterpret_cast<const uint32_t *>((uintptr_t)where + 1);
+	
+	if (*p_opcode == 0xe8) {
+		uint32_t rel = this->m_Target - ((uintptr_t)where + 5);
+		if (*p_offset == rel) {
+			this->AddMatch(where);
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
+// SCANS =======================================================================
 
 template<class SCANNER>
 class CScan
@@ -283,7 +323,7 @@ public:
 	void DoScan();
 	
 	const std::vector<const void *>& Matches() const { return this->m_Scanner->Matches(); }
-	const void *GetFirstMatch() const                { return this->m_Scanner->GetFirstMatch(); }
+	const void *FirstMatch() const                   { return this->m_Scanner->FirstMatch(); }
 	bool ExactlyOneMatch() const                     { return this->m_Scanner->ExactlyOneMatch(); }
 	
 private:
@@ -332,13 +372,8 @@ inline void CScan<SCANNER>::DoScan()
 }
 
 
-#if defined __GNUC__
-#warning TODO: look into making CMultiScan threads globally shared/persistent
-#endif
-
-#if defined __GNUC__
-#warning TODO: try to make heterogenous CMultiScans possible by using RTTI type information
-#endif
+// TODO: make CMultiScan threads globally shared/persistent instead of creating/deleting
+// TODO: make heterogeneous CMultiScans possible by using RTTI
 
 template<class SCANNER>
 class CMultiScan
@@ -432,7 +467,7 @@ inline void CMultiScan<SCANNER>::SubmitTask(CScan<SCANNER> *result)
 
 namespace Scan
 {
-	const char *FindUniqueConstStr(const char *str);
+	const char *FindUniqueConstStr(Library lib, const char *str);
 	const void *FindFuncPrologue(const void *p_in_func);
 }
 

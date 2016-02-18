@@ -45,6 +45,7 @@ private:
 	
 	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
 		{ "sym",                                &CSigsegvGameConf::AddrEntry_Load_Sym },
+		{ "fixed",                              &CSigsegvGameConf::AddrEntry_Load_Fixed },
 		{ "datamap",                            &CSigsegvGameConf::AddrEntry_Load_DataDescMap },
 		{ "func knownvtidx",                    &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
 		{ "func datamap vthunk",                &CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk },
@@ -54,8 +55,9 @@ private:
 		{ "func ebpprologue vprof",             &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf },
 	};
 	
+	void AddrEntry_Load_Common(IAddr *addr);
 	SMCResult AddrEntry_Load_Sym();
-	SMCResult AddrEntry_Load_VTable();
+	SMCResult AddrEntry_Load_Fixed();
 	SMCResult AddrEntry_Load_DataDescMap();
 	SMCResult AddrEntry_Load_Func_KnownVTIdx();
 	SMCResult AddrEntry_Load_Func_DataMap_VThunk();

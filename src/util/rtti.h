@@ -6,9 +6,16 @@
 
 
 #if defined __GNUC__
-	typedef abi::__class_type_info rtti_t;
+typedef abi::__class_type_info rtti_t;
 #elif defined _MSC_VER
-	typedef _TypeDescriptor rtti_t;
+typedef _TypeDescriptor rtti_t;
+#endif
+
+
+#if defined __GNUC__
+template<class T> inline const char *TypeName() { return typeid(T).name(); }
+#elif defined _MSC_VER
+template<class T> inline const char *TypeName() { return typeid(T).raw_name(); }
 #endif
 
 
@@ -19,13 +26,8 @@ namespace RTTI
 	const rtti_t *GetRTTI(const char *name);
 	const void **GetVTable(const char *name);
 	
-#if defined __GNUC__
-	template<class T> inline const rtti_t *GetRTTI()  { return RTTI::GetRTTI(typeid(T).name()); }
-	template<class T> inline const void **GetVTable() { return RTTI::GetVTable(typeid(T).name()); }
-#elif defined _MSC_VER
-	template<class T> inline const rtti_t *GetRTTI()  { return RTTI::GetRTTI(typeid(T).raw_name()); }
-	template<class T> inline const void **GetVTable() { return RTTI::GetVTable(typeid(T).raw_name()); }
-#endif
+	template<class T> const rtti_t *GetRTTI()  { return GetRTTI(TypeName<T>()); }
+	template<class T> const void **GetVTable() { return GetVTable(TypeName<T>()); }
 }
 
 
@@ -43,9 +45,15 @@ inline TO rtti_cast(const FROM ptr)
 	assert(rtti_to   != nullptr);
 	
 #if defined __GNUC__
-	void *result = abi::__dynamic_cast(ptr, rtti_from, rtti_to, -1);
+	/* GCC's __dynamic_cast is grumpy and won't do up-casts at runtime, so we
+	 * have to manually take care of up-casting ourselves */
+	void *result = (void *)ptr;
+	if (!static_cast<const std::type_info *>(rtti_from)->__do_upcast(rtti_to, &result)) {
+		result = abi::__dynamic_cast(result, rtti_from, rtti_to, -1);
+	}
 #elif defined _MSC_VER
-	void *result = __RTDynamicCast(ptr, 0, (void *)rtti_from, (void *)rtti_to, false);
+	/* MSVC's __RTDynamicCast will happily do runtime up-casts and down-casts */
+	void *result = __RTDynamicCast((void *)ptr, 0, (void *)rtti_from, (void *)rtti_to, false);
 #endif
 	
 	return reinterpret_cast<TO>(result);

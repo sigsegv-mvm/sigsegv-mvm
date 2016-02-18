@@ -15,29 +15,37 @@ public:
 	bool IsEFlagSet(int nEFlagMask) const;
 	
 	/* getter/setter */
+	IServerNetworkable *GetNetworkable() { return this->m_Network.GetPtr(); }
+	const char *GetClassname() const     { return STRING((string_t)this->m_iClassname); }
+	string_t GetEntityName() const       { return this->m_iName; }
 	int GetTeamNumber() const            { return this->m_iTeamNum; }
+	int GetMaxHealth() const             { return this->m_iMaxHealth; }
 	int GetHealth() const                { return this->m_iHealth; }
 	bool IsAlive() const                 { return (this->m_lifeState == LIFE_ALIVE); }
 	CBaseEntity *GetGroundEntity() const { return this->m_hGroundEntity; }
 	
 	/* thunk */
-	IServerNetworkable *GetNetworkable() { return (*ft_GetNetworkable)(this); }
-	void CalcAbsolutePosition()          {        (*ft_CalcAbsolutePosition)(this); }
-	bool IsPlayer() const                { return (vt_IsPlayer.Get(this))(this); }
+	void CalcAbsolutePosition()                       {        ft_CalcAbsolutePosition(this); }
+	bool ClassMatches(const char *pszClassOrWildcard) { return ft_ClassMatches        (this, pszClassOrWildcard); }
+	
+	/* hack */
+	bool IsPlayer() const;
 	
 private:
-	DEF_DATAMAP(int,    m_iEFlags);
-	DEF_DATAMAP(Vector, m_vecAbsOrigin);
+	DECL_DATAMAP(IServerNetworkable, m_Network);
+	DECL_DATAMAP(string_t,           m_iClassname);
+	DECL_DATAMAP(string_t,           m_iName);
+	DECL_DATAMAP(int,                m_iEFlags);
+	DECL_DATAMAP(Vector,             m_vecAbsOrigin);
 	
-	DEF_SENDPROP(int,                  m_iTeamNum);
-	DEF_SENDPROP(int,                  m_iHealth);
-	DEF_SENDPROP(char,                 m_lifeState);
-	DEF_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
+	DECL_SENDPROP(int,                  m_iTeamNum);
+	DECL_SENDPROP(int,                  m_iMaxHealth);
+	DECL_SENDPROP(int,                  m_iHealth);
+	DECL_SENDPROP(char,                 m_lifeState);
+	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	
-	static FuncThunk<IServerNetworkable * (*)(CBaseEntity *)> ft_GetNetworkable;
-	static FuncThunk<void                 (*)(CBaseEntity *)> ft_CalcAbsolutePosition;
-	
-	static VFuncThunk<CBaseEntity, bool (*)(const CBaseEntity *)> vt_IsPlayer;
+	static MemberFuncThunk<CBaseEntity *, void              > ft_CalcAbsolutePosition;
+	static MemberFuncThunk<CBaseEntity *, bool, const char *> ft_ClassMatches;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

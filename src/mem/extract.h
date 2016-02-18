@@ -100,13 +100,13 @@ bool IExtract<T>::Check()
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
 	CScan<ExtractScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufExtract, this->m_MaskExtract);
-	if (scan.Matches().size() != 1) {
+	if (!scan.ExactlyOneMatch()) {
 		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
 		return false;
 	}
 	
 	this->m_bFoundOffset = true;
-	this->m_iFuncOffActual = (uintptr_t)scan.Matches()[0] - (uintptr_t)this->m_pFuncAddr;
+	this->m_iFuncOffActual = (uintptr_t)scan.FirstMatch() - (uintptr_t)this->m_pFuncAddr;
 	
 	DevMsg("IExtract::Check: OK: \"%s\": actual offset +0x%04x\n", this->m_pszFuncName, this->m_iFuncOffActual);
 	

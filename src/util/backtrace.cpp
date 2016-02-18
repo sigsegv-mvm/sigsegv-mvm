@@ -1,4 +1,5 @@
 #include "util/backtrace.h"
+#include "library.h"
 
 
 #if defined _LINUX || defined _OSX
@@ -16,6 +17,38 @@ const char *try_demangle(const char *mangled)
 		return demangled;
 	} else {
 		return strdup(mangled);
+	}
+}
+
+
+void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *offp)
+{
+	snprintf(bufp, len, "???");
+	*offp = 0;
+	
+	static unw_word_t r_ip;
+	unw_get_reg(cp, UNW_REG_IP, &r_ip);
+	
+	Library lib = LibMgr::WhichLibAtAddr((void *)r_ip);
+	if (lib == Library::INVALID) {
+		return;
+	}
+	
+	static Symbol *best = nullptr;
+	LibMgr::ForEachSym(lib,
+	[](Symbol *sym)
+	{
+		if (r_ip > (uintptr_t)sym->address) {
+			if (best == nullptr || (r_ip - (uintptr_t)best->address) > (r_ip - (uintptr_t)sym->address)) {
+				best = sym;
+			}
+		}
+	}
+	);
+	
+	if (best != nullptr) {
+		snprintf(bufp, len, "%*s", best->length, best->buffer());
+		*offp = r_ip - (uintptr_t)best->address;
 	}
 }
 
@@ -42,7 +75,10 @@ void print_backtrace()
 		
 		f_name[0] = '\0';
 		unw_word_t off = 0;
-		unw_get_proc_name(&cur, f_name, sizeof(f_name), &off);
+		
+		if (unw_get_proc_name(&cur, f_name, sizeof(f_name), &off) == -UNW_ENOINFO) {
+			sym_get_proc_name(&cur, f_name, sizeof(f_name), &off);
+		}
 		
 		const char *demangled = try_demangle(f_name);
 		DevMsg("%3d  %08x  %08x  %s+0x%x\n", f_idx, r_sp, r_ip, demangled, off);

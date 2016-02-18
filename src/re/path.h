@@ -14,6 +14,18 @@
 class CBaseObject;
 class CNavLadder;
 class CFuncElevator;
+enum NavDirType {};
+
+
+#include "../mvm-reversed/server/NextBot/Path/NextBotPath.h"
+#include "../mvm-reversed/server/NextBot/Path/NextBotPathFollow.h"
+//#include "../mvm-reversed/server/NextBot/Path/NextBotChasePath.h"
+
+
+SIZE_CHECK(Path,         0x4450);
+SIZE_CHECK(PathFollower, 0x47d4);
+//SIZE_CHECK(ChasePath,    0x4800);
+SIZE_CHECK(IPathCost,    0x04);
 
 
 /* from game/server/nav_pathfind.h */
@@ -24,14 +36,6 @@ enum RouteType
 	SAFEST_ROUTE,
 	RETREAT_ROUTE,
 };
-
-
-class IPathCost
-{
-public:
-	virtual float operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const = 0;
-};
-SIZE_CHECK(IPathCost, 0x04);
 
 
 class CTFBotPathCost : public IPathCost
@@ -53,7 +57,8 @@ private:
 SIZE_CHECK(CTFBotPathCost, 0x2c);
 
 
-inline CTFBotPathCost::CTFBotPathCost(CTFBot *actor, RouteType rtype)
+inline CTFBotPathCost::CTFBotPathCost(CTFBot *actor, RouteType rtype) :
+	m_Actor(actor), m_iRouteType(rtype)
 {
 	this->m_flStepHeight      = actor->GetLocomotionInterface()->GetStepHeight();
 	this->m_flMaxJumpHeight   = actor->GetLocomotionInterface()->GetMaxJumpHeight();

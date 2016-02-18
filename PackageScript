@@ -13,6 +13,7 @@ folder_list = [
   'addons/sourcemod/gamedata',
   'addons/sourcemod/gamedata/sigsegv',
 #  'addons/sourcemod/configs',
+  'custom/sigsegv/resource',
 ]
 
 # Create the distribution folder hierarchy.
@@ -55,7 +56,7 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
     'NextBotPlayerBody.txt',
     'NextBotPlayerLocomotion.txt',
     'NextBotPath.txt',
-    'NextBotPathFollower.txt',
+    'NextBotPathFollow.txt',
     'NextBotChasePath.txt',
     'population.txt',
     'nav.txt',
@@ -65,15 +66,23 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
     'tfbot_vision.txt',
     'tfbot_behavior.txt',
     'misc.txt',
+    'debugoverlay.txt',
   ]
 )
 
-# Config Files
+# Config files
 #CopyFiles('configs', 'addons/sourcemod/configs',
 #  [
 #    'configfile.cfg',
 #  ]
 #)
+
+# Resource files
+CopyFiles('resource', 'custom/sigsegv/resource',
+  [
+    'sigsegv_events.res',
+  ]
+)
 
 # Copy binaries.
 for cxx_task in Extension.extensions:

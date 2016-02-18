@@ -57,6 +57,33 @@
 					// alt: "torso_scale"
 					// alt: "hand_scale"
 				}
+				"CTFPlayer::Taunt"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer5TauntE8taunts_ti"
+				}
+				"CTFPlayer::FireBullet"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer10FireBulletEP13CTFWeaponBaseRK17FireBulletsInfo_tbii"
+					unistr "penetration_damage_penalty"
+				}
+				
+				"CTFPlayerShared::AddCond"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared7AddCondE7ETFCondfP11CBaseEntity"
+				}
+				"CTFPlayerShared::RemoveCond"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10RemoveCondE7ETFCondb"
+				}
+				"CTFPlayerShared::InCond"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared6InCondE7ETFCond"
+				}
 			}
 		}
 	}

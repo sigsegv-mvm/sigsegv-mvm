@@ -4,7 +4,7 @@
     <Solution>sigsegv.sln</Solution>
     <CollectionMethod>Sampling</CollectionMethod>
     <AllocationMethod>None</AllocationMethod>
-    <Reportname>C:\Profiling\Sampling.vsp</Reportname>
+    <Reportname>..\..\..\..\Profiling\Sampling.vsp</Reportname>
     <AddReport>true</AddReport>
     <ResourceBasedAnalysisSelected>true</ResourceBasedAnalysisSelected>
     <UniqueReport>Timestamp</UniqueReport>
@@ -37,7 +37,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <Binary>
-      <Path>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
+      <Path>..\..\..\..\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>false</Sample>
@@ -49,10 +49,10 @@
       <LaunchProject>false</LaunchProject>
       <OverrideProjectSettings>true</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
-      <ExecutablePath>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</ExecutablePath>
-      <StartupDirectory>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\</StartupDirectory>
+      <ExecutablePath>..\..\..\..\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</ExecutablePath>
+      <StartupDirectory>..\..\..\..\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\</StartupDirectory>
       <Arguments>-steam -game tf -novid -console -condebug -insecure -windowed -w 1280 -h 720 +maxplayers 32 +developer 1 +map mvm_example
- +exec cheat</Arguments>
+ +sv_cheats 1</Arguments>
       <NetAppHost>IIS</NetAppHost>
       <NetBrowser>InternetExplorer</NetBrowser>
       <ExcludeSmallFuncs>true</ExcludeSmallFuncs>
@@ -97,7 +97,7 @@
   </Binaries>
   <Launches>
     <Binary>
-      <Path>C:\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
+      <Path>..\..\..\..\Program Files (x86)\Steam\SteamApps\common\Team Fortress 2\hl2.exe</Path>
     </Binary>
   </Launches>
 </VSPerformanceSession>

@@ -13,10 +13,20 @@
 		{
 			"addrs"
 			{
+				"NextBotPlayer<CTFPlayer>::PressFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PressFireButtonEf"
+				}
 				"NextBotPlayer<CTFPlayer>::ReleaseFireButton"
 				{
 					type "sym"
 					sym  "_ZN13NextBotPlayerI9CTFPlayerE17ReleaseFireButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressAltFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE18PressAltFireButtonEf"
 				}
 				"NextBotPlayer<CTFPlayer>::ReleaseAltFireButton"
 				{
@@ -32,6 +42,11 @@
 				{
 					type "sym"
 					sym  "_ZN13NextBotPlayerI9CTFPlayerE18ReleaseMeleeButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressSpecialFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE22PressSpecialFireButtonEf"
 				}
 				"NextBotPlayer<CTFPlayer>::ReleaseSpecialFireButton"
 				{

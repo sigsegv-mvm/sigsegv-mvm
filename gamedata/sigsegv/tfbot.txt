@@ -69,6 +69,57 @@
 					unistr "CTFBotSpawner::AddItemToBot: Invalid item %s.\n"
 				}
 				
+				"CTFBot::OpportunisticallyUseWeaponAbilities"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot35OpportunisticallyUseWeaponAbilitiesEv"
+				}
+				"CTFBot::PushRequiredWeapon"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot18PushRequiredWeaponEP13CTFWeaponBase"
+				}
+				"CTFBot::PopRequiredWeapon"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot17PopRequiredWeaponEv"
+				}
+				
+				"CTFBot::ShouldFireCompressionBlast"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot26ShouldFireCompressionBlastEv"
+				}
+				
+				"CTFBot::OnEventChangeAttributes"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot23OnEventChangeAttributesEPKNS_23EventChangeAttributes_tE"
+				}
+				
+				"CTFBot::IsLineOfFireClear_vec"
+				{
+					type "fixed"
+					sym  "_ZNK6CTFBot17IsLineOfFireClearERK6Vector"
+					addr  "0x4d56e0"
+					build "3283568"
+				}
+				"CTFBot::IsLineOfFireClear_ent"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot17IsLineOfFireClearEP11CBaseEntity"
+				}
+				"CTFBot::IsLineOfFireClear_vec_vec"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot17IsLineOfFireClearERK6VectorS2_"
+				}
+				"CTFBot::IsLineOfFireClear_vec_ent"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot17IsLineOfFireClearERK6VectorP11CBaseEntity"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

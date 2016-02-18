@@ -66,8 +66,8 @@
     <ClCompile>
       <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;EXPERIMENTAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\cccapstone\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -81,9 +81,11 @@
       <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
+      <CallingConvention>
+      </CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -106,7 +108,7 @@
     <ClCompile>
       <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\cccapstone\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -119,9 +121,11 @@
       <ForcedIncludeFiles>common.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>common.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
+      <CallingConvention>
+      </CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -149,13 +153,13 @@
     </ClCompile>
     <ClCompile Include="..\src\addr\addr.cpp" />
     <ClCompile Include="..\src\addr\misc.cpp" />
-    <ClCompile Include="..\src\addr\nextbot.cpp" />
     <ClCompile Include="..\src\addr\prescan.cpp" />
-    <ClCompile Include="..\src\addr\vtable.cpp" />
+    <ClCompile Include="..\src\addr\standard.cpp" />
     <ClCompile Include="..\src\common.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\disasm\disasm.cpp" />
     <ClCompile Include="..\src\extension.cpp" />
     <ClCompile Include="..\src\gameconf.cpp" />
     <ClCompile Include="..\src\library.cpp" />
@@ -165,82 +169,56 @@
     <ClCompile Include="..\src\mem\patch.cpp" />
     <ClCompile Include="..\src\mem\scan.cpp" />
     <ClCompile Include="..\src\mod.cpp" />
-    <ClCompile Include="..\src\mod\mod_autocollectspawncredits.cpp" />
-    <ClCompile Include="..\src\mod\mod_botmulticlassitem.cpp" />
-    <ClCompile Include="..\src\mod\mod_engienopush.cpp" />
-    <ClCompile Include="..\src\mod\mod_robotheadnoslide.cpp" />
-    <ClCompile Include="..\src\mod\mod_robottickle.cpp" />
-    <ClCompile Include="..\src\mod\mod_sniperchargeuncap.cpp" />
-    <ClCompile Include="..\src\mod\mod_stickypusher.cpp" />
-    <ClCompile Include="..\src\mod\visualize_airblastbox.cpp" />
-    <ClCompile Include="..\src\mod\visualize_deflectcylinder.cpp" />
-    <ClCompile Include="..\src\mod\visualize_ehsphere.cpp" />
+    <ClCompile Include="..\src\mod\ai\engiebot_nopush.cpp" />
+    <ClCompile Include="..\src\mod\ai\improved_useitem.cpp" />
+    <ClCompile Include="..\src\mod\ai\lookat_oneplayer.cpp" />
+    <ClCompile Include="..\src\mod\ai\wrapassassin_altfire.cpp" />
+    <ClCompile Include="..\src\mod\attr\undocumented.cpp" />
+    <ClCompile Include="..\src\mod\bot\medieval_nonmelee.cpp" />
+    <ClCompile Include="..\src\mod\bot\multiclass_weapon.cpp" />
+    <ClCompile Include="..\src\mod\credits\spawn_autocollect.cpp" />
+    <ClCompile Include="..\src\mod\debug\overlay_recv.cpp" />
+    <ClCompile Include="..\src\mod\debug\overlay_send.cpp" />
+    <ClCompile Include="..\src\mod\debug\penetration.cpp" />
+    <ClCompile Include="..\src\mod\debug\revive_fast.cpp" />
+    <ClCompile Include="..\src\mod\debug\suicide_bomber.cpp" />
+    <ClCompile Include="..\src\mod\debug\usermsg_overflow.cpp" />
+    <ClCompile Include="..\src\mod\pop\eventpopfile_improvements.cpp" />
+    <ClCompile Include="..\src\mod\pop\extattr\alwaysfireweaponalt.cpp" />
+    <ClCompile Include="..\src\mod\pop\extattr\parse.cpp" />
+    <ClCompile Include="..\src\mod\pop\extattr\targetstickies.cpp" />
+    <ClCompile Include="..\src\mod\pop\kv_conditional.cpp" />
+    <ClCompile Include="..\src\mod\pop\nested_complex_spawners.cpp" />
+    <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp" />
+    <ClCompile Include="..\src\mod\robot\standable_heads.cpp" />
+    <ClCompile Include="..\src\mod\robot\ticklish.cpp" />
+    <ClCompile Include="..\src\mod\sniper\charge_uncap.cpp" />
+    <ClCompile Include="..\src\mod\sniper\head_uncap.cpp" />
+    <ClCompile Include="..\src\mod\visualize\airblast.cpp" />
+    <ClCompile Include="..\src\mod\visualize\explosive_headshot.cpp" />
+    <ClCompile Include="..\src\mod\visualize\minigun_deflect.cpp" />
     <ClCompile Include="..\src\prop.cpp" />
-    <ClCompile Include="..\src\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\src\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\src\sizeof.cpp" />
     <ClCompile Include="..\src\sm\detours.cpp" />
     <ClCompile Include="..\src\sm\MemoryUtils.cpp" />
     <ClCompile Include="..\src\stub\baseentity.cpp" />
+    <ClCompile Include="..\src\stub\debugoverlay.cpp" />
     <ClCompile Include="..\src\stub\gamerules.cpp" />
     <ClCompile Include="..\src\stub\misc.cpp" />
     <ClCompile Include="..\src\stub\nav.cpp" />
-    <ClCompile Include="..\src\stub\path.cpp" />
     <ClCompile Include="..\src\stub\populators.cpp" />
+    <ClCompile Include="..\src\stub\projectiles.cpp" />
     <ClCompile Include="..\src\stub\tfbot.cpp" />
     <ClCompile Include="..\src\stub\tfplayer.cpp" />
+    <ClCompile Include="..\src\stub\tfrevivemarker.cpp" />
+    <ClCompile Include="..\src\stub\tfweaponbase.cpp" />
+    <ClCompile Include="..\src\stub\tf_objective_resource.cpp" />
     <ClCompile Include="..\src\util\backtrace.cpp" />
+    <ClCompile Include="..\src\util\prof.cpp" />
     <ClCompile Include="..\src\util\rtti.cpp" />
     <ClCompile Include="..\src\util\trace.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\sourcemod\public\asm\asm.h" />
-    <ClInclude Include="..\src\abi.h" />
-    <ClInclude Include="..\src\addr\addr.h" />
-    <ClInclude Include="..\src\addr\prescan.h" />
-    <ClInclude Include="..\src\common.h" />
-    <ClInclude Include="..\src\extension.h" />
-    <ClInclude Include="..\src\gameconf.h" />
-    <ClInclude Include="..\src\library.h" />
-    <ClInclude Include="..\src\link\link.h" />
-    <ClInclude Include="..\src\link\vcall.h" />
-    <ClInclude Include="..\src\mem\extract.h" />
-    <ClInclude Include="..\src\mem\patch.h" />
-    <ClInclude Include="..\src\mem\scan.h" />
-    <ClInclude Include="..\src\mod.h" />
-    <ClInclude Include="..\src\prop.h" />
-    <ClInclude Include="..\src\re\nextbot.h" />
-    <ClInclude Include="..\src\re\path.h" />
-    <ClInclude Include="..\src\sdk2013\annotations.h" />
-    <ClInclude Include="..\src\sdk2013\basetypes.h" />
-    <ClInclude Include="..\src\sdk2013\fmtstr.h" />
-    <ClInclude Include="..\src\sdk2013\util_shared.h" />
-    <ClInclude Include="..\src\sdk2013\valve_minmax_off.h" />
-    <ClInclude Include="..\src\sdk2013\valve_minmax_on.h" />
-    <ClInclude Include="..\src\sdk\smsdk_config.h" />
-    <ClInclude Include="..\src\sdk\smsdk_ext.h" />
-    <ClInclude Include="..\src\sm\detours.h" />
-    <ClInclude Include="..\src\sm\MemoryUtils.h" />
-    <ClInclude Include="..\src\sm\sm_symtable.h" />
-    <ClInclude Include="..\src\stub\baseanimating.h" />
-    <ClInclude Include="..\src\stub\baseentity.h" />
-    <ClInclude Include="..\src\stub\gamerules.h" />
-    <ClInclude Include="..\src\stub\misc.h" />
-    <ClInclude Include="..\src\stub\nav.h" />
-    <ClInclude Include="..\src\stub\path.h" />
-    <ClInclude Include="..\src\stub\populators.h" />
-    <ClInclude Include="..\src\stub\stub.h" />
-    <ClInclude Include="..\src\stub\tfbot.h" />
-    <ClInclude Include="..\src\stub\tfplayer.h" />
-    <ClInclude Include="..\src\stub\tfweaponbase.h" />
-    <ClInclude Include="..\src\util\autolist.h" />
-    <ClInclude Include="..\src\util\backtrace.h" />
-    <ClInclude Include="..\src\util\buf.h" />
-    <ClInclude Include="..\src\util\misc.h" />
-    <ClInclude Include="..\src\util\rtti.h" />
-    <ClInclude Include="..\src\util\scope.h" />
-    <ClInclude Include="..\src\util\trace.h" />
-    <ClInclude Include="..\src\util\util.h" />
+    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\demo\stringtable_limit.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

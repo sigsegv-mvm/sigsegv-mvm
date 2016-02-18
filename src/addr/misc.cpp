@@ -3,6 +3,7 @@
 #include "prop.h"
 #include "stub/gamerules.h"
 #include "util/rtti.h"
+#include "addr/standard.h"
 
 
 static constexpr uint8_t s_Buf_g_pGameRules[] = {
@@ -20,8 +21,8 @@ struct CExtract_g_pGameRules : public IExtract<uintptr_t>
 	
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
-//		DevMsg("CExtract_g_pGameRules: vt   @ 0x%08x\n", this->GetVTableAddr());
-//		DevMsg("CExtract_g_pGameRules: dtor @ 0x%08x\n", (uintptr_t)this->GetFuncAddr());
+		DevMsg("CExtract_g_pGameRules: vt   @ 0x%08x\n", (uintptr_t)this->GetVTableAddr());
+		DevMsg("CExtract_g_pGameRules: dtor @ 0x%08x\n", (uintptr_t)this->GetFuncAddr());
 		
 		auto ptr_vt = this->GetVTableAddr();
 		if (ptr_vt == nullptr) return false;
@@ -93,23 +94,23 @@ public:
 		auto strscan4 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_pyro");
 		auto strscan5 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_primary");
 		CMultiScan<StrScanner> scan1({ strscan1, strscan2, strscan3, strscan4, strscan5 });
-		if (strscan1->Matches().size() != 1) { DevMsg("Fail strscan1\n"); return false; }
-		if (strscan2->Matches().size() != 1) { DevMsg("Fail strscan2\n"); return false; }
-		if (strscan3->Matches().size() != 1) { DevMsg("Fail strscan3\n"); return false; }
-		if (strscan4->Matches().size() != 1) { DevMsg("Fail strscan4\n"); return false; }
-		if (strscan5->Matches().size() != 1) { DevMsg("Fail strscan5\n"); return false; }
+		if (!strscan1->ExactlyOneMatch()) { DevMsg("Fail strscan1\n"); return false; }
+		if (!strscan2->ExactlyOneMatch()) { DevMsg("Fail strscan2\n"); return false; }
+		if (!strscan3->ExactlyOneMatch()) { DevMsg("Fail strscan3\n"); return false; }
+		if (!strscan4->ExactlyOneMatch()) { DevMsg("Fail strscan4\n"); return false; }
+		if (!strscan5->ExactlyOneMatch()) { DevMsg("Fail strscan5\n"); return false; }
 		
 		ByteBuf seek(0x32);
 		ByteBuf mask(0x32);
-		mask.SetDword(0x00, 0xffffffff); seek.SetDword(0x00, (uint32_t)strscan1->Matches()[0]);
-		mask.SetDword(0x10, 0xffffffff); seek.SetDword(0x10, (uint32_t)strscan2->Matches()[0]);
-		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->Matches()[0]);
-		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->Matches()[0]);
-		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->Matches()[0]);
+		mask.SetDword(0x00, 0xffffffff); seek.SetDword(0x00, (uint32_t)strscan1->FirstMatch());
+		mask.SetDword(0x10, 0xffffffff); seek.SetDword(0x10, (uint32_t)strscan2->FirstMatch());
+		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->FirstMatch());
+		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->FirstMatch());
+		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->FirstMatch());
 		CScan<ArrScanner> scan2(CLibSegBounds(Library::SERVER, ".data"), seek, mask);
-		if (scan2.Matches().size() != 1) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
+		if (!scan2.ExactlyOneMatch()) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
 		
-		auto match = (const char **)scan2.Matches()[0];
+		auto match = (const char **)scan2.FirstMatch();
 		if (match[1][0] != '\0') { DevMsg("Fail nullstr1\n"); return false; }
 		if (match[2][0] != '\0') { DevMsg("Fail nullstr2\n"); return false; }
 		if (match[3][0] != '\0') { DevMsg("Fail nullstr3\n"); return false; }
@@ -180,12 +181,12 @@ public:
 //		DevMsg("m_bPlayingMannVsMachine: %08x\n", off_CTFGameRules_m_bPlayingMannVsMachine);
 		
 		CScan<FuncScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), seek, mask);
-		if (scan1.Matches().size() != 1) {
+		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("Fail scan1 %u\n", scan1.Matches().size());
 			return false;
 		}
 		
-		addr = (uintptr_t)scan1.Matches()[0];
+		addr = (uintptr_t)scan1.FirstMatch();
 		return true;
 	}
 };
@@ -206,47 +207,212 @@ public:
 	virtual bool FindAddrLinux(uintptr_t& addr) const override
 	{
 		const uintptr_t *vtable = *(const uintptr_t **)(this->GetInterfacePtr());
-		addr = vtable[this->GetVTableIndexLinux()];
+		addr = vtable[this->GetVTableIndex()];
 		return true;
 	}
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
-		const uintptr_t *vtable = *(const uintptr_t **)(this->GetInterfacePtr());
-		addr = vtable[this->GetVTableIndexWin()];
-		return true;
+		// when GetVIdxOfMemberFunc is fixed for MSVC, un-break this
+		return false;
 	}
 	
 	virtual const void *GetInterfacePtr() const = 0;
-	virtual int GetVTableIndexLinux() const = 0;
-	virtual int GetVTableIndexWin() const = 0;
+	virtual int GetVTableIndex() const = 0;
 };
 
 class CAddr_InterfaceVFunc : public IAddr_InterfaceVFunc
 {
 public:
-	CAddr_InterfaceVFunc(const void **pp_iface, const std::string& n_iface, const std::string& n_func, int vti_linux, int vti_win) :
-		m_ppIFace(pp_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdxLinux(vti_linux), m_iVTIdxWin(vti_win) {}
+	CAddr_InterfaceVFunc(const void **pp_iface, const std::string& n_iface, const std::string& n_func, int vtidx) :
+		m_ppIFace(pp_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdx(vtidx)
+	{
+		this->m_strName = this->m_strIFaceName + "::" + this->m_strFuncName;
+	}
 	
-	virtual const char *GetName() const override         { return (this->m_strIFaceName + "::" + this->m_strFuncName).c_str(); }
+	virtual const char *GetName() const override         { return this->m_strName.c_str(); }
 	virtual const void *GetInterfacePtr() const override { return *this->m_ppIFace; }
-	virtual int GetVTableIndexLinux() const override     { return this->m_iVTIdxLinux; }
-	virtual int GetVTableIndexWin() const override       { return this->m_iVTIdxWin; }
+	virtual int GetVTableIndex() const override          { return this->m_iVTIdx; }
 	
 private:
 	const void **m_ppIFace;
 	std::string m_strIFaceName;
 	std::string m_strFuncName;
-	int m_iVTIdxLinux;
-	int m_iVTIdxWin;
+	int m_iVTIdx;
+	std::string m_strName;
 };
 
 
 class CAddr_ISpatialPartition : public CAddr_InterfaceVFunc
 {
 public:
-	CAddr_ISpatialPartition(const std::string& n_func, int vti_linux, int vti_win) :
-		CAddr_InterfaceVFunc((const void **)&partition, "ISpatialPartition", n_func, vti_linux, vti_win) {}
+	CAddr_ISpatialPartition(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&partition, "ISpatialPartition", n_func, vtidx) {}
 };
-static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox(   "EnumerateElementsInBox",    0x0e, 0x0d);
-static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", 0x0f, 0x0e);
+static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox(   "EnumerateElementsInBox",    GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInBox));
+static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInSphere));
+
+
+class CAddr_IEngineTrace : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IEngineTrace(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&enginetrace, "IEngineTrace", n_func, vtidx) {}
+};
+static CAddr_IEngineTrace addr_IEngineTrace_EnumerateEntities_ray("EnumerateEntities_ray", GetVIdxOfMemberFunc<IEngineTrace, void, const Ray_t&, bool, IEntityEnumerator *>(&IEngineTrace::EnumerateEntities));
+
+
+#if 0
+class CAddr_IVDebugOverlay : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IVDebugOverlay(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&debugoverlay, "IVDebugOverlay", n_func, vtidx) {}
+};
+static CAddr_IVDebugOverlay addr_IVDebugOverlay_AddEntityTextOverlay("AddEntityTextOverlay", GetVIdxOfMemberFunc(&IVDebugOverlay::AddEntityTextOverlay));
+#endif
+
+
+#if 0
+class RemoveMe
+{
+public:
+	RemoveMe()
+	{
+		Test_ISpatialPartition((ISpatialPartition *)this);
+		Test_IEngineTrace((IEngineTrace *)this);
+		Test_IVDebugOverlay((IVDebugOverlay *)this);
+	}
+	
+	void DumpMemAt(void *p)
+	{
+		uint32_t *i = (uint32_t *)p;
+		
+		DevMsg("%08x %08x %08x %08x\n", i[0], i[1], i[2], i[3]);
+	}
+	
+	void Test_ISpatialPartition(ISpatialPartition *p)
+	{
+		DevMsg("EnumerateElementsInBox\n");
+		p->EnumerateElementsInBox(0, vec3_origin, vec3_origin, false, nullptr);
+		DevMsg("EnumerateElementsInSphere\n");
+		p->EnumerateElementsInSphere(0, vec3_origin, 0.0f, false, nullptr);
+	}
+	
+	void Test_IEngineTrace(IEngineTrace *p)
+	{
+		char pad1[] = "AAAAAAAA";
+		int (IEngineTrace::*p1)(const Vector&, IHandleEntity**) = &IEngineTrace::GetPointContents;
+		char pad2[] = "BBBBBBBB";
+		void (IEngineTrace::*p2)(const Ray_t&, bool, IEntityEnumerator *) = &IEngineTrace::EnumerateEntities;
+		char pad3[] = "CCCCCCCC";
+		void (IEngineTrace::*p3)(const Vector&, const Vector&, IEntityEnumerator *) = &IEngineTrace::EnumerateEntities;
+		char pad4[] = "DDDDDDDD";
+		int (IEngineTrace::*p4)(const Vector&) = &IEngineTrace::GetLeafContainingPoint;
+		char pad5[] = "EEEEEEEE";
+		
+		DumpMemAt((void *)&p1);
+		DumpMemAt((void *)&p2);
+		DumpMemAt((void *)&p3);
+		DumpMemAt((void *)&p4);
+		
+		auto r = (Ray_t *)this;
+		
+		DevMsg("GetPointContents\n");
+		p->GetPointContents(vec3_origin, nullptr);
+		DevMsg("EnumerateEntities_ray\n");
+		p->EnumerateEntities(*r, false, nullptr);
+		DevMsg("EnumerateEntities_vec\n");
+		p->EnumerateEntities(vec3_origin, vec3_origin, nullptr);
+		DevMsg("GetLeafContainingPoint\n");
+		p->GetLeafContainingPoint(vec3_origin);
+	}
+	
+	void Test_IVDebugOverlay(IVDebugOverlay *p)
+	{
+		DevMsg("AddEntityTextOverlay\n");
+		p->AddEntityTextOverlay(0, 0, 0.0f, 0, 0, 0, 0, "");
+		DevMsg("AddBoxOverlay2\n");
+		p->AddBoxOverlay2(vec3_origin, vec3_origin, vec3_origin, vec3_angle, Color(), Color(), 0.0f);
+	}
+};
+RemoveMe removeme;
+#endif
+
+
+static CAddr_Func_KnownVTIdx addr_CTFBotUseItem_D2("CTFBotUseItem::~CTFBotUseItem [D2]", "<nosym>", ".?AVCTFBotUseItem@@", 0x00);
+class CAddr_CTFBotUseItem_C1 : public IAddr_Sym
+{
+public:
+	virtual const char *GetName() const override   { return "CTFBotUseItem::CTFBotUseItem [C1]"; }
+	virtual const char *GetSymbol() const override { return "<ignoreme>"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using VTRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, const void **>;
+		
+		auto p_VT   = RTTI::GetVTable(".?AVCTFBotUseItem@@");
+		auto p_dtor = AddrManager::GetAddr("CTFBotUseItem::~CTFBotUseItem [D2]");
+		
+		CScan<VTRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_VT);
+		
+		std::vector<const void *> matches;
+		for (auto match : scan1.Matches()) {
+			if (match != p_dtor) {
+				matches.push_back(match);
+			}
+		}
+		
+		if (matches.size() != 1) {
+			DevMsg("CAddr_CTFBotUseItem_C1: %u\n", matches.size());
+			return false;
+		}
+		
+		addr = (uintptr_t)matches[0];
+		return true;
+	}
+};
+static CAddr_CTFBotUseItem_C1 addr_CTFBotUseItem_C1;
+
+
+class IAddr_Func_EBPPrologue_UniqueCall : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using CallScanner = CCallScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		auto p_ref = AddrManager::GetAddr(this->GetUniqueFuncName());
+		if (p_ref == nullptr) {
+			DevMsg("IAddr_Func_EBPPrologue_UniqueCall: \"%s\": no addr for ostensibly unique func\n", this->GetName());
+			return false;
+		}
+		
+		CScan<CallScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), (uint32_t)p_ref);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("IAddr_Func_EBPPrologue_UniqueCall: \"%s\": found %u refs to ostensibly unique func\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		auto p_in_func = (const char **)scan1.FirstMatch();
+		
+		auto p_func = Scan::FindFuncPrologue(p_in_func);
+		if (p_func == nullptr) {
+			DevMsg("IAddr_Func_EBPPrologue_UniqueCall: \"%s\": could not locate EBP prologue\n", this->GetName());
+			return false;
+		}
+		
+		addr = (uintptr_t)p_func;
+		return true;
+	}
+	
+protected:
+	virtual const char *GetUniqueFuncName() const = 0;
+};
+
+class CAddr_CTFBot_OpportunisticallyUseWeaponAbilities : public IAddr_Func_EBPPrologue_UniqueCall
+{
+public:
+	virtual const char *GetName() const override           { return "CTFBot::OpportunisticallyUseWeaponAbilities"; }
+	virtual const char *GetSymbol() const override         { return "_ZN6CTFBot35OpportunisticallyUseWeaponAbilitiesEv"; }
+	virtual const char *GetUniqueFuncName() const override { return "CTFBotUseItem::CTFBotUseItem [C1]"; }
+};

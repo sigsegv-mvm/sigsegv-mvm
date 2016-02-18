@@ -13,6 +13,12 @@
 		{
 			"addrs"
 			{
+				"IBaseProjectileAutoList::m_IBaseProjectileAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN23IBaseProjectileAutoList33m_IBaseProjectileAutoListAutoListE"
+				}
+				
 				"CalcDistanceToLineSegment"
 				{
 					type "sym"
@@ -38,15 +44,17 @@
 					type "sym"
 					sym  "_ZN11CBaseEntity20CalcAbsolutePositionEv"
 				}
-				"CBaseEntity::GetNetworkable"
+				"CBaseEntity::ClassMatches"
 				{
 					type "sym"
-					sym  "_ZN11CBaseEntity14GetNetworkableEv"
+					sym  "_ZN11CBaseEntity12ClassMatchesEPKc"
 				}
-				"CBaseEntity::IsPlayer"
+				"CBaseEntity::DispatchTraceAttack"
 				{
-					type "sym"
-					sym  "_ZNK11CBaseEntity8IsPlayerEv"
+					type "fixed"
+					sym  "_ZN11CBaseEntity19DispatchTraceAttackERK15CTakeDamageInfoRK6VectorP10CGameTraceP15CDmgAccumulator"
+					addr  "0x18c830"
+					build "3277805"
 				}
 				
 				"CBasePlayer::IsBot"
@@ -84,6 +92,13 @@
 					type "sym"
 					sym  "_ZN14CTFSniperRifle13ItemPostFrameEv"
 				}
+				"CTFSniperRifle::GetPenetrateType"
+				{
+					type  "fixed"
+					sym   "_ZNK14CTFSniperRifle16GetPenetrateTypeEv"
+					addr  "0x59e1e0"
+					build "3277805"
+				}
 				
 				"CTFSniperRifleClassic::ItemPostFrame"
 				{
@@ -114,6 +129,176 @@
 					unistr "mission_sniper"
 					// alt: "mission_spy"
 					// alt: "mission_sentry_buster"
+				}
+				
+				"CTFReviveMarker::Create"
+				{
+					type  "fixed"
+					sym   "_ZN15CTFReviveMarker6CreateEP9CTFPlayer"
+					addr  "0x4b9d50"
+					build "3271684"
+				}
+				"CTFReviveMarker::AddMarkerHealth"
+				{
+					type  "fixed"
+					sym   "_ZN15CTFReviveMarker15AddMarkerHealthEf"
+					addr  "0x4b9b90"
+					build "3271684"
+				}
+				"CTFReviveMarker::ReviveThink"
+				{
+					type  "fixed"
+					sym   "_ZN15CTFReviveMarker11ReviveThinkEv"
+					addr  "0x4ba390"
+					build "3271684"
+				}
+				
+				"CTFBonesaw::GetWeaponID"
+				{
+					type "sym"
+					sym  "_ZNK10CTFBonesaw11GetWeaponIDEv"
+				}
+				
+				"CBulletPenetrateEnum::EnumEntity"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN20CBulletPenetrateEnum10EnumEntityEP13IHandleEntity"
+					vtable ".?AVCBulletPenetrateEnum@@"
+					idx    "0x00"
+				}
+				
+				"CTFBat_Giftwrap::GetWeaponID"
+				{
+					type "sym"
+					sym  "_ZNK15CTFBat_Giftwrap11GetWeaponIDEv"
+				}
+				
+				"CAttributeManager::ApplyAttributeFloatWrapper"
+				{
+					type "sym"
+					sym  "_ZN17CAttributeManager26ApplyAttributeFloatWrapperEfP11CBaseEntity8string_tP10CUtlVectorIS1_10CUtlMemoryIS1_iEE"
+				}
+				
+				"CBaseServer::BroadcastMessage1"
+				{
+					type "sym"
+					sym  "_ZN11CBaseServer16BroadcastMessageER11INetMessagebb"
+					lib  "engine"
+				}
+				"CBaseServer::BroadcastMessage2"
+				{
+					type "sym"
+					sym  "_ZN11CBaseServer16BroadcastMessageER11INetMessageR16IRecipientFilter"
+					lib  "engine"
+				}
+				
+				"SVC_UserMessage::WriteToBuffer"
+				{
+					type  "fixed"
+					sym   "_ZN15SVC_UserMessage13WriteToBufferER8bf_write"
+					addr  "0x1da230"
+					build "3283568"
+					lib   "engine"
+				}
+				"SVC_UserMessage::ReadFromBuffer"
+				{
+					type  "fixed"
+					sym   "_ZN15SVC_UserMessage14ReadFromBufferER7bf_read"
+					addr  "0x1d5920"
+					build "3283568"
+					lib   "engine"
+				}
+				
+				"CMannVsMachineStats::SendUpgradesToPlayer"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats20SendUpgradesToPlayerEP9CTFPlayerP10CUtlVectorI12CUpgradeInfo10CUtlMemoryIS3_iEE"
+				}
+				
+				"EvaluateConditional"
+				{
+					type "sym"
+					sym  "_Z19EvaluateConditionalPKc"
+				}
+				
+				"UTIL_GetListenServerHost"
+				{
+					type "sym"
+					sym  "_Z24UTIL_GetListenServerHostv"
+				}
+				
+				"CStdMemAlloc::Alloc"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN12CStdMemAlloc5AllocEj"
+					vtable ".?AVCStdMemAlloc@@"
+					idx    "0x01"
+					lib    "tier0"
+				}
+				
+				"[engine] CUtlBuffer::EnsureCapacity"
+				{
+					type  "fixed"
+					sym   "_ZN10CUtlBuffer14EnsureCapacityEi"
+					addr  "0x251b60"
+					build "3283568"
+					lib   "engine"
+				}
+				"[engine] bf_read::bf_read"
+				{
+					type  "fixed"
+					sym   "_ZN7bf_readC1EPKcPKvii"
+					addr  "0x253610"
+					build "3283568"
+					lib   "engine"
+				}
+				"[engine] bf_write::bf_write"
+				{
+					type  "fixed"
+					sym   "_ZN8bf_writeC1EPvii"
+					addr  "0x253690"
+					build "3283568"
+					lib   "engine"
+				}
+				
+				"CDemoPlayer::ReadPacket"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN11CDemoPlayer10ReadPacketEv"
+					unistr "Tried to read a demo message with no demo file\n"
+					lib    "engine"
+				}
+				"CHLTVServer::ReadCompeleteDemoFile"
+				{
+					type  "fixed"
+					sym   "_ZN11CHLTVServer21ReadCompeleteDemoFileEv"
+					addr  "0x19c2b0"
+					build "3283568"
+					lib   "engine"
+				}
+				"CDemoRecorder::RecordStringTables"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN13CDemoRecorder18RecordStringTablesEv"
+					vtable ".?AVCDemoRecorder@@"
+					idx    "0x0d"
+					lib    "engine"
+				}
+				"CHLTVDemoRecorder::RecordStringTables"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN17CHLTVDemoRecorder18RecordStringTablesEv"
+					vtable ".?AVCHLTVDemoRecorder@@"
+					idx    "0x0d"
+					lib    "engine"
+				}
+				"CReplayDemoRecorder::RecordStringTables"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN19CReplayDemoRecorder18RecordStringTablesEv"
+					vtable ".?AVCReplayDemoRecorder@@"
+					idx    "0x0d"
+					lib    "engine"
 				}
 			}
 		}

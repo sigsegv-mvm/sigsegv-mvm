@@ -74,7 +74,7 @@ public:
 	}
 	
 private:
-	DEF_EXTRACT(TFNavAttributeType, m_nAttributes);
+	DECL_EXTRACT(TFNavAttributeType, m_nAttributes);
 };
 
 
@@ -86,7 +86,7 @@ public:
 	void CollectBuiltObjects(CUtlVector<CBaseObject *> *objects, int i1) {}
 	
 private:
-	static FuncThunk<void (*)(CTFNavMesh *, CUtlVector<CBaseObject *> *, int)> ft_CollectBuiltObjects;
+	static MemberFuncThunk<CTFNavMesh *, void, CUtlVector<CBaseObject *> *, int> ft_CollectBuiltObjects;
 };
 
 

@@ -4,6 +4,7 @@
 
 #include "stub/misc.h"
 #include "stub/baseanimating.h"
+#include "stub/tf_shareddefs.h"
 
 
 class CEconEntity : public CBaseAnimating {};
@@ -11,14 +12,38 @@ class CEconEntity : public CBaseAnimating {};
 class CBaseCombatWeapon : public CEconEntity
 {
 public:
-	// TODO
+	DECL_SENDPROP(float, m_flNextPrimaryAttack);
+	DECL_SENDPROP(float, m_flNextSecondaryAttack);
+	DECL_SENDPROP(float, m_flTimeWeaponIdle);
+	DECL_SENDPROP(int,   m_iState);
+	DECL_SENDPROP(int,   m_iPrimaryAmmoType);
+	DECL_SENDPROP(int,   m_iSecondaryAmmoType);
+	DECL_SENDPROP(int,   m_iClip1);
+	DECL_SENDPROP(int,   m_iClip2);
 };
 
 class CTFWeaponBase : public CBaseCombatWeapon
 {
 public:
-	// TODO
+	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
+	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
+	
+private:
+	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetWeaponID;
+	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetPenetrateType;
 };
+
+class CTFWeaponBaseMelee : public CTFWeaponBase {};
+class CTFWeaponBaseGun : public CTFWeaponBase {};
+
+class CTFSniperRifle : public CTFWeaponBaseGun {};
+
+class CTFBonesaw : public CTFWeaponBaseMelee {};
+
+class CTFBuffItem : public CTFWeaponBaseMelee {};
+
+class CTFLunchBox : public CTFWeaponBase {};
+class CTFLunchBox_Drink : public CTFLunchBox {};
 
 
 #endif

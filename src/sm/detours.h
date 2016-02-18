@@ -32,6 +32,7 @@
 #ifndef _INCLUDE_SOURCEMOD_DETOURS_H_
 #define _INCLUDE_SOURCEMOD_DETOURS_H_
 
+#include "abi.h"
 #include <jit/jit_helpers.h>
 #include <jit/x86/x86_macros.h>
 #include <CDetour/detourhelpers.h>
@@ -70,8 +71,8 @@
 #define GET_STATIC_CALLBACK(name) (void *)&Detour_##name
 #define GET_STATIC_TRAMPOLINE(name) (void **)&Actual_##name
 
-#define DETOUR_CREATE_MEMBER(name, gamedata) CDetourManager::CreateDetour(GET_MEMBER_CALLBACK(name), GET_MEMBER_TRAMPOLINE(name), gamedata);
-#define DETOUR_CREATE_STATIC(name, gamedata) CDetourManager::CreateDetour(GET_STATIC_CALLBACK(name), GET_STATIC_TRAMPOLINE(name), gamedata);
+//#define DETOUR_CREATE_MEMBER(name, gamedata) CDetourManager::CreateDetour(GET_MEMBER_CALLBACK(name), GET_MEMBER_TRAMPOLINE(name), gamedata);
+//#define DETOUR_CREATE_STATIC(name, gamedata) CDetourManager::CreateDetour(GET_STATIC_CALLBACK(name), GET_STATIC_TRAMPOLINE(name), gamedata);
 
 
 class GenericClass {};

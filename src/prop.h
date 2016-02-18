@@ -206,6 +206,10 @@ public:
 //		DevMsg("CPropAccessor_Base::GetPtr: base %08x off %08x size %08x dword %08x\n", base, off, sizeof(T), *(uint32_t *)(base + off));
 		return reinterpret_cast<T *>(base + off);
 	}
+	T& GetRef() const
+	{
+		return *this->GetPtr();
+	}
 };
 
 
@@ -215,7 +219,8 @@ class CPropAccessor_Read : public CPropAccessor_Base<T, IPROP, PROP, ADJUST>
 public:
 	CPropAccessor_Read() = delete;
 	
-	operator const T&() const { return *this->GetPtr(); }
+	operator const T&() const   { return this->GetRef(); }
+	const T* operator->() const { return this->GetPtr(); } /* dubious */
 	const T& operator=(const T& val) = delete;
 };
 /* specialization for CHandle<U> */
@@ -225,7 +230,7 @@ class CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST> : public CPropAccessor
 public:
 	CPropAccessor_Read() = delete;
 	
-	operator U*() const { return *this->GetPtr(); }
+	operator U*() const { return this->GetRef(); }
 	U* operator=(U* val) = delete;
 };
 
@@ -265,7 +270,7 @@ public:
 };
 
 
-#define DEF_SENDPROP(T, P) \
+#define DECL_SENDPROP(T, P) \
 	typedef CProp_SendProp<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
 	const static size_t _adj_##P; \
@@ -274,7 +279,7 @@ public:
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
-#define DEF_DATAMAP(T, P) \
+#define DECL_DATAMAP(T, P) \
 	typedef CProp_DataMap<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
 	const static size_t _adj_##P; \
@@ -282,7 +287,7 @@ public:
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
-#define DEF_EXTRACT(T, P) \
+#define DECL_EXTRACT(T, P) \
 	typedef CProp_Extract<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
 	const static size_t _adj_##P; \

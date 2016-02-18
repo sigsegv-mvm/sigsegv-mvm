@@ -13,6 +13,12 @@
 		{
 			"addrs"
 			{
+				"CTFBotMainAction::FireWeaponAtEnemy"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction17FireWeaponAtEnemyEP6CTFBot"
+				}
+				
 				"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
 				{
 					type "sym"
@@ -49,6 +55,54 @@
 					unistr "Engineer.MVM_AutoBuildingTeleporter02"
 					vtable ".?AVCTFBotMvMEngineerBuildTeleportExit@@"
 					idx    "0x2e"
+				}
+				
+				"CTFBotMissionSuicideBomber::OnStart"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN26CTFBotMissionSuicideBomber7OnStartEP6CTFBotP6ActionIS0_E"
+					vtable ".?AVCTFBotMissionSuicideBomber@@"
+					idx    "0x2d"
+				}
+				"CTFBotMissionSuicideBomber::Update"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN26CTFBotMissionSuicideBomber6UpdateEP6CTFBotf"
+					vtable ".?AVCTFBotMissionSuicideBomber@@"
+					idx    "0x2e"
+				}
+//				"CTFBotMissionSuicideBomber::OnEnd"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN26CTFBotMissionSuicideBomber5OnEndEP6CTFBotP6ActionIS0_E"
+//					vtable ".?AVCTFBotMissionSuicideBomber@@"
+//					idx    "0x2f"
+//				}
+				"CTFBotMissionSuicideBomber::OnStuck"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN26CTFBotMissionSuicideBomber7OnStuckEP6CTFBot"
+					vtable ".?AVCTFBotMissionSuicideBomber@@"
+					idx    "0x38"
+				}
+				"CTFBotMissionSuicideBomber::OnKilled"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN26CTFBotMissionSuicideBomber8OnKilledEP6CTFBotRK15CTakeDamageInfo"
+					vtable ".?AVCTFBotMissionSuicideBomber@@"
+					idx    "0x40"
+				}
+				"CTFBotMissionSuicideBomber::StartDetonate"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN26CTFBotMissionSuicideBomber13StartDetonateEP6CTFBotbb"
+					unistr "MvM.SentryBusterSpin" // two strings exist with different case
+				}
+				"CTFBotMissionSuicideBomber::Detonate"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN26CTFBotMissionSuicideBomber8DetonateEP6CTFBot"
+					unistr "mvm_sentrybuster_killed"
 				}
 			}
 		}

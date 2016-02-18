@@ -39,7 +39,7 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsValidForWanderingPopulation"; }
 	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0030; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0007 + 2; }
 };
 
@@ -66,7 +66,7 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 	
 	virtual const char *GetFuncName() const override   { return "CTFNavArea::IsBlocked"; }
 	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0030; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0003 + 2; }
 };
 
@@ -76,6 +76,6 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 IMPL_EXTRACT(TFNavAttributeType, CTFNavArea, m_nAttributes, new CExtract_CTFNavArea_m_nAttributes());
 
 
-FuncThunk<void (*)(CTFNavMesh *, CUtlVector<CBaseObject *> *, int)> CTFNavMesh::ft_CollectBuiltObjects("CTFNavMesh::CollectBuiltObjects");
+MemberFuncThunk<CTFNavMesh *, void, CUtlVector<CBaseObject *> *, int> CTFNavMesh::ft_CollectBuiltObjects("CTFNavMesh::CollectBuiltObjects");
 
 GlobalThunk<CTFNavMesh *> TheNavMesh("TheNavMesh");

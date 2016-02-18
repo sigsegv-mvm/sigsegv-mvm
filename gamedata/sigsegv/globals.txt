@@ -13,10 +13,22 @@
 		{
 			"addrs"
 			{
+				"debugoverlay"
+				{
+					type "sym"
+					sym  "debugoverlay"
+				}
+				
 				"TheNavMesh"
 				{
 					type "sym"
 					sym  "TheNavMesh"
+				}
+				
+				"g_pObjectiveResource"
+				{
+					type "sym"
+					sym  "g_pObjectiveResource"
 				}
 			}
 		}

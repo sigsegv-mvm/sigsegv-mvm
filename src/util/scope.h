@@ -7,6 +7,9 @@ class RefCount
 public:
 	operator const int&() const { return this->m_iCount; }
 	
+	void operator++() { this->Increment(); }
+	void operator--() { this->Decrement(); }
+	
 	void Increment()
 	{
 		++this->m_iCount;

@@ -16,8 +16,8 @@ namespace abi
 
 struct vtable
 {
-	ptrdiff_t off_to_top;
-	abi::__class_type_info *typeinfo;
+	ptrdiff_t whole_object;
+	const abi::__class_type_info *whole_type;
 	void *vfptrs[0x1000];
 };
 
@@ -89,6 +89,133 @@ extern "C" PVOID __CLRCALL_OR_CDECL __RTDynamicCast (
 	PVOID TargetType,
 	BOOL isReference
 	) throw(...);
+#endif
+
+
+/* calling conventions */
+
+/* GCC only: EAX/EDX/ECX register calling convention */
+#if defined __GNUC__
+#define __gcc_regcall __attribute__((regparm(3)))
+#else
+#define __gcc_regcall
+#endif
+
+/* MSVC only: thiscall calling convention */
+#if defined _MSC_VER
+#define __msvc_thiscall __thiscall
+#else
+#define __msvc_thiscall
+#endif
+
+
+/* standard-breaking function pointer conversions */
+
+template<class C, typename RET, typename... PARAMS> using MemberPtrType      = RET (C::*)(PARAMS...);
+template<class C, typename RET, typename... PARAMS> using MemberPtrTypeConst = RET (C::*)(PARAMS...) const;
+
+template<class C, typename RET, typename... PARAMS> using MemberPtrTypeVa      = RET (C::*)(PARAMS..., ...);
+template<class C, typename RET, typename... PARAMS> using MemberPtrTypeVaConst = RET (C::*)(PARAMS..., ...) const;
+
+#if defined __GNUC__
+
+template<class C, typename RET, typename... PARAMS>
+union MemberPtrUnion
+{
+	MemberPtrType<C, RET, PARAMS...> fptr;
+	struct {
+		const void *ptr;
+		ptrdiff_t delta;
+	} guts;
+};
+
+template<class C, typename RET, typename... PARAMS>
+MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
+{
+	MemberPtrUnion<C, RET, PARAMS...> u;
+	
+	u.guts.ptr   = ptr;
+	u.guts.delta = 0;
+	
+	return u.fptr;
+}
+
+template<class C, typename RET, typename... PARAMS>
+MemberPtrTypeConst<C, RET, PARAMS...> MakePtrToConstMemberFunc(const void *ptr)
+{
+	return reinterpret_cast<MemberPtrTypeConst<C, RET, PARAMS...>>(MakePtrToMemberFunc<C, RET, PARAMS...>(ptr));
+}
+
+template<class C, typename RET, typename... PARAMS>
+int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
+{
+	MemberPtrUnion<C, RET, PARAMS...> u;
+	
+	u.fptr = ptr;
+	
+	assert((uintptr_t)u.guts.ptr % 4 == 1);
+	return ((int)u.guts.ptr - 1) / 4;
+}
+
+template<class C, typename RET, typename... PARAMS>
+int GetVIdxOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
+{
+	return GetVIdxOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+
+#elif defined _MSC_VER
+
+template<class C, typename RET, typename... PARAMS>
+union MemberPtrUnion {
+	MemberPtrType<C, RET, PARAMS...> fptr;
+	struct {
+		const void *ptr;
+		ptrdiff_t delta;
+		ptrdiff_t vtordisp;
+		ptrdiff_t vtidx;
+	} guts;
+};
+
+template<class C, typename RET, typename... PARAMS>
+MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
+{
+	MemberPtrUnion<C, RET, PARAMS...> u;
+	
+	u.guts.ptr      = ptr;
+	u.guts.delta    = 0;
+	u.guts.vtordisp = 0;
+	u.guts.vtidx    = 0;
+	
+	return u.fptr;
+}
+
+template<class C, typename RET, typename... PARAMS>
+MemberPtrTypeConst<C, RET, PARAMS...> MakePtrToConstMemberFunc(const void *ptr)
+{
+	return reinterpret_cast<MemberPtrTypeConst<C, RET, PARAMS...>>(MakePtrToMemberFunc<C, RET, PARAMS...>(ptr));
+}
+
+template<class C, typename RET, typename... PARAMS>
+int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
+{
+	return -1;
+	
+	// TODO:
+	// make union
+	// assign ptr to u.fptr
+	// now, u.guts.ptr should point to a __thiscall thunk like this:
+	//   mov eax,[ecx]
+	//   jmp dword ptr [eax+VTOFF]
+	// we need proper disassembler support so we can do this robustly
+	// (e.g. [eax] vs [eax+4] is different in bytes, but disasm can handle it seamlessly)
+}
+
+template<class C, typename RET, typename... PARAMS>
+int GetVIdxOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
+{
+	return GetVIdxOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+
 #endif
 
 

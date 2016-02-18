@@ -7,8 +7,10 @@ std::map<Library, void *> LibMgr::s_LibHandles;
 
 
 static std::map<Library, const char *> libnames{
-	{ Library::SERVER, "server" },
-	{ Library::ENGINE, "engine" },
+	{ Library::INVALID, "invalid" },
+	{ Library::SERVER,  "server" },
+	{ Library::ENGINE,  "engine" },
+	{ Library::TIER0,   "tier0" },
 };
 
 
@@ -16,6 +18,7 @@ void LibMgr::Load()
 {
 	for (const auto& pair : libnames) {
 		Library lib = pair.first;
+		if (lib == Library::INVALID) continue;
 		
 		void *handle = OpenLibHandle(lib);
 		if (handle != nullptr) {
@@ -162,3 +165,45 @@ void LibMgr::CloseLibHandle(void *handle)
 }
 
 #endif
+
+
+Library LibMgr::WhichLibAtAddr(void *ptr)
+{
+	auto addr = (uintptr_t)ptr;
+	
+	for (const auto& pair : libnames) {
+		Library lib = pair.first;
+		if (lib == Library::INVALID) continue;
+		
+		const LibInfo& info = GetInfo(lib);
+		
+		if (addr >= info.baseaddr && addr < info.baseaddr + info.len) {
+			return lib;
+		}
+	}
+	
+	return Library::INVALID;
+}
+
+
+Library LibMgr::FromString(const char *str)
+{
+	for (const auto& pair : libnames) {
+		if (strcmp(pair.second, str) == 0) {
+			return pair.first;
+		}
+	}
+	
+	return Library::INVALID;
+}
+
+const char *LibMgr::ToString(Library lib)
+{
+	for (const auto& pair : libnames) {
+		if (pair.first == lib) {
+			return pair.second;
+		}
+	}
+	
+	return libnames.at(Library::INVALID);
+}

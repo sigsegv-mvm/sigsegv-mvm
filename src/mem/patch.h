@@ -41,8 +41,8 @@ protected:
 		m_MaskVerify(len), m_MaskPatch(len),
 		m_BufRestore(len) {}
 	
-	virtual void GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
-	virtual void GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
+	virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
+	virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	
 private:
 	const int m_iLength;
@@ -79,7 +79,7 @@ public:
 protected:
 	IVerify(int len) : IPatch(len) {}
 	
-	virtual void GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override final {}
+	virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override final { return true; }
 };
 
 

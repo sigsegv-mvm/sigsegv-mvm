@@ -4,25 +4,38 @@
 
 #if defined __GNUC__
 
-static FuncThunk<void (*)(void *)> ft_INextBotEventResponder_dtor_D0("INextBotEventResponder::~INextBotEventResponder [D0]");
-static FuncThunk<void (*)(void *)> ft_INextBotEventResponder_dtor_D2("INextBotEventResponder::~INextBotEventResponder [D2]");
+class Dummy {};
 
-static FuncThunk<void (*)(void *)> ft_IContextualQuery_dtor_D0("IContextualQuery::~IContextualQuery [D0]");
-static FuncThunk<void (*)(void *)> ft_IContextualQuery_dtor_D2("IContextualQuery::~IContextualQuery [D2]");
 
-static FuncThunk<void (*)(void *)> ft_Action_dtor_D2("Action<CTFBot>::~Action [D2]");
+static MemberFuncThunk<Dummy *, void> ft_PathFollower_ctor_C1("PathFollower::PathFollower [C1]");
+static MemberFuncThunk<Dummy *, void> ft_PathFollower_dtor_D1("PathFollower::~PathFollower [D1]");
+
+static MemberFuncThunk<Dummy *, void> ft_INextBotEventResponder_dtor_D0("INextBotEventResponder::~INextBotEventResponder [D0]");
+static MemberFuncThunk<Dummy *, void> ft_INextBotEventResponder_dtor_D2("INextBotEventResponder::~INextBotEventResponder [D2]");
+
+static MemberFuncThunk<Dummy *, void> ft_IContextualQuery_dtor_D0("IContextualQuery::~IContextualQuery [D0]");
+static MemberFuncThunk<Dummy *, void> ft_IContextualQuery_dtor_D2("IContextualQuery::~IContextualQuery [D2]");
+
+static MemberFuncThunk<Dummy *, void> ft_Action_dtor_D2("Action<CTFBot>::~Action [D2]");
 
 extern "C"
 {
+	/* ctors */
+	
+	void _ZN12PathFollowerC1Ev(void *_this) { ft_PathFollower_ctor_C1(reinterpret_cast<Dummy *>(_this)); }
+	
+	
 	/* dtors */
 	
-	void _ZN22INextBotEventResponderD0Ev(void *_this) { (*ft_INextBotEventResponder_dtor_D0)(_this); }
-	void _ZN22INextBotEventResponderD2Ev(void *_this) { (*ft_INextBotEventResponder_dtor_D2)(_this); }
+	void _ZN22INextBotEventResponderD0Ev(void *_this) { ft_INextBotEventResponder_dtor_D0(reinterpret_cast<Dummy *>(_this)); }
+	void _ZN22INextBotEventResponderD2Ev(void *_this) { ft_INextBotEventResponder_dtor_D2(reinterpret_cast<Dummy *>(_this)); }
 	
-	void _ZN16IContextualQueryD0Ev(void *_this) { (*ft_IContextualQuery_dtor_D0)(_this); }
-	void _ZN16IContextualQueryD2Ev(void *_this) { (*ft_IContextualQuery_dtor_D2)(_this); }
+	void _ZN16IContextualQueryD0Ev(void *_this) { ft_IContextualQuery_dtor_D0(reinterpret_cast<Dummy *>(_this)); }
+	void _ZN16IContextualQueryD2Ev(void *_this) { ft_IContextualQuery_dtor_D2(reinterpret_cast<Dummy *>(_this)); }
 	
-	void _ZN6ActionI6CTFBotED2Ev(void *_this) { (*ft_Action_dtor_D2)(_this); }
+	void _ZN12PathFollowerD1Ev(void *_this) { ft_PathFollower_dtor_D1(reinterpret_cast<Dummy *>(_this)); }
+		
+	void _ZN6ActionI6CTFBotED2Ev(void *_this) { ft_Action_dtor_D2(reinterpret_cast<Dummy *>(_this)); }
 	
 	
 	/* the definition of the vtable/RTTI symbols can't be in a translation unit
@@ -31,7 +44,8 @@ extern "C"
 	/* typeinfo */
 	
 	abi::__class_type_info _ZTI22INextBotEventResponder("22INextBotEventResponder");
-	abi::__class_type_info _ZTI16IContextualQuery("16IIContextualQuery");
+	abi::__class_type_info _ZTI16IContextualQuery("16IContextualQuery");
+	abi::__si_class_type_info _ZTI8INextBot("8INextBot", &_ZTI22INextBotEventResponder);
 	
 	/* vtables */
 	
@@ -107,9 +121,9 @@ extern "C"
 
 #elif defined _MSC_VER
 
-static FuncThunk<void (*)(void *)> ft_Action_dtor_D2("Action<CTFBot>::~Action [D2]");
-
 #include "re/nextbot.h"
+
+static MemberFuncThunk<Action<CTFBot> *, void> ft_Action_dtor_D2("Action<CTFBot>::~Action [D2]");
 
 /* oh god... good luck declaring mangled symbols in C for MSVC++, given that
  * they use wonderful characters like "@$?"... */
@@ -120,7 +134,7 @@ IContextualQuery::~IContextualQuery() {}
 
 /* nesting the dtor thunk inside an actual dtor is a bad idea, but it's better
  * than the horrible alternative */
-template<> Action<CTFBot>::~Action() { (*ft_Action_dtor_D2)(this); }
+template<> Action<CTFBot>::~Action() { ft_Action_dtor_D2(this); }
 
 
 // TODO: why didn't we have to hook up the RTTI?

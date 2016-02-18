@@ -13,6 +13,12 @@
 		{
 			"addrs"
 			{
+				"CPopulationManager::UpdateObjectiveResource"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager23UpdateObjectiveResourceEv"
+				}
+				
 				"CMissionPopulator::Parse"
 				{
 					type "sym"
@@ -29,10 +35,81 @@
 					sym  "_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
 				}
 				
+				"CWave::AddClassType"
+				{
+					type "sym"
+					sym  "_ZN5CWave12AddClassTypeE8string_tij"
+				}
+				"CWave::Parse"
+				{
+					type "sym"
+					sym  "_ZN5CWave5ParseEP9KeyValues"
+				}
+				
+				"IPopulationSpawner::GetClassIcon"
+				{
+					type "sym"
+					sym  "_ZN18IPopulationSpawner12GetClassIconEi"
+				}
+				"IPopulationSpawner::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZN18IPopulationSpawner10IsMiniBossEi"
+				}
+				"IPopulationSpawner::HasAttribute"
+				{
+					type "sym"
+					sym  "_ZN18IPopulationSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
+				}
+				
+				"CTFBotSpawner::Spawn"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
+				}
+				
+				"CSquadSpawner::GetClassIcon"
+				{
+					type "sym"
+					sym  "_ZN13CSquadSpawner12GetClassIconEi"
+				}
+				"CSquadSpawner::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZN13CSquadSpawner10IsMiniBossEi"
+				}
+				"CSquadSpawner::HasAttribute"
+				{
+					type "sym"
+					sym  "_ZN13CSquadSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
+				}
+				
+				"CRandomChoiceSpawner::GetClassIcon"
+				{
+					type "sym"
+					sym  "_ZN20CRandomChoiceSpawner12GetClassIconEi"
+				}
+				"CRandomChoiceSpawner::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZN20CRandomChoiceSpawner10IsMiniBossEi"
+				}
+				"CRandomChoiceSpawner::HasAttribute"
+				{
+					type "sym"
+					sym  "_ZN20CRandomChoiceSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
+				}
+				
 				"CSpawnLocation::Parse"
 				{
 					type "sym"
 					sym  "_ZN14CSpawnLocation5ParseEP9KeyValues"
+				}
+				
+				"ParseDynamicAttributes"
+				{
+					type "sym"
+					sym  "_ZL22ParseDynamicAttributesRN6CTFBot23EventChangeAttributes_tEP9KeyValues"
 				}
 			}
 		}
