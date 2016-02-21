@@ -8,6 +8,7 @@ enum class Library : int
 	SERVER,
 	ENGINE,
 	TIER0,
+	CLIENT,
 };
 
 

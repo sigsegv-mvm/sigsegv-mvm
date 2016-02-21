@@ -9,6 +9,7 @@
 #include "prop.h"
 #include "util/rtti.h"
 #include "disasm/disasm.h"
+#include "client.h"
 
 
 CExtSigsegv g_Ext;
@@ -16,6 +17,7 @@ SMEXT_LINK(&g_Ext);
 
 
 ICvar *icvar;
+IBaseClientDLL *clientdll;
 ISpatialPartition *partition;
 IEngineTrace *enginetrace;
 IStaticPropMgrServer *staticpropmgr;
@@ -101,11 +103,16 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	//GET_V_IFACE_ANY(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	//debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
 	
+	if (GetClientFactory() != nullptr) {
+		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
+	}
+	
 	gpGlobals = ismm->GetCGlobals();
 	
 	LibMgr::SetPtr(Library::SERVER, (void *)ismm->GetServerFactory(false));
 	LibMgr::SetPtr(Library::ENGINE, (void *)ismm->GetEngineFactory(false));
 	LibMgr::SetPtr(Library::TIER0,  (void *)&MemAllocScratch);
+	LibMgr::SetPtr(Library::CLIENT, (void *)GetClientFactory());
 	
 	return true;
 }

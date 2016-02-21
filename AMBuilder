@@ -13,6 +13,7 @@ sourceFiles = [
   'src/common.cpp',
   'src/sizeof.cpp',
   'src/extension.cpp',
+  'src/client.cpp',
   'src/gameconf.cpp',
   'src/library.cpp',
   'src/disasm/disasm.cpp',

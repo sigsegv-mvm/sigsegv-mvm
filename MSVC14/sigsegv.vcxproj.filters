@@ -209,7 +209,7 @@
     <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\demo\stringtable_limit.cpp">
+    <ClCompile Include="..\src\client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

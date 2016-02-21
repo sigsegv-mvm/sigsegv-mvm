@@ -19,11 +19,13 @@ class IEngineTrace;
 class IStaticPropMgrServer;
 //class IVDebugOverlay;
 class IGameEventManager2;
+class IBaseClientDLL;
 class CGlobalVars;
 class CBaseEntityList;
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
+extern IBaseClientDLL *clientdll;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
@@ -91,6 +93,13 @@ extern CBaseEntityList *g_pEntityList;
 #include <igameevents.h>
 #include <inetmessage.h>
 #include <inetchannel.h>
+#include <irecipientfilter.h>
+#include <usermessages.h>
+#include <interface.h>
+#include <cdll_int.h>
+
+#define DECLARE_PREDICTABLE()
+#include <collisionproperty.h>
 
 /* MetaMod */
 

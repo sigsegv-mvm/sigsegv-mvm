@@ -155,6 +155,7 @@
     <ClCompile Include="..\src\addr\misc.cpp" />
     <ClCompile Include="..\src\addr\prescan.cpp" />
     <ClCompile Include="..\src\addr\standard.cpp" />
+    <ClCompile Include="..\src\client.cpp" />
     <ClCompile Include="..\src\common.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

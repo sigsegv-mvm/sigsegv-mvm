@@ -11,6 +11,7 @@ static std::map<Library, const char *> libnames{
 	{ Library::SERVER,  "server" },
 	{ Library::ENGINE,  "engine" },
 	{ Library::TIER0,   "tier0" },
+	{ Library::CLIENT,  "client" },
 };
 
 
@@ -171,7 +172,7 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 {
 	auto addr = (uintptr_t)ptr;
 	
-	for (const auto& pair : libnames) {
+	for (const auto& pair : s_LibHandles) {
 		Library lib = pair.first;
 		if (lib == Library::INVALID) continue;
 		
