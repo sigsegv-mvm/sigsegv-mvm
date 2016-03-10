@@ -2,6 +2,7 @@
 #include "stub/tfbot.h"
 #include "stub/tf_objective_resource.h"
 #include "stub/populators.h"
+#include "util/scope.h"
 
 
 namespace Mod_Pop_EventPopfile_Improvements

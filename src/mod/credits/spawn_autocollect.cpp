@@ -1,8 +1,6 @@
 #include "mod.h"
-#include "sm/detours.h"
-#include "stub/stub.h"
-#include "util/util.h"
 #include "re/nextbot.h"
+#include "util/scope.h"
 
 
 namespace Mod_Credits_Spawn_AutoCollect

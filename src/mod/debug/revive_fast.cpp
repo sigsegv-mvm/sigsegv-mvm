@@ -1,5 +1,5 @@
 #include "mod.h"
-#include "stub/tfrevivemarker.h"
+#include "stub/entities.h"
 
 
 namespace Mod_Debug_Revive_Fast

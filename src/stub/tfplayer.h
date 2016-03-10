@@ -6,22 +6,52 @@
 #include "prop.h"
 
 
-class CBaseCombatCharacter : public CBaseFlex {};
+class CBaseCombatWeapon;
+class CTFWeaponBase;
+class CTFPlayer;
+
+
+class CBaseCombatCharacter : public CBaseFlex
+{
+public:
+	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
+	
+private:
+	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
+};
 
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
 	const char *GetPlayerName() { return m_szNetname.GetPtr(); }
 	
-	bool IsBot() const { return vt_IsBot(this); }
+	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors(this, pForward, pRight, pUp); }
+	
+	bool IsBot() const                                             { return vt_IsBot        (this); }
+	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide(this, bExplode, bForce); }
+	void ForceRespawn()                                            {        vt_ForceRespawn (this); }
 	
 private:
 	DECL_DATAMAP(char, m_szNetname);
 	
-	static MemberVFuncThunk<const CBasePlayer *, bool> vt_IsBot;
+	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
+	
+	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
+	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;
+	static MemberVFuncThunk<      CBasePlayer *, void>             vt_ForceRespawn;
 };
 
-class CBaseMultiplayerPlayer : public CBasePlayer {};
+class CBaseMultiplayerPlayer : public CBasePlayer
+{
+public:
+	bool SpeakConceptIfAllowed(int iConcept, const char *modifiers = nullptr, char *pszOutResponseChosen = nullptr, size_t bufsize = 0, IRecipientFilter *filter = nullptr)
+	{
+		return vt_SpeakConceptIfAllowed(this, iConcept, modifiers, pszOutResponseChosen, bufsize, filter);
+	}
+	
+private:
+	static MemberVFuncThunk<CBaseMultiplayerPlayer *, bool, int, const char *, char *, size_t, IRecipientFilter *> vt_SpeakConceptIfAllowed;
+};
 
 
 enum
@@ -160,12 +190,20 @@ enum ETFCond
 	TF_COND_KING_BUFFED                      = 113,
 	TF_COND_TEAM_GLOWS                       = 114,
 	TF_COND_KNOCKED_INTO_AIR                 = 115,
+	TF_COND_COMPETITIVE_WINNER               = 116,
+	TF_COND_COMPETITIVE_LOSER                = 117,
+	TF_COND_NO_TAUNTING                      = 118,
 };
 
 
 class CTFPlayerClassShared
 {
 public:
+	void NetworkStateChanged();
+	void NetworkStateChanged(void *pVar);
+	
+	CTFPlayer *GetOuter();
+	
 	bool IsClass(int iClass) const { return (this->m_iClass == iClass); }
 	
 	int GetClassIndex() const { return this->m_iClass; }
@@ -182,6 +220,11 @@ class CTFPlayerClass : public CTFPlayerClassShared {};
 class CTFPlayerShared
 {
 public:
+	void NetworkStateChanged();
+	void NetworkStateChanged(void *pVar);
+	
+	CTFPlayer *GetOuter();
+	
 	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond   (this, cond, duration, provider); }
 	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond(this, cond, b1); }
 	bool InCond(ETFCond cond) const                                                     { return ft_InCond    (this, cond); }
@@ -205,6 +248,10 @@ public:
 	bool IsPlayerClass(int iClass) const;
 	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
 	
+	CTFWeaponBase *GetActiveTFWeapon() const;
+	
+	void StartBuildingObjectOfType(int iType, int iMode) { ft_StartBuildingObjectOfType(this, iType, iMode); }
+	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
 	
@@ -214,13 +261,46 @@ private:
 	DECL_SENDPROP(CTFPlayerClass, m_PlayerClass);
 	DECL_SENDPROP(bool,           m_bIsMiniBoss);
 	
+	static MemberFuncThunk<CTFPlayer *, void, int, int> ft_StartBuildingObjectOfType;
 //	static MemberFuncThunk<CTFPlayer *, void, taunts_t, int> ft_Taunt;
 };
 
 
-// TODO: ToBasePlayer
-// TODO: ToTFPlayer
-// (WARNING: DON'T ASSUME THAT DYNAMIC CASTS ARE SAFE!)
+inline CTFPlayer *CTFPlayerClassShared::GetOuter()
+{
+	static int off = Prop::FindOffsetAssert("CTFPlayer", "m_PlayerClass");
+	return (CTFPlayer *)((uintptr_t)this - off);
+}
+
+inline void CTFPlayerClassShared::NetworkStateChanged()           { this->GetOuter()->NetworkStateChanged(); }
+inline void CTFPlayerClassShared::NetworkStateChanged(void *pVar) { this->GetOuter()->NetworkStateChanged(pVar); }
+
+
+inline CTFPlayer *CTFPlayerShared::GetOuter()
+{
+	static int off = Prop::FindOffsetAssert("CTFPlayer", "m_Shared");
+	return (CTFPlayer *)((uintptr_t)this - off);
+}
+
+inline void CTFPlayerShared::NetworkStateChanged()           { this->GetOuter()->NetworkStateChanged(); }
+inline void CTFPlayerShared::NetworkStateChanged(void *pVar) { this->GetOuter()->NetworkStateChanged(pVar); }
+
+
+inline CBasePlayer *ToBasePlayer(CBaseEntity *pEntity)
+{
+	/* not actually correct but close enough */
+	return rtti_cast<CBasePlayer *>(pEntity);
+}
+
+inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
+{
+	/* not actually correct but close enough */
+	return rtti_cast<CTFPlayer *>(pEntity);
+}
+
+
+ETFCond GetTFConditionFromName(const char *name);
+const char *GetTFConditionName(ETFCond cond);
 
 
 #endif

@@ -46,16 +46,16 @@ namespace Mod_Bot_Medieval_NonMelee
 	
 	struct CPatch_CTFBot_EquipRequiredWeapon : public IPatch_CTFBot_EquipRequiredWeapon
 	{
-		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x0100; } // @ 0x00b0
+		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override { return 0x0100; } // @ 0x00b0
 	};
 	
 #elif defined _WINDOWS
 	
 	struct CPatch_CTFBot_EquipRequiredWeapon : public IPatch_CTFBot_EquipRequiredWeapon
 	{
-		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x00c0; } // @ 0x0071
+		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override { return 0x00c0; } // @ 0x0071
 	};
 	
 #endif

@@ -1,12 +1,8 @@
 #include "mod.h"
-#include "sm/detours.h"
-#include "stub/stub.h"
-#include "util/util.h"
+#include "util/scope.h"
 
 
-#if defined __GNUC__
-#warning TODO: move cvars into class
-#endif
+// TODO: move cvars into class
 
 
 #ifdef EXPERIMENTAL

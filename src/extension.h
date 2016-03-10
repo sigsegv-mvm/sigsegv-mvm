@@ -22,8 +22,17 @@ public:
 #endif
 	
 	bool RegisterConCommandBase(ConCommandBase *pCommand);
+	
+	void EnableColorSpew();
+	void DisableColorSpew();
+	
+private:
+	SpewOutputFunc_t m_pSpewOutputBackup = nullptr;
 };
 extern CExtSigsegv g_Ext;
+
+
+SpewRetval_t ANSIColorSpew(SpewType_t type, const char *pMsg);
 
 
 #endif

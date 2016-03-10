@@ -643,6 +643,22 @@
 					vtable ".?AV?$Action@VCTFBot@@@@"
 					idx    "0x5a"
 				}
+				
+				"Action<CTFBot>::ApplyResult"
+				{
+					type "sym"
+					sym  "_ZN6ActionI6CTFBotE11ApplyResultEPS0_P8BehaviorIS0_E12ActionResultIS0_E"
+				}
+				"Action<CTFBot>::InvokeOnEnd"
+				{
+					type "sym"
+					sym  "_ZN6ActionI6CTFBotE11InvokeOnEndEPS0_P8BehaviorIS0_EPS1_"
+				}
+				"Action<CTFBot>::InvokeOnResume"
+				{
+					type "sym"
+					sym  "_ZN6ActionI6CTFBotE14InvokeOnResumeEPS0_P8BehaviorIS0_EPS1_"
+				}
 			}
 		}
 	}

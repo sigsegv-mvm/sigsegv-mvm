@@ -13,6 +13,11 @@
 		{
 			"addrs"
 			{
+				"Path::IsValid"
+				{
+					type "sym"
+					sym  "_ZNK4Path7IsValidEv"
+				}
 				"Path::Compute_vec<CTFBotPathCost>"
 				{
 					type  "fixed"

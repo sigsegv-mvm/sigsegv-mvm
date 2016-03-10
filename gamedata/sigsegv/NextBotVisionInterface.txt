@@ -13,7 +13,11 @@
 		{
 			"addrs"
 			{
-				
+				"IVision::Update"
+				{
+					type "sym"
+					sym  "_ZN7IVision6UpdateEv"
+				}
 			}
 		}
 	}

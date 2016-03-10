@@ -13,6 +13,11 @@
 		{
 			"addrs"
 			{
+				"CPopulationManager::Parse"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager5ParseEv"
+				}
 				"CPopulationManager::UpdateObjectiveResource"
 				{
 					type "sym"
@@ -62,6 +67,21 @@
 					sym  "_ZN18IPopulationSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
 				}
 				
+				"CTFBotSpawner::~CTFBotSpawner [D0]"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotSpawnerD0Ev"
+				}
+				"CTFBotSpawner::~CTFBotSpawner [D2]"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotSpawnerD2Ev"
+				}
+				"CTFBotSpawner::Parse"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotSpawner5ParseEP9KeyValues"
+				}
 				"CTFBotSpawner::Spawn"
 				{
 					type "sym"

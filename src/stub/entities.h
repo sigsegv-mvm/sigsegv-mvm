@@ -1,10 +1,20 @@
-#ifndef _INCLUDE_SIGSEGV_STUB_TFREVIVEMARKER_H_
-#define _INCLUDE_SIGSEGV_STUB_TFREVIVEMARKER_H_
+#ifndef _INCLUDE_SIGSEGV_STUB_ENTITIES_H_
+#define _INCLUDE_SIGSEGV_STUB_ENTITIES_H_
 
 
 #include "link/link.h"
 #include "prop.h"
 #include "stub/baseanimating.h"
+
+
+class CItem : public CBaseAnimating {};
+class CTFPowerup : public CItem {};
+
+class CSpellPickup : public CTFPowerup
+{
+public:
+	DECL_DATAMAP(int, m_nTier);
+};
 
 
 class CTFReviveMarker : public CBaseAnimating
@@ -21,6 +31,21 @@ public:
 	// 49c float 0.0f
 	// 4a0 byte, probably: have we landed on the ground
 };
+
+
+class CTFMedigunShield : public CBaseAnimating {};
+
+
+class CEconWearable : public CEconEntity {};
+class CTFWearable : public CEconWearable {};
+class CTFPowerupBottle : public CTFWearable {};
+
+
+class CPointEntity : public CBaseEntity {};
+class CBaseTFBotHintEntity : public CPointEntity {};
+class CTFBotHintSentrygun : public CBaseTFBotHintEntity {};
+class CTFBotHintTeleporterExit : public CBaseTFBotHintEntity {};
+class CTFBotHintEngineerNest : public CBaseTFBotHintEntity {};
 
 
 // 20151007a
@@ -61,7 +86,6 @@ public:
 
 // CTFReviveMarker::AddMarkerHealth
 // - 
-
 
 
 #endif

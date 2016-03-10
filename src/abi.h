@@ -129,6 +129,7 @@ union MemberPtrUnion
 	} guts;
 };
 
+
 template<class C, typename RET, typename... PARAMS>
 MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
 {
@@ -139,12 +140,29 @@ MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
 	
 	return u.fptr;
 }
-
 template<class C, typename RET, typename... PARAMS>
 MemberPtrTypeConst<C, RET, PARAMS...> MakePtrToConstMemberFunc(const void *ptr)
 {
 	return reinterpret_cast<MemberPtrTypeConst<C, RET, PARAMS...>>(MakePtrToMemberFunc<C, RET, PARAMS...>(ptr));
 }
+
+
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
+{
+	MemberPtrUnion<C, RET, PARAMS...> u;
+	
+	u.fptr = ptr;
+	
+	assert((uintptr_t)u.guts.ptr % 2 == 0);
+	return (void *)u.guts.ptr;
+}
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeConst<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+
 
 template<class C, typename RET, typename... PARAMS>
 int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
@@ -156,7 +174,6 @@ int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
 	assert((uintptr_t)u.guts.ptr % 4 == 1);
 	return ((int)u.guts.ptr - 1) / 4;
 }
-
 template<class C, typename RET, typename... PARAMS>
 int GetVIdxOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
 {
@@ -176,6 +193,7 @@ union MemberPtrUnion {
 	} guts;
 };
 
+
 template<class C, typename RET, typename... PARAMS>
 MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
 {
@@ -188,12 +206,29 @@ MemberPtrType<C, RET, PARAMS...> MakePtrToMemberFunc(const void *ptr)
 	
 	return u.fptr;
 }
-
 template<class C, typename RET, typename... PARAMS>
 MemberPtrTypeConst<C, RET, PARAMS...> MakePtrToConstMemberFunc(const void *ptr)
 {
 	return reinterpret_cast<MemberPtrTypeConst<C, RET, PARAMS...>>(MakePtrToMemberFunc<C, RET, PARAMS...>(ptr));
 }
+
+
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
+{
+	MemberPtrUnion<C, RET, PARAMS...> u;
+	
+	u.fptr = ptr;
+	
+	assert((uintptr_t)u.guts.ptr % 2 == 0);
+	return (void *)u.guts.ptr;
+}
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeConst<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+
 
 template<class C, typename RET, typename... PARAMS>
 int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
@@ -209,7 +244,6 @@ int GetVIdxOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
 	// we need proper disassembler support so we can do this robustly
 	// (e.g. [eax] vs [eax+4] is different in bytes, but disasm can handle it seamlessly)
 }
-
 template<class C, typename RET, typename... PARAMS>
 int GetVIdxOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
 {

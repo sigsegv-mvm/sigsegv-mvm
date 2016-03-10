@@ -132,10 +132,11 @@ bool CDetour::CreateDetour()
 			g_pSM->LogError(myself, "Could not locate %s - Disabling detour", signame);
 			return false;
 		}
-	} else {
+	}/* else {
 		g_pSM->LogError(myself, "Invalid detour address passed - Disabling detour");
 		return false;
-	}
+	}*/
+#warning TODO: revert me!
 
 	detour_restore.bytes = copy_bytes((unsigned char *)detour_address, NULL, OP_JMP_SIZE+1);
 
@@ -197,10 +198,28 @@ void CDetour::DeleteDetour()
 	}
 }
 
+/* we have a potential problem when a function is detoured multiple times; to
+ * avoid the more serious problems, we'll maintain a "stack" of detours at a
+ * given address and simply forbid disabling detours in non-LIFO order
+ * 
+ * in the future, we should implement smart disabling, where we can use our list
+ * of detours at the func addr to rewind/undetour/fastforward and arrive at the
+ * actual desired state */
+
+#include <list>
+#include <map>
+#include <util/backtrace.h>
+static std::map<void *, std::list<CDetour *>> s_DetourMap;
+
+#warning TODO: re-enable me!
+
 void CDetour::EnableDetour()
 {
 	if (!detoured)
 	{
+//		std::list<CDetour *>& detours = s_DetourMap[detour_address];
+//		detours.push_back(this);
+		
 		DoGatePatch((unsigned char *)detour_address, &detour_callback);
 		detoured = true;
 	}
@@ -210,6 +229,19 @@ void CDetour::DisableDetour()
 {
 	if (detoured)
 	{
+//		std::list<CDetour *>& detours = s_DetourMap[detour_address];
+//		if (detours.size() > 0) {
+//			if (detours.back() != this) {
+//				Warning("CDetour::DisableDetour: We are not at the back of the detour list for %08x!\n", (uintptr_t)detour_address);
+//				BACKTRACE();
+//				return;
+//			}
+//			detours.pop_back();
+//		} else {
+//			Warning("CDetour::DisableDetour: Detour list for %08x is empty!\n", (uintptr_t)detour_address);
+//			BACKTRACE();
+//		}
+		
 		/* Remove the patch */
 		ApplyPatch(detour_address, 0, &detour_restore, NULL);
 		detoured = false;

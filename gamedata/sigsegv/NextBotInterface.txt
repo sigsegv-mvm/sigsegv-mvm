@@ -13,7 +13,11 @@
 		{
 			"addrs"
 			{
-				
+				"INextBot::Update"
+				{
+					type "sym"
+					sym  "_ZN8INextBot6UpdateEv"
+				}
 			}
 		}
 	}

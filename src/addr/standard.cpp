@@ -279,3 +279,58 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 	addr = (uintptr_t)p_func;
 	return true;
 }
+
+
+#if 0
+bool IAddr_Func_EBPPrologue_UniqueConVar::FindAddrWin(uintptr_t& addr) const
+{
+	using ConVarRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, uintptr_t>;
+	
+	ConVarRef cvref(this->GetConVarName());
+	if (!cvref.IsValid()) {
+		DevMsg("IAddr_Func_EBPPrologue_UniqueConVar: \"%s\": no convar named \"%s\" exists\n", this->GetName(), this->GetConVarName());
+		return false;
+	}
+	
+	ConVar *cvar = static_cast<ConVar *>(cvref.GetLinkedConVar());
+	cvar = *(ConVar **)((uintptr_t)cvar + offsetof(ConVar, m_pParent));
+	
+	uintptr_t p_cvar;
+	switch (this->GetConVarType()) {
+	case DataType::INT:
+		p_cvar = (uintptr_t)cvar + offsetof(ConVar, m_nValue);
+		break;
+	case DataType::FLOAT:
+		p_cvar = (uintptr_t)cvar + offsetof(ConVar, m_fValue);
+		break;
+	case DataType::STRING:
+		p_cvar = (uintptr_t)cvar + offsetof(ConVar, m_pszString);
+		break;
+	default:
+		DevMsg("IAddr_Func_EBPPrologue_UniqueConVar: \"%s\": invalid data type\n", this->GetName());
+		return false;
+	}
+	
+//	const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), this->GetUniqueStr());
+//	if (p_str == nullptr) {
+//		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": failed to find ostensibly unique string\n", this->GetName());
+//		return false;
+//	}
+//	
+//	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+//	if (!scan1.ExactlyOneMatch()) {
+//		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
+//		return false;
+//	}
+//	auto p_in_func = (const char **)scan1.FirstMatch();
+	
+	auto p_func = Scan::FindFuncPrologue(p_in_func);
+	if (p_func == nullptr) {
+		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": could not locate EBP prologue\n", this->GetName());
+		return false;
+	}
+	
+	addr = (uintptr_t)p_func;
+	return true;
+}
+#endif

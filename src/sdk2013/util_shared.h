@@ -246,7 +246,7 @@ private:
 // helper
 void DebugDrawLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, int r, int g, int b, bool test, float duration );
 
-extern ConVar r_visualizetraces;
+//extern ConVar r_visualizetraces;
 
 inline void UTIL_TraceLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, 
 					 const IHandleEntity *ignore, int collisionGroup, trace_t *ptr )
@@ -257,6 +257,7 @@ inline void UTIL_TraceLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, 
 
 	enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
 
+	ConVarRef r_visualizetraces("r_visualizetraces");
 	if( r_visualizetraces.GetBool() )
 	{
 		DebugDrawLine( ptr->startpos, ptr->endpos, 255, 0, 0, true, -1.0f );
@@ -271,6 +272,7 @@ inline void UTIL_TraceLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, 
 
 	enginetrace->TraceRay( ray, mask, pFilter, ptr );
 
+	ConVarRef r_visualizetraces("r_visualizetraces");
 	if( r_visualizetraces.GetBool() )
 	{
 		DebugDrawLine( ptr->startpos, ptr->endpos, 255, 0, 0, true, -1.0f );
@@ -287,6 +289,7 @@ inline void UTIL_TraceHull( const Vector &vecAbsStart, const Vector &vecAbsEnd, 
 
 	enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
 
+	ConVarRef r_visualizetraces("r_visualizetraces");
 	if( r_visualizetraces.GetBool() )
 	{
 		DebugDrawLine( ptr->startpos, ptr->endpos, 255, 255, 0, true, -1.0f );
@@ -301,6 +304,7 @@ inline void UTIL_TraceHull( const Vector &vecAbsStart, const Vector &vecAbsEnd, 
 
 	enginetrace->TraceRay( ray, mask, pFilter, ptr );
 
+	ConVarRef r_visualizetraces("r_visualizetraces");
 	if( r_visualizetraces.GetBool() )
 	{
 		DebugDrawLine( ptr->startpos, ptr->endpos, 255, 255, 0, true, -1.0f );
@@ -314,6 +318,7 @@ inline void UTIL_TraceRay( const Ray_t &ray, unsigned int mask,
 
 	enginetrace->TraceRay( ray, mask, &traceFilter, ptr );
 	
+	ConVarRef r_visualizetraces("r_visualizetraces");
 	if( r_visualizetraces.GetBool() )
 	{
 		DebugDrawLine( ptr->startpos, ptr->endpos, 255, 0, 0, true, -1.0f );
@@ -536,12 +541,6 @@ private:
 	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
 };
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
-inline float IntervalTimer::Now( void ) const
-{
-	return gpGlobals->curtime;
-}
-
 
 //--------------------------------------------------------------------------------------------------------------
 /**
@@ -605,12 +604,6 @@ private:
 	virtual float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
 };
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
-inline float CountdownTimer::Now( void ) const
-{
-	return gpGlobals->curtime;
-}
-
 class RealTimeCountdownTimer : public CountdownTimer
 {
 	virtual float Now( void ) const OVERRIDE
@@ -636,6 +629,121 @@ bool				UTIL_IsHolidayActive( /*EHoliday*/ int eHoliday );
 // This will return the first active holiday string it can find. In the case of multiple
 // holidays overlapping, the list order will act as priority.
 const char		   *UTIL_GetActiveHolidayString();
+
+
+
+// stuff from util_shared.cpp that we need implementations for
+
+
+// work-around since client header doesn't like inlined gpGlobals->curtime
+inline float IntervalTimer::Now( void ) const
+{
+	return gpGlobals->curtime;
+}
+
+// work-around since client header doesn't like inlined gpGlobals->curtime
+inline float CountdownTimer::Now( void ) const
+{
+	return gpGlobals->curtime;
+}
+
+
+inline float UTIL_VecToYaw( const Vector &vec )
+{
+	if (vec.y == 0 && vec.x == 0)
+		return 0;
+	
+	float yaw = atan2( vec.y, vec.x );
+
+	yaw = RAD2DEG(yaw);
+
+	if (yaw < 0)
+		yaw += 360;
+
+	return yaw;
+}
+
+
+inline float UTIL_VecToPitch( const Vector &vec )
+{
+	if (vec.y == 0 && vec.x == 0)
+	{
+		if (vec.z < 0)
+			return 180.0;
+		else
+			return -180.0;
+	}
+
+	float dist = vec.Length2D();
+	float pitch = atan2( -vec.z, dist );
+
+	pitch = RAD2DEG(pitch);
+
+	return pitch;
+}
+
+inline float UTIL_VecToYaw( const matrix3x4_t &matrix, const Vector &vec )
+{
+	Vector tmp = vec;
+	VectorNormalize( tmp );
+
+	float x = matrix[0][0] * tmp.x + matrix[1][0] * tmp.y + matrix[2][0] * tmp.z;
+	float y = matrix[0][1] * tmp.x + matrix[1][1] * tmp.y + matrix[2][1] * tmp.z;
+
+	if (x == 0.0f && y == 0.0f)
+		return 0.0f;
+	
+	float yaw = atan2( -y, x );
+
+	yaw = RAD2DEG(yaw);
+
+	if (yaw < 0)
+		yaw += 360;
+
+	return yaw;
+}
+
+
+inline float UTIL_VecToPitch( const matrix3x4_t &matrix, const Vector &vec )
+{
+	Vector tmp = vec;
+	VectorNormalize( tmp );
+
+	float x = matrix[0][0] * tmp.x + matrix[1][0] * tmp.y + matrix[2][0] * tmp.z;
+	float z = matrix[0][2] * tmp.x + matrix[1][2] * tmp.y + matrix[2][2] * tmp.z;
+
+	if (x == 0.0f && z == 0.0f)
+		return 0.0f;
+	
+	float pitch = atan2( z, x );
+
+	pitch = RAD2DEG(pitch);
+
+	if (pitch < 0)
+		pitch += 360;
+
+	return pitch;
+}
+
+inline Vector UTIL_YawToVector( float yaw )
+{
+	Vector ret;
+	
+	ret.z = 0;
+	float angle = DEG2RAD( yaw );
+	SinCos( angle, &ret.y, &ret.x );
+
+	return ret;
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Add an overlay line with padding on the start and end
+//-----------------------------------------------------------------------------
+inline void DebugDrawLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, int r, int g, int b, bool test, float duration )
+{
+	NDebugOverlay::Line( vecAbsStart + Vector( 0,0,0.1), vecAbsEnd + Vector( 0,0,0.1), r,g,b, test, duration );
+}
 
 
 #endif // UTIL_SHARED_H

@@ -9,7 +9,8 @@ namespace Prop
 {
 	void PreloadAll();
 	
-	bool FindOffset(int& off, const char *obj, const char *mem);
+	bool FindOffset(int& off, const char *obj, const char *var);
+	int FindOffsetAssert(const char *obj, const char *var);
 }
 
 
@@ -47,9 +48,14 @@ private:
 
 inline bool IProp::GetOffset(int& off)
 {
-	this->DoCalcOffset();
+	State state = this->m_State;
 	
-	if (this->m_State == State::FAIL) {
+	if (state == State::INITIAL) {
+		this->DoCalcOffset();
+		state = this->m_State;
+	}
+	
+	if (state != State::OK) {
 		return false;
 	}
 	
@@ -95,10 +101,15 @@ template<typename T>
 class CProp_SendProp : public IPropTyped<T>
 {
 public:
-	CProp_SendProp(const char *obj, const char *mem, const char *sv_class) :
-		IPropTyped<T>(obj, mem), m_pszServerClass(sv_class) {}
+	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *)) :
+		IPropTyped<T>(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func) {}
 	
 	virtual const char *GetKind() const override { return "SENDPROP"; }
+	
+	void StateChanged(void *obj, void *var)
+	{
+		(*this->m_pStateChangedFunc)(obj, var);
+	}
 	
 private:
 	virtual bool CalcOffset(int& off) const override
@@ -114,6 +125,7 @@ private:
 	}
 	
 	const char *m_pszServerClass;
+	void (*m_pStateChangedFunc)(void *, void *);
 };
 
 
@@ -125,6 +137,8 @@ public:
 		IPropTyped<T>(obj, mem) {}
 	
 	virtual const char *GetKind() const override { return "DATAMAP"; }
+	
+	void StateChanged(void *obj, void *var) {}
 	
 private:
 	virtual bool CalcOffset(int& off) const override
@@ -165,6 +179,8 @@ public:
 	
 	virtual const char *GetKind() const override { return "EXTRACT"; }
 	
+	void StateChanged(void *obj, void *var) {}
+	
 private:
 	virtual bool CalcOffset(int& off) const override
 	{
@@ -197,14 +213,22 @@ class CPropAccessor_Base
 public:
 	CPropAccessor_Base() = delete;
 	
-	T *GetPtr() const
+	void *GetBasePtr() const
 	{
-		uintptr_t base = (uintptr_t)this - *ADJUST;
-		
+		return (void *)((uintptr_t)this - *ADJUST);
+	}
+	
+	int GetOffset() const
+	{
 		int off = -1;
 		assert(PROP->GetOffset(off));
+		return off;
+	}
+	
+	T *GetPtr() const
+	{
 //		DevMsg("CPropAccessor_Base::GetPtr: base %08x off %08x size %08x dword %08x\n", base, off, sizeof(T), *(uint32_t *)(base + off));
-		return reinterpret_cast<T *>(base + off);
+		return reinterpret_cast<T *>((uintptr_t)this->GetBasePtr() + this->GetOffset());
 	}
 	T& GetRef() const
 	{
@@ -243,13 +267,21 @@ public:
 	
 	const T& operator=(const T& val)
 	{
+		T *ptr = this->GetPtr();
+		
 		if (NET) {
-			/* TODO: update network state */
-			assert(false);
+			if (memcmp(ptr, &val, sizeof(T)) != 0) {
+				void *obj = this->GetBasePtr();
+				void *var = (void *)((uintptr_t)obj + this->GetOffset());
+				
+				PROP->StateChanged(obj, var);
+			}
 		}
-		*this->GetPtr() = val;
+		
+		*ptr = val;
 		return val;
 	}
+	T* operator->() { return this->GetPtr(); } /* dubious */
 };
 /* specialization for CHandle<U> */
 template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET>
@@ -260,11 +292,18 @@ public:
 	
 	U* operator=(U* val)
 	{
+		U *ptr = this->GetPtr();
+		
 		if (NET) {
-			/* TODO: update network state */
-			assert(false);
+			if (memcmp(ptr, &val, sizeof(U)) != 0) {
+				void *obj = this->GetBasePtr();
+				void *var = (void *)((uintptr_t)obj + this->GetOffset());
+				
+				PROP->StateChanged(obj, var);
+			}
 		}
-		*this->GetPtr() = val;
+		
+		*ptr = val;
 		return val;
 	}
 };
@@ -274,8 +313,7 @@ public:
 	typedef CProp_SendProp<T> _type_prop_##P; \
 	static _type_prop_##P s_prop_##P; \
 	const static size_t _adj_##P; \
-	/*typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, true> _type_accessor_##P;*/ \
-	typedef CPropAccessor_Read<T, _type_prop_##P, &s_prop_##P, &_adj_##P> _type_accessor_##P; \
+	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, true> _type_accessor_##P; \
 	_type_accessor_##P P; \
 	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
 
@@ -297,8 +335,13 @@ public:
 
 
 #define IMPL_SENDPROP(T, C, P, SC) \
+	void NetworkStateChanged_##C##_##P(void *obj, void *var) \
+	{ \
+		auto owner = reinterpret_cast<C *>(obj); \
+		owner->NetworkStateChanged(var); \
+	} \
 	const size_t C::_adj_##P = offsetof(C, P); \
-	CProp_SendProp<T> C::s_prop_##P(#C, #P, #SC)
+	CProp_SendProp<T> C::s_prop_##P(#C, #P, #SC, &NetworkStateChanged_##C##_##P)
 #define IMPL_DATAMAP(T, C, P) \
 	const size_t C::_adj_##P = offsetof(C, P); \
 	CProp_DataMap<T> C::s_prop_##P(#C, #P)

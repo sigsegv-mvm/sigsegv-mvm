@@ -7,6 +7,7 @@
 #include "stub/tfweaponbase.h"
 #include "util/misc.h"
 #include "re/nextbot.h"
+#include "util/rtti.h"
 
 
 enum class ExtAttr : int
@@ -133,6 +134,25 @@ public:
 		MISSION_REPROGRAMMED     = 6,
 	};
 	
+	class SuspectedSpyInfo_t
+	{
+	public:
+		void Suspect()              {        ft_Suspect             (this); } 
+		bool IsCurrentlySuspected() { return ft_IsCurrentlySuspected(this); }
+		bool TestForRealizing()     { return ft_TestForRealizing    (this); }
+		
+	private:
+		static MemberFuncThunk<SuspectedSpyInfo_t *, void> ft_Suspect;
+		static MemberFuncThunk<SuspectedSpyInfo_t *, bool> ft_IsCurrentlySuspected;
+		static MemberFuncThunk<SuspectedSpyInfo_t *, bool> ft_TestForRealizing;
+	};
+	
+	struct DelayedNoticeInfo
+	{
+		CHandle<CBaseEntity> m_hEnt;
+		float m_flWhen;
+	};
+	
 	class ExtendedAttr
 	{
 	public:
@@ -168,6 +188,12 @@ public:
 	bool IsLineOfFireClear(CBaseEntity *to) const                      { return ft_IsLineOfFireClear_ent       (this, to); }
 	bool IsLineOfFireClear(const Vector& from, const Vector& to) const { return ft_IsLineOfFireClear_vec_vec   (this, from, to); }
 	bool IsLineOfFireClear(const Vector& from, CBaseEntity *to) const  { return ft_IsLineOfFireClear_vec_ent   (this, from, to); }
+	SuspectedSpyInfo_t *IsSuspectedSpy(CTFPlayer *spy)                 { return ft_IsSuspectedSpy              (this, spy); }
+	void SuspectSpy(CTFPlayer *spy)                                    {        ft_SuspectSpy                  (this, spy); }
+	void StopSuspectingSpy(CTFPlayer *spy)                             {        ft_StopSuspectingSpy           (this, spy); }
+	bool IsKnownSpy(CTFPlayer *spy) const                              { return ft_IsKnownSpy                  (this, spy); }
+	void RealizeSpy(CTFPlayer *spy)                                    {        ft_RealizeSpy                  (this, spy); }
+	void ForgetSpy(CTFPlayer *spy)                                     {        ft_ForgetSpy                   (this, spy); }
 	
 	/* custom: extended attributes */
 	ExtendedAttr& ExtAttr()
@@ -190,13 +216,22 @@ private:
 	static MemberFuncThunk<const CTFBot *, bool, CBaseEntity *               > ft_IsLineOfFireClear_ent;
 	static MemberFuncThunk<const CTFBot *, bool, const Vector&, const Vector&> ft_IsLineOfFireClear_vec_vec;
 	static MemberFuncThunk<const CTFBot *, bool, const Vector&, CBaseEntity *> ft_IsLineOfFireClear_vec_ent;
+	static MemberFuncThunk<      CTFBot *, SuspectedSpyInfo_t *, CTFPlayer *>  ft_IsSuspectedSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_SuspectSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_StopSuspectingSpy;
+	static MemberFuncThunk<const CTFBot *, bool, CTFPlayer *>                  ft_IsKnownSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_RealizeSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_ForgetSpy;
 	
 	static std::map<CHandle<CTFBot>, ExtendedAttr> s_ExtAttrs;
 };
 
 
-// TODO: ToTFBot
-// (WARNING: DON'T ASSUME THAT DYNAMIC CASTS ARE SAFE!)
+inline CTFBot *ToTFBot(CBaseEntity *pEntity)
+{
+	/* not actually correct but close enough */
+	return rtti_cast<CTFBot *>(pEntity);
+}
 
 
 #endif

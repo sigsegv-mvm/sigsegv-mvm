@@ -1,12 +1,9 @@
 #include "mod.h"
-#include "sm/detours.h"
-#include "stub/stub.h"
-#include "util/util.h"
+#include "util/scope.h"
+#include "stub/tfplayer.h"
 
 
-#if defined __GNUC__
-#warning TODO: move cvars into class
-#endif
+// TODO: move cvars into class
 
 
 namespace Mod_Visualize_Explosive_Headshot

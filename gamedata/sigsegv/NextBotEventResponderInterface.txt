@@ -13,18 +13,18 @@
 		{
 			"addrs"
 			{
-				"INextBotEventResponder::~INextBotEventResponder [D0]"
-				{
-					type "sym"
-					sym  "_ZN22INextBotEventResponderD0Ev"
-				}
-				"INextBotEventResponder::~INextBotEventResponder [D2]"
-				{
-					type   "func knownvtidx"
-					sym    "_ZN22INextBotEventResponderD2Ev"
-					vtable ".?AVINextBotEventResponder@@"
-					idx    "0x00"
-				}
+//				"INextBotEventResponder::~INextBotEventResponder [D0]"
+//				{
+//					type "sym"
+//					sym  "_ZN22INextBotEventResponderD0Ev"
+//				}
+//				"INextBotEventResponder::~INextBotEventResponder [D2]"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN22INextBotEventResponderD2Ev"
+//					vtable ".?AVINextBotEventResponder@@"
+//					idx    "0x00"
+//				}
 				"INextBotEventResponder::FirstContainedResponder"
 				{
 					type   "func knownvtidx"

@@ -1,0 +1,69 @@
+// client
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+//				"[client] usermessages"
+//				{
+//					type  "fixed"
+//					sym   "usermessages"
+//					addr  "0xc27e2c"
+//					build "3283568"
+//					lib   "client"
+//				}
+				
+				"[client] C_TFPlayer::OnPreDataChanged"
+				{
+					type  "fixed"
+					sym   "_ZN10C_TFPlayer16OnPreDataChangedE16DataUpdateType_t"
+					addr  "0x4cfa10"
+					build "3283568"
+					lib   "client"
+				}
+				"[client] C_TFPlayer::OnDataChanged"
+				{
+					type  "fixed"
+					sym   "_ZN10C_TFPlayer13OnDataChangedE16DataUpdateType_t"
+					addr  "0x4ce6b0"
+					build "3283568"
+					lib   "client"
+				}
+				
+//				"[client] CUserMessages::LookupUserMessage"
+//				{
+//					type  "fixed"
+//					sym   "_ZN13CUserMessages17LookupUserMessageEPKc"
+//					addr  ""
+//					build "3283568"
+//					lib   "client"
+//				}
+//				"[client] CUserMessages::Register"
+//				{
+//					type  "fixed"
+//					sym   "_ZN13CUserMessages8RegisterEPKci"
+//					addr  "0x35a550"
+//					build "3283568"
+//					lib   "client"
+//				}
+//				"[client] CUserMessages::HookMessage"
+//				{
+//					type  "fixed"
+//					sym   "_ZN13CUserMessages11HookMessageEPKcPFvR7bf_readE"
+//					addr  "0x359a90"
+//					build "3283568"
+//					lib   "client"
+//				}
+			}
+		}
+	}
+}

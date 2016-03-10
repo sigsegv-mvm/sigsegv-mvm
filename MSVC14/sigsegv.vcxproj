@@ -66,7 +66,7 @@
     <ClCompile>
       <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\cccapstone\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -108,7 +108,7 @@
     <ClCompile>
       <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\cccapstone\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -164,6 +164,7 @@
     <ClCompile Include="..\src\extension.cpp" />
     <ClCompile Include="..\src\gameconf.cpp" />
     <ClCompile Include="..\src\library.cpp" />
+    <ClCompile Include="..\src\link\debugoverlay.cpp" />
     <ClCompile Include="..\src\link\link.cpp" />
     <ClCompile Include="..\src\link\nextbot1.cpp" />
     <ClCompile Include="..\src\link\nextbot2.cpp" />
@@ -173,17 +174,22 @@
     <ClCompile Include="..\src\mod\ai\engiebot_nopush.cpp" />
     <ClCompile Include="..\src\mod\ai\improved_useitem.cpp" />
     <ClCompile Include="..\src\mod\ai\lookat_oneplayer.cpp" />
+    <ClCompile Include="..\src\mod\ai\prevent_postmortem_updates.cpp" />
     <ClCompile Include="..\src\mod\ai\wrapassassin_altfire.cpp" />
     <ClCompile Include="..\src\mod\attr\undocumented.cpp" />
+    <ClCompile Include="..\src\mod\bot\kill_before_forcespec.cpp" />
     <ClCompile Include="..\src\mod\bot\medieval_nonmelee.cpp" />
     <ClCompile Include="..\src\mod\bot\multiclass_weapon.cpp" />
     <ClCompile Include="..\src\mod\credits\spawn_autocollect.cpp" />
-    <ClCompile Include="..\src\mod\debug\overlay_recv.cpp" />
-    <ClCompile Include="..\src\mod\debug\overlay_send.cpp" />
+    <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
+    <ClCompile Include="..\src\mod\debug\medigunshield_obstruction.cpp" />
+    <ClCompile Include="..\src\mod\debug\parachute_warp.cpp" />
     <ClCompile Include="..\src\mod\debug\penetration.cpp" />
     <ClCompile Include="..\src\mod\debug\revive_fast.cpp" />
     <ClCompile Include="..\src\mod\debug\suicide_bomber.cpp" />
+    <ClCompile Include="..\src\mod\debug\useitem_broken.cpp" />
     <ClCompile Include="..\src\mod\debug\usermsg_overflow.cpp" />
+    <ClCompile Include="..\src\mod\demo\stringtable_limit.cpp" />
     <ClCompile Include="..\src\mod\pop\eventpopfile_improvements.cpp" />
     <ClCompile Include="..\src\mod\pop\extattr\alwaysfireweaponalt.cpp" />
     <ClCompile Include="..\src\mod\pop\extattr\parse.cpp" />
@@ -195,31 +201,40 @@
     <ClCompile Include="..\src\mod\robot\ticklish.cpp" />
     <ClCompile Include="..\src\mod\sniper\charge_uncap.cpp" />
     <ClCompile Include="..\src\mod\sniper\head_uncap.cpp" />
+    <ClCompile Include="..\src\mod\util\console_recv.cpp" />
+    <ClCompile Include="..\src\mod\util\console_send.cpp" />
+    <ClCompile Include="..\src\mod\util\listenserverhost.cpp" />
+    <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />
+    <ClCompile Include="..\src\mod\util\overlay_send.cpp" />
     <ClCompile Include="..\src\mod\visualize\airblast.cpp" />
+    <ClCompile Include="..\src\mod\visualize\blast_radius.cpp" />
+    <ClCompile Include="..\src\mod\visualize\dispenser_radius.cpp" />
     <ClCompile Include="..\src\mod\visualize\explosive_headshot.cpp" />
     <ClCompile Include="..\src\mod\visualize\minigun_deflect.cpp" />
+    <ClCompile Include="..\src\mod\visualize\taunt_attacks.cpp" />
     <ClCompile Include="..\src\prop.cpp" />
+    <ClCompile Include="..\src\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\src\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\src\sizeof.cpp" />
     <ClCompile Include="..\src\sm\detours.cpp" />
     <ClCompile Include="..\src\sm\MemoryUtils.cpp" />
     <ClCompile Include="..\src\stub\baseentity.cpp" />
-    <ClCompile Include="..\src\stub\debugoverlay.cpp" />
+    <ClCompile Include="..\src\stub\entities.cpp" />
     <ClCompile Include="..\src\stub\gamerules.cpp" />
     <ClCompile Include="..\src\stub\misc.cpp" />
     <ClCompile Include="..\src\stub\nav.cpp" />
+    <ClCompile Include="..\src\stub\objects.cpp" />
     <ClCompile Include="..\src\stub\populators.cpp" />
     <ClCompile Include="..\src\stub\projectiles.cpp" />
     <ClCompile Include="..\src\stub\tfbot.cpp" />
     <ClCompile Include="..\src\stub\tfplayer.cpp" />
-    <ClCompile Include="..\src\stub\tfrevivemarker.cpp" />
     <ClCompile Include="..\src\stub\tfweaponbase.cpp" />
     <ClCompile Include="..\src\stub\tf_objective_resource.cpp" />
+    <ClCompile Include="..\src\stub\usermessages.cpp" />
     <ClCompile Include="..\src\util\backtrace.cpp" />
     <ClCompile Include="..\src\util\prof.cpp" />
     <ClCompile Include="..\src\util\rtti.cpp" />
     <ClCompile Include="..\src\util\trace.cpp" />
-    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\demo\stringtable_limit.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

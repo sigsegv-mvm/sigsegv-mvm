@@ -273,71 +273,13 @@ static CAddr_IVDebugOverlay addr_IVDebugOverlay_AddEntityTextOverlay("AddEntityT
 #endif
 
 
-#if 0
-class RemoveMe
+class CAddr_IServerGameDLL : public CAddr_InterfaceVFunc
 {
 public:
-	RemoveMe()
-	{
-		Test_ISpatialPartition((ISpatialPartition *)this);
-		Test_IEngineTrace((IEngineTrace *)this);
-		Test_IVDebugOverlay((IVDebugOverlay *)this);
-	}
-	
-	void DumpMemAt(void *p)
-	{
-		uint32_t *i = (uint32_t *)p;
-		
-		DevMsg("%08x %08x %08x %08x\n", i[0], i[1], i[2], i[3]);
-	}
-	
-	void Test_ISpatialPartition(ISpatialPartition *p)
-	{
-		DevMsg("EnumerateElementsInBox\n");
-		p->EnumerateElementsInBox(0, vec3_origin, vec3_origin, false, nullptr);
-		DevMsg("EnumerateElementsInSphere\n");
-		p->EnumerateElementsInSphere(0, vec3_origin, 0.0f, false, nullptr);
-	}
-	
-	void Test_IEngineTrace(IEngineTrace *p)
-	{
-		char pad1[] = "AAAAAAAA";
-		int (IEngineTrace::*p1)(const Vector&, IHandleEntity**) = &IEngineTrace::GetPointContents;
-		char pad2[] = "BBBBBBBB";
-		void (IEngineTrace::*p2)(const Ray_t&, bool, IEntityEnumerator *) = &IEngineTrace::EnumerateEntities;
-		char pad3[] = "CCCCCCCC";
-		void (IEngineTrace::*p3)(const Vector&, const Vector&, IEntityEnumerator *) = &IEngineTrace::EnumerateEntities;
-		char pad4[] = "DDDDDDDD";
-		int (IEngineTrace::*p4)(const Vector&) = &IEngineTrace::GetLeafContainingPoint;
-		char pad5[] = "EEEEEEEE";
-		
-		DumpMemAt((void *)&p1);
-		DumpMemAt((void *)&p2);
-		DumpMemAt((void *)&p3);
-		DumpMemAt((void *)&p4);
-		
-		auto r = (Ray_t *)this;
-		
-		DevMsg("GetPointContents\n");
-		p->GetPointContents(vec3_origin, nullptr);
-		DevMsg("EnumerateEntities_ray\n");
-		p->EnumerateEntities(*r, false, nullptr);
-		DevMsg("EnumerateEntities_vec\n");
-		p->EnumerateEntities(vec3_origin, vec3_origin, nullptr);
-		DevMsg("GetLeafContainingPoint\n");
-		p->GetLeafContainingPoint(vec3_origin);
-	}
-	
-	void Test_IVDebugOverlay(IVDebugOverlay *p)
-	{
-		DevMsg("AddEntityTextOverlay\n");
-		p->AddEntityTextOverlay(0, 0, 0.0f, 0, 0, 0, 0, "");
-		DevMsg("AddBoxOverlay2\n");
-		p->AddBoxOverlay2(vec3_origin, vec3_origin, vec3_origin, vec3_angle, Color(), Color(), 0.0f);
-	}
+	CAddr_IServerGameDLL(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&gamedll, "IServerGameDLL", n_func, vtidx) {}
 };
-RemoveMe removeme;
-#endif
+static CAddr_IServerGameDLL addr_IServerGameDLL_GameFrame("GameFrame", GetVIdxOfMemberFunc(&IServerGameDLL::GameFrame));
 
 
 static CAddr_Func_KnownVTIdx addr_CTFBotUseItem_D2("CTFBotUseItem::~CTFBotUseItem [D2]", "<nosym>", ".?AVCTFBotUseItem@@", 0x00);
@@ -416,3 +358,208 @@ public:
 	virtual const char *GetSymbol() const override         { return "_ZN6CTFBot35OpportunisticallyUseWeaponAbilitiesEv"; }
 	virtual const char *GetUniqueFuncName() const override { return "CTFBotUseItem::CTFBotUseItem [C1]"; }
 };
+
+
+class CAddr_Pointer : public IAddr
+{
+public:
+	CAddr_Pointer(const std::string& name, const void *ptr) :
+		m_strName(name), m_pAddr(ptr) {}
+	
+	virtual const char *GetName() const override { return this->m_strName.c_str(); }
+	
+	virtual bool FindAddrLinux(uintptr_t& addr) const override
+	{
+		if (this->m_pAddr == nullptr) return false;
+		
+		addr = (uintptr_t)this->m_pAddr;
+		return true;
+	}
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		return this->FindAddrLinux(addr);
+	}
+	
+private:
+	std::string m_strName;
+	const void *m_pAddr;
+};
+static CAddr_Pointer addr_NDebugOverlay_Box(                       "[local] NDebugOverlay::Box",                        (const void *)&NDebugOverlay::Box);
+static CAddr_Pointer addr_NDebugOverlay_BoxDirection(              "[local] NDebugOverlay::BoxDirection",               (const void *)&NDebugOverlay::BoxDirection);
+static CAddr_Pointer addr_NDebugOverlay_BoxAngles(                 "[local] NDebugOverlay::BoxAngles",                  (const void *)&NDebugOverlay::BoxAngles);
+static CAddr_Pointer addr_NDebugOverlay_SweptBox(                  "[local] NDebugOverlay::SweptBox",                   (const void *)&NDebugOverlay::SweptBox);
+static CAddr_Pointer addr_NDebugOverlay_EntityBounds(              "[local] NDebugOverlay::EntityBounds",               (const void *)&NDebugOverlay::EntityBounds);
+static CAddr_Pointer addr_NDebugOverlay_Line(                      "[local] NDebugOverlay::Line",                       (const void *)&NDebugOverlay::Line);
+static CAddr_Pointer addr_NDebugOverlay_Triangle(                  "[local] NDebugOverlay::Triangle",                   (const void *)&NDebugOverlay::Triangle);
+static CAddr_Pointer addr_NDebugOverlay_EntityText(                "[local] NDebugOverlay::EntityText",                 (const void *)&NDebugOverlay::EntityText);
+static CAddr_Pointer addr_NDebugOverlay_EntityTextAtPosition(      "[local] NDebugOverlay::EntityTextAtPosition",       (const void *)&NDebugOverlay::EntityTextAtPosition);
+static CAddr_Pointer addr_NDebugOverlay_Grid(                      "[local] NDebugOverlay::Grid",                       (const void *)&NDebugOverlay::Grid);
+static CAddr_Pointer addr_NDebugOverlay_Text(                      "[local] NDebugOverlay::Text",                       (const void *)&NDebugOverlay::Text);
+static CAddr_Pointer addr_NDebugOverlay_ScreenText(                "[local] NDebugOverlay::ScreenText",                 (const void *)&NDebugOverlay::ScreenText);
+static CAddr_Pointer addr_NDebugOverlay_Cross3D_ext(               "[local] NDebugOverlay::Cross3D_ext",                (const void *)(void (*)(const Vector&, const Vector&, const Vector&, int, int, int, bool, float))&NDebugOverlay::Cross3D);
+static CAddr_Pointer addr_NDebugOverlay_Cross3D_size(              "[local] NDebugOverlay::Cross3D_size",               (const void *)(void (*)(const Vector&, float, int, int, int, bool, float))&NDebugOverlay::Cross3D);
+static CAddr_Pointer addr_NDebugOverlay_Cross3DOriented_ang(       "[local] NDebugOverlay::Cross3DOriented_ang",        (const void *)(void (*)(const Vector&, const QAngle&, float, int, int, int, bool, float))&NDebugOverlay::Cross3DOriented);
+static CAddr_Pointer addr_NDebugOverlay_Cross3DOriented_mat(       "[local] NDebugOverlay::Cross3DOriented_mat",        (const void *)(void (*)(const matrix3x4_t&, float, int, bool, float))&NDebugOverlay::Cross3DOriented);
+static CAddr_Pointer addr_NDebugOverlay_HorzArrow(                 "[local] NDebugOverlay::HorzArrow",                  (const void *)&NDebugOverlay::HorzArrow);
+static CAddr_Pointer addr_NDebugOverlay_YawArrow(                  "[local] NDebugOverlay::YawArrow",                   (const void *)&NDebugOverlay::YawArrow);
+static CAddr_Pointer addr_NDebugOverlay_VertArrow(                 "[local] NDebugOverlay::VertArrow",                  (const void *)&NDebugOverlay::VertArrow);
+static CAddr_Pointer addr_NDebugOverlay_Axis(                      "[local] NDebugOverlay::Axis",                       (const void *)&NDebugOverlay::Axis);
+static CAddr_Pointer addr_NDebugOverlay_Sphere(                    "[local] NDebugOverlay::Sphere",                     (const void *)(void (*)(const Vector&, float, int, int, int, bool, float))&NDebugOverlay::Sphere);
+static CAddr_Pointer addr_NDebugOverlay_Circle(                    "[local] NDebugOverlay::Circle",                     (const void *)(void (*)(const Vector&, float, int, int, int, int, bool, float))&NDebugOverlay::Circle);
+static CAddr_Pointer addr_NDebugOverlay_Circle_ang(                "[local] NDebugOverlay::Circle_ang",                 (const void *)(void (*)(const Vector&, const QAngle&, float, int, int, int, int, bool, float))&NDebugOverlay::Circle);
+static CAddr_Pointer addr_NDebugOverlay_Circle_axes(               "[local] NDebugOverlay::Circle_axes",                (const void *)(void (*)(const Vector&, const Vector&, const Vector&, float, int, int, int, int, bool, float))&NDebugOverlay::Circle);
+static CAddr_Pointer addr_NDebugOverlay_Sphere_ang(                "[local] NDebugOverlay::Sphere_ang",                 (const void *)(void (*)(const Vector&, const QAngle&, float, int, int, int, int, bool, float))&NDebugOverlay::Sphere);
+static CAddr_Pointer addr_NDebugOverlay_Clear(                     "[local] NDebugOverlay::Clear",                      (const void *)&NDebugOverlay::Clear);
+
+
+class CAddr_Client_UserMessages : public IAddr_Sym
+{
+public:
+	CAddr_Client_UserMessages()
+	{
+		this->SetLibrary(Library::CLIENT);
+	}
+	
+	virtual const char *GetName() const override   { return "[client] usermessages"; }
+	virtual const char *GetSymbol() const override { return "usermessages"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using MyScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), "MVMWaveFailed");
+		if (p_str == nullptr) {
+			DevMsg("%s: no const str\n", this->GetName());
+			return false;
+		}
+		
+		constexpr uint8_t buf[] = {
+			0x8b, 0x0d, 0x00, 0x00, 0x00, 0x00, // +0000  mov ecx,0xVVVVVVVV
+			0x6a, 0x00,                         // +0006  push 0x00000000
+			0x68, 0x00, 0x00, 0x00, 0x00,       // +0008  push p_str
+			0xe8, 0x00, 0x00, 0x00, 0x00,       // +000D  call 0xXXXXXXXX
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		mask.SetRange(0x00 + 2, 0x04, 0x00);
+		seek.SetDword(0x08 + 1, (uint32_t)p_str);
+		mask.SetRange(0x0d + 1, 0x04, 0x00);
+		
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		addr = *(uintptr_t *)((uintptr_t)scan1.FirstMatch() + 0x02);
+		return true;
+	}
+};
+static CAddr_Client_UserMessages addr_client_UserMessages;
+
+
+class CAddr_Client_CUserMessages_Register : public IAddr_Sym
+{
+public:
+	CAddr_Client_CUserMessages_Register()
+	{
+		this->SetLibrary(Library::CLIENT);
+	}
+	
+	virtual const char *GetName() const override   { return "[client] CUserMessages::Register"; }
+	virtual const char *GetSymbol() const override { return "_ZN13CUserMessages8RegisterEPKci"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using MyScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), "MVMWaveFailed");
+		if (p_str == nullptr) {
+			DevMsg("%s: no const str\n", this->GetName());
+			return false;
+		}
+		
+		constexpr uint8_t buf[] = {
+			0x8b, 0x0d, 0x00, 0x00, 0x00, 0x00, // +0000  mov ecx,0xXXXXXXXX
+			0x6a, 0x00,                         // +0006  push 0x00000000
+			0x68, 0x00, 0x00, 0x00, 0x00,       // +0008  push p_str
+			0xe8, 0x00, 0x00, 0x00, 0x00,       // +000D  call 0xVVVVVVVV
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		mask.SetRange(0x00 + 2, 0x04, 0x00);
+		seek.SetDword(0x08 + 1, (uint32_t)p_str);
+		mask.SetRange(0x0d + 1, 0x04, 0x00);
+		
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		auto match = (uintptr_t)scan1.FirstMatch() + 0x0e;
+		addr = *(uintptr_t *)match + (match + 4);
+		return true;
+	}
+};
+static CAddr_Client_CUserMessages_Register addr_client_CUserMessages_Register;
+
+
+class CAddr_Client_CUserMessages_HookMessage : public IAddr_Sym
+{
+public:
+	CAddr_Client_CUserMessages_HookMessage()
+	{
+		this->SetLibrary(Library::CLIENT);
+	}
+	
+	virtual const char *GetName() const override   { return "[client] CUserMessages::HookMessage"; }
+	virtual const char *GetSymbol() const override { return "_ZN13CUserMessages11HookMessageEPKcPFvR7bf_readE"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using MyScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), "MVMWaveFailed");
+		if (p_str == nullptr) {
+			DevMsg("%s: no const str\n", this->GetName());
+			return false;
+		}
+		
+		constexpr uint8_t buf[] = {
+			0x8b, 0x0d, 0x00, 0x00, 0x00, 0x00, // +0000  mov ecx,0xXXXXXXXX
+			0x68, 0x00, 0x00, 0x00, 0x00,       // +0006  push 0xXXXXXXXX
+			0x68, 0x00, 0x00, 0x00, 0x00,       // +000B  push p_str
+			0xe8, 0x00, 0x00, 0x00, 0x00,       // +0010  call 0xVVVVVVVV
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		mask.SetRange(0x00 + 2, 0x04, 0x00);
+		mask.SetRange(0x06 + 1, 0x04, 0x00);
+		seek.SetDword(0x0b + 1, (uint32_t)p_str);
+		mask.SetRange(0x10 + 1, 0x04, 0x00);
+		
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		auto match = (uintptr_t)scan1.FirstMatch() + 0x11;
+		addr = *(uintptr_t *)match + (match + 4);
+		return true;
+	}
+};
+static CAddr_Client_CUserMessages_HookMessage addr_client_CUserMessages_HookMessage;

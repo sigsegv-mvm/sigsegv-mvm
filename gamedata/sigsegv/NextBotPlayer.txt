@@ -13,6 +13,17 @@
 		{
 			"addrs"
 			{
+				"NextBotPlayer<CTFPlayer>::PhysicsSimulate"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PhysicsSimulateEv"
+				}
+				"NextBotPlayer<CTFPlayer>::Update"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE6UpdateEv"
+				}
+				
 				"NextBotPlayer<CTFPlayer>::PressFireButton"
 				{
 					type "sym"

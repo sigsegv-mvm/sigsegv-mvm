@@ -51,6 +51,7 @@ public:
 	static const LibInfo& GetInfo(Library lib);
 	
 	static void *FindSym(Library lib, const char *sym);
+	static void *FindSymRegex(Library lib, const char *pattern);
 	static void ForEachSym(Library lib, void (*functor)(Symbol *));
 	
 	static Library WhichLibAtAddr(void *ptr);

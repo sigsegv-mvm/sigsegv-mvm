@@ -1,9 +1,20 @@
 #include "stub/tfplayer.h"
+#include "stub/tfweaponbase.h"
+
+
+IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
 
 
 IMPL_DATAMAP(char, CBasePlayer, m_szNetname);
 
-MemberVFuncThunk<const CBasePlayer *, bool> CBasePlayer::vt_IsBot(TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
+MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors("CBasePlayer::EyeVectors");
+
+MemberVFuncThunk<const CBasePlayer *, bool>             CBasePlayer::vt_IsBot(        TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
+MemberVFuncThunk<      CBasePlayer *, void, bool, bool> CBasePlayer::vt_CommitSuicide(TypeName<CBasePlayer>(), "CBasePlayer::CommitSuicide");
+MemberVFuncThunk<      CBasePlayer *, void>             CBasePlayer::vt_ForceRespawn( TypeName<CTFPlayer>(),   "CTFPlayer::ForceRespawn");
+
+
+MemberVFuncThunk<CBaseMultiplayerPlayer *, bool, int, const char *, char *, size_t, IRecipientFilter *> CBaseMultiplayerPlayer::vt_SpeakConceptIfAllowed(TypeName<CTFPlayer>(), "CTFPlayer::SpeakConceptIfAllowed");
 
 
 IMPL_SENDPROP(int,      CTFPlayerClassShared, m_iClass,         CTFPlayer);
@@ -24,6 +35,8 @@ IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
 IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);
 IMPL_SENDPROP(bool,            CTFPlayer, m_bIsMiniBoss, CTFPlayer);
 
+MemberFuncThunk<CTFPlayer *, void, int, int> CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
+
 
 bool CTFPlayer::IsPlayerClass(int iClass) const
 {
@@ -31,6 +44,12 @@ bool CTFPlayer::IsPlayerClass(int iClass) const
 	if (pClass == nullptr) return false;
 	
 	return pClass->IsClass(iClass);
+}
+
+
+CTFWeaponBase *CTFPlayer::GetActiveTFWeapon() const
+{
+	return rtti_cast<CTFWeaponBase *>(this->GetActiveWeapon());
 }
 
 
@@ -47,3 +66,10 @@ CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
 	
 	return pPlayer;
 }
+
+
+static StaticFuncThunk<ETFCond, const char *> ft_GetTFConditionFromName("GetTFConditionFromName");
+ETFCond GetTFConditionFromName(const char *name) { return ft_GetTFConditionFromName(name); }
+
+static StaticFuncThunk<const char *, ETFCond> ft_GetTFConditionName("GetTFConditionName");
+const char *GetTFConditionName(ETFCond cond) { return ft_GetTFConditionName(cond); }

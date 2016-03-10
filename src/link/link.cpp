@@ -1,9 +1,9 @@
 #include "link/link.h"
 
 
-#if defined _WINDOWS
+//#if defined _WINDOWS
 #define LINK_NONFATAL
-#endif
+//#endif
 
 
 namespace Link

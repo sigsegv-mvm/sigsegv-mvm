@@ -1,10 +1,14 @@
 #include "mod.h"
 #include "stub/tf_objective_resource.h"
 #include "stub/populators.h"
+#include "util/scope.h"
 
 
 namespace Mod_Pop_Nested_Complex_Spawners
 {
+	ConVar cvar_trace("sig_pop_nested_complex_spawners_trace", "0", FCVAR_NOTIFY,
+		"Trace populators and spawners as they are parsed");
+	
 	struct WaveClassCount_t
 	{
 		int count;
@@ -64,6 +68,17 @@ namespace Mod_Pop_Nested_Complex_Spawners
 		constexpr ptrdiff_t OFF_CWaveSpawnPopulator_m_bSupport        = 0x4cc;
 		constexpr ptrdiff_t OFF_CWaveSpawnPopulator_m_bSupportLimited = 0x4cd;
 		
+		// extractor for CWaveSpawnPopulator::m_bSupport
+		// CWaveSpawnPopulator::IsFinishedSpawning
+		// CWaveSpawnPopulator::Parse
+		// CWaveSpawnPopulator::OnNonSupportWavesDone
+		// CWaveSpawnPopulator::GetCurrencyAmountPerDeath
+		// CWave::IsDoneWithNonSupportWaves
+		
+		// extractor for CWaveSpawnPopulator::m_bSupportLimited
+		// CWaveSpawnPopulator::IsFinishedSpawning
+		// CWaveSpawnPopulator::Parse
+		
 		bool *m_bSupport        = (bool *)((uintptr_t)wavespawn + OFF_CWaveSpawnPopulator_m_bSupport);
 		bool *m_bSupportLimited = (bool *)((uintptr_t)wavespawn + OFF_CWaveSpawnPopulator_m_bSupportLimited);
 		
@@ -82,7 +97,9 @@ namespace Mod_Pop_Nested_Complex_Spawners
 		
 		/* SentryGun: leaf */
 		if (sp_sentrygun != nullptr) {
-			DevMsg("%*s[SentryGun] NOT IMPLEMENTED\n", rlevel * 2, "");
+			if (cvar_trace.GetBool()) {
+				DevMsg("%*s[SentryGun] NOT IMPLEMENTED\n", rlevel * 2, "");
+			}
 		}
 		
 		/* Tank/TFBot: leaf */
@@ -99,23 +116,29 @@ namespace Mod_Pop_Nested_Complex_Spawners
 			if (spawner->IsMiniBoss(-1))                             count.flags |= CLASSFLAG_MINIBOSS;
 			if (spawner->HasAttribute(CTFBot::ATTR_ALWAYS_CRIT, -1)) count.flags |= CLASSFLAG_CRITICAL;
 			
-			DevMsg("%*s[%s] \"%s\" %s\n", rlevel * 2, "",
-				(sp_tfbot != nullptr ? "TFBot" : "Tank"),
-				count.icon, ClassFlags_ToString(count.flags));
+			if (cvar_trace.GetBool()) {
+				DevMsg("%*s[%s] \"%s\" %s\n", rlevel * 2, "",
+					(sp_tfbot != nullptr ? "TFBot" : "Tank"),
+					count.icon, ClassFlags_ToString(count.flags));
+			}
 			counts.push_back(count);
 			++num_spawned;
 		}
 		
 		/* Mob: recursive */
 		if (sp_mob != nullptr) {
-			DevMsg("%*s[Mob]\n", rlevel * 2, "");
+			if (cvar_trace.GetBool()) {
+				DevMsg("%*s[Mob]\n", rlevel * 2, "");
+			}
 			
 			num_spawned += IPopulationSpawner_CountClasses(wavespawn, sp_mob->m_SubSpawner, counts);
 		}
 		
 		/* Squad: recursive */
 		if (sp_squad != nullptr) {
-			DevMsg("%*s[Squad]\n", rlevel * 2, "");
+			if (cvar_trace.GetBool()) {
+				DevMsg("%*s[Squad]\n", rlevel * 2, "");
+			}
 			
 			FOR_EACH_VEC(sp_squad->m_SubSpawners, i) {
 				auto sub = sp_squad->m_SubSpawners[i];
@@ -125,7 +148,9 @@ namespace Mod_Pop_Nested_Complex_Spawners
 		
 		/* RandomChoice: recursive */
 		if (sp_randomchoice != nullptr) {
-			DevMsg("%*s[RandomChoice]\n", rlevel * 2, "");
+			if (cvar_trace.GetBool()) {
+				DevMsg("%*s[RandomChoice]\n", rlevel * 2, "");
+			}
 			
 			auto sub = sp_randomchoice->m_SubSpawners[CRandomChoiceSpawner_GetNextIndex(sp_randomchoice)];
 			num_spawned += IPopulationSpawner_CountClasses(wavespawn, sub, counts);
@@ -138,19 +163,26 @@ namespace Mod_Pop_Nested_Complex_Spawners
 	
 	void CWave_CountClasses(CWave *wave)
 	{
-		DevMsg("[Wave]\n");
+		if (cvar_trace.GetBool()) {
+			DevMsg("[Wave]\n");
+		}
 		
 		randomchoice_tracker.clear();
 		
 		std::vector<WaveClassCount_t> counts;
 		
 		FOR_EACH_VEC(wave->m_WaveSpawns, i) {
-			DevMsg("  [WaveSpawn]\n");
+			if (cvar_trace.GetBool()) {
+				DevMsg("  [WaveSpawn]\n");
+			}
 			auto wavespawn = wave->m_WaveSpawns[i];
 			
 			/* TODO: remove this garbage */
 			constexpr ptrdiff_t OFF_CWaveSpawnPopulator_m_iTotalCount = 0x030;
 			int *m_iTotalCount = (int *)((uintptr_t)wavespawn + OFF_CWaveSpawnPopulator_m_iTotalCount);
+			
+			// extractor for CWaveSpawnPopulator::TotalCount
+			// CWaveSpawnPopulator::Parse
 			
 			int total = *m_iTotalCount;
 			while (total > 0) {

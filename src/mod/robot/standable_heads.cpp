@@ -1,6 +1,5 @@
 #include "mod.h"
 #include "util/scope.h"
-#include "sm/detours.h"
 #include "stub/gamerules.h"
 #include "stub/tfplayer.h"
 
@@ -17,7 +16,7 @@ namespace Mod_Robot_Standable_Heads
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAbsVelocityImpulse, const Vector *v1)
 	{
 		if (rc_TFPlayerThink > 0 && v1->z == 100.0f &&
-			TFGameRules() && TFGameRules()->IsMannVsMachineMode()) {
+			TFGameRules()->IsMannVsMachineMode()) {
 			CTFPlayer *player = reinterpret_cast<CTFPlayer *>(this);
 			
 			CBaseEntity *groundent = player->GetGroundEntity();

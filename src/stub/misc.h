@@ -5,8 +5,6 @@
 #include "link/link.h"
 
 
-class CBaseObject;
-
 class CTFBotMvMEngineerTeleportSpawn;
 class CTFBotMvMEngineerBuildTeleportExit;
 class CTFBotMvMEngineerBuildSentryGun;

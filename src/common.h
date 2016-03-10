@@ -6,9 +6,9 @@
 
 #if defined __cplusplus
 
-#if !defined __GNUC__
-#define __attribute__(...)
-#endif
+//#if !defined __GNUC__
+//#define __attribute__(...)
+//#endif
 
 
 class IVEngineServer;
@@ -17,7 +17,7 @@ class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
 class IStaticPropMgrServer;
-//class IVDebugOverlay;
+class IVDebugOverlay;
 class IGameEventManager2;
 class IBaseClientDLL;
 class CGlobalVars;
@@ -31,7 +31,7 @@ extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 extern IGameEventManager2 *gameeventmanager;
-//extern IVDebugOverlay *debugoverlay;
+extern IVDebugOverlay *debugoverlay;
 
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
@@ -52,6 +52,7 @@ extern CBaseEntityList *g_pEntityList;
 /* STL */
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 /* AMTL */
@@ -80,11 +81,11 @@ extern CBaseEntityList *g_pEntityList;
 #include <IEngineTrace.h>
 #include <IStaticPropMgr.h>
 #include <ivdebugoverlay.h>
+#include "sdk2013/debugoverlay_shared.h"
 #include "sdk2013/util_shared.h"
 #include <ai_activity.h>
 #include <usercmd.h>
 #include <npcevent.h>
-#include <debugoverlay_shared.h>
 #include <dt_send.h>
 #include <eiface.h>
 #include <ispatialpartition.h>
@@ -94,9 +95,12 @@ extern CBaseEntityList *g_pEntityList;
 #include <inetmessage.h>
 #include <inetchannel.h>
 #include <irecipientfilter.h>
-#include <usermessages.h>
+//#include <usermessages.h>
 #include <interface.h>
 #include <cdll_int.h>
+#include <iclientnetworkable.h>
+#include <tier1/utldict.h>
+#include <mp_shareddefs.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
@@ -115,6 +119,8 @@ extern CBaseEntityList *g_pEntityList;
 
 /* Posix specific */
 #if defined _LINUX || defined _OSX
+#include <unistd.h>
+#include <sys/mman.h>
 #include <libunwind.h>
 #define HAVE_DECL_BASENAME 1
 #include <libiberty/demangle.h>
@@ -134,6 +140,10 @@ extern CBaseEntityList *g_pEntityList;
 #if defined CreateEvent
 #undef CreateEvent
 #endif
+
+
+#define bf_write old_bf_write
+#define bf_read old_bf_read
 
 #endif
 

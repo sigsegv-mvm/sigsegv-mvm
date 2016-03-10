@@ -5,4 +5,8 @@
 #define SIZE_CHECK(_type, _size) static_assert(sizeof(_type) == _size, "sizeof(" #_type ") == " #_size)
 
 
+constexpr long double operator"" _deg(long double deg)        { return deg * (M_PI / 180.0); }
+constexpr long double operator"" _deg(unsigned long long deg) { return (long double)deg * (M_PI / 180.0); }
+
+
 #endif

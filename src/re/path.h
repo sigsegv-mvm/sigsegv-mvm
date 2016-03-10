@@ -7,8 +7,8 @@
 #endif
 
 
-#include "stub/stub.h"
-#include "util/util.h"
+#include "util/misc.h"
+#include "stub/tfbot.h"
 
 
 class CBaseObject;
@@ -22,7 +22,7 @@ enum NavDirType {};
 //#include "../mvm-reversed/server/NextBot/Path/NextBotChasePath.h"
 
 
-SIZE_CHECK(Path,         0x4450);
+SIZE_CHECK(Path,         0x4754);
 SIZE_CHECK(PathFollower, 0x47d4);
 //SIZE_CHECK(ChasePath,    0x4800);
 SIZE_CHECK(IPathCost,    0x04);

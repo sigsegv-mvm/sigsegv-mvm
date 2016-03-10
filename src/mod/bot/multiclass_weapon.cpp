@@ -1,6 +1,6 @@
 #include "mod.h"
-#include "stub/stub.h"
-#include "util/util.h"
+#include "stub/tfbot.h"
+#include "util/scope.h"
 
 
 namespace Mod_Bot_MultiClass_Weapon

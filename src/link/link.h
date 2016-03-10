@@ -406,8 +406,7 @@ public:
 	}
 	
 protected:
-	T *GetPtr() const   { return this->m_pObjPtr; }
-	void SetPtr(T *ptr) { this->m_pObjPtr = ptr; }
+	T *GetPtr() const { return this->m_pObjPtr; }
 	
 private:
 	const char *m_pszObjName;
@@ -424,9 +423,69 @@ public:
 	
 	T& operator=(T& that)
 	{
-		this->SetPtr(&that);
+		*this->GetPtr() = that;
 		return that;
 	}
+};
+
+
+template<size_t SIZE>
+class TypeInfoThunk : public ILinkage
+{
+public:
+	TypeInfoThunk(const char *name, uint8_t *dst) :
+		m_pszName(name), m_pDest(dst) {}
+	
+	virtual bool Link() override
+	{
+		auto rtti = RTTI::GetRTTI(this->m_pszName);
+		if (rtti == nullptr) {
+			DevMsg("TypeInfoThunk::Link FAIL \"%s\": can't find RTTI\n", this->m_pszName);
+			return false;
+		}
+		
+		memcpy(m_pDest, rtti, SIZE);
+		
+		DevMsg("TypeInfoThunk::Link OK \"%s\"\n", this->m_pszName);
+		return true;
+	}
+	
+private:
+	const char *m_pszName;
+	uint8_t *m_pDest;
+};
+
+
+template<size_t SIZE>
+class VTableThunk : public ILinkage
+{
+public:
+	VTableThunk(const char *name, uint8_t *dst) :
+		m_pszName(name), m_pDest(dst) {}
+	
+	virtual bool Link() override
+	{
+		auto vt = RTTI::GetVTable(this->m_pszName);
+		if (vt == nullptr) {
+			DevMsg("VTableThunk::Link FAIL \"%s\": can't find vtable\n", this->m_pszName);
+			return false;
+		}
+		
+#if defined __GNUC__
+		ptrdiff_t adj = -offsetof(vtable, vfptrs);
+#else
+		ptrdiff_t adj = 0;
+#endif
+		
+		memcpy(m_pDest, (void *)((uintptr_t)vt + adj), SIZE);
+		
+		DevMsg("VTableThunk::Link OK \"%s\"\n", this->m_pszName);
+		return true;
+	}
+	
+private:
+	const char *m_pszName;
+	uint8_t *m_pDest;
 };
 
 

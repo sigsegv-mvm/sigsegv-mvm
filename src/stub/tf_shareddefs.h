@@ -207,6 +207,14 @@ enum ETFDmgCustom
 	TF_DMG_CUSTOM_RUNE_REFLECT,
 };
 
+enum
+{
+	OBJ_DISPENSER         = 0,
+	OBJ_TELEPORTER        = 1,
+	OBJ_SENTRYGUN         = 2,
+	OBJ_ATTACHMENT_SAPPER = 3,
+};
+
 
 /* I invented this function, because this particular idiom comes up frequently;
  * I can't seem to actually find it anywhere in the 2013 SDK or the 2007 leak,

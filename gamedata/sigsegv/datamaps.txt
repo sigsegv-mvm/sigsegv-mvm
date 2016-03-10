@@ -19,11 +19,29 @@
 					sym   "_ZN11CBaseEntity9m_DataMapE"
 					class "CBaseEntity"
 				}
+				"CBasePlayer::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN11CBasePlayer9m_DataMapE"
+					class "CBasePlayer"
+				}
+				"CBaseObject::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN11CBaseObject9m_DataMapE"
+					class "CBaseObject"
+				}
 				"CItem::m_DataMap"
 				{
 					type  "datamap"
 					sym   "_ZN5CItem9m_DataMapE"
 					class "CItem"
+				}
+				"CSpellPickup::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN12CSpellPickup9m_DataMapE"
+					class "CSpellPickup"
 				}
 			}
 		}

@@ -13,6 +13,11 @@
 		{
 			"addrs"
 			{
+				"CTFBotMainAction::Update"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction6UpdateEP6CTFBotf"
+				}
 				"CTFBotMainAction::FireWeaponAtEnemy"
 				{
 					type "sym"
@@ -38,6 +43,17 @@
 					idx    "0x2e"
 				}
 				
+				"CTFBotMvMEngineerIdle::Update"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotMvMEngineerIdle6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotMvMEngineerBuildSentryGun::CTFBotMvMEngineerBuildSentryGun [C1]"
+				{
+					type "sym"
+					sym  "_ZN31CTFBotMvMEngineerBuildSentryGunC1EP19CTFBotHintSentrygun"
+				}
 				"CTFBotMvMEngineerBuildSentryGun::Update"
 				{
 					type   "func ebpprologue unistr knownvtidx"
@@ -48,6 +64,11 @@
 					idx    "0x2e"
 				}
 				
+				"CTFBotMvMEngineerBuildTeleportExit::CTFBotMvMEngineerBuildTeleportExit [C1]"
+				{
+					type "sym"
+					sym  "_ZN34CTFBotMvMEngineerBuildTeleportExitC1EP24CTFBotHintTeleporterExit"
+				}
 				"CTFBotMvMEngineerBuildTeleportExit::Update"
 				{
 					type   "func ebpprologue unistr knownvtidx"

@@ -1,0 +1,24 @@
+// NextBotManager
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"TheNextBots"
+				{
+					type "sym"
+					sym  "_Z11TheNextBotsv"
+				}
+			}
+		}
+	}
+}

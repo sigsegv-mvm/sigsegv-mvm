@@ -19,6 +19,12 @@
 					sym  "debugoverlay"
 				}
 				
+				"usermessages"
+				{
+					type "sym"
+					sym  "usermessages"
+				}
+				
 				"TheNavMesh"
 				{
 					type "sym"
@@ -29,6 +35,12 @@
 				{
 					type "sym"
 					sym  "g_pObjectiveResource"
+				}
+				
+				"CGameRulesProxy::s_pGameRulesProxy"
+				{
+					type "sym"
+					sym  "_ZN15CGameRulesProxy17s_pGameRulesProxyE"
 				}
 			}
 		}

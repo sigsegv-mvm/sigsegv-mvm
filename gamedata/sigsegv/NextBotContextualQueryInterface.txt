@@ -13,18 +13,18 @@
 		{
 			"addrs"
 			{
-				"IContextualQuery::~IContextualQuery [D0]"
-				{
-					type "sym"
-					sym  "_ZN16IContextualQueryD0Ev"
-				}
-				"IContextualQuery::~IContextualQuery [D2]"
-				{
-					type   "func knownvtidx"
-					sym    "_ZN16IContextualQueryD2Ev"
-					vtable ".?AVIContextualQuery@@"
-					idx    "0x00"
-				}
+//				"IContextualQuery::~IContextualQuery [D0]"
+//				{
+//					type "sym"
+//					sym  "_ZN16IContextualQueryD0Ev"
+//				}
+//				"IContextualQuery::~IContextualQuery [D2]"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN16IContextualQueryD2Ev"
+//					vtable ".?AVIContextualQuery@@"
+//					idx    "0x00"
+//				}
 				"IContextualQuery::ShouldPickUp"
 				{
 					type   "func knownvtidx"

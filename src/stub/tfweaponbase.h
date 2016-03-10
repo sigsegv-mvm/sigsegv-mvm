@@ -7,8 +7,6 @@
 #include "stub/tf_shareddefs.h"
 
 
-class CEconEntity : public CBaseAnimating {};
-
 class CBaseCombatWeapon : public CEconEntity
 {
 public:
@@ -44,6 +42,15 @@ class CTFBuffItem : public CTFWeaponBaseMelee {};
 
 class CTFLunchBox : public CTFWeaponBase {};
 class CTFLunchBox_Drink : public CTFLunchBox {};
+
+class CWeaponMedigun : public CTFWeaponBase
+{
+public:
+	CBaseEntity *GetHealTarget() const { return this->m_hHealingTarget; }
+	
+private:
+	DECL_SENDPROP(CHandle<CBaseEntity>, m_hHealingTarget);
+};
 
 
 #endif

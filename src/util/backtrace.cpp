@@ -4,7 +4,6 @@
 
 #if defined _LINUX || defined _OSX
 
-
 const char *try_demangle(const char *mangled)
 {
 	if (strlen(mangled) == 0) {
@@ -85,27 +84,32 @@ void print_backtrace()
 		free((void *)demangled);
 		
 		++f_idx;
+		
+		/* sanity check to prevent unending log-filling backtraces when
+		 * libunwind gets confused about where the end of the stack is */
+		if (f_idx >= 1000) break;
 	}
 }
 
-#if 0
-void print_backtrace()
+
+extern "C"
 {
-	constexpr int MAX_ENTRIES = 0x100;
+	[[noreturn]] void __real___assert_fail(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
 	
-	uintptr_t entries[MAX_ENTRIES];
-	memset(entries, 0x00, sizeof(entries));
-	
-	int num_entries = backtrace((void **)entries, MAX_ENTRIES);
-	char **symbols = backtrace_symbols((void *const *)entries, num_entries);
-	
-	/* skip entry 0, which will point to this function */
-	for (int i = 1; i < num_entries; ++i) {
-		DevMsg("  %3d  %s\n", i, symbols[i]);
+	[[noreturn]] void __wrap___assert_fail(const char *__assertion, const char *__file, unsigned int __line, const char *__function)
+	{
+		BACKTRACE();
+		__real___assert_fail(__assertion, __file, __line, __function);
 	}
 	
-	free(symbols);
+//	[[noreturn]] void __real_abort();
+//
+//	[[noreturn]] void __wrap_abort()
+//	{
+//		BACKTRACE();
+//		__real_abort();
+//	}
 }
-#endif
+
 
 #endif

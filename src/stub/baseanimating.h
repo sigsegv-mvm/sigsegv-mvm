@@ -6,8 +6,11 @@
 
 
 class CBaseAnimating : public CBaseEntity {};
+
 class CBaseAnimatingOverlay : public CBaseAnimating {};
 class CBaseFlex : public CBaseAnimatingOverlay {};
+
+class CEconEntity : public CBaseAnimating {};
 
 
 #endif

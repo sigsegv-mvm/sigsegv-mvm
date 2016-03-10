@@ -1,7 +1,5 @@
 #include "mod.h"
-#include "sm/detours.h"
-#include "stub/stub.h"
-#include "util/util.h"
+#include "util/scope.h"
 #include "re/nextbot.h"
 
 

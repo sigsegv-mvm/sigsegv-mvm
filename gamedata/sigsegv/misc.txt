@@ -173,6 +173,11 @@
 					sym  "_ZNK15CTFBat_Giftwrap11GetWeaponIDEv"
 				}
 				
+				"CAttributeManager::AttribHookValue<int>"
+				{
+					type "sym"
+					sym  "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
+				}
 				"CAttributeManager::ApplyAttributeFloatWrapper"
 				{
 					type "sym"
@@ -299,6 +304,161 @@
 					vtable ".?AVCReplayDemoRecorder@@"
 					idx    "0x0d"
 					lib    "engine"
+				}
+				
+				"CTFGameRules::PlayerKilled"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules12PlayerKilledEP11CBasePlayerRK15CTakeDamageInfo"
+				}
+				"CTFGameRules::ShouldDropSpellPickup"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules21ShouldDropSpellPickupEv"
+				}
+				"CTFGameRules::DropSpellPickup"
+				{
+					type "sym"
+					sym  "_ZNK12CTFGameRules15DropSpellPickupERK6Vectori"
+				}
+				"CTFGameRules::IsUsingSpells"
+				{
+					type "sym"
+					sym  "_ZNK12CTFGameRules13IsUsingSpellsEv"
+				}
+				
+				"KeyValues::LoadFromFile"
+				{
+					type "sym"
+					sym  "_ZN9KeyValues12LoadFromFileEP15IBaseFileSystemPKcS3_b"
+				}
+				
+				"CBasePlayer::EyeVectors"
+				{
+					type  "fixed"
+					sym   "_ZN11CBasePlayer10EyeVectorsEP6VectorS1_S1_"
+					addr  "0x19ac90"
+					build "3283568"
+				}
+				
+				"CBasePlayer::CommitSuicide"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer13CommitSuicideEbb"
+				}
+				
+				"CUserMessages::LookupUserMessage"
+				{
+					type "sym"
+					sym  "_ZN13CUserMessages17LookupUserMessageEPKc"
+				}
+				"CUserMessages::Register"
+				{
+					type "sym"
+					sym  "_ZN13CUserMessages8RegisterEPKci"
+				}
+				
+				"clear_debug_overlays"
+				{
+					type "sym"
+					sym  "_ZL20clear_debug_overlaysRK8CCommand"
+				}
+				
+				"ConColorMsg"
+				{
+					type "sym"
+					sym  "_Z11ConColorMsgRK5ColorPKcz"
+					lib  "tier0"
+				}
+				
+				"CTFPowerupBottle::ReapplyProvision"
+				{
+					type "sym"
+					sym  "_ZN16CTFPowerupBottle16ReapplyProvisionEv"
+				}
+				
+				"CTFGameRules::RadiusDamage"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules12RadiusDamageER19CTFRadiusDamageInfo"
+				}
+				"CEntitySphereQuery::CEntitySphereQuery [C1]"
+				{
+					type "sym"
+					sym  "_ZN18CEntitySphereQueryC1ERK6Vectorfi"
+				}
+				"CTFRadiusDamageInfo::ApplyToEntity"
+				{
+					type "sym"
+					sym  "_ZN19CTFRadiusDamageInfo13ApplyToEntityEP11CBaseEntity"
+				}
+				"CBaseEntity::TakeDamage"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity10TakeDamageERK15CTakeDamageInfo"
+				}
+				
+				"CBaseEntity::EyeAngles"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EyeAnglesEv"
+				}
+				
+				"CObjectDispenser::DispenseThink"
+				{
+					type "sym"
+					sym  "_ZN16CObjectDispenser13DispenseThinkEv"
+				}
+				"CObjectDispenser::GetDispenserRadius"
+				{
+					type "sym"
+					sym  "_ZN16CObjectDispenser18GetDispenserRadiusEv"
+				}
+				
+				"CBaseEntity::EyePosition"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity11EyePositionEv"
+				}
+				
+				"CBaseEntity::SetOwnerEntity"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity14SetOwnerEntityEPS_"
+				}
+				
+				"CBaseEntity::SetAbsOrigin"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12SetAbsOriginERK6Vector"
+				}
+				"CBaseEntity::SetAbsAngles"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12SetAbsAnglesERK6QAngle"
+				}
+				
+				"CBaseEntity::Spawn"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity5SpawnEv"
+				}
+				
+				"CBaseObject::StartPlacement"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject14StartPlacementEP9CTFPlayer"
+				}
+				"CBaseObject::StartBuilding"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject13StartBuildingEP11CBaseEntity"
+				}
+				
+				"CEconItemView::GetItemDefIndex"
+				{
+					type "sym"
+					sym  "_ZNK13CEconItemView15GetItemDefIndexEv"
 				}
 			}
 		}

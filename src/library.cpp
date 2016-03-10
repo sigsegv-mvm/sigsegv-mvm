@@ -106,6 +106,12 @@ void *LibMgr::FindSym(Library lib, const char *sym)
 	return g_MemUtils.ResolveSymbol(handle, sym);
 }
 
+void *LibMgr::FindSymRegex(Library lib, const char *pattern)
+{
+	// TODO
+	#error
+}
+
 void LibMgr::ForEachSym(Library lib, void (*functor)(Symbol *))
 {
 	void *handle = s_LibHandles.at(lib);

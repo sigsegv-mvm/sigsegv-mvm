@@ -2,10 +2,6 @@
 #include "util/backtrace.h"
 
 
-/* gotta love SM's ancient HL2SDK headers */
-#define bf_write old_bf_write
-#define bf_read old_bf_read
-
 class IServerMessageHandler;
 
 class CNetMessage : public INetMessage

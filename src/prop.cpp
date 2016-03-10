@@ -50,14 +50,22 @@ namespace Prop
 		CC_ListProps(dummy);
 	}
 	
-	bool FindOffset(int& off, const char *obj, const char *mem)
+	
+	bool FindOffset(int& off, const char *obj, const char *var)
 	{
 		for (auto prop : AutoList<IProp>::List()) {
-			if (strcmp(obj, prop->GetObjectName()) == 0 && strcmp(mem, prop->GetMemberName()) == 0) {
+			if (strcmp(obj, prop->GetObjectName()) == 0 && strcmp(var, prop->GetMemberName()) == 0) {
 				return prop->GetOffset(off);
 			}
 		}
 		
 		return false;
+	}
+	
+	int FindOffsetAssert(const char *obj, const char *var)
+	{
+		int off = -1;
+		assert(FindOffset(off, obj, var));
+		return off;
 	}
 }

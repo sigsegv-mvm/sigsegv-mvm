@@ -1,11 +1,8 @@
 #include "mod.h"
-#include "sm/detours.h"
 #include "stub/tfplayer.h"
 
 
-#if defined __GNUC__
-#warning TODO: move cvars into class
-#endif
+// TODO: move cvars into class
 
 
 namespace Mod_Robot_Ticklish

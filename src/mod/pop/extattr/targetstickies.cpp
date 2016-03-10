@@ -2,6 +2,7 @@
 #include "re/nextbot.h"
 #include "re/path.h"
 #include "stub/projectiles.h"
+#include "util/scope.h"
 
 
 #if defined EXPERIMENTAL

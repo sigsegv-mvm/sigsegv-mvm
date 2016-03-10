@@ -6,16 +6,6 @@
 #include "addr/addr.h"
 
 
-// CPatch:
-// - func signature
-// - base address
-// - "before" buffer
-// - "after" buffer
-// - automatic verification
-// - apply AND un-apply
-// - optional fuzzy base offset
-
-
 class IPatch
 {
 public:

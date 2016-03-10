@@ -1,13 +1,15 @@
 #include "mod.h"
-#include "sm/detours.h"
 #include "stub/tfweaponbase.h"
-#include "util/util.h"
 #include "re/nextbot.h"
 #include "stub/tfbot.h"
 
 
 namespace Mod_AI_Improved_UseItem
 {
+	ConVar cvar_debug("sig_ai_improved_useitem_debug", "0", FCVAR_NOTIFY,
+		"Mod: debug CTFBotUseItemImproved and descendants");
+	
+	
 	class CTFBotUseItem : public Action<CTFBot>
 	{
 	public:
@@ -29,7 +31,9 @@ namespace Mod_AI_Improved_UseItem
 		
 		virtual ActionResult<CTFBot> OnStart(CTFBot *actor, Action<CTFBot> *action) override
 		{
-			DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnStart\n", gpGlobals->curtime, ENTINDEX(actor));
+			if (cvar_debug.GetBool()) {
+				DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnStart\n", gpGlobals->curtime, ENTINDEX(actor));
+			}
 			
 			this->m_State = State::FIRE;
 			
@@ -45,7 +49,9 @@ namespace Mod_AI_Improved_UseItem
 				
 			case State::FIRE:
 				if (gpGlobals->curtime >= this->m_flSwitchTime) {
-					DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Using item now\n", gpGlobals->curtime, ENTINDEX(actor));
+					if (cvar_debug.GetBool()) {
+						DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Using item now\n", gpGlobals->curtime, ENTINDEX(actor));
+					}
 					actor->PressFireButton(1.0f);
 					this->m_State = State::WAIT;
 				}
@@ -53,7 +59,9 @@ namespace Mod_AI_Improved_UseItem
 				
 			case State::WAIT:
 				if (this->IsDone(actor)) {
-					DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Done using item\n", gpGlobals->curtime, ENTINDEX(actor));
+					if (cvar_debug.GetBool()) {
+						DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Done using item\n", gpGlobals->curtime, ENTINDEX(actor));
+					}
 					return ActionResult<CTFBot>::Done("Item used");
 				}
 				break;
@@ -64,7 +72,9 @@ namespace Mod_AI_Improved_UseItem
 		
 		virtual void OnEnd(CTFBot *actor, Action<CTFBot> *action) override
 		{
-			DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnEnd\n", gpGlobals->curtime, ENTINDEX(actor));
+			if (cvar_debug.GetBool()) {
+				DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnEnd\n", gpGlobals->curtime, ENTINDEX(actor));
+			}
 			
 			actor->PopRequiredWeapon();
 		}

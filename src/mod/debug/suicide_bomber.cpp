@@ -2,7 +2,7 @@
 #include "re/nextbot.h"
 #include "re/path.h"
 #include "stub/tfbot.h"
-#include "stub/debugoverlay.h"
+#include "util/scope.h"
 
 
 // win syms:

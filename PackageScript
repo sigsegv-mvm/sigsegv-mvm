@@ -58,6 +58,7 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
     'NextBotPath.txt',
     'NextBotPathFollow.txt',
     'NextBotChasePath.txt',
+    'NextBotManager.txt',
     'population.txt',
     'nav.txt',
     'tfplayer.txt',
@@ -67,6 +68,7 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
     'tfbot_behavior.txt',
     'misc.txt',
     'debugoverlay.txt',
+    'client.txt',
   ]
 )
 
@@ -86,4 +88,11 @@ CopyFiles('resource', 'custom/sigsegv/resource',
 
 # Copy binaries.
 for cxx_task in Extension.extensions:
-  builder.AddCopy(cxx_task.binary, folder_map['addons/sourcemod/extensions'])
+  src = os.path.join('..', cxx_task.binary.path)
+  dst = os.path.join('addons/sourcemod/extensions', os.path.basename(cxx_task.binary.path))
+  builder.AddCommand(
+    inputs  = [ cxx_task.binary ],
+    argv    = [ 'cp', '--remove-destination', src, dst ],
+    outputs = [ dst ],
+  )
+#  builder.AddCopy(cxx_task.binary, folder_map['addons/sourcemod/extensions'])

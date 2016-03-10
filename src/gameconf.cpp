@@ -23,6 +23,7 @@ static const char *const configs[] = {
 	"sigsegv/NextBotPath",
 	"sigsegv/NextBotPathFollow",
 	"sigsegv/NextBotChasePath",
+	"sigsegv/NextBotManager",
 	"sigsegv/population",
 	"sigsegv/nav",
 	"sigsegv/tfplayer",
@@ -32,6 +33,7 @@ static const char *const configs[] = {
 	"sigsegv/tfbot_behavior",
 	"sigsegv/misc",
 	"sigsegv/debugoverlay",
+	"sigsegv/client",
 	nullptr,
 };
 

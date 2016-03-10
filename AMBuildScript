@@ -187,8 +187,11 @@ class ExtensionConfig(object):
 #      '-Q',
       '-Winvalid-pch',
       '-rdynamic',
-      '-ggdb3',
-#      '-pthread',
+      '-gdwarf-4',
+      '-g2',
+      '-fvar-tracking-assignments',
+      '-gsplit-dwarf',
+#      '-pthread
     ]
     cxx.cxxflags += [
       '-std=c++11',
@@ -200,9 +203,14 @@ class ExtensionConfig(object):
       '-Wno-invalid-offsetof',
     ]
     cxx.linkflags += [
+      '-fuse-ld=gold',
       '-m32',
       '-Wl,--no-undefined',
+      '-Wl,--threads', # crashy
+      '-Wl,--wrap,__assert_fail'
     ]
+#    if builder.options.opt != '1':
+#      cxx.linkflags += ['-Wl,-Ur'] # incremental link
 
     have_gcc = ('gcc' in cxx.version.vendor_name)
     have_clang = ('clang' in cxx.version.vendor_name)

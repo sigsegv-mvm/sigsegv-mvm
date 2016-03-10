@@ -8,22 +8,29 @@
 #include "debugoverlay_shared.h"
 #include "mathlib/mathlib.h"
 
+#include "stub/tfplayer.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #define	MAX_OVERLAY_DIST_SQR	90000000
 
-#if 0
 //-----------------------------------------------------------------------------
 // Purpose: Local player on the server or client
 //-----------------------------------------------------------------------------
 CBasePlayer *GetLocalPlayer( void )
 {
+#if 0
 #if defined( CLIENT_DLL)
 	return C_BasePlayer::GetLocalPlayer();
 #else
 	return UTIL_GetListenServerHost();
 #endif
+#endif
+	
+	/* ugly */
+	static ConVarRef index("sig_debug_listenserverhost_index");
+	return UTIL_PlayerByIndex(index.GetInt());
 }
 
 //-----------------------------------------------------------------------------
@@ -31,14 +38,16 @@ CBasePlayer *GetLocalPlayer( void )
 //-----------------------------------------------------------------------------
 CBasePlayer *GetDebugPlayer( void )
 {
+#if 0
 #if defined( CLIENT_DLL )
 	//NOTENOTE: This doesn't necessarily make sense on the client
 	return GetLocalPlayer();
 #else
 	return UTIL_PlayerByIndex(CBaseEntity::m_nDebugPlayer);
 #endif
-}
 #endif
+	return nullptr;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw a box with no orientation
@@ -48,7 +57,6 @@ void NDebugOverlay::Box(const Vector &origin, const Vector &mins, const Vector &
 	BoxAngles( origin, mins, maxs, vec3_angle, r, g, b, a, flDuration );
 }
 
-#if 0
 //-----------------------------------------------------------------------------
 // Purpose: Draw box oriented to a Vector direction
 //-----------------------------------------------------------------------------
@@ -60,7 +68,6 @@ void NDebugOverlay::BoxDirection(const Vector &origin, const Vector &mins, const
 
 	BoxAngles( origin, mins, maxs, f_angles, r, g, b, a, duration );
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw box oriented to a QAngle direction
@@ -84,7 +91,6 @@ void NDebugOverlay::SweptBox( const Vector& start, const Vector& end, const Vect
 	}
 }
 
-#if 0
 //-----------------------------------------------------------------------------
 // Purpose: Draws a box around an entity
 //-----------------------------------------------------------------------------
@@ -93,14 +99,12 @@ void NDebugOverlay::EntityBounds( const CBaseEntity *pEntity, int r, int g, int 
 	const CCollisionProperty *pCollide = pEntity->CollisionProp();
 	BoxAngles( pCollide->GetCollisionOrigin(), pCollide->OBBMins(), pCollide->OBBMaxs(), pCollide->GetCollisionAngles(), r, g, b, a, flDuration );
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Draws a line from one position to another
 //-----------------------------------------------------------------------------
 void NDebugOverlay::Line( const Vector &origin, const Vector &target, int r, int g, int b, bool noDepthTest, float duration )
 {
-#if 0
 	// --------------------------------------------------------------
 	// Clip the line before sending so we 
 	// don't overflow the client message buffer
@@ -126,7 +130,6 @@ void NDebugOverlay::Line( const Vector &origin, const Vector &target, int r, int
 	
 	if (dotOrigin < 0 && dotTarget < 0) 
 		return;
-#endif
 
 	if ( debugoverlay )
 	{
@@ -140,7 +143,6 @@ void NDebugOverlay::Line( const Vector &origin, const Vector &target, int r, int
 //-----------------------------------------------------------------------------
 void NDebugOverlay::Triangle( const Vector &p1, const Vector &p2, const Vector &p3, int r, int g, int b, int a, bool noDepthTest, float duration )
 {
-#if 0
 	CBasePlayer *player = GetLocalPlayer();
 	if ( !player )
 		return;
@@ -167,7 +169,6 @@ void NDebugOverlay::Triangle( const Vector &p1, const Vector &p2, const Vector &
 
 	if (dot1 < 0 && dot2 < 0 && dot3 < 0) 
 		return;
-#endif
 
 	if ( debugoverlay )
 	{
@@ -182,9 +183,9 @@ void NDebugOverlay::EntityText( int entityID, int text_offset, const char *text,
 {
 	if ( debugoverlay )
 	{
-		debugoverlay->AddEntityTextOverlay( entityID, text_offset, duration, 
-			(int)clamp(r * 255.f,0.f,255.f), (int)clamp(g * 255.f,0.f,255.f), (int)clamp(b * 255.f,0.f,255.f), 
-			(int)clamp(a * 255.f,0.f,255.f), text );
+		// FIX: whoever wrote this thought that rgba were floats
+		// FIX: prevent format string crashes
+		debugoverlay->AddEntityTextOverlay( entityID, text_offset, duration, r, g, b, a, "%s", text );
 	}
 }
 
@@ -195,7 +196,8 @@ void NDebugOverlay::EntityTextAtPosition( const Vector &origin, int text_offset,
 {
 	if ( debugoverlay )
 	{
-		debugoverlay->AddTextOverlayRGB( origin, text_offset, duration, r, g, b, a, text );
+		// FIX: prevent format string crashes
+		debugoverlay->AddTextOverlayRGB( origin, text_offset, duration, r, g, b, a, "%s", text );
 	}
 }
 
@@ -215,7 +217,6 @@ void NDebugOverlay::Grid( const Vector &vPosition )
 //-----------------------------------------------------------------------------
 void NDebugOverlay::Text( const Vector &origin, const char *text, bool bViewCheck, float duration )
 {
-#if 0
 	CBasePlayer *player = GetLocalPlayer();
 	
 	if ( !player )
@@ -235,6 +236,7 @@ void NDebugOverlay::Text( const Vector &origin, const char *text, bool bViewChec
 	if (dotPr < 0) 
 		return;
 
+#if 0
 	// Clip text that is obscured
 	if (bViewCheck)
 	{
@@ -248,7 +250,8 @@ void NDebugOverlay::Text( const Vector &origin, const char *text, bool bViewChec
 
 	if ( debugoverlay )
 	{
-		debugoverlay->AddTextOverlay( origin, duration, text );
+		// FIX: prevent format string crashes
+		debugoverlay->AddTextOverlay( origin, duration, "%s", text );
 	}	
 }
 
@@ -470,7 +473,6 @@ void NDebugOverlay::HorzArrow( const Vector &startPos, const Vector &endPos, flo
 	}
 }
 
-#if 0
 //-----------------------------------------------------------------------------
 // Purpose : Draw a horizontal arrow pointing in the specified direction by yaw value
 //-----------------------------------------------------------------------------
@@ -480,7 +482,6 @@ void NDebugOverlay::YawArrow( const Vector &startPos, float yaw, float length, f
 
 	HorzArrow( startPos, startPos + forward * length, width, r, g, b, a, noDepthTest, flDuration );
 }
-#endif
 
 //--------------------------------------------------------------------------------
 // Purpose : Draw a vertical arrow at a position
@@ -542,7 +543,56 @@ void NDebugOverlay::Axis( const Vector &position, const QAngle &angles, float si
 	Line( position, zvec, 0, 0, 255, noDepthTest, flDuration );
 }
 
-#if 0
+//-----------------------------------------------------------------------------
+// Purpose: Draw circles to suggest a sphere
+//-----------------------------------------------------------------------------
+void NDebugOverlay::Sphere( const Vector &center, float radius, int r, int g, int b, bool noDepthTest, float flDuration )
+{
+	Vector edge, lastEdge;
+
+	float axisSize = radius;
+	Line( center + Vector( 0, 0, -axisSize ), center + Vector( 0, 0, axisSize ), r, g, b, noDepthTest, flDuration );
+	Line( center + Vector( 0, -axisSize, 0 ), center + Vector( 0, axisSize, 0 ), r, g, b, noDepthTest, flDuration );
+	Line( center + Vector( -axisSize, 0, 0 ), center + Vector( axisSize, 0, 0 ), r, g, b, noDepthTest, flDuration );
+
+	lastEdge = Vector( radius + center.x, center.y, center.z );
+	float angle;
+	for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+	{
+		edge.x = radius * cosf( angle / 180.0f * M_PI ) + center.x;
+		edge.y = center.y;
+		edge.z = radius * sinf( angle / 180.0f * M_PI ) + center.z;
+
+		Line( edge, lastEdge, r, g, b, noDepthTest, flDuration );
+
+		lastEdge = edge;
+	}
+
+	lastEdge = Vector( center.x, radius + center.y, center.z );
+	for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+	{
+		edge.x = center.x;
+		edge.y = radius * cosf( angle / 180.0f * M_PI ) + center.y;
+		edge.z = radius * sinf( angle / 180.0f * M_PI ) + center.z;
+
+		Line( edge, lastEdge, r, g, b, noDepthTest, flDuration );
+
+		lastEdge = edge;
+	}
+
+	lastEdge = Vector( center.x, radius + center.y, center.z );
+	for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+	{
+		edge.x = radius * cosf( angle / 180.0f * M_PI ) + center.x;
+		edge.y = radius * sinf( angle / 180.0f * M_PI ) + center.y;
+		edge.z = center.z;
+
+		Line( edge, lastEdge, r, g, b, noDepthTest, flDuration );
+
+		lastEdge = edge;
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Draw a circle whose center is at a position, facing the camera
 //-----------------------------------------------------------------------------
@@ -560,7 +610,6 @@ void NDebugOverlay::Circle( const Vector &position, float radius, int r, int g, 
 	
 	Circle( position, vecAngles, radius, r, g, b, a, bNoDepthTest, flDuration );
 }
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -606,8 +655,11 @@ void NDebugOverlay::Circle( const Vector &position, const Vector &xAxis, const V
 
 		// If we have an alpha value, then draw the fan
 		if ( a && i > 1 )
-		{		
-			debugoverlay->AddTriangleOverlay( vecStart, vecLastPosition, vecPosition, r, g, b, a, bNoDepthTest, flDuration );
+		{
+			// FIX: check for debugoverlay nullptr
+			if (debugoverlay != nullptr) {
+				debugoverlay->AddTriangleOverlay( vecStart, vecLastPosition, vecPosition, r, g, b, a, bNoDepthTest, flDuration );
+			}
 		}
 	}
 }
@@ -625,4 +677,12 @@ void NDebugOverlay::Sphere( const Vector &position, const QAngle &angles, float 
 	Circle( position, xAxis, yAxis, radius, r, g, b, a, bNoDepthTest, flDuration );	// xy plane
 	Circle( position, yAxis, zAxis, radius, r, g, b, a, bNoDepthTest, flDuration );	// yz plane
 	Circle( position, xAxis, zAxis, radius, r, g, b, a, bNoDepthTest, flDuration );	// xz plane
+}
+
+
+void NDebugOverlay::Clear()
+{
+	if (debugoverlay != nullptr) {
+		debugoverlay->ClearAllOverlays();
+	}
 }

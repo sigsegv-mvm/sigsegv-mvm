@@ -1,8 +1,19 @@
 #include "mod.h"
+#include "mod/pop/kv_conditional.h"
 
 
 namespace Mod_Pop_KV_Conditional
 {
+	bool IsSigsegv()
+	{
+		for (auto cond : AutoList<IKVCond>::List()) {
+			if ((*cond)()) return true;
+		}
+		
+		return false;
+	}
+	
+	
 	DETOUR_DECL_STATIC(bool, EvaluateConditional, const char *str)
 	{
 		bool result = DETOUR_STATIC_CALL(EvaluateConditional)(str);
@@ -11,7 +22,7 @@ namespace Mod_Pop_KV_Conditional
 		bool bNot = (*str == '!');
 		
 		if (V_stristr(str, "$SIGSEGV") != nullptr) {
-			return !bNot;
+			return IsSigsegv() ^ bNot;
 		}
 		
 		return result;

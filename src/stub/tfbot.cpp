@@ -98,18 +98,29 @@ template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > Next
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float, float> NextBotPlayer<CTFPlayer>::vt_SetButtonScale(          TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::SetButtonScale");
 
 
+MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, void> CTFBot::SuspectedSpyInfo_t::ft_Suspect             ("CTFBot::SuspectedSpyInfo_t::Suspect");
+MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::ft_IsCurrentlySuspected("CTFBot::SuspectedSpyInfo_t::IsCurrentlySuspected");
+MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::ft_TestForRealizing    ("CTFBot::SuspectedSpyInfo_t::TestForRealizing");
+
+
 IMPL_EXTRACT(CTFBot::MissionType, CTFBot, m_nMission, new CExtract_CTFBot_m_nMission());
 
-MemberFuncThunk<const CTFBot *, ILocomotion *                     > CTFBot::ft_GetLocomotionInterface      ("CTFBot::GetLocomotionInterface");
-MemberFuncThunk<const CTFBot *, IBody *                           > CTFBot::ft_GetBodyInterface            ("CTFBot::GetBodyInterface");
-MemberFuncThunk<const CTFBot *, IVision *                         > CTFBot::ft_GetVisionInterface          ("CTFBot::GetVisionInterface");
-MemberFuncThunk<const CTFBot *, IIntention *                      > CTFBot::ft_GetIntentionInterface       ("CTFBot::GetIntentionInterface");
-MemberFuncThunk<const CTFBot *, float                             > CTFBot::ft_GetDesiredPathLookAheadRange("CTFBot::GetDesiredPathLookAheadRange");
-MemberFuncThunk<      CTFBot *, void, CTFWeaponBase *             > CTFBot::ft_PushRequiredWeapon          ("CTFBot::PushRequiredWeapon");
-MemberFuncThunk<      CTFBot *, void                              > CTFBot::ft_PopRequiredWeapon           ("CTFBot::PopRequiredWeapon");
-MemberFuncThunk<const CTFBot *, bool, const Vector&               > CTFBot::ft_IsLineOfFireClear_vec       ("CTFBot::IsLineOfFireClear_vec");
-MemberFuncThunk<const CTFBot *, bool, CBaseEntity *               > CTFBot::ft_IsLineOfFireClear_ent       ("CTFBot::IsLineOfFireClear_ent");
-MemberFuncThunk<const CTFBot *, bool, const Vector&, const Vector&> CTFBot::ft_IsLineOfFireClear_vec_vec   ("CTFBot::IsLineOfFireClear_vec_vec");
-MemberFuncThunk<const CTFBot *, bool, const Vector&, CBaseEntity *> CTFBot::ft_IsLineOfFireClear_vec_ent   ("CTFBot::IsLineOfFireClear_vec_ent");
+MemberFuncThunk<const CTFBot *, ILocomotion *                            > CTFBot::ft_GetLocomotionInterface      ("CTFBot::GetLocomotionInterface");
+MemberFuncThunk<const CTFBot *, IBody *                                  > CTFBot::ft_GetBodyInterface            ("CTFBot::GetBodyInterface");
+MemberFuncThunk<const CTFBot *, IVision *                                > CTFBot::ft_GetVisionInterface          ("CTFBot::GetVisionInterface");
+MemberFuncThunk<const CTFBot *, IIntention *                             > CTFBot::ft_GetIntentionInterface       ("CTFBot::GetIntentionInterface");
+MemberFuncThunk<const CTFBot *, float                                    > CTFBot::ft_GetDesiredPathLookAheadRange("CTFBot::GetDesiredPathLookAheadRange");
+MemberFuncThunk<      CTFBot *, void, CTFWeaponBase *                    > CTFBot::ft_PushRequiredWeapon          ("CTFBot::PushRequiredWeapon");
+MemberFuncThunk<      CTFBot *, void                                     > CTFBot::ft_PopRequiredWeapon           ("CTFBot::PopRequiredWeapon");
+MemberFuncThunk<const CTFBot *, bool, const Vector&                      > CTFBot::ft_IsLineOfFireClear_vec       ("CTFBot::IsLineOfFireClear_vec");
+MemberFuncThunk<const CTFBot *, bool, CBaseEntity *                      > CTFBot::ft_IsLineOfFireClear_ent       ("CTFBot::IsLineOfFireClear_ent");
+MemberFuncThunk<const CTFBot *, bool, const Vector&, const Vector&       > CTFBot::ft_IsLineOfFireClear_vec_vec   ("CTFBot::IsLineOfFireClear_vec_vec");
+MemberFuncThunk<const CTFBot *, bool, const Vector&, CBaseEntity *       > CTFBot::ft_IsLineOfFireClear_vec_ent   ("CTFBot::IsLineOfFireClear_vec_ent");
+MemberFuncThunk<      CTFBot *, CTFBot::SuspectedSpyInfo_t *, CTFPlayer *> CTFBot::ft_IsSuspectedSpy              ("CTFBot::IsSuspectedSpy");
+MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_SuspectSpy                  ("CTFBot::SuspectSpy");
+MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_StopSuspectingSpy           ("CTFBot::StopSuspectingSpy");
+MemberFuncThunk<const CTFBot *, bool, CTFPlayer *                        > CTFBot::ft_IsKnownSpy                  ("CTFBot::IsKnownSpy");
+MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_RealizeSpy                  ("CTFBot::RealizeSpy");
+MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_ForgetSpy                   ("CTFBot::ForgetSpy");
 
 std::map<CHandle<CTFBot>, CTFBot::ExtendedAttr> CTFBot::s_ExtAttrs;

@@ -1,7 +1,6 @@
 #include "extension.h"
 #include "library.h"
 #include "link/link.h"
-#include "sm/detours.h"
 #include "mod.h"
 #include "addr/addr.h"
 #include "addr/prescan.h"
@@ -22,16 +21,32 @@ ISpatialPartition *partition;
 IEngineTrace *enginetrace;
 IStaticPropMgrServer *staticpropmgr;
 IGameEventManager2 *gameeventmanager;
-//IVDebugOverlay *debugoverlay;
+IVDebugOverlay *debugoverlay;
 
 CGlobalVars *gpGlobals;
 CBaseEntityList *g_pEntityList;
 
+IExtensionManager *smexts;
+
 //ISDKTools *g_pSDKTools;
+
+
+#if 0
+CON_COMMAND_F(sig_unload, "Unload this extension", FCVAR_NONE)
+{
+	if (smexts != nullptr) {
+		smexts->UnloadExtension(myself);
+	}
+}
+#endif
 
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
+	SM_FIND_IFACE_OR_FAIL(EXTENSIONMANAGER, smexts, error, maxlen);
+	
+	this->EnableColorSpew();
+	
 //	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 //	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
 	
@@ -50,7 +65,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	if (!Link::InitAll()) goto fail;
 	
-	CDetourManager::Init(g_pSM->GetScriptingEngine());
+//	CDetourManager::Init(g_pSM->GetScriptingEngine());
 	
 	Prop::PreloadAll();
 	
@@ -70,6 +85,8 @@ void CExtSigsegv::SDK_OnUnload()
 	LibMgr::Unload();
 	
 	g_GCHook.UnloadAll();
+	
+	this->DisableColorSpew();
 }
 
 void CExtSigsegv::SDK_OnAllLoaded()
@@ -84,24 +101,25 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 }
 
 
+ConVar cvar_build("sig_build", __DATE__ " " __TIME__, FCVAR_NONE);
 bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	DevMsg("CExtSigsegv: compiled @ " __DATE__ " " __TIME__ "\n");
 	
-	GET_V_IFACE_ANY(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
-	GET_V_IFACE_ANY(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
+	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
+	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;
 	ConVar_Register(0, this);
 	
-	GET_V_IFACE_ANY(GetEngineFactory, partition, ISpatialPartition, INTERFACEVERSION_SPATIALPARTITION);
-	GET_V_IFACE_ANY(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
-	GET_V_IFACE_ANY(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
-	GET_V_IFACE_ANY(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	GET_V_IFACE_CURRENT(GetEngineFactory, partition, ISpatialPartition, INTERFACEVERSION_SPATIALPARTITION);
+	GET_V_IFACE_CURRENT(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
+	GET_V_IFACE_CURRENT(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
+	GET_V_IFACE_CURRENT(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	
-	//GET_V_IFACE_ANY(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
-	//debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
+	//GET_V_IFACE_CURRENT(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
+	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
 	
 	if (GetClientFactory() != nullptr) {
 		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
@@ -128,3 +146,45 @@ bool CExtSigsegv::RegisterConCommandBase(ConCommandBase *pCommand)
 	META_REGCVAR(pCommand);
 	return true;
 }
+
+
+void CExtSigsegv::EnableColorSpew()
+{
+#if defined POSIX
+	if (engine->IsDedicatedServer()) {
+		this->m_pSpewOutputBackup = GetSpewOutputFunc();
+		SpewOutputFunc(&ANSIColorSpew);
+	}
+#endif
+}
+
+void CExtSigsegv::DisableColorSpew()
+{
+#if defined POSIX
+	if (engine->IsDedicatedServer()) {
+		SpewOutputFunc(this->m_pSpewOutputBackup);
+	}
+#endif
+}
+
+
+#if defined POSIX
+SpewRetval_t ANSIColorSpew(SpewType_t type, const char *pMsg)
+{
+	Color color = GetSpewOutputColor();
+	
+	printf("\e[38;2;%d;%d;%dm%s\e[0m", color.r(), color.g(), color.b(), pMsg);
+	
+	if (type == SPEW_ASSERT) {
+		if (getenv("RAISE_ON_ASSERT") == nullptr) {
+			return SPEW_DEBUGGER;
+		} else {
+			return SPEW_CONTINUE;
+		}
+	} else if (type == SPEW_ERROR) {
+		return SPEW_ABORT;
+	} else {
+		return SPEW_CONTINUE;
+	}
+}
+#endif

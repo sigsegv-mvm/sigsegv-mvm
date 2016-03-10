@@ -9,7 +9,7 @@
 
 #include "stub/tfplayer.h"
 #include "stub/nav.h"
-#include "util/util.h"
+#include "util/misc.h"
 
 
 class CTFBot;
@@ -38,6 +38,7 @@ template<class T> class Action;
 #include "../mvm-reversed/server/NextBot/NextBotBehavior.h"
 // TODO: NextBot/Player/PlayerBody.h
 // TODO: NextBot/Player/PlayerLocomotion.h
+#include "../mvm-reversed/server/NextBot/NextBotManager.h"
 
 
 SIZE_CHECK(CKnownEntity,               0x30); // 0x2d
@@ -53,9 +54,13 @@ SIZE_CHECK(Behavior<CTFBot>,           0x50);
 SIZE_CHECK(Action<CTFBot>,             0x34); // 0x32
 SIZE_CHECK(ActionResult<CTFBot>,       0x0c);
 SIZE_CHECK(EventDesiredResult<CTFBot>, 0x10);
+SIZE_CHECK(NextBotManager,             0x50);
 
 
-/* from NextBotBehavior.cpp */
+/* NextBotKnownEntity.cpp */
+inline CKnownEntity::~CKnownEntity() {}
+
+/* NextBotBehavior.cpp */
 template<class T> inline Action<T>::Action() :
 	m_ActionParent(nullptr), m_ActionChild(nullptr),
 	m_ActionWeSuspended(nullptr), m_ActionSuspendedUs(nullptr),
@@ -67,6 +72,43 @@ template<class T> inline Action<T>::Action() :
 	
 	memset((void *)&this->m_Result, 0x00, 0x10);
 }
+template<class T> inline Behavior<T> *Action<T>::GetBehavior() const { return this->m_Behavior; }
+template<class T> inline T *Action<T>::GetActor() const              { return this->m_Actor; }
+
+
+/* wrapper for Action<CTFBot> which can be rapidly stopped at mod unload time */
+template<class T>
+class IHotplugAction : public Action<CTFBot>, public AutoList<IHotplugAction<T>>
+{
+public:
+	void Unload()
+	{
+		/* this code is mostly the same as the DONE case of ApplyResult, but we
+		 * don't put ourselves on the behavior's deferred deletion list */
+		
+		auto actor    = this->GetActor();
+		auto behavior = this->GetBehavior();
+		
+		this->InvokeOnEnd(actor, behavior, this->m_ActionWeSuspended);
+		
+		if (this->m_ActionWeSuspended != nullptr) {
+			ActionResult<CTFBot> result = this->m_ActionWeSuspended->InvokeOnResume(actor, behavior, this);
+			this->m_ActionWeSuspended->ApplyResult(actor, behavior, result);
+		}
+	}
+	
+	static void UnloadAll()
+	{
+		for (auto action : AutoList<IHotplugAction<T>>::List()) {
+			action->Unload();
+		}
+		
+		while (!AutoList<IHotplugAction<T>>::List().empty()) {
+			auto action = AutoList<IHotplugAction<T>>::List().front();
+			delete action;
+		}
+	}
+};
 
 
 #endif

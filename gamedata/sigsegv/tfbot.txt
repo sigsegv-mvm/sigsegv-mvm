@@ -84,6 +84,11 @@
 					type "sym"
 					sym  "_ZN6CTFBot17PopRequiredWeaponEv"
 				}
+				"CTFBot::EquipRequiredWeapon"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot19EquipRequiredWeaponEv"
+				}
 				
 				"CTFBot::ShouldFireCompressionBlast"
 				{
@@ -118,6 +123,72 @@
 				{
 					type "sym"
 					sym  "_ZNK6CTFBot17IsLineOfFireClearERK6VectorP11CBaseEntity"
+				}
+				
+				"CTFBot::ChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot10ChangeTeamEibb"
+				}
+				
+				"CTFBot::IsSuspectedSpy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot14IsSuspectedSpyEP9CTFPlayer"
+				}
+				"CTFBot::SuspectSpy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot10SuspectSpyEP9CTFPlayer"
+				}
+				"CTFBot::StopSuspectingSpy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot17StopSuspectingSpyEP9CTFPlayer"
+				}
+				
+				"CTFBot::IsKnownSpy"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot10IsKnownSpyEP9CTFPlayer"
+				}
+				"CTFBot::RealizeSpy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot10RealizeSpyEP9CTFPlayer"
+				}
+				"CTFBot::ForgetSpy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot9ForgetSpyEP9CTFPlayer"
+				}
+				
+				"CTFBot::CTFBotIntention::Update"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot15CTFBotIntention6UpdateEv"
+				}
+				
+				"CTFBot::SuspectedSpyInfo_t::Suspect"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot18SuspectedSpyInfo_t7SuspectEv"
+				}
+				"CTFBot::SuspectedSpyInfo_t::IsCurrentlySuspected"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot18SuspectedSpyInfo_t20IsCurrentlySuspectedEv"
+				}
+				"CTFBot::SuspectedSpyInfo_t::TestForRealizing"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot18SuspectedSpyInfo_t16TestForRealizingEv"
+				}
+				
+				"CTFBot::DelayedThreatNotice"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot19DelayedThreatNoticeE7CHandleI11CBaseEntityEf"
 				}
 				
 				"CTFBotPathCost::operator()"

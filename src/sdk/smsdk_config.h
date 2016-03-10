@@ -40,7 +40,7 @@
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"sigsegv MvM"
 #define SMEXT_CONF_DESCRIPTION	"sigsegv's Mann vs Machine mods"
-#define SMEXT_CONF_VERSION		"2016.02.08"
+#define SMEXT_CONF_VERSION		"2016.03.03"
 #define SMEXT_CONF_AUTHOR		"sigsegv"
 #define SMEXT_CONF_URL			"http://sigpipe.info/"
 #define SMEXT_CONF_LOGTAG		"SIGSEGV"

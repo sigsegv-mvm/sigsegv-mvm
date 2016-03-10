@@ -294,6 +294,44 @@ private:
 
 
 #if 0
+/* address finder for functions with these traits:
+ * 1. func body starts with "push ebp; mov ebp,esp"
+ * 2. func body contains a unique reference to a particular convar
+ */
+class IAddr_Func_EBPPrologue_UniqueConVar : public IAddr_Sym
+{
+public:
+	enum class DataType : int
+	{
+		INT,
+		FLOAT,
+		STRING,
+	};
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetConVarName() const = 0;
+	virtual DataType GetConVarType() const = 0;
+};
+
+class CAddr_Func_EBPPrologue_UniqueConVar : public IAddr_Func_EBPPrologue_UniqueConVar
+{
+public:
+	CAddr_Func_EBPPrologue_UniqueConVar(const std::string& name, DataType type) :
+		m_strName(name), m_iType(type) {}
+	
+	virtual const char *GetConVarName() const override { return this->m_strName.c_str(); }
+	virtual DataType GetConVarType() const override    { return this->m_iType; }
+	
+private:
+	std::string m_strName;
+	DataType m_iType;
+};
+#endif
+
+
+#if 0
 class IAddr_Func_EBPPrologue_UniqueCall : public IAddr_Sym
 {
 public:

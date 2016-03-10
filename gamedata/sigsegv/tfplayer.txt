@@ -19,6 +19,11 @@
 					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
 					unistr "mult_aiming_knockback_resistance"
 				}
+				"CTFPlayer::ApplyPushFromDamage"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19ApplyPushFromDamageERK15CTakeDamageInfo6Vector"
+				}
 				"CTFPlayer::IsMiniBoss"
 				{
 					type "sym"
@@ -68,6 +73,34 @@
 					sym    "_ZN9CTFPlayer10FireBulletEP13CTFWeaponBaseRK17FireBulletsInfo_tbii"
 					unistr "penetration_damage_penalty"
 				}
+				"CTFPlayer::ForceChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15ForceChangeTeamEib"
+				}
+				"CTFPlayer::ForceRespawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12ForceRespawnEv"
+				}
+				
+				"CTFPlayer::SpeakConceptIfAllowed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
+				}
+				
+				"CTFPlayer::StartBuildingObjectOfType"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25StartBuildingObjectOfTypeEii"
+				}
+				
+				"CTFPlayer::GetLoadoutItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14GetLoadoutItemEiib"
+				}
 				
 				"CTFPlayerShared::AddCond"
 				{
@@ -83,6 +116,17 @@
 				{
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared6InCondE7ETFCond"
+				}
+				
+				"GetTFConditionName"
+				{
+					type "sym"
+					sym  "_Z18GetTFConditionName7ETFCond"
+				}
+				"GetTFConditionFromName"
+				{
+					type "sym"
+					sym  "_Z22GetTFConditionFromNamePKc"
 				}
 			}
 		}

@@ -1,6 +1,4 @@
 #include "link/link.h"
-#include "util/util.h"
-#include "stub/stub.h"
 #include "re/nextbot.h"
 #include "re/path.h"
 
@@ -8,6 +6,28 @@
 #define INER INextBotEventResponder
 #define AR   ActionResult<CTFBot>
 #define EDR  EventDesiredResult<CTFBot>
+
+
+/* CKnownEntity */
+static MemberFuncThunk<      CKnownEntity *, void>                      ft_CKnownEntity_Destroy(                     "CKnownEntity::Destroy");
+static MemberFuncThunk<      CKnownEntity *, void>                      ft_CKnownEntity_UpdatePosition(              "CKnownEntity::UpdatePosition");
+static MemberFuncThunk<const CKnownEntity *, CBaseEntity *>             ft_CKnownEntity_GetEntity(                   "CKnownEntity::GetEntity");
+static MemberFuncThunk<const CKnownEntity *, const Vector *>            ft_CKnownEntity_GetLastKnownPosition(        "CKnownEntity::GetLastKnownPosition");
+static MemberFuncThunk<const CKnownEntity *, bool>                      ft_CKnownEntity_HasLastKnownPositionBeenSeen("CKnownEntity::HasLastKnownPositionBeenSeen");
+static MemberFuncThunk<      CKnownEntity *, void>                      ft_CKnownEntity_MarkLastKnownPositionAsSeen( "CKnownEntity::MarkLastKnownPositionAsSeen");
+static MemberFuncThunk<const CKnownEntity *, CNavArea *>                ft_CKnownEntity_GetLastKnownArea(            "CKnownEntity::GetLastKnownArea");
+static MemberFuncThunk<const CKnownEntity *, float>                     ft_CKnownEntity_GetTimeSinceLastKnown(       "CKnownEntity::GetTimeSinceLastKnown");
+static MemberFuncThunk<const CKnownEntity *, float>                     ft_CKnownEntity_GetTimeSinceBecameKnown(     "CKnownEntity::GetTimeSinceBecameKnown");
+static MemberFuncThunk<      CKnownEntity *, void, bool>                ft_CKnownEntity_UpdateVisibilityStatus(      "CKnownEntity::UpdateVisibilityStatus");
+static MemberFuncThunk<const CKnownEntity *, bool>                      ft_CKnownEntity_IsVisibleInFOVNow(           "CKnownEntity::IsVisibleInFOVNow");
+static MemberFuncThunk<const CKnownEntity *, bool>                      ft_CKnownEntity_IsVisibleRecently(           "CKnownEntity::IsVisibleRecently");
+static MemberFuncThunk<const CKnownEntity *, float>                     ft_CKnownEntity_GetTimeSinceBecameVisible(   "CKnownEntity::GetTimeSinceBecameVisible");
+static MemberFuncThunk<const CKnownEntity *, float>                     ft_CKnownEntity_GetTimeWhenBecameVisible(    "CKnownEntity::GetTimeWhenBecameVisible");
+static MemberFuncThunk<const CKnownEntity *, float>                     ft_CKnownEntity_GetTimeSinceLastSeen(        "CKnownEntity::GetTimeSinceLastSeen");
+static MemberFuncThunk<const CKnownEntity *, bool>                      ft_CKnownEntity_WasEverVisible(              "CKnownEntity::WasEverVisible");
+static MemberFuncThunk<const CKnownEntity *, bool>                      ft_CKnownEntity_IsObsolete(                  "CKnownEntity::IsObsolete");
+static MemberFuncThunk<const CKnownEntity *, bool, const CKnownEntity&> ft_CKnownEntity_op_equal(                    "CKnownEntity::operator==");
+static MemberFuncThunk<const CKnownEntity *, bool, CBaseEntity *>       ft_CKnownEntity_Is(                          "CKnownEntity::Is");
 
 /* INextBotEventResponder */
 static MemberFuncThunk<const INER *, INER *>                                                    ft_INextBotEventResponder_FirstContainedResponder(       "INextBotEventResponder::FirstContainedResponder");
@@ -63,7 +83,8 @@ static MemberFuncThunk<const IContextualQuery *, QueryResponse,        const INe
 static MemberFuncThunk<const IContextualQuery *, const CKnownEntity *, const INextBot *, const CBaseCombatCharacter *, const CKnownEntity *, const CKnownEntity *> ft_IContextualQuery_SelectMoreDangerousThreat("IContextualQuery::SelectMoreDangerousThreat");
 
 /* Path */
-static MemberFuncThunk<Path *, bool, INextBot *, const Vector&, CTFBotPathCost&, float, bool> ft_Path_Compute_vec_CTFBotPathCost("Path::Compute_vec<CTFBotPathCost>");
+static MemberFuncThunk<const Path *, bool>                                                          ft_Path_IsValid                   ("Path::IsValid");
+static MemberFuncThunk<      Path *, bool, INextBot *, const Vector&, CTFBotPathCost&, float, bool> ft_Path_Compute_vec_CTFBotPathCost("Path::Compute_vec<CTFBotPathCost>");
 
 /* PathFollower */
 static MemberFuncThunk<PathFollower *, void, INextBot *> ft_PathFollower_Update                 ("PathFollower::Update");
@@ -113,56 +134,81 @@ static MemberFuncThunk<      Action<CTFBot> *, void>                            
 static MemberFuncThunk<      Action<CTFBot> *, void>                                                                                 ft_Action_INER_OnLose(                        "Action<CTFBot>::OnLose"                         " [INER]");
 static MemberFuncThunk<const Action<CTFBot> *, bool,             const char *>                                                       ft_Action_IsNamed(                            "Action<CTFBot>::IsNamed");
 static MemberFuncThunk<const Action<CTFBot> *, char *>                                                                               ft_Action_GetFullName(                        "Action<CTFBot>::GetFullName");
-static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                    ft_Action_OnStart(                            "Action<CTFBot>::OnStart");
-static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, float>                                               ft_Action_Update(                             "Action<CTFBot>::Update");
-static MemberFuncThunk<      Action<CTFBot> *, void,             CTFBot *, Action<CTFBot> *>                                    ft_Action_OnEnd(                              "Action<CTFBot>::OnEnd");
-static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                    ft_Action_OnSuspend(                          "Action<CTFBot>::OnSuspend");
-static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                    ft_Action_OnResume(                           "Action<CTFBot>::OnResume");
-static MemberFuncThunk<      Action<CTFBot> *, Action<CTFBot> *, CTFBot *>                                                      ft_Action_InitialContainedAction(             "Action<CTFBot>::InitialContainedAction");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnLeaveGround(                      "Action<CTFBot>::OnLeaveGround");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnLandOnGround(                     "Action<CTFBot>::OnLandOnGround");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, CGameTrace *>                         ft_Action_OnContact(                          "Action<CTFBot>::OnContact");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Path *>                                        ft_Action_OnMoveToSuccess(                    "Action<CTFBot>::OnMoveToSuccess");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Path *, INER::MoveToFailureType>               ft_Action_OnMoveToFailure(                    "Action<CTFBot>::OnMoveToFailure");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnStuck(                            "Action<CTFBot>::OnStuck");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnUnStuck(                          "Action<CTFBot>::OnUnStuck");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnPostureChanged(                   "Action<CTFBot>::OnPostureChanged");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                 ft_Action_OnAnimationActivityComplete(        "Action<CTFBot>::OnAnimationActivityComplete");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                 ft_Action_OnAnimationActivityInterrupted(     "Action<CTFBot>::OnAnimationActivityInterrupted");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, animevent_t *>                                       ft_Action_OnAnimationEvent(                   "Action<CTFBot>::OnAnimationEvent");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnIgnite(                           "Action<CTFBot>::OnIgnite");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const CTakeDamageInfo&>                              ft_Action_OnInjured(                          "Action<CTFBot>::OnInjured");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const CTakeDamageInfo&>                              ft_Action_OnKilled(                           "Action<CTFBot>::OnKilled");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, const CTakeDamageInfo&>      ft_Action_OnOtherKilled(                      "Action<CTFBot>::OnOtherKilled");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnSight(                            "Action<CTFBot>::OnSight");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnLostSight(                        "Action<CTFBot>::OnLostSight");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, const Vector&, KeyValues *>           ft_Action_OnSound(                            "Action<CTFBot>::OnSound");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, const char *, AI_Response *> ft_Action_OnSpokeConcept(                     "Action<CTFBot>::OnSpokeConcept");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, CBaseCombatWeapon *>         ft_Action_OnWeaponFired(                      "Action<CTFBot>::OnWeaponFired");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CNavArea *, CNavArea *>                              ft_Action_OnNavAreaChanged(                   "Action<CTFBot>::OnNavAreaChanged");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnModelChanged(                     "Action<CTFBot>::OnModelChanged");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, CBaseCombatCharacter *>               ft_Action_OnPickUp(                           "Action<CTFBot>::OnPickUp");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnDrop(                             "Action<CTFBot>::OnDrop");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, int>                         ft_Action_OnActorEmoted(                      "Action<CTFBot>::OnActorEmoted");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnCommandAttack(                    "Action<CTFBot>::OnCommandAttack");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Vector&, float>                                ft_Action_OnCommandApproach_vec(              "Action<CTFBot>::OnCommandApproach(vec)");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnCommandApproach_ent(              "Action<CTFBot>::OnCommandApproach(ent)");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, float>                                ft_Action_OnCommandRetreat(                   "Action<CTFBot>::OnCommandRetreat");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, float>                                               ft_Action_OnCommandPause(                     "Action<CTFBot>::OnCommandPause");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnCommandResume(                    "Action<CTFBot>::OnCommandResume");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const char *>                                        ft_Action_OnCommandString(                    "Action<CTFBot>::OnCommandString");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnShoved(                           "Action<CTFBot>::OnShoved");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                       ft_Action_OnBlinded(                          "Action<CTFBot>::OnBlinded");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                 ft_Action_OnTerritoryContested(               "Action<CTFBot>::OnTerritoryContested");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                 ft_Action_OnTerritoryCaptured(                "Action<CTFBot>::OnTerritoryCaptured");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                 ft_Action_OnTerritoryLost(                    "Action<CTFBot>::OnTerritoryLost");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnWin(                              "Action<CTFBot>::OnWin");
-static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                      ft_Action_OnLose(                             "Action<CTFBot>::OnLose");
+static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                         ft_Action_OnStart(                            "Action<CTFBot>::OnStart");
+static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, float>                                                    ft_Action_Update(                             "Action<CTFBot>::Update");
+static MemberFuncThunk<      Action<CTFBot> *, void,             CTFBot *, Action<CTFBot> *>                                         ft_Action_OnEnd(                              "Action<CTFBot>::OnEnd");
+static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                         ft_Action_OnSuspend(                          "Action<CTFBot>::OnSuspend");
+static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Action<CTFBot> *>                                         ft_Action_OnResume(                           "Action<CTFBot>::OnResume");
+static MemberFuncThunk<      Action<CTFBot> *, Action<CTFBot> *, CTFBot *>                                                           ft_Action_InitialContainedAction(             "Action<CTFBot>::InitialContainedAction");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnLeaveGround(                      "Action<CTFBot>::OnLeaveGround");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnLandOnGround(                     "Action<CTFBot>::OnLandOnGround");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, CGameTrace *>                              ft_Action_OnContact(                          "Action<CTFBot>::OnContact");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Path *>                                             ft_Action_OnMoveToSuccess(                    "Action<CTFBot>::OnMoveToSuccess");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Path *, INER::MoveToFailureType>                    ft_Action_OnMoveToFailure(                    "Action<CTFBot>::OnMoveToFailure");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnStuck(                            "Action<CTFBot>::OnStuck");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnUnStuck(                          "Action<CTFBot>::OnUnStuck");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnPostureChanged(                   "Action<CTFBot>::OnPostureChanged");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                      ft_Action_OnAnimationActivityComplete(        "Action<CTFBot>::OnAnimationActivityComplete");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                      ft_Action_OnAnimationActivityInterrupted(     "Action<CTFBot>::OnAnimationActivityInterrupted");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, animevent_t *>                                            ft_Action_OnAnimationEvent(                   "Action<CTFBot>::OnAnimationEvent");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnIgnite(                           "Action<CTFBot>::OnIgnite");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const CTakeDamageInfo&>                                   ft_Action_OnInjured(                          "Action<CTFBot>::OnInjured");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const CTakeDamageInfo&>                                   ft_Action_OnKilled(                           "Action<CTFBot>::OnKilled");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, const CTakeDamageInfo&>           ft_Action_OnOtherKilled(                      "Action<CTFBot>::OnOtherKilled");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnSight(                            "Action<CTFBot>::OnSight");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnLostSight(                        "Action<CTFBot>::OnLostSight");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, const Vector&, KeyValues *>                ft_Action_OnSound(                            "Action<CTFBot>::OnSound");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, const char *, AI_Response *>      ft_Action_OnSpokeConcept(                     "Action<CTFBot>::OnSpokeConcept");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, CBaseCombatWeapon *>              ft_Action_OnWeaponFired(                      "Action<CTFBot>::OnWeaponFired");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CNavArea *, CNavArea *>                                   ft_Action_OnNavAreaChanged(                   "Action<CTFBot>::OnNavAreaChanged");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnModelChanged(                     "Action<CTFBot>::OnModelChanged");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, CBaseCombatCharacter *>                    ft_Action_OnPickUp(                           "Action<CTFBot>::OnPickUp");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnDrop(                             "Action<CTFBot>::OnDrop");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseCombatCharacter *, int>                              ft_Action_OnActorEmoted(                      "Action<CTFBot>::OnActorEmoted");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnCommandAttack(                    "Action<CTFBot>::OnCommandAttack");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const Vector&, float>                                     ft_Action_OnCommandApproach_vec(              "Action<CTFBot>::OnCommandApproach(vec)");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnCommandApproach_ent(              "Action<CTFBot>::OnCommandApproach(ent)");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *, float>                                     ft_Action_OnCommandRetreat(                   "Action<CTFBot>::OnCommandRetreat");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, float>                                                    ft_Action_OnCommandPause(                     "Action<CTFBot>::OnCommandPause");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnCommandResume(                    "Action<CTFBot>::OnCommandResume");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, const char *>                                             ft_Action_OnCommandString(                    "Action<CTFBot>::OnCommandString");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnShoved(                           "Action<CTFBot>::OnShoved");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, CBaseEntity *>                                            ft_Action_OnBlinded(                          "Action<CTFBot>::OnBlinded");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                      ft_Action_OnTerritoryContested(               "Action<CTFBot>::OnTerritoryContested");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                      ft_Action_OnTerritoryCaptured(                "Action<CTFBot>::OnTerritoryCaptured");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *, int>                                                      ft_Action_OnTerritoryLost(                    "Action<CTFBot>::OnTerritoryLost");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnWin(                              "Action<CTFBot>::OnWin");
+static MemberFuncThunk<      Action<CTFBot> *, EDR,              CTFBot *>                                                           ft_Action_OnLose(                             "Action<CTFBot>::OnLose");
 static MemberFuncThunk<const Action<CTFBot> *, bool,             const INextBot *>                                                   ft_Action_IsAbleToBlockMovementOf(            "Action<CTFBot>::IsAbleToBlockMovementOf");
+static MemberFuncThunk<      Action<CTFBot> *, Action<CTFBot> *, CTFBot *, Behavior<CTFBot> *, AR>                                   ft_Action_ApplyResult(                        "Action<CTFBot>::ApplyResult");
+static MemberFuncThunk<      Action<CTFBot> *, void,             CTFBot *, Behavior<CTFBot> *, Action<CTFBot> *>                     ft_Action_InvokeOnEnd(                        "Action<CTFBot>::InvokeOnEnd");
+static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Behavior<CTFBot> *, Action<CTFBot> *>                     ft_Action_InvokeOnResume(                     "Action<CTFBot>::InvokeOnResume");
 
 /* CTFBotPathCost */
 static MemberFuncThunk<const CTFBotPathCost *, float, CNavArea *, CNavArea *, const CNavLadder *, const CFuncElevator *, float> ft_CTFBotPathCost_op_func("CTFBotPathCost::operator()");
 
+static StaticFuncThunk<NextBotManager *> ft_TheNextBots("TheNextBots");
+
+
+void CKnownEntity::Destroy()                                  {        ft_CKnownEntity_Destroy                     (this);          }
+void CKnownEntity::UpdatePosition()                           {        ft_CKnownEntity_UpdatePosition              (this);          }
+CBaseEntity *CKnownEntity::GetEntity() const                  { return ft_CKnownEntity_GetEntity                   (this);          }
+const Vector *CKnownEntity::GetLastKnownPosition() const      { return ft_CKnownEntity_GetLastKnownPosition        (this);          }
+bool CKnownEntity::HasLastKnownPositionBeenSeen() const       { return ft_CKnownEntity_HasLastKnownPositionBeenSeen(this);          }
+void CKnownEntity::MarkLastKnownPositionAsSeen()              {        ft_CKnownEntity_MarkLastKnownPositionAsSeen (this);          }
+CNavArea *CKnownEntity::GetLastKnownArea() const              { return ft_CKnownEntity_GetLastKnownArea            (this);          }
+float CKnownEntity::GetTimeSinceLastKnown() const             { return ft_CKnownEntity_GetTimeSinceLastKnown       (this);          }
+float CKnownEntity::GetTimeSinceBecameKnown() const           { return ft_CKnownEntity_GetTimeSinceBecameKnown     (this);          }
+void CKnownEntity::UpdateVisibilityStatus(bool visible)       {        ft_CKnownEntity_UpdateVisibilityStatus      (this, visible); }
+bool CKnownEntity::IsVisibleInFOVNow() const                  { return ft_CKnownEntity_IsVisibleInFOVNow           (this);          }
+bool CKnownEntity::IsVisibleRecently() const                  { return ft_CKnownEntity_IsVisibleRecently           (this);          }
+float CKnownEntity::GetTimeSinceBecameVisible() const         { return ft_CKnownEntity_GetTimeSinceBecameVisible   (this);          }
+float CKnownEntity::GetTimeWhenBecameVisible() const          { return ft_CKnownEntity_GetTimeWhenBecameVisible    (this);          }
+float CKnownEntity::GetTimeSinceLastSeen() const              { return ft_CKnownEntity_GetTimeSinceLastSeen        (this);          }
+bool CKnownEntity::WasEverVisible() const                     { return ft_CKnownEntity_WasEverVisible              (this);          }
+bool CKnownEntity::IsObsolete() const                         { return ft_CKnownEntity_IsObsolete                  (this);          }
+bool CKnownEntity::operator==(const CKnownEntity& that) const { return ft_CKnownEntity_op_equal                    (this, that);    }
+bool CKnownEntity::Is(CBaseEntity *ent) const                 { return ft_CKnownEntity_Is                          (this, ent);     }
 
 INextBotEventResponder *INextBotEventResponder::FirstContainedResponder() const                               { return ft_INextBotEventResponder_FirstContainedResponder       (this);                    }
 INextBotEventResponder *INextBotEventResponder::NextContainedResponder(INextBotEventResponder *prev) const    { return ft_INextBotEventResponder_NextContainedResponder        (this, prev);              }
@@ -215,10 +261,11 @@ Vector IContextualQuery::SelectTargetPoint(const INextBot *nextbot, const CBaseC
 QueryResponse IContextualQuery::IsPositionAllowed(const INextBot *nextbot, const Vector& v1) const                                                                                         { return ft_IContextualQuery_IsPositionAllowed        (this, nextbot, v1);                     }
 const CKnownEntity *IContextualQuery::SelectMoreDangerousThreat(const INextBot *nextbot, const CBaseCombatCharacter *them, const CKnownEntity *threat1, const CKnownEntity *threat2) const { return ft_IContextualQuery_SelectMoreDangerousThreat(this, nextbot, them, threat1, threat2); }
 
+bool Path::IsValid() const                                                                                                                   { return ft_Path_IsValid                   (this); }
 template<> bool Path::Compute<CTFBotPathCost>(INextBot *nextbot, const Vector& vec, CTFBotPathCost& cost_func, float maxPathLength, bool b1) { return ft_Path_Compute_vec_CTFBotPathCost(this, nextbot, vec, cost_func, maxPathLength, b1); }
 
-void PathFollower::Update(INextBot *nextbot)         { ft_PathFollower_Update                 (this, nextbot); }
-void PathFollower::SetMinLookAheadDistance(float f1) { ft_PathFollower_SetMinLookAheadDistance(this, f1); }
+void PathFollower::Update(INextBot *nextbot)           { ft_PathFollower_Update                 (this, nextbot); }
+void PathFollower::SetMinLookAheadDistance(float dist) { ft_PathFollower_SetMinLookAheadDistance(this, dist); }
 
 template<> INextBotEventResponder *Action<CTFBot>::FirstContainedResponder() const                                                                    { return ft_Action_INER_FirstContainedResponder       (this);                           }
 template<> INextBotEventResponder *Action<CTFBot>::NextContainedResponder(INextBotEventResponder *prev) const                                         { return ft_Action_INER_NextContainedResponder        (this, prev);                     }
@@ -309,5 +356,10 @@ template<> EventDesiredResult<CTFBot> Action<CTFBot>::OnTerritoryLost(CTFBot *ac
 template<> EventDesiredResult<CTFBot> Action<CTFBot>::OnWin(CTFBot *actor)                                                                            { return ft_Action_OnWin                              (this, actor);                    }
 template<> EventDesiredResult<CTFBot> Action<CTFBot>::OnLose(CTFBot *actor)                                                                           { return ft_Action_OnLose                             (this, actor);                    }
 template<> bool Action<CTFBot>::IsAbleToBlockMovementOf(const INextBot *nextbot) const                                                                { return ft_Action_IsAbleToBlockMovementOf            (this, nextbot);                  }
+template<> Action<CTFBot> *Action<CTFBot>::ApplyResult(CTFBot *actor, Behavior<CTFBot> *behavior, ActionResult<CTFBot> result)                        { return ft_Action_ApplyResult                        (this, actor, behavior, result);  }
+template<> void Action<CTFBot>::InvokeOnEnd(CTFBot *actor, Behavior<CTFBot> *behavior, Action<CTFBot> *action)                                        {        ft_Action_InvokeOnEnd                        (this, actor, behavior, action);  }
+template<> ActionResult<CTFBot> Action<CTFBot>::InvokeOnResume(CTFBot *actor, Behavior<CTFBot> *behavior, Action<CTFBot> *action)                     { return ft_Action_InvokeOnResume                     (this, actor, behavior, action);  }
 
 float CTFBotPathCost::operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const { return ft_CTFBotPathCost_op_func(this, area1, area2, ladder, elevator, f1); }
+
+NextBotManager *TheNextBots() { return ft_TheNextBots(); }

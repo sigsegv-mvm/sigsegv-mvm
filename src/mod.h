@@ -2,8 +2,8 @@
 #define _INCLUDE_SIGSEGV_MOD_H_
 
 
-#include "sm/detours.h"
 #include "mem/patch.h"
+#include "mem/detour.h"
 
 
 class CModManager
@@ -16,19 +16,76 @@ public:
 };
 
 
-struct DetourInfo
+class IHasPatches
 {
-	void *callback;
-	void **trampoline;
+public:
+	virtual ~IHasPatches() {}
 	
-	CDetour *detour;
+	virtual const char *GetName() const = 0;
+	
+	bool LoadPatches();
+	void UnloadPatches();
+	
+	void AddPatch(IPatch *patch);
+	
+	void ToggleAllPatches(bool enable);
+	void EnableAllPatches()  { this->ToggleAllPatches(true); }
+	void DisableAllPatches() { this->ToggleAllPatches(false); }
+	
+	size_t GetNumPatches() const     { return this->m_Patches.size(); }
+	std::vector<IPatch *>& Patches() { return this->m_Patches; }
+	
+protected:
+	IHasPatches() {}
+	
+	virtual bool CanAddPatches() const = 0;
+	virtual bool CanTogglePatches() const = 0;
+	
+private:
+	std::vector<IPatch *> m_Patches;
 };
 
 
-class IMod : public AutoList<IMod>
+class IHasDetours
 {
 public:
-	virtual const char *GetName() const final { return this->m_pszName; }
+	virtual ~IHasDetours() {}
+	
+	virtual const char *GetName() const = 0;
+	
+	bool LoadDetours();
+	void UnloadDetours();
+	
+	void AddDetour(IDetour *detour);
+	
+	void ToggleDetour(const char *name, bool enable);
+	void EnableDetour(const char *name)  { this->ToggleDetour(name, true); }
+	void DisableDetour(const char *name) { this->ToggleDetour(name, false); }
+	
+	void ToggleAllDetours(bool enable);
+	void EnableAllDetours()  { this->ToggleAllDetours(true); }
+	void DisableAllDetours() { this->ToggleAllDetours(false); }
+	
+	size_t GetNumDetours() const                 { return this->m_Detours.size(); }
+	std::map<const char *, IDetour *>& Detours() { return this->m_Detours; }
+	
+protected:
+	IHasDetours() {}
+	
+	virtual bool CanAddDetours() const = 0;
+	virtual bool CanToggleDetours() const = 0;
+	
+private:
+	std::map<const char *, IDetour *> m_Detours;
+};
+
+
+class IMod : public AutoList<IMod>, public IHasPatches, public IHasDetours
+{
+public:
+	virtual ~IMod() {}
+	
+	virtual const char *GetName() const override final { return this->m_pszName; }
 	
 	virtual bool OnLoad()   { return true; }
 	virtual void OnUnload() {}
@@ -36,38 +93,30 @@ public:
 protected:
 	IMod(const char *name) :
 		m_pszName(name) {}
-	virtual ~IMod() {}
-	
-	void AddPatch(IPatch *patch);
-	void ToggleAllPatches(bool enable);
-	
-	void AddDetour(const char *name, void *callback, void **trampoline);
-	void ToggleDetour(const char *name, bool enable);
-	void ToggleAllDetours(bool enable);
 	
 private:
 	void InvokeLoad();
 	void InvokeUnload();
 	
-	bool Init_CheckPatches();
-	bool Init_SetupDetours();
+	virtual bool CanAddPatches() const override    { return !this->m_bLoaded; }
+	virtual bool CanTogglePatches() const override { return !this->m_bFailed; }
+	
+	virtual bool CanAddDetours() const override    { return !this->m_bLoaded; }
+	virtual bool CanToggleDetours() const override { return !this->m_bFailed; }
 	
 	const char *m_pszName;
 	
 	bool m_bFailed = false;
 	bool m_bLoaded = false;
 	
-	std::vector<IPatch *> m_Patches;
-	std::map<const char *, DetourInfo> m_Detours;
-	
 	friend class CModManager;
 };
 
 
 #define MOD_ADD_DETOUR_MEMBER(detour, addr) \
-	this->AddDetour(addr, GET_MEMBER_CALLBACK(detour), GET_MEMBER_TRAMPOLINE(detour))
+	this->AddDetour(new CDetour(addr, addr, GET_MEMBER_CALLBACK(detour), GET_MEMBER_INNERPTR(detour)))
 #define MOD_ADD_DETOUR_STATIC(detour, addr) \
-	this->AddDetour(addr, GET_STATIC_CALLBACK(detour), GET_STATIC_TRAMPOLINE(detour))
+	this->AddDetour(new CDetour(addr, addr, GET_STATIC_CALLBACK(detour), GET_STATIC_INNERPTR(detour)))
 
 
 #endif
