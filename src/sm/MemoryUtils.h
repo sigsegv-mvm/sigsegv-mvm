@@ -65,7 +65,12 @@ public:
 	~MemoryUtils();
 	void *ResolveSymbol(void *handle, const char *symbol);
 	bool GetLibraryInfo(const void *libPtr, DynLibInfo &lib);
-	void ForEachSymbol(void *handle, void (*functor)(Symbol *));
+	void ForEachSymbol(void *handle, const std::function<void(Symbol *)>& functor);
+#if defined PLATFORM_LINUX
+	void ForEachSection(void *handle, const std::function<void(const Elf32_Shdr *, const char *)>& functor);
+#elif defined PLATFORM_WINDOWS
+	void ForEachSection(void *handle, const std::function<void(const IMAGE_SECTION_HEADER *)>& functor);
+#endif
 #if defined PLATFORM_LINUX || defined PLATFORM_APPLE
 private:
 	CVector<LibSymbolTable *> m_SymTables;

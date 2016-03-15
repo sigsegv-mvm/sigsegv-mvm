@@ -6,6 +6,7 @@
 
 #if defined __cplusplus
 
+
 //#if !defined __GNUC__
 //#define __attribute__(...)
 //#endif
@@ -19,13 +20,19 @@ class IEngineTrace;
 class IStaticPropMgrServer;
 class IVDebugOverlay;
 class IGameEventManager2;
-class IBaseClientDLL;
 class CGlobalVars;
 class CBaseEntityList;
+class IBaseClientDLL;
+class IMaterialSystem;
+namespace SourcePawn {
+	class ISourcePawnEngine;
+}
+namespace SourceMod {
+	class IExtensionManager;
+}
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
-extern IBaseClientDLL *clientdll;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
@@ -35,6 +42,12 @@ extern IVDebugOverlay *debugoverlay;
 
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
+
+extern IBaseClientDLL *clientdll;
+extern IMaterialSystem *g_pMaterialSystem;
+
+extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
+extern SourceMod::IExtensionManager *smexts;
 
 
 /* C++ standard library */
@@ -49,17 +62,56 @@ extern CBaseEntityList *g_pEntityList;
 #include <typeinfo>
 #include <utility>
 
+
 /* STL */
 #include <list>
 #include <map>
 #include <set>
 #include <vector>
 
+
 /* AMTL */
 #include <amtl/am-string.h>
 
+
 /* Boost */
 //#include <boost/thread.hpp>
+
+
+/* Posix specific */
+#if defined _LINUX || defined _OSX
+
+#include <unistd.h>
+#include <sys/mman.h>
+#include <libunwind.h>
+#define HAVE_DECL_BASENAME 1
+#include <libiberty/demangle.h>
+#include <libelf.h>
+
+#endif
+
+
+/* Windows specific */
+#if defined _WINDOWS
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+#pragma warning(disable:4091)
+#include <Dbghelp.h>
+#pragma warning(default:4091)
+
+/* namespace clash between Windows CreateEvent macro and IGameEventManager2::CreateEvent */
+#if defined CreateEvent
+#undef CreateEvent
+#endif
+
+#endif
+
+
+/* Capstone */
+#include <capstone.h>
+
 
 /* Source SDK */
 #include <string_t.h>
@@ -101,9 +153,12 @@ extern CBaseEntityList *g_pEntityList;
 #include <iclientnetworkable.h>
 #include <tier1/utldict.h>
 #include <mp_shareddefs.h>
+#include <materialsystem/imaterialsystem.h>
+#include <materialsystem/imaterial.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
+
 
 /* MetaMod */
 
@@ -114,36 +169,14 @@ extern CBaseEntityList *g_pEntityList;
 
 //extern SourceMod::ISDKTools *g_pSDKTools;
 
+
 /* this extension */
 #include <smsdk_ext.h>
-
-/* Posix specific */
-#if defined _LINUX || defined _OSX
-#include <unistd.h>
-#include <sys/mman.h>
-#include <libunwind.h>
-#define HAVE_DECL_BASENAME 1
-#include <libiberty/demangle.h>
-#endif
-
-/* Windows specific */
-#if defined _WINDOWS
-#pragma warning(disable:4091)
-#include <Dbghelp.h>
-#pragma warning(default:4091)
-#endif
-
-/* Capstone */
-#include <capstone.h>
-
-/* namespace clash between Windows CreateEvent macro and IGameEventManager2::CreateEvent */
-#if defined CreateEvent
-#undef CreateEvent
-#endif
 
 
 #define bf_write old_bf_write
 #define bf_read old_bf_read
+
 
 #endif
 

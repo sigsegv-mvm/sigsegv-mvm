@@ -371,7 +371,7 @@ void Disasm::Load()
 	
 	std::vector<FuncInfo> funcs;
 	
-	FuncInfo func = {address, 0};
+	FuncInfo func = {(uint32_t)address, 0};
 	bool in_func = true;
 	
 	while (cs_disasm_iter(this->m_Handle, &code, &size, &address, insn)) {

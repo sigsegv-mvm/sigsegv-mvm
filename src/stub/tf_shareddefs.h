@@ -215,6 +215,24 @@ enum
 	OBJ_ATTACHMENT_SAPPER = 3,
 };
 
+/* from SourceMod; can't seem to find these elsewhere */
+enum
+{
+	TF_STUNFLAG_SLOWDOWN        = (1 << 0),	/**< activates slowdown modifier */
+	TF_STUNFLAG_BONKSTUCK       = (1 << 1),	/**< bonk sound, stuck */
+	TF_STUNFLAG_LIMITMOVEMENT   = (1 << 2),	/**< disable forward/backward movement */
+	TF_STUNFLAG_CHEERSOUND      = (1 << 3),	/**< cheering sound */
+	TF_STUNFLAG_NOSOUNDOREFFECT = (1 << 5),	/**< no sound or particle */
+	TF_STUNFLAG_THIRDPERSON     = (1 << 6),	/**< panic animation */
+	TF_STUNFLAG_GHOSTEFFECT     = (1 << 7),	/**< ghost particles */
+	
+	TF_STUNFLAGS_LOSERSTATE     = TF_STUNFLAG_SLOWDOWN | TF_STUNFLAG_NOSOUNDOREFFECT | TF_STUNFLAG_THIRDPERSON,
+	TF_STUNFLAGS_GHOSTSCARE     = TF_STUNFLAG_GHOSTEFFECT | TF_STUNFLAG_THIRDPERSON,
+	TF_STUNFLAGS_SMALLBONK      = TF_STUNFLAG_THIRDPERSON | TF_STUNFLAG_SLOWDOWN,
+	TF_STUNFLAGS_NORMALBONK     = TF_STUNFLAG_BONKSTUCK,
+	TF_STUNFLAGS_BIGBONK        = TF_STUNFLAG_CHEERSOUND | TF_STUNFLAG_BONKSTUCK,
+};
+
 
 /* I invented this function, because this particular idiom comes up frequently;
  * I can't seem to actually find it anywhere in the 2013 SDK or the 2007 leak,

@@ -1,41 +1,47 @@
 #include "mod.h"
 
 
-#include "addr/standard.h"
-//static CAddr_Sym addr1("CTFBotMainAction::Update", "_ZN16CTFBotMainAction6UpdateEP6CTFBotf");
+// CPopulationManager::JumpToWave calls CPopulationManager::Initialize
+// and then calls CTeamplayRoundBasedRules::State_Enter_PREROUND
+// which also calls CPopulationManager::Initialize
+
+// tf_mvm_popfile calls CPopulationManager::SetPopulationFilename, and then
+// calls CPopulationManager::ResetMap; both of these call
+// CPopulationManager::JumpToWave
 
 
-#define TRACE_ENABLE 1
-#include "util/trace.h"
+// #1
+// CPopulationManager::SetPopulationFilename
+// CPopulationManager::ResetMap
+// CPopulationManager::JumpToWave
+// CPopulationManager::Initialize
+// CPopulationManager::Parse
+
+// #2
+// 
 
 
 namespace Mod_Debug_PopMgr_MultiParse
 {
-	//DETOUR_DECL_MEMBER()
-	
-	// CPopulationManager::Parse()
-	
-	// CPopulationManager::Initialize()
-	
-	// CPopulationManager::JumpToWave(unsigned int, float)
-	
-	// CPopulationManager::ResetMap()
-	
-	// CPopulationManager::SetPopulationFilename(char const*)
-	
-	DETOUR_DECL_STATIC(void, tf_mvm_popfile, const CCommand& args)
-	{
-		TRACE();
-		DETOUR_STATIC_CALL(tf_mvm_popfile)(args);
-	}
-	
-	
 	class CMod : public IMod
 	{
 	public:
 		CMod() : IMod("Debug:PopMgr_MultiParse")
 		{
-			this->AddDetour(new CFuncTrace(Library::SERVER, "_ZN18CPopulationManager5ParseEv"));
+			for (auto pattern : {
+				"tf_mvm_popfile",
+				"CPopulationManager\\d+SetPopulationFilenameE",
+				"CPopulationManager\\d+ResetMapE",
+				"CPopulationManager\\d+JumpToWaveE",
+				"CPopulationManager\\d+InitializeE",
+				"CPopulationManager\\d+ParseE",
+				"CTeamplayRoundBasedRules\\d+State_Enter_PREROUNDE",
+				"CTeamplayRoundBasedRules\\d+RoundRespawnE",
+				"CTFGameRules\\d+RoundRespawnE",
+				"CTFGameRules\\d+SetupOnRoundStartE",
+			}) {
+				this->AddDetour(new CFuncTrace(Library::SERVER, pattern));
+			}
 		}
 		
 		void SetEnabled(bool enable)

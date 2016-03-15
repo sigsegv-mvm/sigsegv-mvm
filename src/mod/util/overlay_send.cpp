@@ -96,7 +96,7 @@ namespace Mod_Util_Overlay_Send
 	
 	CBasePlayer *GetLocalPlayer()
 	{
-		static ConVarRef index("sig_debug_listenserverhost_index");
+		static ConVarRef index("sig_util_listenserverhost_index");
 		return UTIL_PlayerByIndex(index.GetInt());
 	}
 	

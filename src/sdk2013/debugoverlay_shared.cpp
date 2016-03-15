@@ -29,7 +29,7 @@ CBasePlayer *GetLocalPlayer( void )
 #endif
 	
 	/* ugly */
-	static ConVarRef index("sig_debug_listenserverhost_index");
+	static ConVarRef index("sig_util_listenserverhost_index");
 	return UTIL_PlayerByIndex(index.GetInt());
 }
 

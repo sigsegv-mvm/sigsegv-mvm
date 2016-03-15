@@ -460,6 +460,41 @@
 					type "sym"
 					sym  "_ZNK13CEconItemView15GetItemDefIndexEv"
 				}
+				
+				"CObjectSentrygun::GetTurretAngles"
+				{
+					type "sym"
+					sym  "_ZNK16CObjectSentrygun15GetTurretAnglesEv"
+				}
+				"CObjectDispenser::GetAvailableMetal"
+				{
+					type "sym"
+					sym  "_ZNK16CObjectDispenser17GetAvailableMetalEv"
+				}
+				
+				"CMultiplayRules::VoiceCommand"
+				{
+					type "sym"
+					sym  "_ZN15CMultiplayRules12VoiceCommandEP22CBaseMultiplayerPlayerii"
+				}
+				
+				"CTFBotHintEngineerNest::HintTeleporterThink"
+				{
+					type "sym"
+					sym  "_ZN22CTFBotHintEngineerNest19HintTeleporterThinkEv"
+				}
+				
+				"ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN24ITFBotHintEntityAutoList34m_ITFBotHintEntityAutoListAutoListE"
+				}
+				
+				"CBaseEntity::Remove"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity6RemoveEv"
+				}
 			}
 		}
 	}

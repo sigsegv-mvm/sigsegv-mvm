@@ -12,6 +12,12 @@
 #endif
 
 
+bool IsClient()
+{
+	return (GetClientFactory() != nullptr);
+}
+
+
 CreateInterfaceFn GetClientFactory()
 {
 	static bool init = false;
@@ -25,9 +31,18 @@ CreateInterfaceFn GetClientFactory()
 	return factory;
 }
 
-bool IsClient()
+
+CreateInterfaceFn GetMaterialSystemFactory()
 {
-	return (GetClientFactory() != nullptr);
+	static bool init = false;
+	static CreateInterfaceFn factory = nullptr;
+	
+	if (!init) {
+		factory = Sys_GetFactory("materialsystem" DLL_EXT_STRING);
+		init = true;
+	}
+	
+	return factory;
 }
 
 
@@ -72,6 +87,11 @@ void *GetModuleHandle(const char *name)
 static void *Sys_GetProcAddress( const char *pModuleName, const char *pName )
 {
 	HMODULE hModule = (HMODULE)GetModuleHandle( pModuleName );
+	
+	/* avoid idiotic cases where we get a nullptr handle, which then makes us
+	 * dlopen ourselves */
+	if (hModule == nullptr) return nullptr;
+	
 #ifdef WIN32
 	return (void *)GetProcAddress( hModule, pName );
 #else

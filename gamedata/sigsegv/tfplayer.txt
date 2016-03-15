@@ -117,6 +117,17 @@
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared6InCondE7ETFCond"
 				}
+				"CTFPlayerShared::StunPlayer"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10StunPlayerEffiP9CTFPlayer"
+				}
+				
+				"CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZN20CTFPlayerSharedUtils28GetEconItemViewByLoadoutSlotEP9CTFPlayeriPP11CEconEntity"
+				}
 				
 				"GetTFConditionName"
 				{

@@ -563,3 +563,105 @@ public:
 	}
 };
 static CAddr_Client_CUserMessages_HookMessage addr_client_CUserMessages_HookMessage;
+
+
+/* string literal reference + nearby pattern match + back to prologue */
+class IAddr_Client_CDebugOverlay : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using StrRefScanner        = CTypeScanner  <ScanDir::FORWARD, ScanResults::ALL, 1, const char *>;
+		using NearbyPatternScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		constexpr const char *str = "s_OverlayMutex";
+		const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), str);
+		if (p_str == nullptr) {
+			DevMsg("IAddr_Client_CDebugOverlay: \"%s\": failed to find string \"%s\"\n", this->GetName(), str);
+			return false;
+		}
+		
+		CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+		DevMsg("IAddr_Client_CDebugOverlay: \"%s\": found %u preliminary matches\n", this->GetName(), scan1.Matches().size());
+		for (auto match : scan1.Matches()) {
+			DevMsg("  %08x\n", (uintptr_t)match);
+		}
+		
+		int buf_size = this->GetBufferSize();
+		ByteBuf seek(buf_size);
+		ByteBuf mask(buf_size);
+		this->SetUpBuffers(seek, mask);
+		
+		std::vector<const void *>matches;
+		for (auto match : scan1.Matches()) {
+			CScan<NearbyPatternScanner> scan2(CAddrOffBounds(match, 0x80), seek, mask);
+			DevMsg("  %08x: %d sub-matches\n", (uintptr_t)match, scan2.Matches().size());
+			
+			if (!scan2.ExactlyOneMatch()) continue;
+			auto p_in_func = scan2.FirstMatch();
+			
+			auto p_func = Scan::FindFuncPrologue(p_in_func);
+			if (p_func == nullptr) continue;
+			
+			matches.push_back(p_func);
+		}
+		
+		if (matches.size() != 1) {
+			DevMsg("IAddr_Client_CDebugOverlay: \"%s\": found %u potential matches\n", this->GetName(), matches.size());
+			return false;
+		}
+		
+		addr = (uintptr_t)matches[0];
+		return true;
+	}
+	
+protected:
+	virtual int GetBufferSize() const = 0;
+	virtual void SetUpBuffers(ByteBuf& seek, ByteBuf& mask) const = 0;
+};
+
+static constexpr uint8_t s_Buf_CDebugOverlay_AddSphereOverlay[] = {
+//	0x6a, 0x3c,                                     // +0000  push 0x3c
+//	0xe8, 0x00, 0x00, 0x00, 0x00,                   // +0002  call 0xXXXXXXXX
+//	0xf3, 0x0f, 0x10, 0x0d, 0x00, 0x00, 0x00, 0x00, // +0007  movss xmm0,ds:0xXXXXXXXX
+//	0x8b, 0xf0,                                     // +000F  mov esi,eax
+//	0x83, 0xc4, 0x00,                               // +0011  add esp,0xXX
+//	0x85, 0xf6,                                     // +0014  test esi,esi
+//	0x74, 0x00,                                     // +0016  jz +0xXX
+//	0xc7, 0x46, 0x08, 0xff, 0xff, 0xff, 0xff,       // +0018  mov dword ptr [esi+0x08],0xffffffff
+//	0xc7, 0x46, 0x04, 0xff, 0xff, 0xff, 0xff,       // +001F  mov dword ptr [esi+0x04],0xffffffff
+//	0xc7, 0x46, 0x0c, 0x00, 0x00, 0x00, 0x00,       // +0026  mov dword ptr [esi+0x0c],0x00000000
+//	0xc7, 0x46, 0x10, 0x00, 0x00, 0x00, 0x00,       // +002D  mov dword ptr [esi+0x10],0x00000000
+//	0xc7, 0x06, 0x01, 0x00, 0x00, 0x00,             // +0034  mov dword ptr [esi+0x00],0x00000001
+	
+	0xc7, 0x46, 0x08, 0xff, 0xff, 0xff, 0xff, // +0000  mov dword ptr [esi+0x08],0xffffffff
+	0xc7, 0x46, 0x04, 0xff, 0xff, 0xff, 0xff, // +0007  mov dword ptr [esi+0x04],0xffffffff
+	0xc7, 0x46, 0x0c, 0x00, 0x00, 0x00, 0x00, // +000E  mov dword ptr [esi+0x0c],0x00000000
+	0xc7, 0x46, 0x10, 0x00, 0x00, 0x00, 0x00, // +0015  mov dword ptr [esi+0x10],0x00000000
+	0xc7, 0x06, 0x01, 0x00, 0x00, 0x00,       // +001C  mov dword ptr [esi+0x00],0x00000001
+};
+
+struct CAddr_Client_CDebugOverlay_AddSphereOverlay : public IAddr_Client_CDebugOverlay
+{
+	CAddr_Client_CDebugOverlay_AddSphereOverlay()
+	{
+		this->SetLibrary(Library::ENGINE);
+	}
+	
+	virtual const char *GetName() const override   { return "[client] CDebugOverlay::AddSphereOverlay"; }
+	virtual const char *GetSymbol() const override { return "_ZN13CDebugOverlay16AddSphereOverlayERK6Vectorfiiiiiif"; }
+	
+	virtual int GetBufferSize() const override { return sizeof(s_Buf_CDebugOverlay_AddSphereOverlay); }
+	
+	virtual void SetUpBuffers(ByteBuf& seek, ByteBuf& mask) const override
+	{
+		seek.CopyFrom(s_Buf_CDebugOverlay_AddSphereOverlay);
+		mask.SetAll(0xff);
+		
+	//	mask.SetRange(0x02 + 1, 0x04, 0x00);
+	//	mask.SetRange(0x07 + 4, 0x04, 0x00);
+	//	mask.SetRange(0x11 + 2, 0x01, 0x00);
+	//	mask.SetRange(0x16 + 1, 0x01, 0x00);
+	}
+};
+static CAddr_Client_CDebugOverlay_AddSphereOverlay addr_client_CDebugOverlay_AddSphereOverlay;

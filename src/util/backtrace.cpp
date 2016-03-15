@@ -94,6 +94,10 @@ void print_backtrace()
 
 extern "C"
 {
+	// TODO:
+	// implement handlers for std::terminate and pure virtual
+	
+	
 	[[noreturn]] void __real___assert_fail(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
 	
 	[[noreturn]] void __wrap___assert_fail(const char *__assertion, const char *__file, unsigned int __line, const char *__function)

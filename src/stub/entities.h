@@ -45,7 +45,21 @@ class CPointEntity : public CBaseEntity {};
 class CBaseTFBotHintEntity : public CPointEntity {};
 class CTFBotHintSentrygun : public CBaseTFBotHintEntity {};
 class CTFBotHintTeleporterExit : public CBaseTFBotHintEntity {};
-class CTFBotHintEngineerNest : public CBaseTFBotHintEntity {};
+
+class CTFBotHintEngineerNest : public CBaseTFBotHintEntity
+{
+public:
+	DECL_SENDPROP(bool, m_bHasActiveTeleporter);
+};
+
+
+class ITFBotHintEntityAutoList
+{
+public:
+	static const CUtlVector<ITFBotHintEntityAutoList *>& AutoList() { return m_ITFBotHintEntityAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<ITFBotHintEntityAutoList *>> m_ITFBotHintEntityAutoListAutoList;
+};
 
 
 // 20151007a

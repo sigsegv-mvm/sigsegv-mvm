@@ -19,6 +19,9 @@ namespace RTTI
 	{
 		DevMsg("RTTI::PreLoad BEGIN\n");
 		
+		s_RTTI.clear();
+		s_VT.clear();
+		
 #if defined __GNUC__
 		
 		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0}) {

@@ -7,6 +7,10 @@
 #include "stub/baseentity.h"
 
 
+class CBaseMultiplayerPlayer;
+struct VoiceCommandMenuItem_t;
+
+
 class CGameRulesProxy : public CBaseEntity
 {
 public:
@@ -27,7 +31,15 @@ public:
 	void NetworkStateChanged()           { CGameRulesProxy::NotifyNetworkStateChanged(); }
 };
 
-class CMultiplayRules : public CGameRules {};
+class CMultiplayRules : public CGameRules
+{
+public:
+	VoiceCommandMenuItem_t *VoiceCommand(CBaseMultiplayerPlayer *pPlayer, int iMenu, int iItem) { return vt_VoiceCommand(this, pPlayer, iMenu, iItem); }
+	
+private:
+	static MemberVFuncThunk<CMultiplayRules *, VoiceCommandMenuItem_t *, CBaseMultiplayerPlayer *, int, int> vt_VoiceCommand;
+};
+
 class CTeamplayRules : public CMultiplayRules {};
 class CTeamplayRoundBasedRules : public CTeamplayRules {};
 
@@ -52,8 +64,11 @@ inline void CGameRulesProxy::NotifyNetworkStateChanged()
 
 
 extern GlobalThunk<CGameRules *> g_pGameRules;
-inline CGameRules   *GameRules()   { return g_pGameRules; }
-inline CTFGameRules *TFGameRules() { return reinterpret_cast<CTFGameRules *>(GameRules()); }
+inline CGameRules                *GameRules()               { return g_pGameRules; }
+inline CMultiplayRules           *MultiplayRules()          { return reinterpret_cast<CMultiplayRules *>(GameRules()); }
+inline CTeamplayRules            *TeamplayGameRules()       { return reinterpret_cast<CTeamplayRules *>(GameRules()); }
+inline CTeamplayRoundBasedRules  *TeamplayRoundBasedRules() { return reinterpret_cast<CTeamplayRoundBasedRules *>(GameRules()); }
+inline CTFGameRules              *TFGameRules()             { return reinterpret_cast<CTFGameRules *>(GameRules()); }
 
 
 #endif

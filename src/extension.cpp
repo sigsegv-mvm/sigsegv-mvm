@@ -15,20 +15,23 @@ CExtSigsegv g_Ext;
 SMEXT_LINK(&g_Ext);
 
 
-ICvar *icvar;
-IBaseClientDLL *clientdll;
-ISpatialPartition *partition;
-IEngineTrace *enginetrace;
-IStaticPropMgrServer *staticpropmgr;
-IGameEventManager2 *gameeventmanager;
-IVDebugOverlay *debugoverlay;
+ICvar *icvar                         = nullptr;
+ISpatialPartition *partition         = nullptr;
+IEngineTrace *enginetrace            = nullptr;
+IStaticPropMgrServer *staticpropmgr  = nullptr;
+IGameEventManager2 *gameeventmanager = nullptr;
+IVDebugOverlay *debugoverlay         = nullptr;
 
-CGlobalVars *gpGlobals;
-CBaseEntityList *g_pEntityList;
+CGlobalVars *gpGlobals         = nullptr;
+CBaseEntityList *g_pEntityList = nullptr;
 
-IExtensionManager *smexts;
+IBaseClientDLL *clientdll          = nullptr;
+IMaterialSystem *g_pMaterialSystem = nullptr;
 
-//ISDKTools *g_pSDKTools;
+SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
+SourceMod::IExtensionManager *smexts         = nullptr;
+
+//ISDKTools *g_pSDKTools = nullptr;
 
 
 #if 0
@@ -43,6 +46,7 @@ CON_COMMAND_F(sig_unload, "Unload this extension", FCVAR_NONE)
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
+	g_pSourcePawn = g_pSM->GetScriptingEngine();
 	SM_FIND_IFACE_OR_FAIL(EXTENSIONMANAGER, smexts, error, maxlen);
 	
 	this->EnableColorSpew();
@@ -58,14 +62,14 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
 	
 	LibMgr::Load();
-	g_Disasm.Load();
+//	g_Disasm.Load();
 	
 	RTTI::PreLoad();
 	AddrManager::Load();
 	
 	if (!Link::InitAll()) goto fail;
 	
-//	CDetourManager::Init(g_pSM->GetScriptingEngine());
+//	CDetourManager::Init(g_pSourcePawn);
 	
 	Prop::PreloadAll();
 	
@@ -121,8 +125,9 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	//GET_V_IFACE_CURRENT(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
 	
-	if (GetClientFactory() != nullptr) {
+	if (IsClient()) {
 		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
+		g_pMaterialSystem = (IMaterialSystem *)ismm->VInterfaceMatch(GetMaterialSystemFactory(), MATERIAL_SYSTEM_INTERFACE_VERSION, 0);
 	}
 	
 	gpGlobals = ismm->GetCGlobals();
@@ -130,7 +135,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	LibMgr::SetPtr(Library::SERVER, (void *)ismm->GetServerFactory(false));
 	LibMgr::SetPtr(Library::ENGINE, (void *)ismm->GetEngineFactory(false));
 	LibMgr::SetPtr(Library::TIER0,  (void *)&MemAllocScratch);
-	LibMgr::SetPtr(Library::CLIENT, (void *)GetClientFactory());
+	LibMgr::SetPtr(Library::CLIENT, (void *)clientdll);
 	
 	return true;
 }

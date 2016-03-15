@@ -234,28 +234,89 @@ bool CDetour::EnsureUniqueInnerPtrs()
 }
 
 
+const char *CFuncTrace::GetName() const
+{
+	if (this->IsLoaded()) {
+		return this->m_strDemangled.c_str();
+	} else {
+		return this->m_strPattern.c_str();
+	}
+}
+
+
 void CFuncTrace::TracePre()
 {
-	IndentMsg("TracePre:  %s\n", this->GetName());
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "{");
+	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
 	TraceLevel::Increment();
 }
 
 void CFuncTrace::TracePost()
 {
 	TraceLevel::Decrement();
-	IndentMsg("TracePost: %s\n", this->GetName());
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "}");
+	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
 }
+
+
+/* iterator for non-null-terminated symbol name strings, to avoid having to make
+ * std::string copies a bunch of times for regex matching */
+class CharPtrIterator : public std::iterator<std::bidirectional_iterator_tag, char>
+{
+public:
+	CharPtrIterator() :
+		m_pChar(nullptr) {}
+	CharPtrIterator(char *ptr) :
+		m_pChar(ptr) {}
+	CharPtrIterator(const CharPtrIterator& that) = default;
+	
+	CharPtrIterator& operator++()   { ++this->m_pChar; return *this; }
+	CharPtrIterator operator++(int) { CharPtrIterator tmp(*this); ++this->m_pChar; return tmp; }
+	
+	CharPtrIterator& operator--()   { --this->m_pChar; return *this; }
+	CharPtrIterator operator--(int) { CharPtrIterator tmp(*this); --this->m_pChar; return tmp; }
+	
+	bool operator==(const CharPtrIterator& that) const { return this->m_pChar == that.m_pChar; }
+	bool operator!=(const CharPtrIterator& that) const { return this->m_pChar != that.m_pChar; }
+	
+	char& operator*() const { return *this->m_pChar; }
+	
+private:
+	char *m_pChar;
+};
 
 
 bool CFuncTrace::DoLoad()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 	
-	this->m_pFunc = LibMgr::FindSym(this->m_Library, this->m_strSymbol.c_str());
-	if (this->m_pFunc == nullptr) {
-		DevMsg("CFuncTrace::DoLoad: \"%s\": symbol lookup failed\n", this->GetName());
+	const LibInfo& info = LibMgr::GetInfo(this->m_Library);
+	void *text_begin = (void *)(info.baseaddr         + info.segs.at(".text").off);
+	void *text_end   = (void *)((uintptr_t)text_begin + info.segs.at(".text").len);
+	
+	std::regex filter(this->m_strPattern);
+	std::vector<Symbol *> syms;
+	LibMgr::ForEachSym(this->m_Library, [&](Symbol *sym){
+		char *buf  = sym->buffer();
+		size_t len = sym->length;
+		
+		CharPtrIterator begin(buf), end(buf + len);
+		if (std::regex_search(begin, end, filter, std::regex_constants::match_any)) {
+			if (sym->address >= text_begin && sym->address < text_end) {
+				syms.push_back(sym);
+			}
+		}
+	});
+	
+	if (syms.size() != 1) {
+		DevMsg("CFuncTrace::DoLoad: \"%s\": symbol lookup failed (%u matches)\n", this->GetName(), syms.size());
 		return false;
 	}
+	
+	this->m_strSymbol = std::string(syms[0]->buffer(), syms[0]->length);
+	this->m_pFunc     = syms[0]->address;
+	
+	this->Demangle();
 	
 	return true;
 }
@@ -278,6 +339,22 @@ void CFuncTrace::DoDisable()
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 	
 	CDetouredFunc::Find(this->m_pFunc).RemoveTrace(this);
+}
+
+
+void CFuncTrace::Demangle()
+{
+#if defined _LINUX || defined _OSX
+	const char *demangled = cplus_demangle(this->m_strSymbol.c_str(), DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS);
+	if (demangled != nullptr) {
+		this->m_strDemangled = demangled;
+		free((void *)demangled);
+	} else {
+		this->m_strDemangled = this->m_strSymbol;
+	}
+#else
+	this->m_strDemangled = this->m_strSymbol;
+#endif
 }
 
 
@@ -385,8 +462,9 @@ void CDetouredFunc::CreateWrapper()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
+#if !defined _WINDOWS
 	size_t size = (&Wrapper_end - &Wrapper_begin);
-	this->m_pWrapper = g_pSM->GetScriptingEngine()->AllocatePageMemory(size);
+	this->m_pWrapper = g_pSourcePawn->AllocatePageMemory(size);
 	
 	memcpy(this->m_pWrapper, &Wrapper_begin, size);
 	
@@ -401,6 +479,7 @@ void CDetouredFunc::CreateWrapper()
 	CallAbsMem32::Write((void *)actual_func,  (uint32_t)&this->m_pWrapperInner);
 	PushImm32::Write(   (void *)func_addr_2,  (uint32_t)this->m_pFunc);
 	CallAbsMem32::Write((void *)wrapper_post, (uint32_t)&this->m_pWrapperPost);
+#endif
 }
 
 void CDetouredFunc::DestroyWrapper()
@@ -408,7 +487,7 @@ void CDetouredFunc::DestroyWrapper()
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
 	if (this->m_pWrapper == nullptr) {
-		g_pSM->GetScriptingEngine()->FreePageMemory(this->m_pWrapper);
+		g_pSourcePawn->FreePageMemory(this->m_pWrapper);
 	}
 }
 
@@ -422,7 +501,7 @@ void CDetouredFunc::CreateTrampoline()
 	size_t size = this->m_Prologue.size() + JmpRelImm32::Size();
 	TRACE_MSG("size = %u\n", size);
 	
-	this->m_pTrampoline = g_pSM->GetScriptingEngine()->AllocatePageMemory(size);
+	this->m_pTrampoline = g_pSourcePawn->AllocatePageMemory(size);
 	TRACE_MSG("trampoline @ %08x\n", (uintptr_t)this->m_pTrampoline);
 	memcpy(this->m_pTrampoline, this->m_Prologue.data(), this->m_Prologue.size());
 	
@@ -436,7 +515,7 @@ void CDetouredFunc::DestroyTrampoline()
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
 	if (this->m_pTrampoline == nullptr) {
-		g_pSM->GetScriptingEngine()->FreePageMemory(this->m_pTrampoline);
+		g_pSourcePawn->FreePageMemory(this->m_pTrampoline);
 	}
 }
 
@@ -487,6 +566,7 @@ void CDetouredFunc::Reconfigure()
 		this->InstallJump(first->m_pCallback);*/
 	}
 	
+#if !defined _WINDOWS
 	if (!this->m_Traces.empty()) {
 		if (jump_to != nullptr) {
 			this->m_pWrapperInner = jump_to;
@@ -496,6 +576,7 @@ void CDetouredFunc::Reconfigure()
 		
 		jump_to = this->m_pWrapper;
 	}
+#endif
 	
 	if (jump_to != nullptr) {
 		this->InstallJump(jump_to);

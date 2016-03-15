@@ -2,8 +2,10 @@
 #define _INCLUDE_SIGSEGV_CLIENT_H_
 
 
-CreateInterfaceFn GetClientFactory();
 bool IsClient();
+
+CreateInterfaceFn GetClientFactory();
+CreateInterfaceFn GetMaterialSystemFactory();
 
 
 #endif

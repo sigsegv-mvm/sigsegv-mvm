@@ -191,23 +191,30 @@ class ExtensionConfig(object):
       '-g2',
       '-fvar-tracking-assignments',
       '-gsplit-dwarf',
-#      '-pthread
+      '-pthread',
+      
+      # the STB_GNU_UNIQUE 'feature' prevents dlclose from functioning
+      '-fno-gnu-unique',
     ]
     cxx.cxxflags += [
       '-std=c++11',
       '-fno-exceptions',
-      '-fno-threadsafe-statics',
+#      '-fno-threadsafe-statics',
 #      '-Wno-non-virtual-dtor',
 #      '-Wno-overloaded-virtual',
       '-fvisibility-inlines-hidden',
       '-Wno-invalid-offsetof',
+#      '-fabi-version=0',
+#      '-fabi-compat-version=2', # GCC 4.6.1
+      '-Wabi',
     ]
     cxx.linkflags += [
+      '-pthread',
       '-fuse-ld=gold',
       '-m32',
       '-Wl,--no-undefined',
       '-Wl,--threads', # crashy
-      '-Wl,--wrap,__assert_fail'
+      '-Wl,--wrap,__assert_fail',
     ]
 #    if builder.options.opt != '1':
 #      cxx.linkflags += ['-Wl,-Ur'] # incremental link
@@ -289,7 +296,7 @@ class ExtensionConfig(object):
     cxx.linkflags += [
       '-Wl,--exclude-libs,ALL',
       '-lm',
-      '-lpthread',
+    #  '-lpthread',
       '-ldl',
     ]
     if 'gcc' in cxx.version.vendor_name:

@@ -5,15 +5,47 @@
 #include "stub/objects.h"
 #include "stub/entities.h"
 #include "util/rtti.h"
+#include "util/scope.h"
+#include "stub/gamerules.h"
+#include "stub/econ.h"
 
 
-#define TRACE_ENABLE 1
+//#define TRACE_ENABLE 1
 #define TRACE_TERSE  0
 #include "util/trace.h"
 
 
 namespace Mod_AI_EngieBot_Dispensers
 {
+	bool suppress_speak = false;
+	
+	
+	// CTFPlayer::PlayTauntSceneFromItem(CEconItemView *)
+	
+	
+	bool DoRelaxoTaunt(CTFPlayer *player)
+	{
+		constexpr int DEFIDX_TAUNT_RELAXO = 1115;
+		
+		// allocate >= 0xac bytes
+		// call CEconItemView default ctor
+		
+		// call CEconItemView::Init(int, int, int, uint)
+		// - int #1 -> offset 0x04 m_iItemDefinitionIndex
+		// - int #2 -> offset 0x08 m_iEntityQuality
+		// - int #3 -> offset 0x0c m_iEntityLevel
+		// - int #4 -> offset 0x20 m_iAccountID
+		
+		
+		
+		// ? CItemGeneration::GenerateItemFromDefIndex
+		
+		
+		
+		return false;
+	}
+	
+	
 	class CTFBotMvMEngineerBuildSGDispenser : public IHotplugAction<CTFBotMvMEngineerBuildSGDispenser>
 	{
 	public:
@@ -52,6 +84,14 @@ namespace Mod_AI_EngieBot_Dispensers
 				actor->PressCrouchButton();
 				actor->GetBodyInterface()->AimHeadTowards(this->m_hHint->GetAbsOrigin(),
 					IBody::LookAtPriorityType::OVERRIDE, 0.1f, nullptr, "Placing dispenser");
+				
+				if (!this->m_bNearHint) {
+					this->m_bNearHint = true;
+					//TFGameRules()->VoiceCommand(actor, 1, 4);
+					//actor->SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_DISPENSERHERE);
+				}
+			} else {
+				this->m_bNearHint = false;
 			}
 			
 			if (range_to_hint > 25.0f) {
@@ -91,9 +131,14 @@ namespace Mod_AI_EngieBot_Dispensers
 			dispenser->Spawn();
 			
 			dispenser->StartPlacement(actor);
-			dispenser->StartBuilding(actor);
 			
-			dispenser->SetOwnerEntity(actor);
+			suppress_speak = true;
+			dispenser->StartBuilding(actor);
+			suppress_speak = false;
+			
+			this->m_hHint->SetOwnerEntity(dispenser);
+			
+			actor->SpeakConceptIfAllowed(MP_CONCEPT_BUILDING_OBJECT, "objtype:dispenser");
 			
 			return ActionResult<CTFBot>::Done("Built a dispenser");
 		}
@@ -103,6 +148,7 @@ namespace Mod_AI_EngieBot_Dispensers
 		CHandle<CTFBotHintSentrygun> m_hHint;
 		PathFollower m_PathFollower;
 		CountdownTimer m_ctRecomputePath;
+		bool m_bNearHint = false;
 	};
 	
 	class CTFBotMvMEngineerBuildTEDispenser : public IHotplugAction<CTFBotMvMEngineerBuildTEDispenser>
@@ -162,14 +208,21 @@ namespace Mod_AI_EngieBot_Dispensers
 			}
 			
 			auto dispenser = rtti_cast<CObjectDispenser *>(ent);
+			dispenser->SetName(this->m_hHint->GetEntityName());
+			dispenser->m_nDefaultUpgradeLevel = 2;
 			dispenser->SetAbsOrigin(this->m_hHint->GetAbsOrigin());
 			dispenser->SetAbsAngles(this->m_hHint->GetAbsAngles());
 			dispenser->Spawn();
 			
 			dispenser->StartPlacement(actor);
-			dispenser->StartBuilding(actor);
 			
-			dispenser->SetOwnerEntity(actor);
+			suppress_speak = true;
+			dispenser->StartBuilding(actor);
+			suppress_speak = false;
+			
+			this->m_hHint->SetOwnerEntity(dispenser);
+			
+			actor->SpeakConceptIfAllowed(MP_CONCEPT_BUILDING_OBJECT, "objtype:dispenser");
 			
 			return ActionResult<CTFBot>::Done("Built a dispenser");
 		}
@@ -201,9 +254,31 @@ namespace Mod_AI_EngieBot_Dispensers
 	}
 	
 	
+	RefCount rc_CTFBotMvMEngineerIdle_Update;
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMvMEngineerIdle_Update, CTFBot *actor, float dt)
 	{
+		SCOPED_INCREMENT(rc_CTFBotMvMEngineerIdle_Update);
+		
 		TRACE();
+		
+		static IntervalTimer last_ask;
+		constexpr float ask_interval = 20.0f;
+		constexpr float ask_minwait  =  3.0f;
+		if (RandomFloat(0.0f, 1.0f) < (dt / ask_interval)) {
+			if (last_ask.GetElapsedTime() > ask_minwait) {
+				last_ask.Start();
+				
+				switch (RandomInt(0, 2)) {
+				case 0:
+				case 1:
+					actor->SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TELEPORTERHERE);
+					break;
+				case 2:
+					actor->SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_SENTRYHERE);
+					break;
+				}
+			}
+		}
 		
 		auto result = DETOUR_MEMBER_CALL(CTFBotMvMEngineerIdle_Update)(actor, dt);
 		
@@ -223,6 +298,58 @@ namespace Mod_AI_EngieBot_Dispensers
 	}
 	
 	
+	/* CTFBotMvMEngineerIdle::Update static_cast's the owner of the sentry hint
+	 * to a CObjectSentrygun and calls GetTurretAngles, which doesn't exist for
+	 * CObjectDispenser; this tweak should avoid the problem */
+	DETOUR_DECL_MEMBER(const QAngle&, CObjectDispenser_GetAvailableMetal)
+	{
+		TRACE();
+		
+		if (rc_CTFBotMvMEngineerIdle_Update > 0) {
+			TRACE_MSG("in CTFBotMvMEngineerIdle::Update");
+			auto obj = reinterpret_cast<CBaseEntity *>(this);
+			return obj->EyeAngles();
+		}
+		
+		return DETOUR_MEMBER_CALL(CObjectDispenser_GetAvailableMetal)();
+	}
+	
+	
+	DETOUR_DECL_MEMBER(bool, CTFPlayer_SpeakConceptIfAllowed, int iConcept, const char *modifiers, char *pszOutResponseChosen, size_t bufsize, IRecipientFilter *filter)
+	{
+		if (suppress_speak) {
+			return false;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFPlayer_SpeakConceptIfAllowed)(iConcept, modifiers, pszOutResponseChosen, bufsize, filter);
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTFBotHintEngineerNest_HintTeleporterThink)
+	{
+		DETOUR_MEMBER_CALL(CTFBotHintEngineerNest_HintTeleporterThink)();
+		
+		auto nest = reinterpret_cast<CTFBotHintEngineerNest *>(this);
+		nest->m_bHasActiveTeleporter = false;
+	}
+	
+	
+	// MP_CONCEPT_PLAYER_SENTRYAHEAD
+	// MP_CONCEPT_PLAYER_TELEPORTERHERE
+	// MP_CONCEPT_PLAYER_DISPENSERHERE
+	// MP_CONCEPT_PLAYER_SENTRYHERE
+	// MP_CONCEPT_PLAYER_MOVEUP
+	// MP_CONCEPT_DETONATED_OBJECT
+	// MP_CONCEPT_KILLED_OBJECT
+	// MP_CONCEPT_PLAYER_HELP
+	// MP_CONCEPT_BUILDING_OBJECT
+	// MP_CONCEPT_LOST_OBJECT
+	// MP_CONCEPT_SPY_SAPPER
+	// MP_CONCEPT_PICKUP_BUILDING
+	// MP_CONCEPT_REDEPLOY_BUILDING
+	// MP_CONCEPT_CARRYING_BUILDING
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -232,12 +359,29 @@ namespace Mod_AI_EngieBot_Dispensers
 			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildTeleportExit_ctor, "CTFBotMvMEngineerBuildTeleportExit::CTFBotMvMEngineerBuildTeleportExit [C1]");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerIdle_Update, "CTFBotMvMEngineerIdle::Update");
+			
+			MOD_ADD_DETOUR_MEMBER(CObjectDispenser_GetAvailableMetal, "CObjectDispenser::GetAvailableMetal");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_SpeakConceptIfAllowed, "CTFPlayer::SpeakConceptIfAllowed");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBotHintEngineerNest_HintTeleporterThink, "CTFBotHintEngineerNest::HintTeleporterThink");
 		}
 		
 		virtual void OnUnload() override
 		{
 			CTFBotMvMEngineerBuildSGDispenser::UnloadAll();
 			CTFBotMvMEngineerBuildTEDispenser::UnloadAll();
+			
+			for (int i = 0; i < ITFBotHintEntityAutoList::AutoList().Count(); ++i) {
+				auto hint = rtti_cast<CBaseTFBotHintEntity *>(ITFBotHintEntityAutoList::AutoList()[i]);
+				if (hint != nullptr) {
+					CBaseEntity *owner = hint->GetOwnerEntity();
+					if (owner != nullptr && rtti_cast<CObjectDispenser *>(owner) != nullptr) {
+						owner->Remove();
+						hint->SetOwnerEntity(nullptr);
+					}
+				}
+			}
 		}
 		
 		void SetEnabled(bool enable)

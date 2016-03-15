@@ -34,6 +34,7 @@ public:
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
 	
 	/* thunk */
+	void Remove()                                     {        ft_Remove              (this); }
 	void CalcAbsolutePosition()                       {        ft_CalcAbsolutePosition(this); }
 	bool ClassMatches(const char *pszClassOrWildcard) { return ft_ClassMatches        (this, pszClassOrWildcard); }
 	void SetAbsOrigin(const Vector& absOrigin)        {        ft_SetAbsOrigin        (this, absOrigin); }
@@ -67,7 +68,8 @@ private:
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOwnerEntity);
 	
-	static MemberFuncThunk<CBaseEntity *, void              >  ft_CalcAbsolutePosition;
+	static MemberFuncThunk<CBaseEntity *, void>                ft_Remove;
+	static MemberFuncThunk<CBaseEntity *, void>                ft_CalcAbsolutePosition;
 	static MemberFuncThunk<CBaseEntity *, bool, const char *>  ft_ClassMatches;
 	static MemberFuncThunk<CBaseEntity *, void, const Vector&> ft_SetAbsOrigin;
 	static MemberFuncThunk<CBaseEntity *, void, const QAngle&> ft_SetAbsAngles;

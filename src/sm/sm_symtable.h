@@ -222,7 +222,7 @@ public:
 		return kvs;
 	}
 	
-	void ForEachSymbol(void (*functor)(Symbol *))
+	void ForEachSymbol(const std::function<void(Symbol *)>& functor)
 	{
 		for (uint32_t i = 0; i < nbuckets; ++i) {
 			Symbol *sym = buckets[i];

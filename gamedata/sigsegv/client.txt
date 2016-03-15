@@ -63,6 +63,64 @@
 //					build "3283568"
 //					lib   "client"
 //				}
+				
+//				"[client] CDebugOverlay::AddSphereOverlay"
+//				{
+//					type ""
+//					sym  ""
+//					lib  "engine"
+//				}
+				
+				"[client] CDebugOverlay::DrawOverlay"
+				{
+					type  "fixed"
+					sym   "_ZN13CDebugOverlay11DrawOverlayEPNS_13OverlayBase_tE"
+					addr  "0x0e3350"
+					build "3341818"
+					lib   "engine"
+				}
+				"[client] RenderSphere [IMaterial *]"
+				{
+					type  "fixed"
+					sym   "_Z12RenderSphereRK6Vectorfii5ColorP9IMaterial"
+					addr  "0x25f1d0"
+					build "3341818"
+					lib   "engine"
+				}
+				"[client] RenderWireframeSphere"
+				{
+					type  "fixed"
+					sym   "_Z21RenderWireframeSphereRK6Vectorfii5Colorb"
+					addr  "0x7fe310"
+					build "3341818"
+					lib   "client"
+				}
+				
+				"[client] s_pVertexColor"
+				{
+					type  "fixed"
+					sym   "s_pVertexColor"
+					addr  "0xd67f54"
+					build "3341818"
+					lib   "client"
+				}
+				"[client] s_pVertexColorIgnoreZ"
+				{
+					type  "fixed"
+					sym   "s_pVertexColorIgnoreZ"
+					addr  "0xd67f58"
+					build "3341818"
+					lib   "client"
+				}
+				
+//				"[client] InitializeStandardMaterials"
+//				{
+//					type  "fixed"
+//					sym   "_Z27InitializeStandardMaterialsv"
+//					addr  "0x25e910"
+//					build "3341818"
+//					lib   "engine"
+//				}
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 
 
 #include "stub/baseanimating.h"
+#include "stub/econ.h"
 #include "prop.h"
 
 
@@ -229,14 +230,17 @@ public:
 	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond(this, cond, b1); }
 	bool InCond(ETFCond cond) const                                                     { return ft_InCond    (this, cond); }
 	
+	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner) { ft_StunPlayer(this, duration, amount, flags, stunner); }
+	
 	DECL_SENDPROP(float, m_flRageMeter);
 	DECL_SENDPROP(bool,  m_bRageDraining);
 	DECL_SENDPROP(bool,  m_bInUpgradeZone);
 	
 private:
-	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity *> ft_AddCond;
-	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                > ft_RemoveCond;
-	static MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                      > ft_InCond;
+	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > ft_AddCond;
+	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > ft_RemoveCond;
+	static MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > ft_InCond;
+	static MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> ft_StunPlayer;
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
@@ -250,6 +254,7 @@ public:
 	
 	CTFWeaponBase *GetActiveTFWeapon() const;
 	
+	void ForceChangeTeam(int team, bool b1)              { ft_ForceChangeTeam          (this, team, b1); }
 	void StartBuildingObjectOfType(int iType, int iMode) { ft_StartBuildingObjectOfType(this, iType, iMode); }
 	
 //	typedef int taunts_t;
@@ -261,8 +266,18 @@ private:
 	DECL_SENDPROP(CTFPlayerClass, m_PlayerClass);
 	DECL_SENDPROP(bool,           m_bIsMiniBoss);
 	
-	static MemberFuncThunk<CTFPlayer *, void, int, int> ft_StartBuildingObjectOfType;
+	static MemberFuncThunk<CTFPlayer *, void, int, bool> ft_ForceChangeTeam;
+	static MemberFuncThunk<CTFPlayer *, void, int, int > ft_StartBuildingObjectOfType;
 //	static MemberFuncThunk<CTFPlayer *, void, taunts_t, int> ft_Taunt;
+};
+
+class CTFPlayerSharedUtils
+{
+public:
+	static CEconItemView *GetEconItemViewByLoadoutSlot(CTFPlayer *player, int slot, CEconEntity **ent = nullptr) { return ft_GetEconItemViewByLoadoutSlot(player, slot, ent); }
+	
+private:
+	static StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> ft_GetEconItemViewByLoadoutSlot;
 };
 
 

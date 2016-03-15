@@ -18,6 +18,7 @@ IMPL_SENDPROP(char,                 CBaseEntity, m_lifeState,     CBasePlayer);
 IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hGroundEntity, CBasePlayer);
 IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hOwnerEntity,  CBaseEntity);
 
+MemberFuncThunk<CBaseEntity *, void               > CBaseEntity::ft_Remove              ("CBaseEntity::Remove");
 MemberFuncThunk<CBaseEntity *, void               > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
 MemberFuncThunk<CBaseEntity *, bool, const char * > CBaseEntity::ft_ClassMatches(        "CBaseEntity::ClassMatches");
 MemberFuncThunk<CBaseEntity *, void, const Vector&> CBaseEntity::ft_SetAbsOrigin(        "CBaseEntity::SetAbsOrigin");

@@ -47,11 +47,13 @@ void CModManager::CC_ListMods(const CCommand& cmd)
 		
 		bool operator<(const ModInfo& that) const
 		{
-			int c_cat = this->cat.compare(that.cat);
-			if (c_cat != 0) return c_cat;
+			if (this->cat.compare(that.cat) != 0) {
+				return this->cat < that.cat;
+			}
 			
-			int c_name = this->name.compare(that.name);
-			if (c_name != 0) return c_name;
+			if (this->name.compare(that.name) != 0) {
+				return this->name < that.name;
+			}
 			
 			return this->mod < that.mod;
 		}
@@ -245,6 +247,7 @@ void IHasDetours::UnloadDetours()
 	for (auto& pair : this->m_Detours) {
 		IDetour *detour = pair.second;
 		detour->Unload();
+		delete detour;
 	}
 	
 	this->m_Detours.clear();

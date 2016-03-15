@@ -94,7 +94,7 @@ private:
 		
 #if !TRACE_TERSE
 		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "%*s%s",
-			2 * TraceLevel::Get(), "", "EXIT ");
+			2 * TraceLevel::Get(), "", "EXIT  ");
 		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "%s", this->m_strFuncName.c_str());
 		DevMsg(" %s\n", this->m_szExitMsg);
 #endif

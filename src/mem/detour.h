@@ -77,10 +77,10 @@ private:
 class CFuncTrace : public IDetour
 {
 public:
-	CFuncTrace(Library lib, const char *symbol) :
-		m_Library(lib), m_strSymbol(symbol) {}
+	CFuncTrace(Library lib, const char *pattern) :
+		m_Library(lib), m_strPattern(pattern) {}
 	
-	virtual const char *GetName() const override { return this->m_strSymbol.c_str(); }
+	virtual const char *GetName() const override;
 	
 	void TracePre();
 	void TracePost();
@@ -92,8 +92,13 @@ private:
 	virtual void DoEnable() override;
 	virtual void DoDisable() override;
 	
+	void Demangle();
+	
 	Library m_Library;
+	std::string m_strPattern;
+	
 	std::string m_strSymbol;
+	std::string m_strDemangled;
 	void *m_pFunc = nullptr;
 };
 

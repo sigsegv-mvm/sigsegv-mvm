@@ -26,16 +26,21 @@ IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,    CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,  CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone, CTFPlayer);
 
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity *> CTFPlayerShared::ft_AddCond(   "CTFPlayerShared::AddCond");
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                > CTFPlayerShared::ft_RemoveCond("CTFPlayerShared::RemoveCond");
-MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                      > CTFPlayerShared::ft_InCond(    "CTFPlayerShared::InCond");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond(   "CTFPlayerShared::AddCond");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond("CTFPlayerShared::RemoveCond");
+MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > CTFPlayerShared::ft_InCond(    "CTFPlayerShared::InCond");
+MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer("CTFPlayerShared::StunPlayer");
 
 
 IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
 IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);
 IMPL_SENDPROP(bool,            CTFPlayer, m_bIsMiniBoss, CTFPlayer);
 
-MemberFuncThunk<CTFPlayer *, void, int, int> CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
+MemberFuncThunk<CTFPlayer *, void, int, bool> CTFPlayer::ft_ForceChangeTeam          ("CTFPlayer::ForceChangeTeam");
+MemberFuncThunk<CTFPlayer *, void, int, int > CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
+
+
+StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");
 
 
 bool CTFPlayer::IsPlayerClass(int iClass) const

@@ -56,6 +56,7 @@ THUNK_VTABLE(8INextBot, 0x200);
 #elif defined _MSC_VER
 
 #include "re/nextbot.h"
+#include "re/path.h"
 
 static MemberFuncThunk<Action<CTFBot> *, void> ft_Action_dtor_D2("Action<CTFBot>::~Action [D2]");
 
@@ -65,6 +66,14 @@ static MemberFuncThunk<Action<CTFBot> *, void> ft_Action_dtor_D2("Action<CTFBot>
 /* nesting the dtor thunk inside an actual dtor is a bad idea, but it's better
  * than the horrible alternative */
 template<> Action<CTFBot>::~Action() { ft_Action_dtor_D2(this); }
+
+/* not implemented */
+INextBotEventResponder::~INextBotEventResponder() { assert(false); }
+IContextualQuery::~IContextualQuery()             { assert(false); }
+//Path::Path()                                      { assert(false); }
+//Path::~Path()                                     { assert(false); }
+//PathFollower::PathFollower()                      { assert(false); }
+//PathFollower::~PathFollower()                     { assert(false); }
 
 
 // TODO: why didn't we have to hook up the RTTI?

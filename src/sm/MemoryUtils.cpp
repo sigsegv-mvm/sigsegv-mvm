@@ -569,7 +569,7 @@ bool MemoryUtils::GetLibraryInfo(const void *libPtr, DynLibInfo &lib)
 	return true;
 }
 
-void MemoryUtils::ForEachSymbol(void *handle, void (*functor)(Symbol *))
+void MemoryUtils::ForEachSymbol(void *handle, const std::function<void(Symbol *)>& functor)
 {
 	/* do a bogus symbol lookup to force everything into the symbol table cache */
 	assert(ResolveSymbol(handle, "________________") == nullptr);
@@ -666,3 +666,58 @@ void MemoryUtils::ForEachSymbol(void *handle, void (*functor)(Symbol *))
 	table->ForEachSymbol(functor);
 #endif
 }
+
+#if defined PLATFORM_LINUX
+void MemoryUtils::ForEachSection(void *handle, const std::function<void(const Elf32_Shdr *, const char *)>& functor)
+{
+	auto dlmap = (struct link_map *)handle;
+	
+	int dlfile = open(dlmap->l_name, O_RDONLY);
+	struct stat dlstat;
+	if (dlfile == -1 || fstat(dlfile, &dlstat) == -1) {
+		close(dlfile);
+		return;
+	}
+	
+	auto ehdr = (Elf32_Ehdr *)mmap(nullptr, dlstat.st_size, PROT_READ, MAP_PRIVATE, dlfile, 0);
+	if (ehdr == MAP_FAILED) {
+		close(dlfile);
+		return;
+	}
+	
+	close(dlfile);
+	
+	if (ehdr->e_shoff == 0 || ehdr->e_shstrndx == SHN_UNDEF) {
+		munmap(ehdr, dlstat.st_size);
+		return;
+	}
+	
+	auto shdrs = (Elf32_Shdr *)((uintptr_t)ehdr + ehdr->e_shoff);
+	uint16_t n_shdrs = ehdr->e_shnum;
+	
+	auto shstrtab = (const char *)((uintptr_t)ehdr + shdrs[ehdr->e_shstrndx].sh_offset);
+	
+	for (uint16_t i = 0; i < n_shdrs; ++i) {
+		Elf32_Shdr *shdr = shdrs + i;
+		
+		if (shdr->sh_type == SHT_NULL) continue;
+		
+		const char *name = shstrtab + shdr->sh_name;
+		functor(shdr, name);
+	}
+	
+	munmap(ehdr, dlstat.st_size);
+}
+#elif defined PLATFORM_WINDOWS
+void MemoryUtils::ForEachSection(void *handle, const std::function<void(const IMAGE_SECTION_HEADER *)>& functor)
+{
+	IMAGE_NT_HEADERS *pNtHdr = ImageNtHeader(handle);
+	auto pSectHdr = (IMAGE_SECTION_HEADER *)(pNtHdr + 1);
+	
+	int n_sect = pNtHdr->FileHeader.NumberOfSections;
+	for (int i = 0; i < n_sect; ++i) {
+		functor(pSectHdr);
+		++pSectHdr;
+	}
+}
+#endif

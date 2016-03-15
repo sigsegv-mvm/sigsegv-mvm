@@ -68,23 +68,23 @@ void LibMgr::FindInfo(Library lib)
 	info.baseaddr = (uintptr_t)dlinfo.baseAddress;
 	info.len      = (uintptr_t)dlinfo.memorySize;
 	
-#if defined _WINDOWS
-	
-	IMAGE_NT_HEADERS *pNtHdr = ImageNtHeader((void *)info.baseaddr);
-	IMAGE_SECTION_HEADER *pSectHdr = (IMAGE_SECTION_HEADER *)(pNtHdr + 1);
-	
-	int num_sect = pNtHdr->FileHeader.NumberOfSections;
-	for (int i = 0; i < num_sect; ++i) {
+#if defined _LINUX
+	g_MemUtils.ForEachSection(s_LibHandles[lib], [&](const Elf32_Shdr *shdr, const char *name){
+		SegInfo seg;
+		seg.off = shdr->sh_addr;
+		seg.len = shdr->sh_size;
+		
+		info.segs[name] = seg;
+	});
+#elif defined _WINDOWS
+	g_MemUtils.ForEachSection(s_LibHandles[lib], [&](const IMAGE_SECTION_HEADER *pSectHdr){
 		SegInfo seg;
 		seg.off = pSectHdr->VirtualAddress;
 		seg.len = pSectHdr->Misc.VirtualSize;
 		
-		const char *name = (const char *)pSectHdr->Name;
+		auto name = (const char *)pSectHdr->Name;
 		info.segs[name] = seg;
-		
-		++pSectHdr;
-	}
-	
+	});
 #endif
 	
 	s_LibInfos[lib] = info;
@@ -101,18 +101,37 @@ void LibMgr::FindInfo(Library lib)
 
 void *LibMgr::FindSym(Library lib, const char *sym)
 {
+	if (s_LibHandles.count(lib) == 0) return nullptr;
+	
 	void *handle = s_LibHandles.at(lib);
-	assert(handle != nullptr);
+	if (handle == nullptr) return nullptr;
+	
 	return g_MemUtils.ResolveSymbol(handle, sym);
 }
 
-void *LibMgr::FindSymRegex(Library lib, const char *pattern)
+std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern, std::regex::flag_type flags)
 {
-	// TODO
-	#error
+	std::regex filter(pattern);
+	
+	std::vector<Symbol *> matches;
+	
+	LibMgr::ForEachSym(lib, [&](Symbol *sym){
+		std::string name(sym->buffer(), sym->length);
+		
+		if (std::regex_search(name, filter, std::regex_constants::match_any)) {
+			matches.push_back(sym);
+		}
+	});
+	
+	if (matches.size() == 1) {
+		std::string name(matches[0]->buffer(), matches[0]->length);
+		return std::make_tuple(true, name, matches[0]->address);
+	} else {
+		return std::make_tuple(false, nullptr, nullptr);
+	}
 }
 
-void LibMgr::ForEachSym(Library lib, void (*functor)(Symbol *))
+void LibMgr::ForEachSym(Library lib, const std::function<void(Symbol *)>& functor)
 {
 	void *handle = s_LibHandles.at(lib);
 	assert(handle != nullptr);

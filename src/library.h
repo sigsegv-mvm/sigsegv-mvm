@@ -51,8 +51,8 @@ public:
 	static const LibInfo& GetInfo(Library lib);
 	
 	static void *FindSym(Library lib, const char *sym);
-	static void *FindSymRegex(Library lib, const char *pattern);
-	static void ForEachSym(Library lib, void (*functor)(Symbol *));
+	static std::tuple<bool, std::string, void *> FindSymRegex(Library lib, const char *pattern, std::regex::flag_type flags = std::regex::ECMAScript | std::regex::icase);
+	static void ForEachSym(Library lib, const std::function<void(Symbol *)>& functor);
 	
 	static Library WhichLibAtAddr(void *ptr);
 	
