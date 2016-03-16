@@ -7,13 +7,25 @@ namespace Mod_Cond_Reprogrammed
 {
 	void OnAddReprogrammed(CTFPlayer *player)
 	{
+		DevMsg("OnAddReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
+		
 		player->m_Shared->StunPlayer(5.0f, 0.65f, TF_STUNFLAG_NOSOUNDOREFFECT | TF_STUNFLAG_SLOWDOWN, nullptr);
 		player->ForceChangeTeam(TF_TEAM_RED, false);
+		
+		/* this used to be in CTFPlayerShared::OnAddReprogrammed on the client
+		 * side, but we now have to do it from the server side */
+		DispatchParticleEffect("sapper_sentry1_fx", PATTACH_POINT_FOLLOW, player, "head");
 	}
 	
 	void OnRemoveReprogrammed(CTFPlayer *player)
 	{
+		DevMsg("OnRemoveReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
+		
 		player->ForceChangeTeam(TF_TEAM_BLUE, false);
+		
+		/* this is far from ideal; we can only remove ALL particle effects from
+		 * the server side */
+		StopParticleEffects(player);
 	}
 	
 	

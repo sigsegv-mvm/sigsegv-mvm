@@ -216,12 +216,12 @@ private:
 	static MemberFuncThunk<const CTFBot *, bool, CBaseEntity *               > ft_IsLineOfFireClear_ent;
 	static MemberFuncThunk<const CTFBot *, bool, const Vector&, const Vector&> ft_IsLineOfFireClear_vec_vec;
 	static MemberFuncThunk<const CTFBot *, bool, const Vector&, CBaseEntity *> ft_IsLineOfFireClear_vec_ent;
-	static MemberFuncThunk<      CTFBot *, SuspectedSpyInfo_t *, CTFPlayer *>  ft_IsSuspectedSpy;
-	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_SuspectSpy;
-	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_StopSuspectingSpy;
-	static MemberFuncThunk<const CTFBot *, bool, CTFPlayer *>                  ft_IsKnownSpy;
-	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_RealizeSpy;
-	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *>                  ft_ForgetSpy;
+	static MemberFuncThunk<      CTFBot *, SuspectedSpyInfo_t *, CTFPlayer * > ft_IsSuspectedSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_SuspectSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_StopSuspectingSpy;
+	static MemberFuncThunk<const CTFBot *, bool, CTFPlayer *                 > ft_IsKnownSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_RealizeSpy;
+	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_ForgetSpy;
 	
 	static std::map<CHandle<CTFBot>, ExtendedAttr> s_ExtAttrs;
 };
@@ -229,7 +229,12 @@ private:
 
 inline CTFBot *ToTFBot(CBaseEntity *pEntity)
 {
-	/* not actually correct but close enough */
+	if (pEntity == nullptr)   return nullptr;
+	if (!pEntity->IsPlayer()) return nullptr;
+	
+	/* not actually correct, but to do this the "right" way we'd need to do an
+	 * rtti_cast to CBasePlayer before we can call IsBotOfType, and then we'd
+	 * need to do another rtti_cast after that... may as well just do this */
 	return rtti_cast<CTFBot *>(pEntity);
 }
 

@@ -495,6 +495,85 @@
 					type "sym"
 					sym  "_ZN11CBaseEntity6RemoveEv"
 				}
+				
+				"UTIL_EntitiesInSphere"
+				{
+					type "sym"
+					sym  "_Z21UTIL_EntitiesInSphereRK6VectorfP20CFlaggedEntitiesEnum"
+				}
+				"CTFProjectile_Jar::Explode"
+				{
+					type "sym"
+					sym  "_ZN17CTFProjectile_Jar7ExplodeEP10CGameTracei"
+				}
+				"CBaseProjectile::GetProjectileType"
+				{
+					type "sym"
+					sym  "_ZNK15CBaseProjectile17GetProjectileTypeEv"
+				}
+				"CTFWeaponBaseGrenadeProj::GetWeaponID"
+				{
+					type "sym"
+					sym  "_ZNK24CTFWeaponBaseGrenadeProj11GetWeaponIDEv"
+				}
+				
+				"DispatchParticleEffect [overload 1]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc20ParticleAttachment_tP11CBaseEntityS0_b"
+				}
+				"DispatchParticleEffect [overload 2]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc20ParticleAttachment_tP11CBaseEntityib"
+				}
+				"DispatchParticleEffect [overload 3]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc6Vector6QAngleP11CBaseEntity"
+				}
+				"DispatchParticleEffect [overload 4]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc6VectorS1_6QAngleP11CBaseEntity"
+				}
+				"DispatchParticleEffect [overload 5]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffecti6VectorS_6QAngleP11CBaseEntity"
+				}
+				"DispatchParticleEffect [overload 6]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc20ParticleAttachment_tP11CBaseEntityS0_6VectorS4_bb"
+				}
+				"DispatchParticleEffect [overload 7]"
+				{
+					type "sym"
+					sym  "_Z22DispatchParticleEffectPKc6Vector6QAngleS1_S1_bP11CBaseEntityi"
+				}
+				"StopParticleEffects"
+				{
+					type "sym"
+					sym  "_Z19StopParticleEffectsP11CBaseEntity"
+				}
+				
+				"CBaseEntity::EmitSound"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundEPKcfPf"
+				}
+				
+				"IGameSystem::Add"
+				{
+					type "sym"
+					sym  "_ZN11IGameSystem3AddEPS_"
+				}
+				"IGameSystem::Remove"
+				{
+					type "sym"
+					sym  "_ZN11IGameSystem6RemoveEPS_"
+				}
 			}
 		}
 	}

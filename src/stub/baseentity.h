@@ -34,15 +34,16 @@ public:
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
 	
 	/* thunk */
-	void Remove()                                     {        ft_Remove              (this); }
-	void CalcAbsolutePosition()                       {        ft_CalcAbsolutePosition(this); }
-	bool ClassMatches(const char *pszClassOrWildcard) { return ft_ClassMatches        (this, pszClassOrWildcard); }
-	void SetAbsOrigin(const Vector& absOrigin)        {        ft_SetAbsOrigin        (this, absOrigin); }
-	void SetAbsAngles(const QAngle& absAngles)        {        ft_SetAbsAngles        (this, absAngles); }
-	Vector EyePosition()                              { return vt_EyePosition         (this); }
-	const QAngle& EyeAngles()                         { return vt_EyeAngles           (this); }
-	void SetOwnerEntity(CBaseEntity *pOwner)          {        vt_SetOwnerEntity      (this, pOwner); }
-	void Spawn()                                      {        vt_Spawn               (this); }
+	void Remove()                                                                            {        ft_Remove              (this); }
+	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition(this); }
+	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches        (this, pszClassOrWildcard); }
+	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin        (this, absOrigin); }
+	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles        (this, absAngles); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound           (this, soundname, soundtime, duration); }
+	Vector EyePosition()                                                                     { return vt_EyePosition         (this); }
+	const QAngle& EyeAngles()                                                                { return vt_EyeAngles           (this); }
+	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity      (this, pOwner); }
+	void Spawn()                                                                             {        vt_Spawn               (this); }
 	
 	/* hack */
 	bool IsPlayer() const;
@@ -68,11 +69,12 @@ private:
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOwnerEntity);
 	
-	static MemberFuncThunk<CBaseEntity *, void>                ft_Remove;
-	static MemberFuncThunk<CBaseEntity *, void>                ft_CalcAbsolutePosition;
-	static MemberFuncThunk<CBaseEntity *, bool, const char *>  ft_ClassMatches;
-	static MemberFuncThunk<CBaseEntity *, void, const Vector&> ft_SetAbsOrigin;
-	static MemberFuncThunk<CBaseEntity *, void, const QAngle&> ft_SetAbsAngles;
+	static MemberFuncThunk<CBaseEntity *, void>                               ft_Remove;
+	static MemberFuncThunk<CBaseEntity *, void>                               ft_CalcAbsolutePosition;
+	static MemberFuncThunk<CBaseEntity *, bool, const char *>                 ft_ClassMatches;
+	static MemberFuncThunk<CBaseEntity *, void, const Vector&>                ft_SetAbsOrigin;
+	static MemberFuncThunk<CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
+	static MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
 	
 	static MemberVFuncThunk<CBaseEntity *, Vector>              vt_EyePosition;
 	static MemberVFuncThunk<CBaseEntity *, const QAngle&>       vt_EyeAngles;

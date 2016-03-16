@@ -14,7 +14,7 @@ sourceFiles = [
   'src/common.cpp',
   'src/sizeof.cpp',
   'src/extension.cpp',
-  'src/client.cpp',
+  'src/factory.cpp',
   'src/gameconf.cpp',
   'src/library.cpp',
   'src/disasm/disasm.cpp',
@@ -45,6 +45,8 @@ sourceFiles = [
   'src/stub/objects.cpp',
   'src/stub/econ.cpp',
   'src/stub/cdebugoverlay.cpp',
+  'src/stub/particles.cpp',
+  'src/stub/igamesystem.cpp',
   'src/link/link.cpp',
   'src/link/nextbot1.cpp',
   'src/link/nextbot2.cpp',
@@ -91,6 +93,7 @@ sourceFiles = [
   'src/mod/robot/ticklish.cpp',
   'src/mod/sniper/charge_uncap.cpp',
   'src/mod/sniper/head_uncap.cpp',
+  'src/mod/sound/tele_activate.cpp',
   'src/mod/util/console_recv.cpp',
   'src/mod/util/console_send.cpp',
   'src/mod/util/listenserverhost.cpp',
@@ -102,6 +105,7 @@ sourceFiles = [
   'src/mod/visualize/explosive_headshot.cpp',
   'src/mod/visualize/minigun_deflect.cpp',
   'src/mod/visualize/taunt_attacks.cpp',
+  'src/mod/visualize/jar_radius.cpp',
 ]
 
 ###############

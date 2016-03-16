@@ -122,6 +122,16 @@
 					type "sym"
 					sym  "_ZN15CTFPlayerShared10StunPlayerEffiP9CTFPlayer"
 				}
+				"CTFPlayerShared::OnConditionAdded"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16OnConditionAddedE7ETFCond"
+				}
+				"CTFPlayerShared::OnConditionRemoved"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared18OnConditionRemovedE7ETFCond"
+				}
 				
 				"CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot"
 				{

@@ -6,7 +6,14 @@
 #include "stub/baseanimating.h"
 
 
-class CBaseProjectile : public CBaseAnimating {};
+class CBaseProjectile : public CBaseAnimating
+{
+public:
+	int GetProjectileType() const { return vt_GetProjectileType(this); }
+	
+private:
+	static MemberVFuncThunk<const CBaseProjectile *, int> vt_GetProjectileType;
+};
 
 class CBaseGrenade : public CBaseProjectile {};
 class CThrownGrenade : public CBaseGrenade {};
@@ -33,7 +40,12 @@ class CTFProjectile_GrapplingHook : public CTFProjectile_Arrow {};
 class CTFWeaponBaseGrenadeProj : public CBaseGrenade
 {
 public:
+	int GetWeaponID() const { return vt_GetWeaponID(this); }
+	
 	DECL_SENDPROP(bool, m_bCritical);
+	
+private:
+	static MemberVFuncThunk<const CTFWeaponBaseGrenadeProj *, int> vt_GetWeaponID;
 };
 
 class CTFGrenadePipebombProjectile : public CTFWeaponBaseGrenadeProj {};

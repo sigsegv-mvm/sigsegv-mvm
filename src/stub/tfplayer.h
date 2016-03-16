@@ -303,13 +303,25 @@ inline void CTFPlayerShared::NetworkStateChanged(void *pVar) { this->GetOuter()-
 
 inline CBasePlayer *ToBasePlayer(CBaseEntity *pEntity)
 {
-	/* not actually correct but close enough */
+	if (pEntity == nullptr)   return nullptr;
+	if (!pEntity->IsPlayer()) return nullptr;
+	
 	return rtti_cast<CBasePlayer *>(pEntity);
+}
+
+inline CBaseMultiplayerPlayer *ToBaseMultiplayerPlayer(CBaseEntity *pEntity)
+{
+	if (pEntity == nullptr)   return nullptr;
+	if (!pEntity->IsPlayer()) return nullptr;
+	
+	return rtti_cast<CBaseMultiplayerPlayer *>(pEntity);
 }
 
 inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
 {
-	/* not actually correct but close enough */
+	if (pEntity == nullptr)   return nullptr;
+	if (!pEntity->IsPlayer()) return nullptr;
+	
 	return rtti_cast<CTFPlayer *>(pEntity);
 }
 

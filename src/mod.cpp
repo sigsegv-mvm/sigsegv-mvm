@@ -1,18 +1,187 @@
 #include "mod.h"
 
 
-void CModManager::LoadAllMods()
+bool IHasPatches::LoadPatches()
 {
-	DevMsg("CModManager::LoadAllMods\n");
+	bool ok = true;
+	
+	for (auto patch : this->m_Patches) {
+		if (patch->Init()) {
+			if (patch->Check()) {
+				DevMsg("IHasPatches::LoadPatches: \"%s\" OK\n", this->GetName());
+			} else {
+				DevMsg("IHasPatches::LoadPatches: \"%s\" FAIL in Check\n", this->GetName());
+				ok = false;
+			}
+		} else {
+			DevMsg("IHasPatches::LoadPatches: \"%s\" FAIL in Init\n", this->GetName());
+			ok = false;
+		}
+	}
+	
+	return ok;
+}
+
+void IHasPatches::UnloadPatches()
+{
+	for (auto patch : this->m_Patches) {
+		patch->UnApply();
+		delete patch;
+	}
+	
+	this->m_Patches.clear();
+}
+
+
+void IHasPatches::AddPatch(IPatch *patch)
+{
+	DevMsg("IHasPatches::AddPatch: \"%s\" \"%s\" off:[0x%05x~0x%05x] len:0x%05x\n", this->GetName(),
+		patch->GetFuncName(), patch->GetFuncOffMin(), patch->GetFuncOffMax(), patch->GetLength());
+	
+	assert(this->CanAddPatches());
+	
+	this->m_Patches.push_back(patch);
+}
+
+
+void IHasPatches::ToggleAllPatches(bool enable)
+{
+	if (!this->CanTogglePatches()) return;
+	
+	DevMsg("IHasPatches::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
+		(enable ? "ON" : "OFF"));
+	
+	for (auto patch : this->m_Patches) {
+		if (enable) {
+			patch->Apply();
+		} else {
+			patch->UnApply();
+		}
+	}
+}
+
+
+bool IHasDetours::LoadDetours()
+{
+	bool ok = true;
+	
+	for (auto& pair : this->m_Detours) {
+		const char *name = pair.first;
+		IDetour *detour  = pair.second;
+		
+		if (!detour->IsLoaded()) {
+			if (detour->Load()) {
+				DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" OK\n", this->GetName(), name);
+			} else {
+				DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" FAIL\n", this->GetName(), name);
+				ok = false;
+			}
+		}
+	}
+	
+	return ok;
+}
+
+void IHasDetours::UnloadDetours()
+{
+	for (auto& pair : this->m_Detours) {
+		IDetour *detour = pair.second;
+		
+		if (detour->IsLoaded()) {
+			detour->Unload();
+		}
+		
+		delete detour;
+	}
+	
+	this->m_Detours.clear();
+}
+
+
+void IHasDetours::AddDetour(IDetour *detour)
+{
+	const char *name = detour->GetName();
+	
+	DevMsg("IHasDetours::AddDetour: \"%s\" \"%s\"\n", this->GetName(), name);
+	
+	assert(this->CanAddDetours());
+	assert(this->m_Detours.find(name) == this->m_Detours.end());
+	
+	this->m_Detours[name] = detour;
+}
+
+
+void IHasDetours::ToggleDetour(const char *name, bool enable)
+{
+	if (!this->CanToggleDetours()) return;
+	
+	DevMsg("IHasDetours::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
+		(enable ? "ON" : "OFF"));
+	
+	this->m_Detours.at(name)->Toggle(enable);
+}
+
+
+void IHasDetours::ToggleAllDetours(bool enable)
+{
+	if (!this->CanToggleDetours()) return;
+	
+	DevMsg("IHasDetours::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
+		(enable ? "ON" : "OFF"));
+	
+	for (auto& pair : this->m_Detours) {
+		IDetour *detour = pair.second;
+		detour->Toggle(enable);
+	}
+}
+
+
+void IMod::InvokeLoad()
+{
+	DevMsg("IMod::InvokeLoad: \"%s\"\n", this->GetName());
+	
+	bool ok_patch  = this->LoadPatches();
+	bool ok_detour = this->LoadDetours();
+	
+	if (!ok_patch || !ok_detour) {
+		this->m_bFailed = true;
+		return;
+	}
+	
+	bool ok_load = this->OnLoad();
+	if (ok_load) {
+		this->m_bLoaded = true;
+	} else {
+		this->m_bFailed = true;
+	}
+}
+
+void IMod::InvokeUnload()
+{
+	DevMsg("IMod::InvokeUnload: \"%s\"\n", this->GetName());
+	
+	this->OnUnload();
+	
+	this->UnloadDetours();
+	this->UnloadPatches();
+}
+
+
+CModManager g_ModManager;
+
+
+void CModManager::Load()
+{
+	DevMsg("CModManager::Load\n");
 	
 	for (auto mod : AutoList<IMod>::List()) {
 		mod->InvokeLoad();
 	}
 }
 
-void CModManager::UnloadAllMods()
+void CModManager::Unload()
 {
-	DevMsg("CModManager::UnloadAllMods\n");
+	DevMsg("CModManager::Unload\n");
 	
 	for (auto mod : AutoList<IMod>::List()) {
 		mod->InvokeUnload();
@@ -160,164 +329,4 @@ void CModManager::CC_ListMods(const CCommand& cmd)
 		ConColorMsg(info.c_d_failed, "%-*s",   2 + l_d_failed, info.d_failed.c_str());
 		ConColorMsg(info.c_d_active, "%-*s\n", 2 + l_d_active, info.d_active.c_str());
 	}
-}
-
-
-bool IHasPatches::LoadPatches()
-{
-	bool ok = true;
-	
-	for (auto patch : this->m_Patches) {
-		if (patch->Init()) {
-			if (patch->Check()) {
-				DevMsg("IHasPatches::LoadPatches: \"%s\" OK\n", this->GetName());
-			} else {
-				DevMsg("IHasPatches::LoadPatches: \"%s\" FAIL in Check\n", this->GetName());
-				ok = false;
-			}
-		} else {
-			DevMsg("IHasPatches::LoadPatches: \"%s\" FAIL in Init\n", this->GetName());
-			ok = false;
-		}
-	}
-	
-	return ok;
-}
-
-void IHasPatches::UnloadPatches()
-{
-	for (auto patch : this->m_Patches) {
-		patch->UnApply();
-		delete patch;
-	}
-	
-	this->m_Patches.clear();
-}
-
-
-void IHasPatches::AddPatch(IPatch *patch)
-{
-	DevMsg("IHasPatches::AddPatch: \"%s\" \"%s\" off:[0x%05x~0x%05x] len:0x%05x\n", this->GetName(),
-		patch->GetFuncName(), patch->GetFuncOffMin(), patch->GetFuncOffMax(), patch->GetLength());
-	
-	assert(this->CanAddPatches());
-	
-	this->m_Patches.push_back(patch);
-}
-
-
-void IHasPatches::ToggleAllPatches(bool enable)
-{
-	if (!this->CanTogglePatches()) return;
-	
-	DevMsg("IHasPatches::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
-		(enable ? "ON" : "OFF"));
-	
-	for (auto patch : this->m_Patches) {
-		if (enable) {
-			patch->Apply();
-		} else {
-			patch->UnApply();
-		}
-	}
-}
-
-
-bool IHasDetours::LoadDetours()
-{
-	bool ok = true;
-	
-	for (auto& pair : this->m_Detours) {
-		const char *name = pair.first;
-		IDetour *detour  = pair.second;
-		
-		if (detour->Load()) {
-			DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" OK\n", this->GetName(), name);
-		} else {
-			DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" FAIL\n", this->GetName(), name);
-			ok = false;
-		}
-	}
-	
-	return ok;
-}
-
-void IHasDetours::UnloadDetours()
-{
-	for (auto& pair : this->m_Detours) {
-		IDetour *detour = pair.second;
-		detour->Unload();
-		delete detour;
-	}
-	
-	this->m_Detours.clear();
-}
-
-
-void IHasDetours::AddDetour(IDetour *detour)
-{
-	const char *name = detour->GetName();
-	
-	DevMsg("IHasDetours::AddDetour: \"%s\" \"%s\"\n", this->GetName(), name);
-	
-	assert(this->CanAddDetours());
-	assert(this->m_Detours.find(name) == this->m_Detours.end());
-	
-	this->m_Detours[name] = detour;
-}
-
-
-void IHasDetours::ToggleDetour(const char *name, bool enable)
-{
-	if (!this->CanToggleDetours()) return;
-	
-	DevMsg("IHasDetours::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
-		(enable ? "ON" : "OFF"));
-	
-	this->m_Detours.at(name)->Toggle(enable);
-}
-
-
-void IHasDetours::ToggleAllDetours(bool enable)
-{
-	if (!this->CanToggleDetours()) return;
-	
-	DevMsg("IHasDetours::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
-		(enable ? "ON" : "OFF"));
-	
-	for (auto& pair : this->m_Detours) {
-		IDetour *detour = pair.second;
-		detour->Toggle(enable);
-	}
-}
-
-
-void IMod::InvokeLoad()
-{
-	DevMsg("IMod::InvokeLoad: \"%s\"\n", this->GetName());
-	
-	bool ok_patch  = this->LoadPatches();
-	bool ok_detour = this->LoadDetours();
-	
-	if (!ok_patch || !ok_detour) {
-		this->m_bFailed = true;
-		return;
-	}
-	
-	bool ok_load = this->OnLoad();
-	if (ok_load) {
-		this->m_bLoaded = true;
-	} else {
-		this->m_bFailed = true;
-	}
-}
-
-void IMod::InvokeUnload()
-{
-	DevMsg("IMod::InvokeUnload: \"%s\"\n", this->GetName());
-	
-	this->OnUnload();
-	
-	this->UnloadDetours();
-	this->UnloadPatches();
 }

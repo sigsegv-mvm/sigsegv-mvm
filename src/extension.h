@@ -6,27 +6,40 @@
 #define maxlength maxlen
 
 
-class CExtSigsegv : public SDKExtension, public IConCommandBaseAccessor
+class CExtSigsegv :
+	public SDKExtension,
+	public IMetamodListener,
+	public IConCommandBaseAccessor,
+	public CBaseGameSystemPerFrame
 {
 public:
-	virtual bool SDK_OnLoad(char *error, size_t maxlen, bool late);
-	virtual void SDK_OnUnload();
-	virtual void SDK_OnAllLoaded();
-//	virtual void SDK_OnPauseChange(bool paused);
-	virtual bool QueryRunning(char *error, size_t maxlen);
+	virtual bool SDK_OnLoad(char *error, size_t maxlen, bool late) override;
+	virtual void SDK_OnUnload() override;
+	virtual void SDK_OnAllLoaded() override;
+//	virtual void SDK_OnPauseChange(bool paused) override;
+	virtual bool QueryRunning(char *error, size_t maxlen) override;
 	
 #if defined SMEXT_CONF_METAMOD
-	virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late);
-	virtual bool SDK_OnMetamodUnload(char *error, size_t maxlen);
-//	virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlen);
+	virtual bool SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late) override;
+	virtual bool SDK_OnMetamodUnload(char *error, size_t maxlen) override;
+//	virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlen) override;
 #endif
 	
 	bool RegisterConCommandBase(ConCommandBase *pCommand);
 	
+private:
+	virtual void LevelInitPreEntity() override;
+	virtual void LevelInitPostEntity() override;
+	virtual void LevelShutdownPreEntity() override;
+	virtual void LevelShutdownPostEntity() override;
+	virtual void FrameUpdatePreEntityThink() override;
+	virtual void FrameUpdatePostEntityThink() override;
+	
+	void LoadSoundOverrides();
+	
 	void EnableColorSpew();
 	void DisableColorSpew();
 	
-private:
 	SpewOutputFunc_t m_pSpewOutputBackup = nullptr;
 };
 extern CExtSigsegv g_Ext;

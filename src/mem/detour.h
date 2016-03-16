@@ -156,7 +156,10 @@ private:
 	
 	static void WrapperPre(void *func_ptr, uint32_t *eip);
 	static void WrapperPost(void *func_ptr, uint32_t *eip);
-	static thread_local std::vector<uint32_t> s_SaveEIP;
+	/* TODO: should be thread_local, but our statically linked libstdc++ thinks
+	 * it has recent glibc, and it may not, which breaks
+	 * __cxa_thread_atexit_impl */
+	static /*thread_local*/ std::vector<uint32_t> s_SaveEIP;
 	
 	static std::map<void *, CDetouredFunc> s_FuncMap;
 };

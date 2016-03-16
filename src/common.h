@@ -18,12 +18,14 @@ class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
 class IStaticPropMgrServer;
-class IVDebugOverlay;
 class IGameEventManager2;
+class IEngineSound;
+class IVDebugOverlay;
+class ISoundEmitterSystemBase;
+class IMaterialSystem;
 class CGlobalVars;
 class CBaseEntityList;
 class IBaseClientDLL;
-class IMaterialSystem;
 namespace SourcePawn {
 	class ISourcePawnEngine;
 }
@@ -38,13 +40,17 @@ extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 extern IGameEventManager2 *gameeventmanager;
+extern IEngineSound *enginesound;
 extern IVDebugOverlay *debugoverlay;
+
+extern ISoundEmitterSystemBase *soundemitterbase;
+
+extern IMaterialSystem *g_pMaterialSystem;
 
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
 
 extern IBaseClientDLL *clientdll;
-extern IMaterialSystem *g_pMaterialSystem;
 
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
@@ -155,6 +161,10 @@ extern SourceMod::IExtensionManager *smexts;
 #include <mp_shareddefs.h>
 #include <materialsystem/imaterialsystem.h>
 #include <materialsystem/imaterial.h>
+#include <particle_parse.h>
+#include <SoundEmitterSystem/isoundemittersystembase.h>
+#include <IEngineSound.h>
+#include <igamesystem.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>

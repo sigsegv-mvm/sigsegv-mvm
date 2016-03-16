@@ -14,6 +14,7 @@ folder_list = [
   'addons/sourcemod/gamedata/sigsegv',
 #  'addons/sourcemod/configs',
   'custom/sigsegv/resource',
+  'custom/sigsegv/scripts',
 ]
 
 # Create the distribution folder hierarchy.
@@ -83,6 +84,13 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
 CopyFiles('resource', 'custom/sigsegv/resource',
   [
     'sigsegv_events.res',
+  ]
+)
+
+# Script files
+CopyFiles('scripts', 'custom/sigsegv/scripts',
+  [
+    'sigsegv_sound_overrides.txt',
   ]
 )
 

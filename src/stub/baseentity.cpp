@@ -18,16 +18,17 @@ IMPL_SENDPROP(char,                 CBaseEntity, m_lifeState,     CBasePlayer);
 IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hGroundEntity, CBasePlayer);
 IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hOwnerEntity,  CBaseEntity);
 
-MemberFuncThunk<CBaseEntity *, void               > CBaseEntity::ft_Remove              ("CBaseEntity::Remove");
-MemberFuncThunk<CBaseEntity *, void               > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
-MemberFuncThunk<CBaseEntity *, bool, const char * > CBaseEntity::ft_ClassMatches(        "CBaseEntity::ClassMatches");
-MemberFuncThunk<CBaseEntity *, void, const Vector&> CBaseEntity::ft_SetAbsOrigin(        "CBaseEntity::SetAbsOrigin");
-MemberFuncThunk<CBaseEntity *, void, const QAngle&> CBaseEntity::ft_SetAbsAngles(        "CBaseEntity::SetAbsAngles");
+MemberFuncThunk<CBaseEntity *, void                              > CBaseEntity::ft_Remove              ("CBaseEntity::Remove");
+MemberFuncThunk<CBaseEntity *, void                              > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
+MemberFuncThunk<CBaseEntity *, bool, const char *                > CBaseEntity::ft_ClassMatches        ("CBaseEntity::ClassMatches");
+MemberFuncThunk<CBaseEntity *, void, const Vector&               > CBaseEntity::ft_SetAbsOrigin        ("CBaseEntity::SetAbsOrigin");
+MemberFuncThunk<CBaseEntity *, void, const QAngle&               > CBaseEntity::ft_SetAbsAngles        ("CBaseEntity::SetAbsAngles");
+MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> CBaseEntity::ft_EmitSound           ("CBaseEntity::EmitSound");
 
-MemberVFuncThunk<CBaseEntity *, Vector             > CBaseEntity::vt_EyePosition(   TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
-MemberVFuncThunk<CBaseEntity *, const QAngle&      > CBaseEntity::vt_EyeAngles(     TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
+MemberVFuncThunk<CBaseEntity *, Vector             > CBaseEntity::vt_EyePosition   (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
+MemberVFuncThunk<CBaseEntity *, const QAngle&      > CBaseEntity::vt_EyeAngles     (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
 MemberVFuncThunk<CBaseEntity *, void, CBaseEntity *> CBaseEntity::vt_SetOwnerEntity(TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
-MemberVFuncThunk<CBaseEntity *, void               > CBaseEntity::vt_Spawn(         TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
+MemberVFuncThunk<CBaseEntity *, void               > CBaseEntity::vt_Spawn         (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
 
 
 bool CBaseEntity::IsPlayer() const

@@ -1,0 +1,8 @@
+"MVM.Robot_Teleporter_Activate"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+	"soundlevel"  	"SNDLVL_150dB"
+	"wave"			")mvm/mvm_tele_activate.wav"
+}

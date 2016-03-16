@@ -1,20 +1,27 @@
-#include "client.h"
+#include "factory.h"
 
-
-#undef DLL_EXT_STRING
 
 #if defined _WINDOWS
-#define DLL_EXT_STRING ".dll"
+#define DLL_EXT_STRINGS { ".dll" }
 #elif defined _LINUX
-#define DLL_EXT_STRING ".so"
+#define DLL_EXT_STRINGS { ".so", "_srv.so" }
 #elif defined _OSX
-#define DLL_EXT_STRING ".dylib"
+#define DLL_EXT_STRINGS { ".dylib" }
 #endif
 
 
-bool IsClient()
+CreateInterfaceFn GetFactory_NoExt(const char *name)
 {
-	return (GetClientFactory() != nullptr);
+	char buf[1024];
+	
+	for (auto ext : DLL_EXT_STRINGS) {
+		snprintf(buf, sizeof(buf), "%s%s", name, ext);
+		
+		auto fn = Sys_GetFactory(buf);
+		if (fn != nullptr) return fn;
+	}
+	
+	return nullptr;
 }
 
 
@@ -24,7 +31,31 @@ CreateInterfaceFn GetClientFactory()
 	static CreateInterfaceFn factory = nullptr;
 	
 	if (!init) {
-		factory = Sys_GetFactory("client" DLL_EXT_STRING);
+		factory = GetFactory_NoExt("client");
+		
+		if (factory == nullptr) {
+			Warning("GetClientFactory: factory is nullptr\n");
+		}
+		
+		init = true;
+	}
+	
+	return factory;
+}
+
+
+CreateInterfaceFn GetSoundEmitterSystemFactory()
+{
+	static bool init = false;
+	static CreateInterfaceFn factory = nullptr;
+	
+	if (!init) {
+		factory = GetFactory_NoExt("soundemittersystem");
+		
+		if (factory == nullptr) {
+			Warning("GetSoundEmitterSystemFactory: factory is nullptr\n");
+		}
+		
 		init = true;
 	}
 	
@@ -38,7 +69,12 @@ CreateInterfaceFn GetMaterialSystemFactory()
 	static CreateInterfaceFn factory = nullptr;
 	
 	if (!init) {
-		factory = Sys_GetFactory("materialsystem" DLL_EXT_STRING);
+		factory = GetFactory_NoExt("materialsystem");
+		
+		if (factory == nullptr) {
+			Warning("GetMaterialSystemFactory: factory is nullptr\n");
+		}
+		
 		init = true;
 	}
 	

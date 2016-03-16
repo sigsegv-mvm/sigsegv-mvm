@@ -8,7 +8,7 @@
 #include "prop.h"
 #include "util/rtti.h"
 #include "disasm/disasm.h"
-#include "client.h"
+#include "factory.h"
 
 
 CExtSigsegv g_Ext;
@@ -20,13 +20,17 @@ ISpatialPartition *partition         = nullptr;
 IEngineTrace *enginetrace            = nullptr;
 IStaticPropMgrServer *staticpropmgr  = nullptr;
 IGameEventManager2 *gameeventmanager = nullptr;
+IEngineSound *enginesound            = nullptr;
 IVDebugOverlay *debugoverlay         = nullptr;
+
+ISoundEmitterSystemBase *soundemitterbase = nullptr;
+
+IMaterialSystem *g_pMaterialSystem = nullptr;
 
 CGlobalVars *gpGlobals         = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
 
 IBaseClientDLL *clientdll          = nullptr;
-IMaterialSystem *g_pMaterialSystem = nullptr;
 
 SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
 SourceMod::IExtensionManager *smexts         = nullptr;
@@ -54,7 +58,11 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 //	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 //	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
 	
-	gameeventmanager->LoadEventsFromFile("resource/sigsegv_events.res");
+	if (gameeventmanager != nullptr) {
+		gameeventmanager->LoadEventsFromFile("resource/sigsegv_events.res");
+	}
+	
+	this->LoadSoundOverrides();
 	
 	g_pEntityList = reinterpret_cast<CBaseEntityList *>(gamehelpers->GetGlobalEntityList());
 	
@@ -73,7 +81,9 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	Prop::PreloadAll();
 	
-	CModManager::LoadAllMods();
+	g_ModManager.Load();
+	
+	IGameSystem::Add(this);
 	
 	return true;
 	
@@ -84,7 +94,9 @@ fail:
 
 void CExtSigsegv::SDK_OnUnload()
 {
-	CModManager::UnloadAllMods();
+	IGameSystem::Remove(this);
+	
+	g_ModManager.Unload();
 	
 	LibMgr::Unload();
 	
@@ -121,13 +133,21 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_CURRENT(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	GET_V_IFACE_CURRENT(GetEngineFactory, enginesound, IEngineSound, IENGINESOUND_SERVER_INTERFACE_VERSION);
 	
 	//GET_V_IFACE_CURRENT(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
 	
-	if (IsClient()) {
-		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
+	if (GetSoundEmitterSystemFactory() != nullptr) {
+		soundemitterbase = (ISoundEmitterSystemBase *)ismm->VInterfaceMatch(GetSoundEmitterSystemFactory(), SOUNDEMITTERSYSTEM_INTERFACE_VERSION, 0);
+	}
+	
+	if (GetMaterialSystemFactory() != nullptr) {
 		g_pMaterialSystem = (IMaterialSystem *)ismm->VInterfaceMatch(GetMaterialSystemFactory(), MATERIAL_SYSTEM_INTERFACE_VERSION, 0);
+	}
+	
+	if (GetClientFactory() != nullptr) {
+		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
 	}
 	
 	gpGlobals = ismm->GetCGlobals();
@@ -150,6 +170,47 @@ bool CExtSigsegv::RegisterConCommandBase(ConCommandBase *pCommand)
 {
 	META_REGCVAR(pCommand);
 	return true;
+}
+
+
+void CExtSigsegv::LevelInitPreEntity()
+{
+	this->LoadSoundOverrides();
+	
+	g_ModManager.LevelInitPreEntity();
+}
+
+void CExtSigsegv::LevelInitPostEntity()
+{
+	g_ModManager.LevelInitPostEntity();
+}
+
+void CExtSigsegv::LevelShutdownPreEntity()
+{
+	g_ModManager.LevelShutdownPreEntity();
+}
+
+void CExtSigsegv::LevelShutdownPostEntity()
+{
+	g_ModManager.LevelShutdownPostEntity();
+}
+
+void CExtSigsegv::FrameUpdatePreEntityThink()
+{
+	g_ModManager.FrameUpdatePreEntityThink();
+}
+
+void CExtSigsegv::FrameUpdatePostEntityThink()
+{
+	g_ModManager.FrameUpdatePostEntityThink();
+}
+
+
+void CExtSigsegv::LoadSoundOverrides()
+{
+	if (soundemitterbase != nullptr) {
+		soundemitterbase->AddSoundOverrides("scripts/sigsegv_sound_overrides.txt", true);
+	}
 }
 
 

@@ -631,7 +631,7 @@ void CDetouredFunc::FuncPost()
 }
 
 
-thread_local std::vector<uint32_t> CDetouredFunc::s_SaveEIP;
+/*thread_local*/ std::vector<uint32_t> CDetouredFunc::s_SaveEIP;
 
 
 void CDetouredFunc::WrapperPre(void *func_ptr, uint32_t *eip)
