@@ -16,6 +16,7 @@ public:
 	int entindex();
 	const Vector& GetAbsOrigin() const;
 	const QAngle& GetAbsAngles() const;
+//	const Vector& GetAbsVelocity() const;
 	bool IsEFlagSet(int nEFlagMask) const;
 	
 	/* getter/setter */
@@ -32,6 +33,7 @@ public:
 	bool IsAlive() const                        { return (this->m_lifeState == LIFE_ALIVE); }
 	CBaseEntity *GetGroundEntity() const        { return this->m_hGroundEntity; }
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
+	IPhysicsObject *VPhysicsGetObject() const   { return this->m_pPhysicsObject; }
 	
 	/* thunk */
 	void Remove()                                                                            {        ft_Remove              (this); }
@@ -44,6 +46,8 @@ public:
 	const QAngle& EyeAngles()                                                                { return vt_EyeAngles           (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity      (this, pOwner); }
 	void Spawn()                                                                             {        vt_Spawn               (this); }
+	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity         (this, vVelocity, vAngVelocity); }
+	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter    (this); }
 	
 	/* hack */
 	bool IsPlayer() const;
@@ -60,6 +64,8 @@ private:
 	DECL_DATAMAP(int,                    m_iEFlags);
 	DECL_DATAMAP(Vector,                 m_vecAbsOrigin);
 	DECL_DATAMAP(QAngle,                 m_angAbsRotation);
+	DECL_DATAMAP(Vector,                 m_vecAbsVelocity);
+	DECL_DATAMAP(IPhysicsObject *,       m_pPhysicsObject);
 	
 	DECL_SENDPROP(CCollisionProperty,   m_Collision);
 	DECL_SENDPROP(int,                  m_iTeamNum);
@@ -76,10 +82,12 @@ private:
 	static MemberFuncThunk<CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
 	static MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
 	
-	static MemberVFuncThunk<CBaseEntity *, Vector>              vt_EyePosition;
-	static MemberVFuncThunk<CBaseEntity *, const QAngle&>       vt_EyeAngles;
-	static MemberVFuncThunk<CBaseEntity *, void, CBaseEntity *> vt_SetOwnerEntity;
-	static MemberVFuncThunk<CBaseEntity *, void>                vt_Spawn;
+	static MemberVFuncThunk<      CBaseEntity *, Vector>                           vt_EyePosition;
+	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                    vt_EyeAngles;
+	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>              vt_SetOwnerEntity;
+	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_Spawn;
+	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> vt_GetVelocity;
+	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                    vt_WorldSpaceCenter;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -145,6 +153,16 @@ inline const QAngle& CBaseEntity::GetAbsAngles() const
 	}
 	return this->m_angAbsRotation;
 }
+
+#if 0
+inline const Vector& CBaseEntity::GetAbsVelocity() const
+{
+	if (this->IsEFlagSet(EFL_DIRTY_ABSVELOCITY)) {
+		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
+	}
+	return this->m_vecAbsVelocity;
+}
+#endif
 
 inline bool CBaseEntity::IsEFlagSet(int nEFlagMask) const
 {

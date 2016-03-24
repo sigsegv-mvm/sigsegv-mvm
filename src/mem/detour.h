@@ -74,23 +74,20 @@ private:
 };
 
 
-class CFuncTrace : public IDetour
+class IDetourRegexSymbol : public IDetour
 {
 public:
-	CFuncTrace(Library lib, const char *pattern) :
-		m_Library(lib), m_strPattern(pattern) {}
-	
 	virtual const char *GetName() const override;
 	
-	void TracePre();
-	void TracePost();
+	virtual void *GetFuncPtr() const { return this->m_pFunc; }
+	
+protected:
+	IDetourRegexSymbol(Library lib, const char *pattern) :
+		m_Library(lib), m_strPattern(pattern) {}
 	
 private:
 	virtual bool DoLoad() override;
 	virtual void DoUnload() override;
-	
-	virtual void DoEnable() override;
-	virtual void DoDisable() override;
 	
 	void Demangle();
 	
@@ -100,6 +97,43 @@ private:
 	std::string m_strSymbol;
 	std::string m_strDemangled;
 	void *m_pFunc = nullptr;
+};
+
+
+class IDetourTrace : public IDetourRegexSymbol
+{
+public:
+	virtual void DoEnable() override;
+	virtual void DoDisable() override;
+	
+	virtual void TracePre() = 0;
+	virtual void TracePost() = 0;
+	
+protected:
+	IDetourTrace(Library lib, const char *pattern) :
+		IDetourRegexSymbol(lib, pattern) {}
+};
+
+
+class CFuncTrace : public IDetourTrace
+{
+public:
+	CFuncTrace(Library lib, const char *pattern) :
+		IDetourTrace(lib, pattern) {}
+	
+	virtual void TracePre() override;
+	virtual void TracePost() override;
+};
+
+
+class CFuncBacktrace : public IDetourTrace
+{
+public:
+	CFuncBacktrace(Library lib, const char *pattern) :
+		IDetourTrace(lib, pattern) {}
+	
+	virtual void TracePre() override;
+	virtual void TracePost() override;
 };
 
 
@@ -114,8 +148,8 @@ public:
 	void AddDetour(CDetour *detour);
 	void RemoveDetour(CDetour *detour);
 	
-	void AddTrace(CFuncTrace *trace);
-	void RemoveTrace(CFuncTrace *trace);
+	void AddTrace(IDetourTrace *trace);
+	void RemoveTrace(IDetourTrace *trace);
 	
 private:
 	void RemoveAllDetours();
@@ -134,16 +168,13 @@ private:
 	void InstallJump(void *target);
 	void UninstallJump();
 	
-	void FuncEnableWrite();
-	void FuncDisableWrite();
-	
 	void FuncPre();
 	void FuncPost();
 	
 	void *m_pFunc;
 	
 	std::vector<CDetour *> m_Detours;
-	std::vector<CFuncTrace *> m_Traces;
+	std::vector<IDetourTrace *> m_Traces;
 	
 	std::vector<uint8_t> m_Prologue;
 	

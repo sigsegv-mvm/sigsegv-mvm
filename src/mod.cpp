@@ -189,6 +189,45 @@ void CModManager::Unload()
 }
 
 
+void CModManager::LevelInitPreEntity()
+{
+	// TODO
+}
+
+void CModManager::LevelInitPostEntity()
+{
+	// TODO
+}
+
+void CModManager::LevelShutdownPreEntity()
+{
+	// TODO
+}
+
+void CModManager::LevelShutdownPostEntity()
+{
+	// TODO
+}
+
+void CModManager::FrameUpdatePreEntityThink()
+{
+	for (auto listener : AutoList<IFrameUpdateListener>::List()) {
+		if (listener->ShouldReceiveFrameEvents()) {
+			listener->FrameUpdatePreEntityThink();
+		}
+	}
+}
+
+void CModManager::FrameUpdatePostEntityThink()
+{
+	for (auto listener : AutoList<IFrameUpdateListener>::List()) {
+		if (listener->ShouldReceiveFrameEvents()) {
+			listener->FrameUpdatePostEntityThink();
+		}
+	}
+}
+
+
 static ConCommand ccmd_list_mods("sig_list_mods", &CModManager::CC_ListMods,
 	"List mods and show their status", FCVAR_NONE);
 void CModManager::CC_ListMods(const CCommand& cmd)

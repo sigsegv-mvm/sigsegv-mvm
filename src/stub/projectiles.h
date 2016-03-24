@@ -9,9 +9,13 @@
 class CBaseProjectile : public CBaseAnimating
 {
 public:
-	int GetProjectileType() const { return vt_GetProjectileType(this); }
+	CBaseEntity *GetOriginalLauncher() const { return this->m_hOriginalLauncher; }
+	
+	int GetProjectileType() const            { return vt_GetProjectileType(this); }
 	
 private:
+	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOriginalLauncher);
+	
 	static MemberVFuncThunk<const CBaseProjectile *, int> vt_GetProjectileType;
 };
 
@@ -23,7 +27,12 @@ class CBaseGrenadeTimed : public CBaseGrenade {};
 
 class CTFBaseProjectile : public CBaseProjectile {};
 
-class CTFBaseRocket  : public CBaseProjectile {};
+class CTFBaseRocket  : public CBaseProjectile
+{
+public:
+	DECL_SENDPROP(Vector, m_vInitialVelocity);
+};
+
 class CTFFlameRocket : public CTFBaseRocket {};
 
 class CTFProjectile_Syringe : public CTFBaseProjectile {};
@@ -42,7 +51,8 @@ class CTFWeaponBaseGrenadeProj : public CBaseGrenade
 public:
 	int GetWeaponID() const { return vt_GetWeaponID(this); }
 	
-	DECL_SENDPROP(bool, m_bCritical);
+	DECL_SENDPROP(bool,   m_bCritical);
+	DECL_SENDPROP(Vector, m_vInitialVelocity);
 	
 private:
 	static MemberVFuncThunk<const CTFWeaponBaseGrenadeProj *, int> vt_GetWeaponID;

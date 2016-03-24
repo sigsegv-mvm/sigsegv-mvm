@@ -686,3 +686,40 @@ void NDebugOverlay::Clear()
 		debugoverlay->ClearAllOverlays();
 	}
 }
+
+void NDebugOverlay::LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration)
+{
+	// --------------------------------------------------------------
+	// Clip the line before sending so we 
+	// don't overflow the client message buffer
+	// --------------------------------------------------------------
+	CBasePlayer *player = GetLocalPlayer();
+	
+	if (player == nullptr) {
+		return;
+	}
+	
+	// Clip line that is far away
+	if (((player->GetAbsOrigin() - origin).LengthSqr() > MAX_OVERLAY_DIST_SQR) &&
+		((player->GetAbsOrigin() - target).LengthSqr() > MAX_OVERLAY_DIST_SQR)) {
+		return;
+	}
+	
+	// Clip line that is behind the client 
+	Vector clientForward;
+	player->EyeVectors( &clientForward );
+	
+	Vector toOrigin = origin - player->GetAbsOrigin();
+	Vector toTarget = target - player->GetAbsOrigin();
+	float dotOrigin = DotProduct(clientForward, toOrigin);
+	float dotTarget = DotProduct(clientForward, toTarget);
+	
+	if (dotOrigin < 0.0f && dotTarget < 0.0f) {
+		return;
+	}
+
+	if (debugoverlay != nullptr)
+	{
+		debugoverlay->AddLineOverlayAlpha(origin, target, r, g, b, a, noDepthTest, flDuration);
+	}
+}

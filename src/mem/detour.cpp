@@ -1,6 +1,7 @@
 #include "mem/detour.h"
 #include "addr/addr.h"
 #include "mem/protect.h"
+#include "util/backtrace.h"
 
 
 #if !(defined(__i386) || defined(_M_IX86))
@@ -234,31 +235,6 @@ bool CDetour::EnsureUniqueInnerPtrs()
 }
 
 
-const char *CFuncTrace::GetName() const
-{
-	if (this->IsLoaded()) {
-		return this->m_strDemangled.c_str();
-	} else {
-		return this->m_strPattern.c_str();
-	}
-}
-
-
-void CFuncTrace::TracePre()
-{
-	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "{");
-	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
-	TraceLevel::Increment();
-}
-
-void CFuncTrace::TracePost()
-{
-	TraceLevel::Decrement();
-	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "}");
-	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
-}
-
-
 /* iterator for non-null-terminated symbol name strings, to avoid having to make
  * std::string copies a bunch of times for regex matching */
 class CharPtrIterator : public std::iterator<std::bidirectional_iterator_tag, char>
@@ -286,9 +262,24 @@ private:
 };
 
 
-bool CFuncTrace::DoLoad()
+const char *IDetourRegexSymbol::GetName() const
+{
+	if (this->IsLoaded()) {
+		return this->m_strDemangled.c_str();
+	} else {
+		return this->m_strPattern.c_str();
+	}
+}
+
+
+bool IDetourRegexSymbol::DoLoad()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	
+	if (this->m_Library == Library::INVALID) {
+		DevMsg("IDetourRegexSymbol::DoLoad: \"%s\": invalid library\n", this->GetName());
+		return false;
+	}
 	
 	const LibInfo& info = LibMgr::GetInfo(this->m_Library);
 	void *text_begin = (void *)(info.baseaddr         + info.segs.at(".text").off);
@@ -309,7 +300,11 @@ bool CFuncTrace::DoLoad()
 	});
 	
 	if (syms.size() != 1) {
-		DevMsg("CFuncTrace::DoLoad: \"%s\": symbol lookup failed (%u matches)\n", this->GetName(), syms.size());
+		DevMsg("IDetourRegexSymbol::DoLoad: \"%s\": symbol lookup failed (%u matches):\n", this->GetName(), syms.size());
+		for (auto sym : syms) {
+			std::string name(sym->buffer(), sym->length);
+			DevMsg("  %s\n", name.c_str());
+		}
 		return false;
 	}
 	
@@ -321,28 +316,13 @@ bool CFuncTrace::DoLoad()
 	return true;
 }
 
-void CFuncTrace::DoUnload()
+void IDetourRegexSymbol::DoUnload()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 }
 
 
-void CFuncTrace::DoEnable()
-{
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-	
-	CDetouredFunc::Find(this->m_pFunc).AddTrace(this);
-}
-
-void CFuncTrace::DoDisable()
-{
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-	
-	CDetouredFunc::Find(this->m_pFunc).RemoveTrace(this);
-}
-
-
-void CFuncTrace::Demangle()
+void IDetourRegexSymbol::Demangle()
 {
 #if defined _LINUX || defined _OSX
 	const char *demangled = cplus_demangle(this->m_strSymbol.c_str(), DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS);
@@ -355,6 +335,46 @@ void CFuncTrace::Demangle()
 #else
 	this->m_strDemangled = this->m_strSymbol;
 #endif
+}
+
+
+void IDetourTrace::DoEnable()
+{
+	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	
+	CDetouredFunc::Find(this->GetFuncPtr()).AddTrace(this);
+}
+
+void IDetourTrace::DoDisable()
+{
+	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	
+	CDetouredFunc::Find(this->GetFuncPtr()).RemoveTrace(this);
+}
+
+
+void CFuncTrace::TracePre()
+{
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "{");
+	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
+	TraceLevel::Increment();
+}
+
+void CFuncTrace::TracePost()
+{
+	TraceLevel::Decrement();
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "}");
+	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
+}
+
+
+void CFuncBacktrace::TracePre()
+{
+	BACKTRACE();
+}
+
+void CFuncBacktrace::TracePost()
+{
 }
 
 
@@ -415,7 +435,7 @@ void CDetouredFunc::RemoveDetour(CDetour *detour)
 }
 
 
-void CDetouredFunc::AddTrace(CFuncTrace *trace)
+void CDetouredFunc::AddTrace(IDetourTrace *trace)
 {
 	TRACE("[this: %08x] [trace: %08x \"%s\"]", (uintptr_t)this, (uintptr_t)trace, trace->GetName());
 	
@@ -425,7 +445,7 @@ void CDetouredFunc::AddTrace(CFuncTrace *trace)
 	this->Reconfigure();
 }
 
-void CDetouredFunc::RemoveTrace(CFuncTrace *trace)
+void CDetouredFunc::RemoveTrace(IDetourTrace *trace)
 {
 	TRACE("[this: %08x] [trace: %08x \"%s\"]", (uintptr_t)this, (uintptr_t)trace, trace->GetName());
 	
@@ -486,8 +506,9 @@ void CDetouredFunc::DestroyWrapper()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
-	if (this->m_pWrapper == nullptr) {
+	if (this->m_pWrapper != nullptr) {
 		g_pSourcePawn->FreePageMemory(this->m_pWrapper);
+		this->m_pWrapper = nullptr;
 	}
 }
 
@@ -514,8 +535,9 @@ void CDetouredFunc::DestroyTrampoline()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
-	if (this->m_pTrampoline == nullptr) {
+	if (this->m_pTrampoline != nullptr) {
 		g_pSourcePawn->FreePageMemory(this->m_pTrampoline);
+		this->m_pTrampoline = nullptr;
 	}
 }
 
@@ -527,6 +549,7 @@ void CDetouredFunc::StorePrologue()
 	assert(!this->IsPrologueValid());
 	
 	size_t n_bytes = copy_bytes((unsigned char *)this->m_pFunc, nullptr, JmpRelImm32::Size());
+	assert(n_bytes >= JmpRelImm32::Size());
 	
 	this->m_Prologue.resize(n_bytes);
 	memcpy(this->m_Prologue.data(), this->m_pFunc, n_bytes);
@@ -588,9 +611,8 @@ void CDetouredFunc::InstallJump(void *target)
 {
 	TRACE("[this: %08x] [target: %08x]", (uintptr_t)this, (uintptr_t)target);
 	
-	this->FuncEnableWrite();
+	MemUnprotector prot(this->m_pFunc, this->m_Prologue.size());
 	JmpRelImm32::WritePadded(this->m_pFunc, (uint32_t)target, this->m_Prologue.size());
-	this->FuncDisableWrite();
 }
 
 void CDetouredFunc::UninstallJump()
@@ -599,20 +621,8 @@ void CDetouredFunc::UninstallJump()
 	
 	assert(this->IsPrologueValid());
 	
-	this->FuncEnableWrite();
+	MemUnprotector prot(this->m_pFunc, this->m_Prologue.size());
 	memcpy(this->m_pFunc, this->m_Prologue.data(), this->m_Prologue.size());
-	this->FuncDisableWrite();
-}
-
-
-void CDetouredFunc::FuncEnableWrite()
-{
-	MemProtect(this->m_pFunc, this->m_Prologue.size(), false);
-}
-
-void CDetouredFunc::FuncDisableWrite()
-{
-	MemProtect(this->m_pFunc, this->m_Prologue.size(), true);
 }
 
 

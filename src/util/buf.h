@@ -13,7 +13,12 @@ public:
 	
 	void SetAll(uint8_t val);
 	void SetRange(int idx, int len, uint8_t val);
+	
+	uint32_t GetDword(int idx);
 	void SetDword(int idx, uint32_t val);
+	
+	float GetFloat(int idx);
+	void SetFloat(int idx, float val);
 	
 	void CopyFrom(const ByteBuf& that);
 	void CopyFrom(const uint8_t *arr);
@@ -68,10 +73,30 @@ inline void ByteBuf::SetRange(int idx, int len, uint8_t val)
 	}
 }
 
+
+inline uint32_t ByteBuf::GetDword(int idx)
+{
+	assert(idx >= 0 && idx + 4 <= this->m_iSize);
+	return *(uint32_t *)(this->m_Buf + idx);
+}
+
 inline void ByteBuf::SetDword(int idx, uint32_t val)
 {
 	assert(idx >= 0 && idx + 4 <= this->m_iSize);
 	*(uint32_t *)(this->m_Buf + idx) = val;
+}
+
+
+inline float ByteBuf::GetFloat(int idx)
+{
+	assert(idx >= 0 && idx + 4 <= this->m_iSize);
+	return *(float *)(this->m_Buf + idx);
+}
+
+inline void ByteBuf::SetFloat(int idx, float val)
+{
+	assert(idx >= 0 && idx + 4 <= this->m_iSize);
+	*(float *)(this->m_Buf + idx) = val;
 }
 
 

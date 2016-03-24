@@ -36,16 +36,8 @@ private:
 	virtual void FrameUpdatePostEntityThink() override;
 	
 	void LoadSoundOverrides();
-	
-	void EnableColorSpew();
-	void DisableColorSpew();
-	
-	SpewOutputFunc_t m_pSpewOutputBackup = nullptr;
 };
 extern CExtSigsegv g_Ext;
-
-
-SpewRetval_t ANSIColorSpew(SpewType_t type, const char *pMsg);
 
 
 #endif

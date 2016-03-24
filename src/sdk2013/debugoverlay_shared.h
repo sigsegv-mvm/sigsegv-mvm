@@ -48,6 +48,7 @@ namespace NDebugOverlay
 	void	Sphere( const Vector &position, const QAngle &angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration );
 	
 	void Clear();
+	void LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration);
 };
 
 #endif // DEBUGOVERLAY_SHARED_H

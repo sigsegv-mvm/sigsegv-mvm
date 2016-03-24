@@ -12,6 +12,15 @@
 //#endif
 
 
+/* older versions of public/tier0/platform.h lack these definitions */
+#if defined POSIX
+#define stricmp    strcasecmp
+#define _stricmp   strcasecmp
+#define _snprintf  snprintf
+#define _vsnprintf vsnprintf
+#endif
+
+
 class IVEngineServer;
 class IServerGameDLL;
 class ICvar;
@@ -21,10 +30,12 @@ class IStaticPropMgrServer;
 class IGameEventManager2;
 class IEngineSound;
 class IVDebugOverlay;
+class IPhysics;
 class ISoundEmitterSystemBase;
 class IMaterialSystem;
 class CGlobalVars;
 class CBaseEntityList;
+class IVEngineClient;
 class IBaseClientDLL;
 namespace SourcePawn {
 	class ISourcePawnEngine;
@@ -43,6 +54,8 @@ extern IGameEventManager2 *gameeventmanager;
 extern IEngineSound *enginesound;
 extern IVDebugOverlay *debugoverlay;
 
+extern IPhysics *physics;
+
 extern ISoundEmitterSystemBase *soundemitterbase;
 
 extern IMaterialSystem *g_pMaterialSystem;
@@ -50,6 +63,7 @@ extern IMaterialSystem *g_pMaterialSystem;
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
 
+extern IVEngineClient *engineclient;
 extern IBaseClientDLL *clientdll;
 
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
@@ -74,10 +88,6 @@ extern SourceMod::IExtensionManager *smexts;
 #include <map>
 #include <set>
 #include <vector>
-
-
-/* AMTL */
-#include <amtl/am-string.h>
 
 
 /* Boost */
@@ -119,10 +129,19 @@ extern SourceMod::IExtensionManager *smexts;
 #include <capstone.h>
 
 
+/* Approximate Nearest Neighbor */
+#include <ANN/ANN.h>
+
+
 /* Source SDK */
+#define PRINTF_FORMAT_STRING
+#define FMTFUNCTION(...)
+
+#include <Color.h>
 #include <string_t.h>
 #include "sdk2013/annotations.h"
 #include "sdk2013/basetypes.h"
+#include "sdk2013/icvar.h"
 #include <tier0/dbg.h>
 #include <tier1/convar.h>
 #include "sdk2013/fmtstr.h"
@@ -165,12 +184,20 @@ extern SourceMod::IExtensionManager *smexts;
 #include <SoundEmitterSystem/isoundemittersystembase.h>
 #include <IEngineSound.h>
 #include <igamesystem.h>
+#include <vphysics_interface.h>
+#include <ivmodelrender.h>
+#include <vcollide_parse.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
 
 
+/* AMTL */
+#include <amtl/am-string.h>
+
+
 /* MetaMod */
+
 
 /* SourceMod */
 #include <compat_wrappers.h>

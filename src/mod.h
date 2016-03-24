@@ -109,17 +109,29 @@ public:
 	void Load();
 	void Unload();
 	
-	/* TODO: pass these events on to all loaded IMods */
-	virtual void LevelInitPreEntity() override {}
-	virtual void LevelInitPostEntity() override {}
-	virtual void LevelShutdownPreEntity() override {}
-	virtual void LevelShutdownPostEntity() override {}
-	virtual void FrameUpdatePreEntityThink() override {}
-	virtual void FrameUpdatePostEntityThink() override {}
+	virtual void LevelInitPreEntity() override;
+	virtual void LevelInitPostEntity() override;
+	virtual void LevelShutdownPreEntity() override;
+	virtual void LevelShutdownPostEntity() override;
+	virtual void FrameUpdatePreEntityThink() override;
+	virtual void FrameUpdatePostEntityThink() override;
 	
 	static void CC_ListMods(const CCommand& cmd);
 };
 extern CModManager g_ModManager;
+
+
+class IFrameUpdateListener : public AutoList<IFrameUpdateListener>
+{
+public:
+	virtual bool ShouldReceiveFrameEvents() const = 0;
+	
+	virtual void FrameUpdatePreEntityThink() {}
+	virtual void FrameUpdatePostEntityThink() {}
+	
+protected:
+	IFrameUpdateListener() {}
+};
 
 
 #define MOD_ADD_DETOUR_MEMBER(detour, addr) \

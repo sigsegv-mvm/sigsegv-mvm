@@ -9,6 +9,8 @@ IMPL_DATAMAP(string_t,               CBaseEntity, m_iName);
 IMPL_DATAMAP(int,                    CBaseEntity, m_iEFlags);
 IMPL_DATAMAP(Vector,                 CBaseEntity, m_vecAbsOrigin);
 IMPL_DATAMAP(QAngle,                 CBaseEntity, m_angAbsRotation);
+IMPL_DATAMAP(Vector,                 CBaseEntity, m_vecAbsVelocity);
+IMPL_DATAMAP(IPhysicsObject*,        CBaseEntity, m_pPhysicsObject);
 
 IMPL_SENDPROP(CCollisionProperty,   CBaseEntity, m_Collision,     CBaseEntity);
 IMPL_SENDPROP(int,                  CBaseEntity, m_iTeamNum,      CBaseEntity);
@@ -25,10 +27,12 @@ MemberFuncThunk<CBaseEntity *, void, const Vector&               > CBaseEntity::
 MemberFuncThunk<CBaseEntity *, void, const QAngle&               > CBaseEntity::ft_SetAbsAngles        ("CBaseEntity::SetAbsAngles");
 MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> CBaseEntity::ft_EmitSound           ("CBaseEntity::EmitSound");
 
-MemberVFuncThunk<CBaseEntity *, Vector             > CBaseEntity::vt_EyePosition   (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
-MemberVFuncThunk<CBaseEntity *, const QAngle&      > CBaseEntity::vt_EyeAngles     (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
-MemberVFuncThunk<CBaseEntity *, void, CBaseEntity *> CBaseEntity::vt_SetOwnerEntity(TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
-MemberVFuncThunk<CBaseEntity *, void               > CBaseEntity::vt_Spawn         (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
+MemberVFuncThunk<      CBaseEntity *, Vector                          > CBaseEntity::vt_EyePosition     (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
+MemberVFuncThunk<      CBaseEntity *, const QAngle&                   > CBaseEntity::vt_EyeAngles       (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
+MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *             > CBaseEntity::vt_SetOwnerEntity  (TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
+MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEntity::vt_Spawn           (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
+MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> CBaseEntity::vt_GetVelocity     (TypeName<CBaseEntity>(), "CBaseEntity::GetVelocity");
+MemberVFuncThunk<const CBaseEntity *, const Vector&                   > CBaseEntity::vt_WorldSpaceCenter(TypeName<CBaseEntity>(), "CBaseEntity::WorldSpaceCenter");
 
 
 bool CBaseEntity::IsPlayer() const

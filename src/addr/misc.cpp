@@ -410,6 +410,7 @@ static CAddr_Pointer addr_NDebugOverlay_Circle_ang(                "[local] NDeb
 static CAddr_Pointer addr_NDebugOverlay_Circle_axes(               "[local] NDebugOverlay::Circle_axes",                (const void *)(void (*)(const Vector&, const Vector&, const Vector&, float, int, int, int, int, bool, float))&NDebugOverlay::Circle);
 static CAddr_Pointer addr_NDebugOverlay_Sphere_ang(                "[local] NDebugOverlay::Sphere_ang",                 (const void *)(void (*)(const Vector&, const QAngle&, float, int, int, int, int, bool, float))&NDebugOverlay::Sphere);
 static CAddr_Pointer addr_NDebugOverlay_Clear(                     "[local] NDebugOverlay::Clear",                      (const void *)&NDebugOverlay::Clear);
+static CAddr_Pointer addr_NDebugOverlay_LineAlpha(                 "[local] NDebugOverlay::LineAlpha",                  (const void *)&NDebugOverlay::LineAlpha);
 
 
 class CAddr_Client_UserMessages : public IAddr_Sym

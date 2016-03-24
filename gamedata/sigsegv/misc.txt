@@ -178,6 +178,11 @@
 					type "sym"
 					sym  "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
 				}
+				"CAttributeManager::AttribHookValue<float>"
+				{
+					type "sym"
+					sym  "_ZN17CAttributeManager15AttribHookValueIfEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
+				}
 				"CAttributeManager::ApplyAttributeFloatWrapper"
 				{
 					type "sym"
@@ -573,6 +578,85 @@
 				{
 					type "sym"
 					sym  "_ZN11IGameSystem6RemoveEPS_"
+				}
+				
+				"CBaseEntity::PhysicsSimulate"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity15PhysicsSimulateEv"
+				}
+				
+				"CTFBaseProjectile::FlyThink"
+				{
+					type "sym"
+					sym  "_ZN17CTFBaseProjectile8FlyThinkEv"
+				}
+				
+				"CBaseEntity::GetVelocity"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity11GetVelocityEP6VectorS1_"
+				}
+				
+				"CBaseEntity::WorldSpaceCenter"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity16WorldSpaceCenterEv"
+				}
+				
+				"net_blocksize"
+				{
+					type "sym"
+					sym  "net_blocksize"
+					lib  "engine"
+				}
+				"net_maxroutable"
+				{
+					type "sym"
+					sym  "net_maxroutable"
+					lib  "engine"
+				}
+				"sv_maxroutable"
+				{
+					type "sym"
+					sym  "_ZL14sv_maxroutable"
+					lib  "engine"
+				}
+				"NET_SendPacket"
+				{
+					type "sym"
+					sym  "_Z14NET_SendPacketP11INetChanneliRK8netadr_sPKhiP8bf_writeb"
+					lib  "engine"
+				}
+				"NET_SendLong"
+				{
+					type "sym"
+					sym  "_Z12NET_SendLongP11INetChanneliiPKciPK8sockaddrii"
+					lib  "engine"
+				}
+				"NET_SendTo"
+				{
+					type "sym"
+					sym  "_Z10NET_SendTobiPKciPK8sockaddrii"
+					lib  "engine"
+				}
+				"CNetChan::GetMaxRoutablePayloadSize"
+				{
+					type "sym"
+					sym  "_ZN8CNetChan25GetMaxRoutablePayloadSizeEv"
+					lib  "engine"
+				}
+				
+				"CTFWeaponBaseGun::FirePipeBomb"
+				{
+					type "sym"
+					sym  "_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
+				}
+				
+				"CBaseEntity::CreateNoSpawn"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity13CreateNoSpawnEPKcRK6VectorRK6QAnglePS_"
 				}
 			}
 		}

@@ -24,6 +24,8 @@ public:
 	virtual uint32_t GetFuncOffMin() const = 0;
 	virtual uint32_t GetFuncOffMax() const = 0;
 	
+	virtual bool Verbose() const { return false; }
+	
 protected:
 	IPatch(int len) :
 		m_iLength(len),

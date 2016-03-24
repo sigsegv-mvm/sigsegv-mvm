@@ -215,7 +215,7 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 Library LibMgr::FromString(const char *str)
 {
 	for (const auto& pair : libnames) {
-		if (strcmp(pair.second, str) == 0) {
+		if (stricmp(pair.second, str) == 0) {
 			return pair.first;
 		}
 	}

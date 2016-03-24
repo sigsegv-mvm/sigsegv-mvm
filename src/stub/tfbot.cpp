@@ -122,5 +122,8 @@ MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBo
 MemberFuncThunk<const CTFBot *, bool, CTFPlayer *                        > CTFBot::ft_IsKnownSpy                  ("CTFBot::IsKnownSpy");
 MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_RealizeSpy                  ("CTFBot::RealizeSpy");
 MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_ForgetSpy                   ("CTFBot::ForgetSpy");
+MemberFuncThunk<      CTFBot *, void, const char *                       > CTFBot::ft_AddItem                     ("CTFBot::AddItem");
 
+#if 0
 std::map<CHandle<CTFBot>, CTFBot::ExtendedAttr> CTFBot::s_ExtAttrs;
+#endif

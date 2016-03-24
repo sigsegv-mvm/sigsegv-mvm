@@ -17,6 +17,7 @@ sourceFiles = [
   'src/factory.cpp',
   'src/gameconf.cpp',
   'src/library.cpp',
+  'src/concolor.cpp',
   'src/disasm/disasm.cpp',
   'src/addr/addr.cpp',
   'src/addr/standard.cpp',
@@ -59,6 +60,8 @@ sourceFiles = [
   'src/mod/ai/prevent_postmortem_updates.cpp',
   'src/mod/ai/rocketjump.cpp',
   'src/mod/ai/wrapassassin_altfire.cpp',
+  'src/mod/ai/mvm_defender_bots.cpp',
+  'src/mod/ai/nextboteventresponder_hooks.cpp',
   'src/mod/attr/undocumented.cpp',
   'src/mod/bot/kill_before_forcespec.cpp',
   'src/mod/bot/medieval_nonmelee.cpp',
@@ -66,6 +69,7 @@ sourceFiles = [
   'src/mod/canteen/share_recall_canteen.cpp',
   'src/mod/cond/reprogrammed.cpp',
   'src/mod/credits/spawn_autocollect.cpp',
+  'src/mod/debug/backtrace.cpp',
   'src/mod/debug/client_desync.cpp',
   'src/mod/debug/known_entities.cpp',
   'src/mod/debug/medigunshield_obstruction.cpp',
@@ -76,18 +80,24 @@ sourceFiles = [
   'src/mod/debug/suicide_bomber.cpp',
   'src/mod/debug/useitem_broken.cpp',
   'src/mod/debug/usermsg_overflow.cpp',
+  'src/mod/debug/projectile_motion.cpp',
 #  'src/mod/debug/popmgr_multiparse.cpp',
   'src/mod/debug/noknockback.cpp',
+  'src/mod/debug/draw_cphyscollide.cpp',
+  'src/mod/debug/grenade_vphysics.cpp',
+  'src/mod/debug/list_competitive_convars.cpp',
+  'src/mod/debug/grenade_logger.cpp',
   'src/mod/demo/stringtable_limit.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
   'src/mod/pop/eventpopfile_improvements.cpp',
-  'src/mod/pop/extattr/parse.cpp',
-  'src/mod/pop/extattr/alwaysfireweaponalt.cpp',
-  'src/mod/pop/extattr/targetstickies.cpp',
+#  'src/mod/pop/extattr/parse.cpp',
+#  'src/mod/pop/extattr/alwaysfireweaponalt.cpp',
+#  'src/mod/pop/extattr/targetstickies.cpp',
   'src/mod/pop/kv_conditional.cpp',
   'src/mod/pop/nested_complex_spawners.cpp',
   'src/mod/pop/popmgr_extensions.cpp',
   'src/mod/pop/tfbot_extensions.cpp',
+#  'src/mod/pop/ecattr_extensions.cpp',
   'src/mod/robot/no_canteens.cpp',
   'src/mod/robot/standable_heads.cpp',
   'src/mod/robot/ticklish.cpp',
@@ -99,6 +109,7 @@ sourceFiles = [
   'src/mod/util/listenserverhost.cpp',
   'src/mod/util/overlay_recv.cpp',
   'src/mod/util/overlay_send.cpp',
+  'src/mod/util/jumboframes.cpp',
   'src/mod/visualize/airblast.cpp',
   'src/mod/visualize/blast_radius.cpp',
   'src/mod/visualize/dispenser_radius.cpp',
@@ -106,6 +117,8 @@ sourceFiles = [
   'src/mod/visualize/minigun_deflect.cpp',
   'src/mod/visualize/taunt_attacks.cpp',
   'src/mod/visualize/jar_radius.cpp',
+  'src/mod/visualize/projectile_trail.cpp',
+  'src/mod/visualize/projectile_speed.cpp',
 ]
 
 ###############
@@ -136,6 +149,12 @@ binary.compiler.linkflags += [
   '-lunwind',
   '-lunwind-x86',
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'libcapstone.a'),
+  os.path.join(builder.currentSourcePath, 'libs', 'ann', 'lib', 'libANN.a'),
+]
+
+binary.compiler.includes += [
+  os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
+  os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
 ]
 
 # TODO: find a better way to handle NASM inputs

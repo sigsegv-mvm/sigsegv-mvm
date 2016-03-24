@@ -101,19 +101,11 @@ namespace Mod_Util_Overlay_Send
 	}
 	
 	
-	void Send_Clear()
-	{
-		MSG_BEGIN();
-			msg->WriteUBitLong(OverlayType::CLEAR, OVERLAY_TYPE_BITS);
-		MSG_END();
-	}
-	
-	
 	void Send_Box(const Vector& origin, const Vector& mins, const Vector& maxs, int r, int g, int b, int a, float flDuration)
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::BOX, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_BOX, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteBitVec3Coord(mins);
 			msg->WriteBitVec3Coord(maxs);
@@ -132,7 +124,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::BOX_ANGLES, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_BOX_ANGLES, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteBitVec3Coord(mins);
 			msg->WriteBitVec3Coord(maxs);
@@ -149,7 +141,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::BOX_ANGLES, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_BOX_ANGLES, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteBitVec3Coord(mins);
 			msg->WriteBitVec3Coord(maxs);
@@ -166,7 +158,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::SWEPT_BOX, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_SWEPT_BOX, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(start);
 			msg->WriteBitVec3Coord(end);
 			msg->WriteBitVec3Coord(mins);
@@ -186,7 +178,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::BOX_ANGLES, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_BOX_ANGLES, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(pCollide->GetCollisionOrigin());
 			msg->WriteBitVec3Coord(pCollide->OBBMins());
 			msg->WriteBitVec3Coord(pCollide->OBBMaxs());
@@ -225,7 +217,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::LINE, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_LINE, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteBitVec3Coord(target);
 			msg->WriteByte(r);
@@ -266,7 +258,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::TRIANGLE, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_TRIANGLE, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(p1);
 			msg->WriteBitVec3Coord(p2);
 			msg->WriteBitVec3Coord(p3);
@@ -283,7 +275,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::ENTITY_TEXT, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_ENTITY_TEXT, OVERLAY_TYPE_BITS);
 			msg->WriteUBitLong(entityID, ENTITY_ID_BITS);
 			msg->WriteChar(text_offset);
 			msg->WriteString(text);
@@ -299,7 +291,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::ENTITY_TEXT_AT_POSITION, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_ENTITY_TEXT_AT_POSITION, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteChar(text_offset);
 			msg->WriteString(text);
@@ -314,7 +306,7 @@ namespace Mod_Util_Overlay_Send
 	void Send_Grid(const Vector& vPosition)
 	{
 		MSG_BEGIN();
-			msg->WriteUBitLong(OverlayType::GRID, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_GRID, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(vPosition);
 		MSG_END();
 	}
@@ -353,7 +345,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::TEXT, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_TEXT, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteString(text);
 			_float16(&temp, flDuration); msg->WriteWord(temp);
@@ -364,7 +356,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::SCREEN_TEXT, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_SCREEN_TEXT, OVERLAY_TYPE_BITS);
 			_float16(&temp, flXpos); msg->WriteWord(temp);
 			_float16(&temp, flYpos); msg->WriteWord(temp);
 			msg->WriteString(text);
@@ -380,7 +372,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CROSS3D_EXT, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CROSS3D_EXT, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitVec3Coord(mins);
 			msg->WriteBitVec3Coord(maxs);
@@ -396,7 +388,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CROSS3D_SIZE, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CROSS3D_SIZE, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			_float16(&temp, size); msg->WriteWord(temp);
 			msg->WriteByte(r);
@@ -411,7 +403,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CROSS3D_ORIENTED_ANG, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CROSS3D_ORIENTED_ANG, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitAngles(angles);
 			_float16(&temp, size); msg->WriteWord(temp);
@@ -432,7 +424,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::HORZ_ARROW, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_HORZ_ARROW, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(startPos);
 			msg->WriteBitVec3Coord(endPos);
 			_float16(&temp, width); msg->WriteWord(temp);
@@ -449,7 +441,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::YAW_ARROW, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_YAW_ARROW, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(startPos);
 			_float16(&temp, yaw); msg->WriteWord(temp);
 			_float16(&temp, length); msg->WriteWord(temp);
@@ -467,7 +459,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::VERT_ARROW, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_VERT_ARROW, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(startPos);
 			msg->WriteBitVec3Coord(endPos);
 			_float16(&temp, width); msg->WriteWord(temp);
@@ -484,7 +476,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::AXIS, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_AXIS, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitAngles(angles);
 			_float16(&temp, size); msg->WriteWord(temp);
@@ -497,7 +489,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::SPHERE, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_SPHERE, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(center);
 			_float16(&temp, radius); msg->WriteWord(temp);
 			msg->WriteByte(r);
@@ -523,7 +515,7 @@ namespace Mod_Util_Overlay_Send
 		
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CIRCLE_ANG, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CIRCLE_ANG, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitAngles(vecAngles);
 			_float16(&temp, radius); msg->WriteWord(temp);
@@ -540,7 +532,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CIRCLE_ANG, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CIRCLE_ANG, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitAngles(angles);
 			_float16(&temp, radius); msg->WriteWord(temp);
@@ -557,7 +549,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::CIRCLE_AXES, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_CIRCLE_AXES, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitVec3Coord(xAxis);
 			msg->WriteBitVec3Coord(yAxis);
@@ -575,7 +567,7 @@ namespace Mod_Util_Overlay_Send
 	{
 		MSG_BEGIN();
 			uint16_t temp;
-			msg->WriteUBitLong(OverlayType::SPHERE_ANG, OVERLAY_TYPE_BITS);
+			msg->WriteUBitLong(OV_SPHERE_ANG, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(position);
 			msg->WriteBitAngles(angles);
 			_float16(&temp, radius); msg->WriteWord(temp);
@@ -584,6 +576,51 @@ namespace Mod_Util_Overlay_Send
 			msg->WriteByte(b);
 			msg->WriteByte(a);
 			msg->WriteOneBit(bNoDepthTest);
+			_float16(&temp, flDuration); msg->WriteWord(temp);
+		MSG_END();
+	}
+	
+	void Send_Clear()
+	{
+		MSG_BEGIN();
+			msg->WriteUBitLong(OV_CLEAR, OVERLAY_TYPE_BITS);
+		MSG_END();
+	}
+	
+	void Send_LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration)
+	{
+		CBasePlayer *player = GetLocalPlayer();
+		if (player == nullptr) {
+			return;
+		}
+		
+		if (((player->GetAbsOrigin() - origin).LengthSqr() > MAX_OVERLAY_DIST_SQR) &&
+			((player->GetAbsOrigin() - target).LengthSqr() > MAX_OVERLAY_DIST_SQR)) {
+			return;
+		}
+		
+		Vector clientForward;
+		player->EyeVectors(&clientForward);
+		
+		Vector toOrigin = origin - player->GetAbsOrigin();
+		Vector toTarget = target - player->GetAbsOrigin();
+		float dotOrigin = DotProduct(clientForward, toOrigin);
+		float dotTarget = DotProduct(clientForward, toTarget);
+		
+		if (dotOrigin < 0.0f && dotTarget < 0.0f) {
+			return;
+		}
+		
+		MSG_BEGIN();
+			uint16_t temp;
+			msg->WriteUBitLong(OV_LINE_ALPHA, OVERLAY_TYPE_BITS);
+			msg->WriteBitVec3Coord(origin);
+			msg->WriteBitVec3Coord(target);
+			msg->WriteByte(r);
+			msg->WriteByte(g);
+			msg->WriteByte(b);
+			msg->WriteByte(a);
+			msg->WriteOneBit(noDepthTest);
 			_float16(&temp, flDuration); msg->WriteWord(temp);
 		MSG_END();
 	}
@@ -825,6 +862,11 @@ namespace Mod_Util_Overlay_Send
 		Send_Clear();
 	}
 	
+	DETOUR_DECL_STATIC(void, local_NDebugOverlay_LineAlpha, const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration)
+	{
+		Send_LineAlpha(origin, target, r, g, b, a, noDepthTest, flDuration);
+	}
+	
 	
 	RefCount rc_NextBotPlayer_PhysicsSimulate;
 	DETOUR_DECL_MEMBER(void, NextBotPlayer_CTFPlayer_PhysicsSimulate)
@@ -915,7 +957,9 @@ namespace Mod_Util_Overlay_Send
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_Circle_ang,           "[local] NDebugOverlay::Circle_ang");
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_Circle_axes,          "[local] NDebugOverlay::Circle_axes");
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_Sphere_ang,           "[local] NDebugOverlay::Sphere_ang");
+			
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_Clear,                "[local] NDebugOverlay::Clear");
+			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_LineAlpha,            "[local] NDebugOverlay::LineAlpha");
 			
 			MOD_ADD_DETOUR_STATIC(clear_debug_overlays, "clear_debug_overlays");
 			
@@ -953,4 +997,24 @@ namespace Mod_Util_Overlay_Send
 			ConVarRef var(pConVar);
 			s_Mod.SetEnabled(var.GetBool());
 		});
+	
+	
+	CON_COMMAND(sig_util_overlay_send_bandwidthtest, "")
+	{
+		int bytes = std::stoi(args[1], nullptr, 0);
+		
+		while (bytes > 0) {
+			int len = Min(bytes, 240);
+			
+			MSG_BEGIN();
+				msg->WriteUBitLong(OV_BANDWIDTH_TEST, OVERLAY_TYPE_BITS);
+				msg->WriteWord(len * 8);
+				for (int i = 0; i < len; ++i) {
+					msg->WriteByte(RandomInt(0x00, 0xff));
+				}
+			MSG_END();
+			
+			bytes -= len;
+		}
+	}
 }

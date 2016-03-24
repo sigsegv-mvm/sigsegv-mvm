@@ -9,6 +9,7 @@
 #include "util/rtti.h"
 #include "disasm/disasm.h"
 #include "factory.h"
+#include "concolor.h"
 
 
 CExtSigsegv g_Ext;
@@ -23,6 +24,8 @@ IGameEventManager2 *gameeventmanager = nullptr;
 IEngineSound *enginesound            = nullptr;
 IVDebugOverlay *debugoverlay         = nullptr;
 
+IPhysics *physics = nullptr;
+
 ISoundEmitterSystemBase *soundemitterbase = nullptr;
 
 IMaterialSystem *g_pMaterialSystem = nullptr;
@@ -30,7 +33,8 @@ IMaterialSystem *g_pMaterialSystem = nullptr;
 CGlobalVars *gpGlobals         = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
 
-IBaseClientDLL *clientdll          = nullptr;
+IVEngineClient *engineclient = nullptr;
+IBaseClientDLL *clientdll    = nullptr;
 
 SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
 SourceMod::IExtensionManager *smexts         = nullptr;
@@ -53,7 +57,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	g_pSourcePawn = g_pSM->GetScriptingEngine();
 	SM_FIND_IFACE_OR_FAIL(EXTENSIONMANAGER, smexts, error, maxlen);
 	
-	this->EnableColorSpew();
+	ColorSpew::Enable();
 	
 //	sharesys->AddDependency(myself, "sdktools.ext", true, true);
 //	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
@@ -83,7 +87,13 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	g_ModManager.Load();
 	
+#if !defined _WINDOWS
 	IGameSystem::Add(this);
+#endif
+	
+	for (int i = 0; i < 255; ++i) {
+		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
+	}
 	
 	return true;
 	
@@ -94,7 +104,9 @@ fail:
 
 void CExtSigsegv::SDK_OnUnload()
 {
+#if !defined _WINDOWS
 	IGameSystem::Remove(this);
+#endif
 	
 	g_ModManager.Unload();
 	
@@ -102,7 +114,7 @@ void CExtSigsegv::SDK_OnUnload()
 	
 	g_GCHook.UnloadAll();
 	
-	this->DisableColorSpew();
+	ColorSpew::Disable();
 }
 
 void CExtSigsegv::SDK_OnAllLoaded()
@@ -138,6 +150,8 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	//GET_V_IFACE_CURRENT(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
 	
+	GET_V_IFACE_CURRENT(GetPhysicsFactory, physics, IPhysics, VPHYSICS_INTERFACE_VERSION);
+	
 	if (GetSoundEmitterSystemFactory() != nullptr) {
 		soundemitterbase = (ISoundEmitterSystemBase *)ismm->VInterfaceMatch(GetSoundEmitterSystemFactory(), SOUNDEMITTERSYSTEM_INTERFACE_VERSION, 0);
 	}
@@ -147,6 +161,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	}
 	
 	if (GetClientFactory() != nullptr) {
+		GET_V_IFACE_CURRENT(GetEngineFactory, engineclient, IVEngineClient, VENGINE_CLIENT_INTERFACE_VERSION);
 		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
 	}
 	
@@ -212,45 +227,3 @@ void CExtSigsegv::LoadSoundOverrides()
 		soundemitterbase->AddSoundOverrides("scripts/sigsegv_sound_overrides.txt", true);
 	}
 }
-
-
-void CExtSigsegv::EnableColorSpew()
-{
-#if defined POSIX
-	if (engine->IsDedicatedServer()) {
-		this->m_pSpewOutputBackup = GetSpewOutputFunc();
-		SpewOutputFunc(&ANSIColorSpew);
-	}
-#endif
-}
-
-void CExtSigsegv::DisableColorSpew()
-{
-#if defined POSIX
-	if (engine->IsDedicatedServer()) {
-		SpewOutputFunc(this->m_pSpewOutputBackup);
-	}
-#endif
-}
-
-
-#if defined POSIX
-SpewRetval_t ANSIColorSpew(SpewType_t type, const char *pMsg)
-{
-	Color color = GetSpewOutputColor();
-	
-	printf("\e[38;2;%d;%d;%dm%s\e[0m", color.r(), color.g(), color.b(), pMsg);
-	
-	if (type == SPEW_ASSERT) {
-		if (getenv("RAISE_ON_ASSERT") == nullptr) {
-			return SPEW_DEBUGGER;
-		} else {
-			return SPEW_CONTINUE;
-		}
-	} else if (type == SPEW_ERROR) {
-		return SPEW_ABORT;
-	} else {
-		return SPEW_CONTINUE;
-	}
-}
-#endif

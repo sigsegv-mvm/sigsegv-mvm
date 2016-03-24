@@ -69,17 +69,6 @@ namespace Mod_Util_Overlay_Recv
 		"Set nPhi value for CDebugOverlay::AddSphereOverlay");
 	
 	
-	void Clear(bf_read& msg)
-	{
-		if (cvar_trace.GetBool()) {
-			DevMsg("[Clear]\n");
-		}
-		
-		if (debugoverlay != nullptr) {
-			debugoverlay->ClearAllOverlays();
-		}
-	}
-	
 	void Box(bf_read& msg)
 	{
 		Vector origin; msg.ReadBitVec3Coord(origin);
@@ -808,33 +797,85 @@ namespace Mod_Util_Overlay_Recv
 	}
 	
 	
+	void Clear(bf_read& msg)
+	{
+		if (cvar_trace.GetBool()) {
+			DevMsg("[Clear]\n");
+		}
+		
+		if (debugoverlay != nullptr) {
+			debugoverlay->ClearAllOverlays();
+		}
+	}
+	
+	void LineAlpha(bf_read& msg)
+	{
+		Vector origin; msg.ReadBitVec3Coord(origin);
+		Vector target; msg.ReadBitVec3Coord(target);
+		int r = msg.ReadByte();
+		int g = msg.ReadByte();
+		int b = msg.ReadByte();
+		int a = msg.ReadByte();
+		bool noDepthTest = !!msg.ReadOneBit();
+		float flDuration; _float32(&flDuration, msg.ReadWord());
+		
+		if (cvar_trace.GetBool()) {
+			DevMsg("[LineAlpha] <%+4.0f %+4.0f %+4.0f> <%+4.0f %+4.0f %+4.0f> %02x%02x%02x%02x %d %.2f\n",
+				origin.x, origin.y, origin.z,
+				target.x, target.y, target.z,
+				r, g, b, a,
+				noDepthTest,
+				flDuration);
+		}
+		
+		if (debugoverlay != nullptr) {
+			debugoverlay->AddLineOverlayAlpha(origin, target, r, g, b, a, noDepthTest, flDuration);
+		}
+	}
+	
+	
+	void BandwidthTest(bf_read& msg)
+	{
+		int bits = msg.ReadWord();
+		
+		if (cvar_trace.GetBool()) {
+			DevMsg("[BandwidthTest] %d bits\n",
+				bits);
+		}
+		
+		msg.SeekRelative(bits);
+	}
+	
+	
 	void Hook_Overlays(bf_read& msg)
 	{
 //		while (msg.GetNumBitsLeft() > 0) {
 			switch (msg.ReadUBitLong(OVERLAY_TYPE_BITS)) {
 				
-			case OverlayType::CLEAR:                   Clear(msg);                break;
-			case OverlayType::BOX:                     Box(msg);                  break;
-			case OverlayType::BOX_ANGLES:              BoxAngles(msg);            break;
-			case OverlayType::SWEPT_BOX:               SweptBox(msg);             break;
-			case OverlayType::LINE:                    Line(msg);                 break;
-			case OverlayType::TRIANGLE:                Triangle(msg);             break;
-			case OverlayType::ENTITY_TEXT:             EntityText(msg);           break;
-			case OverlayType::ENTITY_TEXT_AT_POSITION: EntityTextAtPosition(msg); break;
-			case OverlayType::GRID:                    Grid(msg);                 break;
-			case OverlayType::TEXT:                    Text(msg);                 break;
-			case OverlayType::SCREEN_TEXT:             ScreenText(msg);           break;
-			case OverlayType::CROSS3D_EXT:             Cross3D_ext(msg);          break;
-			case OverlayType::CROSS3D_SIZE:            Cross3D_size(msg);         break;
-			case OverlayType::CROSS3D_ORIENTED_ANG:    Cross3DOriented_ang(msg);  break;
-			case OverlayType::HORZ_ARROW:              HorzArrow(msg);            break;
-			case OverlayType::YAW_ARROW:               YawArrow(msg);             break;
-			case OverlayType::VERT_ARROW:              VertArrow(msg);            break;
-			case OverlayType::AXIS:                    Axis(msg);                 break;
-			case OverlayType::SPHERE:                  Sphere(msg);               break;
-			case OverlayType::CIRCLE_ANG:              Circle_ang(msg);           break;
-			case OverlayType::CIRCLE_AXES:             Circle_axes(msg);          break;
-			case OverlayType::SPHERE_ANG:              Sphere_ang(msg);           break;
+			case OV_BOX:                     Box(msg);                  break;
+			case OV_BOX_ANGLES:              BoxAngles(msg);            break;
+			case OV_SWEPT_BOX:               SweptBox(msg);             break;
+			case OV_LINE:                    Line(msg);                 break;
+			case OV_TRIANGLE:                Triangle(msg);             break;
+			case OV_ENTITY_TEXT:             EntityText(msg);           break;
+			case OV_ENTITY_TEXT_AT_POSITION: EntityTextAtPosition(msg); break;
+			case OV_GRID:                    Grid(msg);                 break;
+			case OV_TEXT:                    Text(msg);                 break;
+			case OV_SCREEN_TEXT:             ScreenText(msg);           break;
+			case OV_CROSS3D_EXT:             Cross3D_ext(msg);          break;
+			case OV_CROSS3D_SIZE:            Cross3D_size(msg);         break;
+			case OV_CROSS3D_ORIENTED_ANG:    Cross3DOriented_ang(msg);  break;
+			case OV_HORZ_ARROW:              HorzArrow(msg);            break;
+			case OV_YAW_ARROW:               YawArrow(msg);             break;
+			case OV_VERT_ARROW:              VertArrow(msg);            break;
+			case OV_AXIS:                    Axis(msg);                 break;
+			case OV_SPHERE:                  Sphere(msg);               break;
+			case OV_CIRCLE_ANG:              Circle_ang(msg);           break;
+			case OV_CIRCLE_AXES:             Circle_axes(msg);          break;
+			case OV_SPHERE_ANG:              Sphere_ang(msg);           break;
+			case OV_CLEAR:                   Clear(msg);                break;
+			case OV_LINE_ALPHA:              LineAlpha(msg);            break;
+			case OV_BANDWIDTH_TEST:          BandwidthTest(msg);        break;
 				
 			default:
 				Warning("Unknown overlay type %d\n");

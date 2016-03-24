@@ -255,7 +255,7 @@ namespace Mod_Visualize_Blast_Radius
 				NDebugOverlay::Sphere(radiusinfo->m_vecOrigin, angles, dist, c.r(), c.g(), c.b(), 0x10, false, cvar_duration_sphere.GetFloat());
 				
 				/* additional fake level for showing the 0% cliff */
-				if (f <= radiusinfo->m_flFalloff && cvar_spheretext.GetBool()) {
+				if (f < radiusinfo->m_flFalloff + 0.09f && cvar_spheretext.GetBool()) {
 					dist = RemapVal(f - 0.1f, 1.0f, radiusinfo->m_flFalloff, 0.0f, radiusinfo->m_flRadius);
 					where_r = radiusinfo->m_vecOrigin + (dist * rt);
 					where_l = radiusinfo->m_vecOrigin - (dist * rt);

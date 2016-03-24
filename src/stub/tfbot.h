@@ -10,16 +10,6 @@
 #include "util/rtti.h"
 
 
-enum class ExtAttr : int
-{
-	ALWAYS_FIRE_WEAPON_ALT = 0,
-	TARGET_STICKIES        = 1,
-	
-	// wishlist:
-	// taunt after every kill
-};
-
-
 class ILocomotion;
 class IBody;
 class IVision;
@@ -153,6 +143,46 @@ public:
 		float m_flWhen;
 	};
 	
+	/* custom */
+	class ExtraData
+	{
+	public:
+		ExtraData()
+		{
+			this->Reset();
+		}
+		
+		void Reset()
+		{
+			this->m_bAlwaysFireWeaponAlt = false;
+			this->m_bTargetStickies      = false;
+			this->m_bTauntAfterEveryKill = false;
+			this->m_nSplitCurrencyPacks  = 1;
+		}
+		
+		ExtraData& operator=(const ExtraData& that) = default;
+		
+		bool GetAlwaysFireWeaponAlt() const   { return this->m_bAlwaysFireWeaponAlt; }
+		void SetAlwaysFireWeaponAlt(bool val) { this->m_bAlwaysFireWeaponAlt = val; }
+		
+		bool GetTargetStickies() const   { return this->m_bTargetStickies; }
+		void SetTargetStickies(bool val) { this->m_bTargetStickies = val; }
+		
+		bool GetTauntAfterEveryKill() const   { return this->m_bTauntAfterEveryKill; }
+		void SetTauntAfterEveryKill(bool val) { this->m_bTauntAfterEveryKill = val; }
+		
+		int GetSplitCurrencyPacks() const   { return this->m_nSplitCurrencyPacks; }
+		void SetSplitCurrencyPacks(int val) { this->m_nSplitCurrencyPacks = val; }
+		
+	private:
+		bool m_bAlwaysFireWeaponAlt;
+		bool m_bTargetStickies;
+		bool m_bTauntAfterEveryKill;
+		int m_nSplitCurrencyPacks;
+	};
+	const ExtraData& Ext() const;
+	
+#if 0
 	class ExtendedAttr
 	{
 	public:
@@ -173,6 +203,7 @@ public:
 		uint32_t m_nBits = 0;
 	};
 	SIZE_CHECK(ExtendedAttr, 0x4);
+#endif
 	
 	MissionType GetMission() const { return this->m_nMission; }
 	
@@ -194,13 +225,16 @@ public:
 	bool IsKnownSpy(CTFPlayer *spy) const                              { return ft_IsKnownSpy                  (this, spy); }
 	void RealizeSpy(CTFPlayer *spy)                                    {        ft_RealizeSpy                  (this, spy); }
 	void ForgetSpy(CTFPlayer *spy)                                     {        ft_ForgetSpy                   (this, spy); }
+	void AddItem(const char *name)                                     {        ft_AddItem                     (this, name); }
 	
+#if 0
 	/* custom: extended attributes */
 	ExtendedAttr& ExtAttr()
 	{
 		CHandle<CTFBot> h_this = this;
 		return s_ExtAttrs[h_this];
 	}
+#endif
 	
 private:
 	DECL_EXTRACT(MissionType, m_nMission);
@@ -222,8 +256,11 @@ private:
 	static MemberFuncThunk<const CTFBot *, bool, CTFPlayer *                 > ft_IsKnownSpy;
 	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_RealizeSpy;
 	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_ForgetSpy;
+	static MemberFuncThunk<      CTFBot *, void, const char *                > ft_AddItem;
 	
+#if 0
 	static std::map<CHandle<CTFBot>, ExtendedAttr> s_ExtAttrs;
+#endif
 };
 
 

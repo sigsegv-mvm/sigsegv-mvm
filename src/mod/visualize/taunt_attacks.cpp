@@ -1,4 +1,5 @@
 #include "mod.h"
+#include "util/scope.h"
 
 
 //  0 TAUNTATK_NONE
@@ -75,7 +76,35 @@
 
 namespace Mod_Visualize_Taunt_Attacks
 {
+	// TAUNTATK_PYRO_ARMAGEDDON:
+	// CEntitySphereQuery ctor
 	
+	// TAUNTATK_SOLDIER_GRENADE_KILL:
+	// use Visualize:Blast_Radius!
+	
+	// TAUNTATK_HEAVY_HIGH_NOON:
+	// IEngineTrace::TraceRay
+	
+	// trace:
+	// IEngineTrace::TraceRay
+	
+	// box:
+	// UTIL_EntitiesInBox
+	
+	
+	// detour CBaseEntity::TakeDamage
+	// highlight each affected player and show the amount of damage taken
+	// (actually, find a better way to hook this so we actually get the adjusted/final damage amount)
+	
+	
+/*	RefCount rc_CTFPlayer_DoTauntAttack;
+	DETOUR_DECL_MEMBER(???, CTFPlayer_DoTauntAttack)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		
+		
+	}*/
 	
 	
 	class CMod : public IMod
