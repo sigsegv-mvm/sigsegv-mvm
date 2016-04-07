@@ -130,3 +130,16 @@ void IPatch::UnApply()
 	
 	this->m_bApplied = false;
 }
+
+
+uint32_t IPatch::GetActualOffset() const
+{
+	if (!this->m_bFoundOffset) return -1;
+	return this->m_iFuncOffActual;
+}
+
+void *IPatch::GetActualLocation() const
+{
+	if (!this->m_bFoundOffset) return nullptr;
+	return (void *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
+}

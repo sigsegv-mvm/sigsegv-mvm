@@ -5,11 +5,6 @@
 #include "util/trace.h"
 #include "util/backtrace.h"
 
-#include "addr/standard.h"
-static CAddr_Sym addr1("CTFBotUseItem::OnStart", "_ZN13CTFBotUseItem7OnStartEP6CTFBotP6ActionIS0_E");
-static CAddr_Sym addr2("CTFBotUseItem::Update",  "_ZN13CTFBotUseItem6UpdateEP6CTFBotf");
-static CAddr_Sym addr3("CTFBotUseItem::OnEnd",   "_ZN13CTFBotUseItem5OnEndEP6CTFBotP6ActionIS0_E");
-
 
 //#include "../mvm-reversed/server/tf/bot/behavior/tf_bot_use_item.h"
 class CTFBotUseItem : public Action<CTFBot>

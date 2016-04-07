@@ -1,24 +1,7 @@
 #include "mod.h"
 #include "re/nextbot.h"
 #include "util/rtti.h"
-
-
-class CTFBotMainAction : public Action<CTFBot> {};
-
-class CTFBotDead : public Action<CTFBot>
-{
-public:
-	CTFBotDead()
-	{
-		*((const void ***)this) = RTTI::GetVTable<CTFBotDead>();
-		/* technically we should be writing the IContextualQuery vtable too */
-	}
-	
-	virtual const char *GetName() const override { return "CTFBotDead"; }
-	
-private:
-	IntervalTimer m_itTimeSinceDeath;
-};
+#include "stub/tfbot_behavior.h"
 
 
 namespace Mod_AI_Prevent_Postmortem_Updates
@@ -27,7 +10,7 @@ namespace Mod_AI_Prevent_Postmortem_Updates
 	{
 		auto action = reinterpret_cast<Action<CTFBot> *>(this);
 		if (rtti_cast<CTFBotMainAction *>(action) != nullptr) {
-			return EventDesiredResult<CTFBot>::ChangeTo(new CTFBotDead(), "I died!");
+			return EventDesiredResult<CTFBot>::ChangeTo(CTFBotDead::New(), "I died!");
 		}
 		
 		return DETOUR_MEMBER_CALL(Action_CTFBot_OnKilled)(actor, info);

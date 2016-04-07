@@ -1,5 +1,5 @@
 #include "mod.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 
 
 namespace Mod_AI_LookAt_OnePlayer

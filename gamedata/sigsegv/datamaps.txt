@@ -43,6 +43,12 @@
 					sym   "_ZN12CSpellPickup9m_DataMapE"
 					class "CSpellPickup"
 				}
+				"CBaseTrigger::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN12CBaseTrigger9m_DataMapE"
+					class "CBaseTrigger"
+				}
 			}
 		}
 	}

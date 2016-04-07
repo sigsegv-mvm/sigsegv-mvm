@@ -1,5 +1,5 @@
 #include "stub/baseentity.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 #include "stub/objects.h"
 
 
@@ -26,6 +26,7 @@ MemberFuncThunk<CBaseEntity *, bool, const char *                > CBaseEntity::
 MemberFuncThunk<CBaseEntity *, void, const Vector&               > CBaseEntity::ft_SetAbsOrigin        ("CBaseEntity::SetAbsOrigin");
 MemberFuncThunk<CBaseEntity *, void, const QAngle&               > CBaseEntity::ft_SetAbsAngles        ("CBaseEntity::SetAbsAngles");
 MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> CBaseEntity::ft_EmitSound           ("CBaseEntity::EmitSound");
+MemberFuncThunk<CBaseEntity *, float, const char *               > CBaseEntity::ft_GetNextThink        ("CBaseEntity::GetNextThink");
 
 MemberVFuncThunk<      CBaseEntity *, Vector                          > CBaseEntity::vt_EyePosition     (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
 MemberVFuncThunk<      CBaseEntity *, const QAngle&                   > CBaseEntity::vt_EyeAngles       (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");

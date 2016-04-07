@@ -42,6 +42,18 @@
 					type "sym"
 					sym  "_ZN15CGameRulesProxy17s_pGameRulesProxyE"
 				}
+				
+				"g_hUpgradeEntity"
+				{
+					type "sym"
+					sym  "g_hUpgradeEntity"
+				}
+				
+				"g_MannVsMachineUpgrades"
+				{
+					type "sym"
+					sym  "g_MannVsMachineUpgrades"
+				}
 			}
 		}
 	}

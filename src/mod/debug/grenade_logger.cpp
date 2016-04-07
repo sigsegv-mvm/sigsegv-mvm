@@ -1,6 +1,6 @@
 #include "mod.h"
 #include "stub/projectiles.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 
 
 namespace Mod_Debug_Grenade_Logger

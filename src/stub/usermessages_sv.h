@@ -3,7 +3,7 @@
 
 
 #include "link/link.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 
 
 class CReliableBroadcastRecipientFilter : public IRecipientFilter
@@ -50,8 +50,8 @@ public:
 	void Register(const char *name, int size) {        ft_Register         (this, name, size); }
 	
 private:
-	static MemberFuncThunk<CUserMessages_Server *, int, const char *>                  ft_LookupUserMessage;
-	static MemberFuncThunk<CUserMessages_Server *, void, const char *, int>            ft_Register;
+	static MemberFuncThunk<CUserMessages_Server *, int, const char *>       ft_LookupUserMessage;
+	static MemberFuncThunk<CUserMessages_Server *, void, const char *, int> ft_Register;
 };
 
 

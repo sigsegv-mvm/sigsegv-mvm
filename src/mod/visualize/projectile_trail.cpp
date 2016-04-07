@@ -1,7 +1,7 @@
 #include "mod.h"
 #include "stub/projectiles.h"
 #include "stub/tf_shareddefs.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 #include "util/misc.h"
 
 

@@ -8,7 +8,9 @@
 
 
 class CBaseMultiplayerPlayer;
+class CTFPlayer;
 struct VoiceCommandMenuItem_t;
+class CMannVsMachineUpgrades;
 
 
 class CGameRulesProxy : public CBaseEntity
@@ -29,6 +31,11 @@ class CGameRules
 public:
 	void NetworkStateChanged(void *pVar) { CGameRulesProxy::NotifyNetworkStateChanged(); }
 	void NetworkStateChanged()           { CGameRulesProxy::NotifyNetworkStateChanged(); }
+	
+	const CViewVectors *GetViewVectors() const { return vt_GetViewVectors(this); }
+	
+private:
+	static MemberVFuncThunk<const CGameRules *, const CViewVectors *> vt_GetViewVectors;
 };
 
 class CMultiplayRules : public CGameRules
@@ -48,10 +55,19 @@ class CTFGameRules : public CTeamplayRoundBasedRules
 public:
 	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
 	
+	bool CanUpgradeWithAttrib(CTFPlayer *player, int slot, unsigned short attr, CMannVsMachineUpgrades *upgrade) { return ft_CanUpgradeWithAttrib(this, player, slot, attr, upgrade); }
+	int GetCostForUpgrade(CMannVsMachineUpgrades *upgrade, int slot, int pclass, CTFPlayer *player)              { return ft_GetCostForUpgrade   (this, upgrade, slot, pclass, player); }
+	int GetUpgradeTier(int index)                                                                                { return ft_GetUpgradeTier      (this, index); }
+	bool IsUpgradeTierEnabled(CTFPlayer *player, int slot, int tier)                                             { return ft_IsUpgradeTierEnabled(this, player, slot, tier); }
+	
 	DECL_SENDPROP(bool, m_bPlayingMedieval);
+	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
 	
 private:
-	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
+	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, unsigned short, CMannVsMachineUpgrades *> ft_CanUpgradeWithAttrib;
+	static MemberFuncThunk<CTFGameRules *, int, CMannVsMachineUpgrades *, int, int, CTFPlayer *>             ft_GetCostForUpgrade;
+	static MemberFuncThunk<CTFGameRules *, int, int>                                                         ft_GetUpgradeTier;
+	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, int>                                      ft_IsUpgradeTierEnabled;
 };
 
 

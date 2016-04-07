@@ -2,57 +2,13 @@
 #define _INCLUDE_SIGSEGV_STUB_TFPLAYER_H_
 
 
-#include "stub/baseanimating.h"
+#include "stub/baseplayer.h"
 #include "stub/econ.h"
-#include "prop.h"
 
 
-class CBaseCombatWeapon;
 class CTFWeaponBase;
 class CTFPlayer;
-
-
-class CBaseCombatCharacter : public CBaseFlex
-{
-public:
-	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
-	
-private:
-	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
-};
-
-class CBasePlayer : public CBaseCombatCharacter
-{
-public:
-	const char *GetPlayerName() { return m_szNetname.GetPtr(); }
-	
-	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors(this, pForward, pRight, pUp); }
-	
-	bool IsBot() const                                             { return vt_IsBot        (this); }
-	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide(this, bExplode, bForce); }
-	void ForceRespawn()                                            {        vt_ForceRespawn (this); }
-	
-private:
-	DECL_DATAMAP(char, m_szNetname);
-	
-	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
-	
-	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
-	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;
-	static MemberVFuncThunk<      CBasePlayer *, void>             vt_ForceRespawn;
-};
-
-class CBaseMultiplayerPlayer : public CBasePlayer
-{
-public:
-	bool SpeakConceptIfAllowed(int iConcept, const char *modifiers = nullptr, char *pszOutResponseChosen = nullptr, size_t bufsize = 0, IRecipientFilter *filter = nullptr)
-	{
-		return vt_SpeakConceptIfAllowed(this, iConcept, modifiers, pszOutResponseChosen, bufsize, filter);
-	}
-	
-private:
-	static MemberVFuncThunk<CBaseMultiplayerPlayer *, bool, int, const char *, char *, size_t, IRecipientFilter *> vt_SpeakConceptIfAllowed;
-};
+enum ETFFlagType {};
 
 
 enum
@@ -226,11 +182,11 @@ public:
 	
 	CTFPlayer *GetOuter();
 	
-	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond   (this, cond, duration, provider); }
-	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond(this, cond, b1); }
-	bool InCond(ETFCond cond) const                                                     { return ft_InCond    (this, cond); }
-	
-	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner) { ft_StunPlayer(this, duration, amount, flags, stunner); }
+	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond       (this, cond, duration, provider); }
+	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond    (this, cond, b1); }
+	bool InCond(ETFCond cond) const                                                     { return ft_InCond        (this, cond); }
+	bool IsInvulnerable() const                                                         { return ft_IsInvulnerable(this); }
+	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner)        {        ft_StunPlayer    (this, duration, amount, flags, stunner); }
 	
 	DECL_SENDPROP(float, m_flRageMeter);
 	DECL_SENDPROP(bool,  m_bRageDraining);
@@ -240,6 +196,7 @@ private:
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > ft_AddCond;
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > ft_RemoveCond;
 	static MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > ft_InCond;
+	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsInvulnerable;
 	static MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> ft_StunPlayer;
 };
 
@@ -251,11 +208,14 @@ public:
 	
 	bool IsPlayerClass(int iClass) const;
 	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
+	int GetCurrency() const { return this->m_nCurrency; }
 	
 	CTFWeaponBase *GetActiveTFWeapon() const;
 	
-	void ForceChangeTeam(int team, bool b1)              { ft_ForceChangeTeam          (this, team, b1); }
-	void StartBuildingObjectOfType(int iType, int iMode) { ft_StartBuildingObjectOfType(this, iType, iMode); }
+	void ForceChangeTeam(int team, bool b1)                      {        ft_ForceChangeTeam          (this, team, b1); }
+	void StartBuildingObjectOfType(int iType, int iMode)         {        ft_StartBuildingObjectOfType(this, iType, iMode); }
+	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag               (this, p1, i1); }
+	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam              (this, team); }
 	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
@@ -265,10 +225,13 @@ public:
 private:
 	DECL_SENDPROP(CTFPlayerClass, m_PlayerClass);
 	DECL_SENDPROP(bool,           m_bIsMiniBoss);
+	DECL_SENDPROP(int,            m_nCurrency);
 	
-	static MemberFuncThunk<CTFPlayer *, void, int, bool> ft_ForceChangeTeam;
-	static MemberFuncThunk<CTFPlayer *, void, int, int > ft_StartBuildingObjectOfType;
-//	static MemberFuncThunk<CTFPlayer *, void, taunts_t, int> ft_Taunt;
+	static MemberFuncThunk<      CTFPlayer *, void, int, bool         > ft_ForceChangeTeam;
+	static MemberFuncThunk<      CTFPlayer *, void, int, int          > ft_StartBuildingObjectOfType;
+	static MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> ft_HasTheFlag;
+	static MemberFuncThunk<      CTFPlayer *, int, int                > ft_GetAutoTeam;
+//	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int     > ft_Taunt;
 };
 
 class CTFPlayerSharedUtils
@@ -300,22 +263,6 @@ inline CTFPlayer *CTFPlayerShared::GetOuter()
 inline void CTFPlayerShared::NetworkStateChanged()           { this->GetOuter()->NetworkStateChanged(); }
 inline void CTFPlayerShared::NetworkStateChanged(void *pVar) { this->GetOuter()->NetworkStateChanged(pVar); }
 
-
-inline CBasePlayer *ToBasePlayer(CBaseEntity *pEntity)
-{
-	if (pEntity == nullptr)   return nullptr;
-	if (!pEntity->IsPlayer()) return nullptr;
-	
-	return rtti_cast<CBasePlayer *>(pEntity);
-}
-
-inline CBaseMultiplayerPlayer *ToBaseMultiplayerPlayer(CBaseEntity *pEntity)
-{
-	if (pEntity == nullptr)   return nullptr;
-	if (!pEntity->IsPlayer()) return nullptr;
-	
-	return rtti_cast<CBaseMultiplayerPlayer *>(pEntity);
-}
 
 inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
 {

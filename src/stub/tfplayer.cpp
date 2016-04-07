@@ -2,21 +2,6 @@
 #include "stub/tfweaponbase.h"
 
 
-IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
-
-
-IMPL_DATAMAP(char, CBasePlayer, m_szNetname);
-
-MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors("CBasePlayer::EyeVectors");
-
-MemberVFuncThunk<const CBasePlayer *, bool>             CBasePlayer::vt_IsBot(        TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
-MemberVFuncThunk<      CBasePlayer *, void, bool, bool> CBasePlayer::vt_CommitSuicide(TypeName<CBasePlayer>(), "CBasePlayer::CommitSuicide");
-MemberVFuncThunk<      CBasePlayer *, void>             CBasePlayer::vt_ForceRespawn( TypeName<CTFPlayer>(),   "CTFPlayer::ForceRespawn");
-
-
-MemberVFuncThunk<CBaseMultiplayerPlayer *, bool, int, const char *, char *, size_t, IRecipientFilter *> CBaseMultiplayerPlayer::vt_SpeakConceptIfAllowed(TypeName<CTFPlayer>(), "CTFPlayer::SpeakConceptIfAllowed");
-
-
 IMPL_SENDPROP(int,      CTFPlayerClassShared, m_iClass,         CTFPlayer);
 IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszClassIcon,   CTFPlayer);
 IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszCustomModel, CTFPlayer);
@@ -26,18 +11,22 @@ IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,    CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,  CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone, CTFPlayer);
 
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond(   "CTFPlayerShared::AddCond");
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond("CTFPlayerShared::RemoveCond");
-MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > CTFPlayerShared::ft_InCond(    "CTFPlayerShared::InCond");
-MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer("CTFPlayerShared::StunPlayer");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond       ("CTFPlayerShared::AddCond");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond    ("CTFPlayerShared::RemoveCond");
+MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > CTFPlayerShared::ft_InCond        ("CTFPlayerShared::InCond");
+MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsInvulnerable("CTFPlayerShared::IsInvulnerable");
+MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer    ("CTFPlayerShared::StunPlayer");
 
 
 IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
 IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);
 IMPL_SENDPROP(bool,            CTFPlayer, m_bIsMiniBoss, CTFPlayer);
+IMPL_SENDPROP(int,             CTFPlayer, m_nCurrency,   CTFPlayer);
 
-MemberFuncThunk<CTFPlayer *, void, int, bool> CTFPlayer::ft_ForceChangeTeam          ("CTFPlayer::ForceChangeTeam");
-MemberFuncThunk<CTFPlayer *, void, int, int > CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
+MemberFuncThunk<      CTFPlayer *, void, int, bool         > CTFPlayer::ft_ForceChangeTeam          ("CTFPlayer::ForceChangeTeam");
+MemberFuncThunk<      CTFPlayer *, void, int, int          > CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
+MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> CTFPlayer::ft_HasTheFlag               ("CTFPlayer::HasTheFlag");
+MemberFuncThunk<      CTFPlayer *, int, int                > CTFPlayer::ft_GetAutoTeam              ("CTFPlayer::GetAutoTeam");
 
 
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");

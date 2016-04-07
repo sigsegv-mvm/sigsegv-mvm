@@ -6,12 +6,6 @@
 #include "stub/tfbot.h"
 
 
-#include "addr/standard.h"
-static CAddr_Sym addr1("ILocomotion::TraceHull", "_ZNK11ILocomotion9TraceHullERK6VectorS2_S2_S2_jP12ITraceFilterP10CGameTrace");
-static CAddr_Sym addr2("NextBotTraversableTraceFilter::ShouldHitEntity", "_ZN29NextBotTraversableTraceFilter15ShouldHitEntityEP13IHandleEntityi");
-static CAddr_Sym addr3("CTFBotLocomotion::IsEntityTraversable", "_ZNK16CTFBotLocomotion19IsEntityTraversableEP11CBaseEntityN11ILocomotion16TraverseWhenTypeE");
-
-
 namespace Mod_Debug_MedigunShield_Obstruction
 {
 	// - PathFollower::Avoid

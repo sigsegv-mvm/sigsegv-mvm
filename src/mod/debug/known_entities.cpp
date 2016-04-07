@@ -3,9 +3,6 @@
 #include "stub/tfbot.h"
 #include "stub/objects.h"
 
-	
-	#include <addr/standard.h>
-	static CAddr_Sym addr1("CTFBotMainAction::OnInjured", "_ZN16CTFBotMainAction9OnInjuredEP6CTFBotRK15CTakeDamageInfo");
 
 namespace Mod_Debug_Known_Entities
 {

@@ -26,6 +26,9 @@ public:
 	
 	virtual bool Verbose() const { return false; }
 	
+	uint32_t GetActualOffset() const;
+	void *GetActualLocation() const;
+	
 protected:
 	IPatch(int len) :
 		m_iLength(len),

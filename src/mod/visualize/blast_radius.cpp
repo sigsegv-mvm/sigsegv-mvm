@@ -1,7 +1,7 @@
 #include "mod.h"
 #include "util/scope.h"
 #include "stub/baseentity.h"
-#include "stub/tfplayer.h"
+#include "stub/baseplayer.h"
 
 
 // TODO: make video with this:

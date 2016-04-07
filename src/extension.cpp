@@ -15,14 +15,14 @@
 CExtSigsegv g_Ext;
 SMEXT_LINK(&g_Ext);
 
-
-ICvar *icvar                         = nullptr;
-ISpatialPartition *partition         = nullptr;
-IEngineTrace *enginetrace            = nullptr;
-IStaticPropMgrServer *staticpropmgr  = nullptr;
-IGameEventManager2 *gameeventmanager = nullptr;
-IEngineSound *enginesound            = nullptr;
-IVDebugOverlay *debugoverlay         = nullptr;
+IServerGameClients *serverGameClients = nullptr;
+ICvar *icvar                          = nullptr;
+ISpatialPartition *partition          = nullptr;
+IEngineTrace *enginetrace             = nullptr;
+IStaticPropMgrServer *staticpropmgr   = nullptr;
+IGameEventManager2 *gameeventmanager  = nullptr;
+IEngineSound *enginesound             = nullptr;
+IVDebugOverlay *debugoverlay          = nullptr;
 
 IPhysics *physics = nullptr;
 
@@ -136,6 +136,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
+	GET_V_IFACE_CURRENT(GetServerFactory, serverGameClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;

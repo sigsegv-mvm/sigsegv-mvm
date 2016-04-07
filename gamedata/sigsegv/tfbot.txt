@@ -191,6 +191,66 @@
 					sym  "_ZN6CTFBot19DelayedThreatNoticeE7CHandleI11CBaseEntityEf"
 				}
 				
+				"CTFBot::GetBotType"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot10GetBotTypeEv"
+				}
+				
+				"CTFBot::GetLastKnownArea"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot16GetLastKnownAreaEv"
+				}
+				
+				"CTFBot::GetTimeLeftToCapture"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot20GetTimeLeftToCaptureEv"
+				}
+				
+				"CTFBot::Touch"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot5TouchEP11CBaseEntity"
+				}
+				
+				"CTFBot::EquipLongRangeWeapon"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot20EquipLongRangeWeaponEv"
+				}
+				
+				"CTFBot::GetDesiredAttackRange"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot21GetDesiredAttackRangeEv"
+				}
+				
+				"CTFBot::AvoidPlayers"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot12AvoidPlayersEP8CUserCmd"
+				}
+				
+				"CTFBot::Event_Killed"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot12Event_KilledERK15CTakeDamageInfo"
+				}
+				
+				"CTFBot::GetFlagToFetch"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot14GetFlagToFetchEv"
+				}
+				
+				"CTFBot::Spawn"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot5SpawnEv"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

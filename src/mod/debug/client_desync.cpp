@@ -86,6 +86,24 @@ namespace Mod_Debug_Client_Desync
 		});
 }
 
+/*
+20160327? win
+
+0x1c10 C_TFPlayer::m_bArenaSpectator
+0x1c11 C_TFPlayer::m_bIsMiniBoss
+0x1c12 C_TFPlayer::m_bIsABot
+0x1c13 
+0x1c14 C_TFPlayer::m_nBotSkill
+0x1c15 C_TFPlayer::m_nBotSkill [old version saved in OnPreDataChanged]
+
+0x2f1c C_TFPlayer::m_bUseBossHealthBar
+
+
+20160319a osx
+C_TFPlayer::m_bIsMiniBoss @ 0x1bed
+*/
+
+
 /* 20160202
 
 C_TFPlayer::m_bUseBossHealthBar @ 0x2ee8

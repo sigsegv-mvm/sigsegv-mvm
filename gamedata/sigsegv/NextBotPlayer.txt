@@ -23,6 +23,11 @@
 					type "sym"
 					sym  "_ZN13NextBotPlayerI9CTFPlayerE6UpdateEv"
 				}
+				"NextBotPlayer<CTFPlayer>::IsBot"
+				{
+					type "sym"
+					sym  "_ZNK13NextBotPlayerI9CTFPlayerE5IsBotEv"
+				}
 				
 				"NextBotPlayer<CTFPlayer>::PressFireButton"
 				{

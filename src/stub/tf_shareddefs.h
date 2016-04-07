@@ -7,8 +7,6 @@
 
 enum
 {
-	TEAM_ANY = -2,
-	
 	TF_TEAM_RED  = 2,
 	TF_TEAM_BLUE = 3,
 	
@@ -266,6 +264,22 @@ enum
 	TF_PROJECTILE_BREAD_MONSTER,
 	
 	TF_NUM_PROJECTILES,
+};
+
+enum
+{
+	TF_WPN_TYPE_PRIMARY   = 0,
+	TF_WPN_TYPE_SECONDARY = 1,
+	TF_WPN_TYPE_MELEE     = 2,
+	TF_WPN_TYPE_UTILITY   = 3,
+	TF_WPN_TYPE_BUILDING  = 4, // sapper
+	TF_WPN_TYPE_PDA       = 5, // engie build pda, disguise kit
+	TF_WPN_TYPE_PDA2      = 6, // engie destroy pda, invis watch
+	TF_WPN_TYPE_HEAD      = 7,
+	TF_WPN_TYPE_MISC      = 8,
+	TF_WPN_TYPE_ACTION    = 9, // canteens
+	/* slot 10 unknown */
+	TF_WPN_TYPE_TAUNT     = 11,
 };
 
 

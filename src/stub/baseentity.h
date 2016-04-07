@@ -42,6 +42,7 @@ public:
 	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin        (this, absOrigin); }
 	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles        (this, absAngles); }
 	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound           (this, soundname, soundtime, duration); }
+	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink        (this, szContext); }
 	Vector EyePosition()                                                                     { return vt_EyePosition         (this); }
 	const QAngle& EyeAngles()                                                                { return vt_EyeAngles           (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity      (this, pOwner); }
@@ -81,6 +82,7 @@ private:
 	static MemberFuncThunk<CBaseEntity *, void, const Vector&>                ft_SetAbsOrigin;
 	static MemberFuncThunk<CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
 	static MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
+	static MemberFuncThunk<CBaseEntity *, float, const char *>                ft_GetNextThink;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                    vt_EyeAngles;

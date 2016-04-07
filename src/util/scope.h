@@ -2,12 +2,16 @@
 #define _INCLUDE_SIGSEGV_UTIL_SCOPE_H_
 
 
+#include "util/backtrace.h"
+
+
 class RefCount
 {
 public:
 	operator const int&() const { return this->m_iCount; }
 	
 	void operator++() { this->Increment(); }
+	
 	void operator--() { this->Decrement(); }
 	
 	void Increment()
@@ -20,6 +24,7 @@ public:
 			--this->m_iCount;
 		} else {
 			DevWarning("RefCount::Decrement: m_iCount was %d!\n", this->m_iCount);
+			BACKTRACE();
 			this->m_iCount = 0;
 		}
 	}
@@ -32,19 +37,34 @@ private:
 class ScopedIncrement
 {
 public:
-	ScopedIncrement(RefCount& rc) : m_RefCount(rc)
-	{
-		m_RefCount.Increment();
-	}
+	ScopedIncrement(RefCount& rc) : m_RefCount(rc) {}
 	~ScopedIncrement()
 	{
-		m_RefCount.Decrement();
+		if (this->m_bIncremented) {
+			--this->m_RefCount;
+			this->m_bIncremented = false;
+		}
+	}
+	
+	void Increment()
+	{
+		assert(!this->m_bIncremented);
+		++this->m_RefCount;
+		this->m_bIncremented = true;
 	}
 	
 private:
 	RefCount& m_RefCount;
+	bool m_bIncremented = false;
 };
-#define SCOPED_INCREMENT(rc) ScopedIncrement rc##_incr(rc)
+#define SCOPED_INCREMENT(rc) \
+	ScopedIncrement _incr_##rc(rc); \
+	_incr_##rc.Increment()
+#define SCOPED_INCREMENT_IF(rc, predicate) \
+	ScopedIncrement _incr_##rc(rc); \
+	if (predicate) { \
+		_incr_##rc.Increment(); \
+	}
 
 
 #if 0

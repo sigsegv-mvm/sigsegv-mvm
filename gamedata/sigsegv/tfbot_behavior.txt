@@ -23,7 +23,47 @@
 					type "sym"
 					sym  "_ZN16CTFBotMainAction17FireWeaponAtEnemyEP6CTFBot"
 				}
+				"CTFBotMainAction::ShouldAttack"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotMainAction12ShouldAttackEPK8INextBotPK12CKnownEntity"
+				}
+				"CTFBotMainAction::ShouldHurry"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotMainAction11ShouldHurryEPK8INextBot"
+				}
+				"CTFBotMainAction::OnOtherKilled"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction13OnOtherKilledEP6CTFBotP20CBaseCombatCharacterRK15CTakeDamageInfo"
+				}
+				"CTFBotMainAction::SelectMoreDangerousThreat"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotMainAction25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+				}
+				"CTFBotMainAction::SelectMoreDangerousThreatInternal"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotMainAction33SelectMoreDangerousThreatInternalEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+				}
+				"CTFBotMainAction::OnStuck"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction7OnStuckEP6CTFBot"
+				}
+				"CTFBotMainAction::OnInjured"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction9OnInjuredEP6CTFBotRK15CTakeDamageInfo"
+				}
 				
+				"CTFBotScenarioMonitor::Update"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotScenarioMonitor6UpdateEP6CTFBotf"
+				}
 				"CTFBotScenarioMonitor::DesiredScenarioAndClassAction"
 				{
 					type "sym"
@@ -124,6 +164,119 @@
 					type   "func ebpprologue unistr"
 					sym    "_ZN26CTFBotMissionSuicideBomber8DetonateEP6CTFBot"
 					unistr "mvm_sentrybuster_killed"
+				}
+				
+				"CTFBotSeekAndDestroy::CTFBotSeekAndDestroy [C1]"
+				{
+					type "sym"
+					sym  "_ZN20CTFBotSeekAndDestroyC1Ef"
+				}
+				
+				"CTFBotMedicHeal::CTFBotMedicHeal [C1]"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotMedicHealC1Ev"
+				}
+				"CTFBotMedicHeal::Update"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotMedicHeal6UpdateEP6CTFBotf"
+				}
+				"CTFBotMedicHeal::SelectPatient"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotMedicHeal13SelectPatientEP6CTFBotP9CTFPlayer"
+				}
+				
+				"CTFBotSniperLurk::CTFBotSniperLurk [C1]"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotSniperLurkC1Ev"
+				}
+				"CTFBotSniperLurk::ShouldAttack"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotSniperLurk12ShouldAttackEPK8INextBotPK12CKnownEntity"
+				}
+				"CTFBotSniperLurk::SelectMoreDangerousThreat"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotSniperLurk25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+				}
+				
+				"CTFBotEngineerBuild::InitialContainedAction"
+				{
+					type "sym"
+					sym  "_ZN19CTFBotEngineerBuild22InitialContainedActionEP6CTFBot"
+				}
+				
+				"CTFBotGetAmmo::IsPossible"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotGetAmmo10IsPossibleEP6CTFBot"
+				}
+				
+				"CTFBotGetHealth::IsPossible"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotGetHealth10IsPossibleEP6CTFBot"
+				}
+				
+				"CTFBotUseItem::OnStart"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotUseItem7OnStartEP6CTFBotP6ActionIS0_E"
+				}
+				"CTFBotUseItem::Update"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotUseItem6UpdateEP6CTFBotf"
+				}
+				"CTFBotUseItem::OnEnd"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotUseItem5OnEndEP6CTFBotP6ActionIS0_E"
+				}
+				
+				"CTFBotTacticalMonitor::Update"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotTacticalMonitor6UpdateEP6CTFBotf"
+				}
+				"CTFBotTacticalMonitor::OnCommandString"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotTacticalMonitor15OnCommandStringEP6CTFBotPKc"
+				}
+				
+				"CTFBotSpyAttack::Update"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotSpyAttack6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotStickybombSentrygun::Update"
+				{
+					type "sym"
+					sym  "_ZN25CTFBotStickybombSentrygun6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotFetchFlag::Update"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotFetchFlag6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotDeliverFlag::Update"
+				{
+					type "sym"
+					sym  "_ZN17CTFBotDeliverFlag6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotAttackFlagDefenders::Update"
+				{
+					type "sym"
+					sym  "_ZN25CTFBotAttackFlagDefenders6UpdateEP6CTFBotf"
 				}
 			}
 		}

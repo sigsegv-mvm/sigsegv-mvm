@@ -5,6 +5,22 @@
 #include "link/link.h"
 
 
+class CAttributeManager
+{
+public:
+	template<typename T>
+	static T AttribHookValue(T value, const char *attr, const CBaseEntity *ent, CUtlVector<CBaseEntity *> *vec = nullptr, bool b1 = true);
+	
+	static StaticFuncThunk<int, int, const char *, const CBaseEntity *, CUtlVector<CBaseEntity *> *, bool>     ft_AttribHookValue_int;
+	static StaticFuncThunk<float, float, const char *, const CBaseEntity *, CUtlVector<CBaseEntity *> *, bool> ft_AttribHookValue_float;
+};
+
+template<> inline int CAttributeManager::AttribHookValue<int>(int value, const char *attr, const CBaseEntity *ent, CUtlVector<CBaseEntity *> *vec, bool b1)
+{ return CAttributeManager::ft_AttribHookValue_int(value, attr, ent, vec, b1); }
+template<> inline float CAttributeManager::AttribHookValue<float>(float value, const char *attr, const CBaseEntity *ent, CUtlVector<CBaseEntity *> *vec, bool b1)
+{ return CAttributeManager::ft_AttribHookValue_float(value, attr, ent, vec, b1); }
+
+
 class CEconItemView
 {
 public:
@@ -13,6 +29,31 @@ public:
 private:
 	static MemberVFuncThunk<CEconItemView *, int> vt_GetItemDefIndex;
 };
+
+
+class CEconItemAttributeDefinition
+{
+public:
+	unsigned short GetIndex() const { return this->m_iIndex; }
+	
+private:
+	KeyValues *m_KeyValues;  // +0x00
+	unsigned short m_iIndex; // +0x04
+	// ...
+};
+
+
+class CEconItemSchema
+{
+public:
+	CEconItemAttributeDefinition *GetAttributeDefinitionByName(const char *name) { return ft_GetAttributeDefinitionByName(this, name); }
+	
+private:
+	static MemberFuncThunk<CEconItemSchema *, CEconItemAttributeDefinition *, const char *> ft_GetAttributeDefinitionByName;
+};
+
+
+CEconItemSchema *GetItemSchema();
 
 
 #endif

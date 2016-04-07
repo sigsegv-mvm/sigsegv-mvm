@@ -4,6 +4,7 @@
 
 #include "abi.h"
 #include "library.h"
+#include "util/scope.h"
 
 
 class IDetour
@@ -12,6 +13,7 @@ public:
 	virtual ~IDetour() {}
 	
 	virtual const char *GetName() const = 0;
+	virtual void *GetFuncPtr() const = 0;
 	
 	bool Load();
 	void Unload();
@@ -29,8 +31,8 @@ protected:
 	virtual bool DoLoad() = 0;
 	virtual void DoUnload() = 0;
 	
-	virtual void DoEnable() = 0;
-	virtual void DoDisable() = 0;
+	virtual void DoEnable();
+	virtual void DoDisable();
 	
 private:
 	bool m_bLoaded = false;
@@ -38,57 +40,44 @@ private:
 };
 
 
-class CDetour : public IDetour
+class IDetour_SymNormal : public IDetour
 {
 public:
-	/* by pointer */
-	CDetour(const char *name, void *func_ptr, void *callback, void **inner_ptr) :
-		m_strName(name), m_pCallback(callback), m_pInner(inner_ptr), m_bFuncByName(false), m_pFunc(func_ptr) {}
-	/* by addr name */
-	CDetour(const char *name, const char *func_name, void *callback, void **inner_ptr) :
-		m_strName(name), m_pCallback(callback), m_pInner(inner_ptr), m_bFuncByName(true), m_strFuncName(func_name) {}
-	
 	virtual const char *GetName() const override { return this->m_strName.c_str(); }
+	virtual void *GetFuncPtr() const override { return this->m_pFunc; }
 	
-private:
+protected:
+	IDetour_SymNormal(const char *name, void *func_ptr) :
+		m_strName(name), m_bFuncByName(false), m_pFunc(func_ptr) {}
+	IDetour_SymNormal(const char *name, const char *func_name) :
+		m_strName(name), m_bFuncByName(true), m_strFuncName(func_name) {}
+	
 	virtual bool DoLoad() override;
 	virtual void DoUnload() override;
 	
-	virtual void DoEnable() override;
-	virtual void DoDisable() override;
-	
-	bool EnsureUniqueInnerPtrs();
-	
+private:
 	std::string m_strName;
-	void *m_pCallback;
-	void **m_pInner;
 	
 	bool m_bFuncByName = false;
 	std::string m_strFuncName;
 	void *m_pFunc = nullptr;
-	
-	static std::list<CDetour *> s_LoadedDetours;
-	static std::list<CDetour *> s_ActiveDetours;
-	
-	friend class CDetouredFunc;
 };
 
 
-class IDetourRegexSymbol : public IDetour
+class IDetour_SymRegex : public IDetour
 {
 public:
 	virtual const char *GetName() const override;
-	
-	virtual void *GetFuncPtr() const { return this->m_pFunc; }
+	virtual void *GetFuncPtr() const override { return this->m_pFunc; }
 	
 protected:
-	IDetourRegexSymbol(Library lib, const char *pattern) :
+	IDetour_SymRegex(Library lib, const char *pattern) :
 		m_Library(lib), m_strPattern(pattern) {}
 	
-private:
 	virtual bool DoLoad() override;
 	virtual void DoUnload() override;
 	
+private:
 	void Demangle();
 	
 	Library m_Library;
@@ -100,37 +89,99 @@ private:
 };
 
 
-class IDetourTrace : public IDetourRegexSymbol
+class CDetour : public IDetour_SymNormal
 {
 public:
+	/* by pointer */
+	CDetour(const char *name, void *func_ptr, void *callback, void **inner_ptr) :
+		IDetour_SymNormal(name, func_ptr), m_pCallback(callback), m_pInner(inner_ptr) {}
+	/* by addr name */
+	CDetour(const char *func_name, void *callback, void **inner_ptr) :
+		IDetour_SymNormal(func_name, func_name), m_pCallback(callback), m_pInner(inner_ptr) {}
+	
+private:
+	virtual bool DoLoad() override;
+	virtual void DoUnload() override;
+	
 	virtual void DoEnable() override;
 	virtual void DoDisable() override;
+	
+	bool EnsureUniqueInnerPtrs();
+	
+	void *m_pCallback;
+	void **m_pInner;
+	
+	static std::list<CDetour *> s_LoadedDetours;
+	static std::list<CDetour *> s_ActiveDetours;
+	
+	friend class CDetouredFunc;
+};
+
+
+class ITrace
+{
+public:
+	virtual ~ITrace() {}
 	
 	virtual void TracePre() = 0;
 	virtual void TracePost() = 0;
 	
 protected:
-	IDetourTrace(Library lib, const char *pattern) :
-		IDetourRegexSymbol(lib, pattern) {}
+	ITrace() {}
 };
 
 
-class CFuncTrace : public IDetourTrace
+class CFuncCount : public IDetour_SymNormal, public ITrace
+{
+public:
+	CFuncCount(RefCount& rc, const char *name, void *func_ptr) :
+		IDetour_SymNormal(name, func_ptr), m_RefCount(rc) {}
+	CFuncCount(RefCount& rc, const char *func_name) :
+		IDetour_SymNormal(func_name, func_name), m_RefCount(rc) {}
+	
+	virtual void TracePre() override;
+	virtual void TracePost() override;
+	
+private:
+	RefCount& m_RefCount;
+};
+
+
+class CFuncCallback : public IDetour_SymNormal, public ITrace
+{
+public:
+	using Callback_t = void (*)();
+	
+	CFuncCallback(Callback_t pre, Callback_t post, const char *name, void *func_ptr) :
+		IDetour_SymNormal(name, func_ptr), m_pCBPre(pre), m_pCBPost(post) {}
+	CFuncCallback(Callback_t pre, Callback_t post, const char *func_name) :
+		IDetour_SymNormal(func_name, func_name), m_pCBPre(pre), m_pCBPost(post) {}
+	
+	virtual void TracePre() override;
+	virtual void TracePost() override;
+	
+private:
+	Callback_t m_pCBPre;
+	Callback_t m_pCBPost;
+};
+
+
+class CFuncTrace : public IDetour_SymRegex, public ITrace
 {
 public:
 	CFuncTrace(Library lib, const char *pattern) :
-		IDetourTrace(lib, pattern) {}
+		IDetour_SymRegex(lib, pattern) {}
 	
 	virtual void TracePre() override;
 	virtual void TracePost() override;
 };
 
 
-class CFuncBacktrace : public IDetourTrace
+class CFuncBacktrace : public IDetour_SymRegex, public ITrace
 {
 public:
 	CFuncBacktrace(Library lib, const char *pattern) :
-		IDetourTrace(lib, pattern) {}
+		IDetour_SymRegex(lib, pattern) {}
 	
 	virtual void TracePre() override;
 	virtual void TracePost() override;
@@ -148,8 +199,8 @@ public:
 	void AddDetour(CDetour *detour);
 	void RemoveDetour(CDetour *detour);
 	
-	void AddTrace(IDetourTrace *trace);
-	void RemoveTrace(IDetourTrace *trace);
+	void AddTrace(ITrace *trace);
+	void RemoveTrace(ITrace *trace);
 	
 private:
 	void RemoveAllDetours();
@@ -174,7 +225,7 @@ private:
 	void *m_pFunc;
 	
 	std::vector<CDetour *> m_Detours;
-	std::vector<IDetourTrace *> m_Traces;
+	std::vector<ITrace *> m_Traces;
 	
 	std::vector<uint8_t> m_Prologue;
 	

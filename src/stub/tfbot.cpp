@@ -123,6 +123,7 @@ MemberFuncThunk<const CTFBot *, bool, CTFPlayer *                        > CTFBo
 MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_RealizeSpy                  ("CTFBot::RealizeSpy");
 MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_ForgetSpy                   ("CTFBot::ForgetSpy");
 MemberFuncThunk<      CTFBot *, void, const char *                       > CTFBot::ft_AddItem                     ("CTFBot::AddItem");
+MemberFuncThunk<const CTFBot *, float                                    > CTFBot::ft_GetDesiredAttackRange       ("CTFBot::GetDesiredAttackRange");
 
 #if 0
 std::map<CHandle<CTFBot>, CTFBot::ExtendedAttr> CTFBot::s_ExtAttrs;

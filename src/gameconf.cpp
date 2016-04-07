@@ -28,6 +28,7 @@ static const char *const configs[] = {
 	"sigsegv/nav",
 	"sigsegv/tfplayer",
 	"sigsegv/tfbot",
+	"sigsegv/tfbot_body",
 	"sigsegv/tfbot_locomotion",
 	"sigsegv/tfbot_vision",
 	"sigsegv/tfbot_behavior",

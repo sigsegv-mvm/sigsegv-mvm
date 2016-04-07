@@ -121,6 +121,11 @@
 					func    "CItemComeToRest"
 					vtable  ".?AVCCurrencyPack@@"
 				}
+				"CCurrencyPack::MyTouch"
+				{
+					type "sym"
+					sym  "_ZN13CCurrencyPack7MyTouchEP11CBasePlayer"
+				}
 				
 				"CFuncNavCost::IsApplicableTo"
 				{
@@ -460,6 +465,12 @@
 					sym  "_ZN11CBaseObject13StartBuildingEP11CBaseEntity"
 				}
 				
+				"CTFWeaponBuilder::StartBuilding"
+				{
+					type "sym"
+					sym  "_ZN16CTFWeaponBuilder13StartBuildingEv"
+				}
+				
 				"CEconItemView::GetItemDefIndex"
 				{
 					type "sym"
@@ -493,6 +504,12 @@
 				{
 					type "sym"
 					sym  "_ZN24ITFBotHintEntityAutoList34m_ITFBotHintEntityAutoListAutoListE"
+				}
+				
+				"ICaptureFlagAutoList::m_ICaptureFlagAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN20ICaptureFlagAutoList30m_ICaptureFlagAutoListAutoListE"
 				}
 				
 				"CBaseEntity::Remove"
@@ -657,6 +674,186 @@
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity13CreateNoSpawnEPKcRK6VectorRK6QAnglePS_"
+				}
+				
+				"WeaponID_IsSniperRifle"
+				{
+					type "sym"
+					sym  "_Z22WeaponID_IsSniperRiflei"
+				}
+				"WeaponID_IsSniperRifleOrBow"
+				{
+					type "sym"
+					sym  "_Z27WeaponID_IsSniperRifleOrBowi"
+				}
+				
+				"CTFKnife::GetMeleeDamage"
+				{
+					type "sym"
+					sym  "_ZN8CTFKnife14GetMeleeDamageEP11CBaseEntityPiS2_"
+				}
+				
+				"CObjectSapper::Spawn"
+				{
+					type "sym"
+					sym  "_ZN13CObjectSapper5SpawnEv"
+				}
+				
+				"CTFGameRules::ApplyOnDamageAliveModifyRules"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules29ApplyOnDamageAliveModifyRulesERK15CTakeDamageInfoP11CBaseEntityRNS_20DamageModifyExtras_tE"
+				}
+				
+				"NextBotTraversableTraceFilter::ShouldHitEntity"
+				{
+					type "sym"
+					sym  "_ZN29NextBotTraversableTraceFilter15ShouldHitEntityEP13IHandleEntityi"
+				}
+				
+				"CUpgrades::GetUpgradeAttributeName"
+				{
+					type "sym"
+					sym  "_ZNK9CUpgrades23GetUpgradeAttributeNameEi"
+				}
+				
+				"GetItemSchema"
+				{
+					type "sym"
+					sym  "_Z13GetItemSchemav"
+				}
+				
+				"CEconItemSchema::GetAttributeDefinitionByName"
+				{
+					type "sym"
+					sym  "_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
+				}
+				
+				"CTFGameRules::CanUpgradeWithAttrib"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules20CanUpgradeWithAttribEP9CTFPlayeritP22CMannVsMachineUpgrades"
+				}
+				"CTFGameRules::GetCostForUpgrade"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules17GetCostForUpgradeEP22CMannVsMachineUpgradesiiP9CTFPlayer"
+				}
+				"CTFGameRules::GetUpgradeTier"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules14GetUpgradeTierEi"
+				}
+				"CTFGameRules::IsUpgradeTierEnabled"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules20IsUpgradeTierEnabledEP9CTFPlayerii"
+				}
+				
+				"CBaseCombatCharacter::GetLastKnownArea"
+				{
+					type "sym"
+					sym  "_ZNK20CBaseCombatCharacter16GetLastKnownAreaEv"
+				}
+				
+				"CBasePlayer::GetSteamID"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer10GetSteamIDEP8CSteamID"
+				}
+				
+				"CMannVsMachineStats::GetUpgradeSpending"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats18GetUpgradeSpendingEP9CTFPlayer"
+				}
+				"CMannVsMachineStats::GetBottleSpending"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats17GetBottleSpendingEP9CTFPlayer"
+				}
+				"CMannVsMachineStats::GetBuyBackSpending"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats18GetBuyBackSpendingEP9CTFPlayer"
+				}
+				"CMannVsMachineStats::ResetUpgradeSpending"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats20ResetUpgradeSpendingEP9CTFPlayer"
+				}
+				
+				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
+				}
+				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"
+				{
+					type "sym"
+					sym  "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
+				}
+				"CPopulationManager::RemovePlayerAndItemUpgradesFromHistory"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager38RemovePlayerAndItemUpgradesFromHistoryEP9CTFPlayer"
+				}
+				
+				"CPopulationManager::GetNumRespecsAvailableForPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager31GetNumRespecsAvailableForPlayerEP9CTFPlayer"
+				}
+				"CPopulationManager::SetNumRespecsForPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
+				}
+				"CPopulationManager::AddRespecToPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
+				}
+				"CPopulationManager::RemoveRespecFromPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager22RemoveRespecFromPlayerEP9CTFPlayer"
+				}
+				
+				"CGameRules::GetViewVectors"
+				{
+					type "sym"
+					sym  "_ZNK10CGameRules14GetViewVectorsEv"
+				}
+				
+				"ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN21ICurrencyPackAutoList31m_ICurrencyPackAutoListAutoListE"
+				}
+				
+				"CTFPowerup::GetLifeTime"
+				{
+					type "sym"
+					sym  "_ZN10CTFPowerup11GetLifeTimeEv"
+				}
+				
+				"CBaseEntity::GetNextThink"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12GetNextThinkEPKc"
+				}
+				
+				"CCurrencyPack::SetAmount"
+				{
+					type "sym"
+					sym  "_ZN13CCurrencyPack9SetAmountEf"
+				}
+				
+				"CBaseCombatCharacter::Weapon_GetSlot"
+				{
+					type "sym"
+					sym  "_ZNK20CBaseCombatCharacter14Weapon_GetSlotEi"
 				}
 			}
 		}

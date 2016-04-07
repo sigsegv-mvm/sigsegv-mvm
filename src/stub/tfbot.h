@@ -226,6 +226,7 @@ public:
 	void RealizeSpy(CTFPlayer *spy)                                    {        ft_RealizeSpy                  (this, spy); }
 	void ForgetSpy(CTFPlayer *spy)                                     {        ft_ForgetSpy                   (this, spy); }
 	void AddItem(const char *name)                                     {        ft_AddItem                     (this, name); }
+	float GetDesiredAttackRange() const                                { return ft_GetDesiredAttackRange       (this); }
 	
 #if 0
 	/* custom: extended attributes */
@@ -257,6 +258,7 @@ private:
 	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_RealizeSpy;
 	static MemberFuncThunk<      CTFBot *, void, CTFPlayer *                 > ft_ForgetSpy;
 	static MemberFuncThunk<      CTFBot *, void, const char *                > ft_AddItem;
+	static MemberFuncThunk<const CTFBot *, float                             > ft_GetDesiredAttackRange;
 	
 #if 0
 	static std::map<CHandle<CTFBot>, ExtendedAttr> s_ExtAttrs;

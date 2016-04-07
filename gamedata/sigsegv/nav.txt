@@ -20,11 +20,37 @@
 					v_name  "CNavMesh::GetNavArea"
 					v_group "NextBot"
 				}
+				"CNavMesh::GetNearestNavArea [vec]"
+				{
+					type    "sym"
+					sym     "_ZNK8CNavMesh17GetNearestNavAreaERK6Vectorbfbbi"
+				}
+				"CNavMesh::GetNearestNavArea [ent]"
+				{
+					type    "sym"
+					sym     "_ZNK8CNavMesh17GetNearestNavAreaEP11CBaseEntityif"
+				}
+				"CNavMesh::CollectAreasOverlappingExtent<CTFNavArea>"
+				{
+					type    "sym"
+					sym     "_ZN8CNavMesh29CollectAreasOverlappingExtentI10CTFNavAreaEEvRK6ExtentP10CUtlVectorIPT_10CUtlMemoryIS7_iEE"
+				}
 				
 				"CTFNavMesh::CollectBuiltObjects"
 				{
 					type "sym"
 					sym  "_ZN10CTFNavMesh19CollectBuiltObjectsEP10CUtlVectorIP11CBaseObject10CUtlMemoryIS2_iEEi"
+				}
+				
+				"CNavArea::GetExtent"
+				{
+					type "sym"
+					sym  "_ZNK8CNavArea9GetExtentEP6Extent"
+				}
+				"CNavArea::GetClosestPointOnArea"
+				{
+					type "sym"
+					sym  "_ZNK8CNavArea21GetClosestPointOnAreaEPK6VectorPS0_"
 				}
 				
 				"CTFNavArea::IsBlocked"
@@ -38,6 +64,12 @@
 				{
 					type "sym"
 					sym  "_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
+				}
+				
+				"NavAreaTravelDistance<CTFBotPathCost>"
+				{
+					type "sym"
+					sym  "_Z21NavAreaTravelDistanceI14CTFBotPathCostEfP8CNavAreaS2_RT_f"
 				}
 			}
 		}

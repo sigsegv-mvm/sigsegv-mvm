@@ -187,6 +187,8 @@ static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Behav
 /* CTFBotPathCost */
 static MemberFuncThunk<const CTFBotPathCost *, float, CNavArea *, CNavArea *, const CNavLadder *, const CFuncElevator *, float> ft_CTFBotPathCost_op_func("CTFBotPathCost::operator()");
 
+/* NextBotManager */
+static MemberFuncThunk<NextBotManager *, void, CUtlVector<INextBot *> *> ft_NextBotManager_CollectAllBots("NextBotManager::CollectAllBots");
 static StaticFuncThunk<NextBotManager *> ft_TheNextBots("TheNextBots");
 
 
@@ -362,4 +364,5 @@ template<> ActionResult<CTFBot> Action<CTFBot>::InvokeOnResume(CTFBot *actor, Be
 
 float CTFBotPathCost::operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const { return ft_CTFBotPathCost_op_func(this, area1, area2, ladder, elevator, f1); }
 
-NextBotManager *TheNextBots() { return ft_TheNextBots(); }
+void NextBotManager::CollectAllBots(CUtlVector<INextBot *> *nextbots) {        ft_NextBotManager_CollectAllBots(this, nextbots); }
+NextBotManager *TheNextBots()                                         { return ft_TheNextBots                  (); }

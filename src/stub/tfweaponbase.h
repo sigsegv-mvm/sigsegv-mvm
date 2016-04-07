@@ -53,4 +53,8 @@ private:
 };
 
 
+bool WeaponID_IsSniperRifle(int id);
+bool WeaponID_IsSniperRifleOrBow(int id);
+
+
 #endif

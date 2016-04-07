@@ -163,75 +163,64 @@ void IDetour::Disable()
 }
 
 
-bool CDetour::DoLoad()
+void IDetour::DoEnable()
+{
+	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	
+	ITrace *trace   = nullptr;
+	CDetour *detour = nullptr;
+	
+	if ((trace = dynamic_cast<ITrace *>(this)) != nullptr) {
+		CDetouredFunc::Find(this->GetFuncPtr()).AddTrace(trace);
+	} else if ((detour = dynamic_cast<CDetour *>(this)) != nullptr) {
+		CDetouredFunc::Find(this->GetFuncPtr()).AddDetour(detour);
+	} else {
+		/* don't know how to deal with this kind of IDetour */
+		assert(false);
+	}
+}
+
+void IDetour::DoDisable()
+{
+	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	
+	ITrace *trace   = nullptr;
+	CDetour *detour = nullptr;
+	
+	if ((trace = dynamic_cast<ITrace *>(this)) != nullptr) {
+		CDetouredFunc::Find(this->GetFuncPtr()).RemoveTrace(trace);
+	} else if ((detour = dynamic_cast<CDetour *>(this)) != nullptr) {
+		CDetouredFunc::Find(this->GetFuncPtr()).RemoveDetour(detour);
+	} else {
+		/* don't know how to deal with this kind of IDetour */
+		assert(false);
+	}
+}
+
+
+bool IDetour_SymNormal::DoLoad()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 	
 	if (this->m_bFuncByName) {
 		this->m_pFunc = AddrManager::GetAddr(this->m_strFuncName.c_str());
 		if (this->m_pFunc == nullptr) {
-			DevMsg("CDetour::DoLoad: \"%s\": addr lookup failed for \"%s\"\n", this->GetName(), this->m_strFuncName.c_str());
+			DevMsg("IDetour_SymNormal::DoLoad: \"%s\": addr lookup failed for \"%s\"\n", this->GetName(), this->m_strFuncName.c_str());
 			return false;
 		}
 	} else {
 		if (this->m_pFunc == nullptr) {
-			DevMsg("CDetour::DoLoad: \"%s\": func ptr provided is nullptr\n", this->GetName());
-			return false;
-		}
-	}
-	
-	if (!this->EnsureUniqueInnerPtrs()) {
-		return false;
-	}
-	
-	s_LoadedDetours.push_back(this);
-	return true;
-}
-
-void CDetour::DoUnload()
-{
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-	
-	s_LoadedDetours.erase(std::remove(s_LoadedDetours.begin(), s_LoadedDetours.end(), this), s_LoadedDetours.end());
-}
-
-
-void CDetour::DoEnable()
-{
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-	
-	CDetouredFunc::Find(this->m_pFunc).AddDetour(this);
-	s_ActiveDetours.push_back(this);
-}
-
-void CDetour::DoDisable()
-{
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-	
-	CDetouredFunc::Find(this->m_pFunc).RemoveDetour(this);
-	s_ActiveDetours.erase(std::remove(s_ActiveDetours.begin(), s_ActiveDetours.end(), this), s_ActiveDetours.end());
-}
-
-
-/* ensure that no two loaded CDetour instances have the same m_pInner value:
- * this is important because it may seem like two different function detours can
- * share the same callback; but in fact, that's completely unsafe */
-bool CDetour::EnsureUniqueInnerPtrs()
-{
-	TRACE("[this: %08x \"%s\"] %08x", (uintptr_t)this, this->GetName(), (uintptr_t)this->m_pInner);
-	
-	for (auto detour : s_LoadedDetours) {
-		if (detour->m_pInner == this->m_pInner) {
-			Warning("Found two CDetour instances with the same inner function pointer!\n"
-				"this: %08x \"%s\"\n"
-				"that: %08x \"%s\"\n",
-				(uintptr_t)this, this->GetName(),
-				(uintptr_t)detour, detour->GetName());
+			DevMsg("IDetour_SymNormal::DoLoad: \"%s\": func ptr provided is nullptr\n", this->GetName());
 			return false;
 		}
 	}
 	
 	return true;
+}
+
+void IDetour_SymNormal::DoUnload()
+{
+	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 }
 
 
@@ -262,7 +251,7 @@ private:
 };
 
 
-const char *IDetourRegexSymbol::GetName() const
+const char *IDetour_SymRegex::GetName() const
 {
 	if (this->IsLoaded()) {
 		return this->m_strDemangled.c_str();
@@ -272,12 +261,12 @@ const char *IDetourRegexSymbol::GetName() const
 }
 
 
-bool IDetourRegexSymbol::DoLoad()
+bool IDetour_SymRegex::DoLoad()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 	
 	if (this->m_Library == Library::INVALID) {
-		DevMsg("IDetourRegexSymbol::DoLoad: \"%s\": invalid library\n", this->GetName());
+		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": invalid library\n", this->GetName());
 		return false;
 	}
 	
@@ -300,7 +289,7 @@ bool IDetourRegexSymbol::DoLoad()
 	});
 	
 	if (syms.size() != 1) {
-		DevMsg("IDetourRegexSymbol::DoLoad: \"%s\": symbol lookup failed (%u matches):\n", this->GetName(), syms.size());
+		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": symbol lookup failed (%u matches):\n", this->GetName(), syms.size());
 		for (auto sym : syms) {
 			std::string name(sym->buffer(), sym->length);
 			DevMsg("  %s\n", name.c_str());
@@ -316,13 +305,13 @@ bool IDetourRegexSymbol::DoLoad()
 	return true;
 }
 
-void IDetourRegexSymbol::DoUnload()
+void IDetour_SymRegex::DoUnload()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 }
 
 
-void IDetourRegexSymbol::Demangle()
+void IDetour_SymRegex::Demangle()
 {
 #if defined _LINUX || defined _OSX
 	const char *demangled = cplus_demangle(this->m_strSymbol.c_str(), DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS);
@@ -338,18 +327,88 @@ void IDetourRegexSymbol::Demangle()
 }
 
 
-void IDetourTrace::DoEnable()
+bool CDetour::DoLoad()
 {
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	if (!IDetour_SymNormal::DoLoad()) {
+		return false;
+	}
 	
-	CDetouredFunc::Find(this->GetFuncPtr()).AddTrace(this);
+	if (!this->EnsureUniqueInnerPtrs()) {
+		return false;
+	}
+	
+	s_LoadedDetours.push_back(this);
+	return true;
 }
 
-void IDetourTrace::DoDisable()
+void CDetour::DoUnload()
 {
-	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
+	IDetour_SymNormal::DoUnload();
 	
-	CDetouredFunc::Find(this->GetFuncPtr()).RemoveTrace(this);
+	s_LoadedDetours.erase(std::remove(s_LoadedDetours.begin(), s_LoadedDetours.end(), this), s_LoadedDetours.end());
+}
+
+
+void CDetour::DoEnable()
+{
+	IDetour::DoEnable();
+	
+	s_ActiveDetours.push_back(this);
+}
+
+void CDetour::DoDisable()
+{
+	IDetour::DoDisable();
+	
+	s_ActiveDetours.erase(std::remove(s_ActiveDetours.begin(), s_ActiveDetours.end(), this), s_ActiveDetours.end());
+}
+
+
+/* ensure that no two loaded CDetour instances have the same m_pInner value:
+ * this is important because it may seem like two different function detours can
+ * share the same callback; but in fact, that's completely unsafe */
+bool CDetour::EnsureUniqueInnerPtrs()
+{
+	TRACE("[this: %08x \"%s\"] %08x", (uintptr_t)this, this->GetName(), (uintptr_t)this->m_pInner);
+	
+	for (auto detour : s_LoadedDetours) {
+		if (detour->m_pInner == this->m_pInner) {
+			Warning("Found two CDetour instances with the same inner function pointer!\n"
+				"this: %08x \"%s\"\n"
+				"that: %08x \"%s\"\n",
+				(uintptr_t)this, this->GetName(),
+				(uintptr_t)detour, detour->GetName());
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+void CFuncCount::TracePre()
+{
+	++this->m_RefCount;
+}
+
+void CFuncCount::TracePost()
+{
+	--this->m_RefCount;
+}
+
+
+void CFuncCallback::TracePre()
+{
+	if (this->m_pCBPre != nullptr) {
+		this->m_pCBPre();
+	}
+}
+
+void CFuncCallback::TracePost()
+{
+	if (this->m_pCBPost != nullptr) {
+		this->m_pCBPost();
+	}
 }
 
 
@@ -435,7 +494,7 @@ void CDetouredFunc::RemoveDetour(CDetour *detour)
 }
 
 
-void CDetouredFunc::AddTrace(IDetourTrace *trace)
+void CDetouredFunc::AddTrace(ITrace *trace)
 {
 	TRACE("[this: %08x] [trace: %08x \"%s\"]", (uintptr_t)this, (uintptr_t)trace, trace->GetName());
 	
@@ -445,7 +504,7 @@ void CDetouredFunc::AddTrace(IDetourTrace *trace)
 	this->Reconfigure();
 }
 
-void CDetouredFunc::RemoveTrace(IDetourTrace *trace)
+void CDetouredFunc::RemoveTrace(ITrace *trace)
 {
 	TRACE("[this: %08x] [trace: %08x \"%s\"]", (uintptr_t)this, (uintptr_t)trace, trace->GetName());
 	

@@ -23,6 +23,7 @@
 
 class IVEngineServer;
 class IServerGameDLL;
+class IServerGameClients;
 class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
@@ -46,6 +47,7 @@ namespace SourceMod {
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
+extern IServerGameClients *serverGameClients;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
@@ -141,12 +143,14 @@ extern SourceMod::IExtensionManager *smexts;
 #include <string_t.h>
 #include "sdk2013/annotations.h"
 #include "sdk2013/basetypes.h"
+#include <vector.h>
+#include <tier1/utlvector.h>
+#include "sdk2013/shareddefs.h"
 #include "sdk2013/icvar.h"
 #include <tier0/dbg.h>
 #include <tier1/convar.h>
 #include "sdk2013/fmtstr.h"
 #include <tier1/KeyValues.h>
-#include <tier1/utlvector.h>
 #include <shareddefs.h>
 #include <ehandle.h>
 #include <datamap.h>
@@ -187,6 +191,7 @@ extern SourceMod::IExtensionManager *smexts;
 #include <vphysics_interface.h>
 #include <ivmodelrender.h>
 #include <vcollide_parse.h>
+#include <steam/steamclientpublic.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>

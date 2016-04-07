@@ -18,6 +18,11 @@
 					type "sym"
 					sym  "_ZN7IVision6UpdateEv"
 				}
+				"IVision::UpdateKnownEntities"
+				{
+					type "sym"
+					sym  "_ZN7IVision19UpdateKnownEntitiesEv"
+				}
 			}
 		}
 	}

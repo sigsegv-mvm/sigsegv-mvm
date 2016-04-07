@@ -19,12 +19,12 @@ enum NavDirType {};
 
 #include "../mvm-reversed/server/NextBot/Path/NextBotPath.h"
 #include "../mvm-reversed/server/NextBot/Path/NextBotPathFollow.h"
-//#include "../mvm-reversed/server/NextBot/Path/NextBotChasePath.h"
+#include "../mvm-reversed/server/NextBot/Path/NextBotChasePath.h"
 
 
 SIZE_CHECK(Path,         0x4754);
 SIZE_CHECK(PathFollower, 0x47d4);
-//SIZE_CHECK(ChasePath,    0x4800);
+SIZE_CHECK(ChasePath,    0x4800);
 SIZE_CHECK(IPathCost,    0x04);
 
 

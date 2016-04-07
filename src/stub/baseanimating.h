@@ -5,7 +5,14 @@
 #include "stub/baseentity.h"
 
 
-class CBaseAnimating : public CBaseEntity {};
+class CBaseAnimating : public CBaseEntity
+{
+public:
+	float GetModelScale() const { return this->m_flModelScale; }
+	
+private:
+	DECL_SENDPROP(float, m_flModelScale);
+};
 
 class CBaseAnimatingOverlay : public CBaseAnimating {};
 class CBaseFlex : public CBaseAnimatingOverlay {};

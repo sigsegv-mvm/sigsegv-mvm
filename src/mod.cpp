@@ -8,7 +8,7 @@ bool IHasPatches::LoadPatches()
 	for (auto patch : this->m_Patches) {
 		if (patch->Init()) {
 			if (patch->Check()) {
-				DevMsg("IHasPatches::LoadPatches: \"%s\" OK\n", this->GetName());
+//				DevMsg("IHasPatches::LoadPatches: \"%s\" OK\n", this->GetName());
 			} else {
 				DevMsg("IHasPatches::LoadPatches: \"%s\" FAIL in Check\n", this->GetName());
 				ok = false;
@@ -35,8 +35,8 @@ void IHasPatches::UnloadPatches()
 
 void IHasPatches::AddPatch(IPatch *patch)
 {
-	DevMsg("IHasPatches::AddPatch: \"%s\" \"%s\" off:[0x%05x~0x%05x] len:0x%05x\n", this->GetName(),
-		patch->GetFuncName(), patch->GetFuncOffMin(), patch->GetFuncOffMax(), patch->GetLength());
+//	DevMsg("IHasPatches::AddPatch: \"%s\" \"%s\" off:[0x%05x~0x%05x] len:0x%05x\n", this->GetName(),
+//		patch->GetFuncName(), patch->GetFuncOffMin(), patch->GetFuncOffMax(), patch->GetLength());
 	
 	assert(this->CanAddPatches());
 	
@@ -71,7 +71,7 @@ bool IHasDetours::LoadDetours()
 		
 		if (!detour->IsLoaded()) {
 			if (detour->Load()) {
-				DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" OK\n", this->GetName(), name);
+//				DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" OK\n", this->GetName(), name);
 			} else {
 				DevMsg("IHasDetours::LoadDetours: \"%s\" \"%s\" FAIL\n", this->GetName(), name);
 				ok = false;
@@ -102,7 +102,7 @@ void IHasDetours::AddDetour(IDetour *detour)
 {
 	const char *name = detour->GetName();
 	
-	DevMsg("IHasDetours::AddDetour: \"%s\" \"%s\"\n", this->GetName(), name);
+//	DevMsg("IHasDetours::AddDetour: \"%s\" \"%s\"\n", this->GetName(), name);
 	
 	assert(this->CanAddDetours());
 	assert(this->m_Detours.find(name) == this->m_Detours.end());

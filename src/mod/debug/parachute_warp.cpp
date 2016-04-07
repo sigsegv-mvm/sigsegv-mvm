@@ -6,16 +6,6 @@
 #include "util/backtrace.h"
 
 
-#include "addr/standard.h"
-static CAddr_Sym addr1("CTFBotMainAction::Update", "_ZN16CTFBotMainAction6UpdateEP6CTFBotf");
-static CAddr_Sym addr2("CTFBotTacticalMonitor::Update", "_ZN21CTFBotTacticalMonitor6UpdateEP6CTFBotf");
-static CAddr_Sym addr3("CTFBotScenarioMonitor::Update", "_ZN21CTFBotScenarioMonitor6UpdateEP6CTFBotf");
-static CAddr_Sym addr4("CTFBotFetchFlag::Update", "_ZN15CTFBotFetchFlag6UpdateEP6CTFBotf");
-static CAddr_Sym addr5("CTFBotAttackFlagDefenders::Update", "_ZN25CTFBotAttackFlagDefenders6UpdateEP6CTFBotf");
-static CAddr_Sym addr6("CTFBotDeliverFlag::Update", "_ZN17CTFBotDeliverFlag6UpdateEP6CTFBotf");
-static CAddr_Sym addr7("CBaseEntity::SetAbsOrigin", "_ZN11CBaseEntity12SetAbsOriginERK6Vector");
-
-
 namespace Mod_Debug_Parachute_Warp
 {
 	// tracing results:

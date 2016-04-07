@@ -13,21 +13,23 @@ namespace ColorSpew
 		CM_TRUE_COLOR,
 	};
 	
+	constexpr ColorMode MODE_FILE    = CM_DISABLED;
+	constexpr ColorMode MODE_SCREEN  = CM_DISABLED;
+	constexpr ColorMode MODE_DEFAULT = CM_TRUE_COLOR;
+	
 	ColorMode GetColorMode()
 	{
 		if (!isatty(STDOUT_FILENO)) {
-			return CM_DISABLED;
+			return MODE_FILE;
 		}
 		
 		const char *TERM = getenv("TERM");
 		
 		if (TERM != nullptr && strcmp(TERM, "screen") == 0) {
-			return CM_256_COLORS;
+			return MODE_SCREEN;
 		}
 		
-	//	return CM_TRUE_COLOR;
-	//	return CM_256_COLORS;
-		return CM_16_COLORS;
+		return MODE_DEFAULT;
 	}
 	
 	

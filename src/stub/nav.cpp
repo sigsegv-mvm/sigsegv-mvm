@@ -73,9 +73,22 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType>
 #endif
 
 
+MemberFuncThunk<const CNavArea *, void, Extent *>                 CNavArea::ft_GetExtent            ("CNavArea::GetExtent");
+MemberFuncThunk<const CNavArea *, void, const Vector *, Vector *> CNavArea::ft_GetClosestPointOnArea("CNavArea::GetClosestPointOnArea");
+
+
 IMPL_EXTRACT(TFNavAttributeType, CTFNavArea, m_nAttributes, new CExtract_CTFNavArea_m_nAttributes());
+
+
+MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, bool, float, bool, bool, int> CNavMesh::ft_GetNearestNavArea_vec                   ("CNavMesh::GetNearestNavArea [vec]");
+MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   CNavMesh::ft_GetNearestNavArea_ent                   ("CNavMesh::GetNearestNavArea [ent]");
+MemberFuncThunk<CNavMesh *, void, const Extent&, CUtlVector<CTFNavArea *> *>               CNavMesh::ft_CollectAreasOverlappingExtent_CTFNavArea("CNavMesh::CollectAreasOverlappingExtent<CTFNavArea>");
 
 
 MemberFuncThunk<CTFNavMesh *, void, CUtlVector<CBaseObject *> *, int> CTFNavMesh::ft_CollectBuiltObjects("CTFNavMesh::CollectBuiltObjects");
 
+
 GlobalThunk<CTFNavMesh *> TheNavMesh("TheNavMesh");
+
+
+StaticFuncThunk<float, CNavArea *, CNavArea *, CTFBotPathCost&, float> ft_NavAreaTravelDistance_CTFBotPathCost("NavAreaTravelDistance<CTFBotPathCost>");

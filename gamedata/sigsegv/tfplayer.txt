@@ -102,6 +102,84 @@
 					sym  "_ZN9CTFPlayer14GetLoadoutItemEiib"
 				}
 				
+				"CTFPlayer::HandleCommand_JoinClass"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23HandleCommand_JoinClassEPKcb"
+				}
+				"CTFPlayer::HandleCommand_JoinTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22HandleCommand_JoinTeamEPKc"
+				}
+				"CTFPlayer::IsReadyToPlay"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13IsReadyToPlayEv"
+				}
+				"CTFPlayer::GetAutoTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11GetAutoTeamEi"
+				}
+				
+				"CTFPlayer::ShouldDropAmmoPack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18ShouldDropAmmoPackEv"
+				}
+				
+				"CTFPlayer::Event_Killed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12Event_KilledERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::TeleportEffect"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14TeleportEffectEv"
+				}
+				
+				"CTFPlayer::HasTheFlag"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10HasTheFlagEP11ETFFlagTypei"
+				}
+				
+				"CTFPlayer::CanBuild"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer8CanBuildEii"
+				}
+				
+				"CTFPlayer::ManageRegularWeapons"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20ManageRegularWeaponsEP19TFPlayerClassData_t"
+				}
+				
+				"CTFPlayer::ReapplyPlayerUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21ReapplyPlayerUpgradesEv"
+				}
+				"CTFPlayer::ReapplyItemUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19ReapplyItemUpgradesEP13CEconItemView"
+				}
+				"CTFPlayer::RememberUpgrade"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15RememberUpgradeEiP13CEconItemViewiib"
+				}
+				"CTFPlayer::ForgetFirstUpgradeForItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25ForgetFirstUpgradeForItemEP13CEconItemView"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -131,6 +209,11 @@
 				{
 					type "sym"
 					sym  "_ZN15CTFPlayerShared18OnConditionRemovedE7ETFCond"
+				}
+				"CTFPlayerShared::IsInvulnerable"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared14IsInvulnerableEv"
 				}
 				
 				"CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot"

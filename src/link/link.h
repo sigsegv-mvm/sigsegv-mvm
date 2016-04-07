@@ -19,41 +19,6 @@ protected:
 };
 
 
-#if 0
-template<typename FUNC>
-class FuncThunk : public ILinkage
-{
-public:
-	FuncThunk(const char *n_func) :
-		m_pszFuncName(n_func) {}
-	
-	virtual bool Link() override
-	{
-		if (this->m_pFuncPtr == nullptr) {
-			this->m_pFuncPtr = (FUNC)AddrManager::GetAddr(this->m_pszFuncName);
-			if (this->m_pFuncPtr == nullptr) {
-				DevMsg("FuncThunk::Link FAIL \"%s\": can't find func addr\n", this->m_pszFuncName);
-				return false;
-			}
-		}
-		
-		DevMsg("FuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
-		return true;
-	}
-	
-	const FUNC& operator*() const
-	{
-		assert(this->m_pFuncPtr != nullptr);
-		return this->m_pFuncPtr;
-	}
-	
-private:
-	const char *m_pszFuncName;
-	
-	FUNC m_pFuncPtr = nullptr;
-};
-#endif
-
 template<typename RET, typename... PARAMS>
 class StaticFuncThunk : public ILinkage
 {
@@ -73,7 +38,7 @@ public:
 			}
 		}
 		
-		DevMsg("StaticFuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
+//		DevMsg("StaticFuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
 		return true;
 	}
 	
@@ -106,7 +71,7 @@ public:
 			}
 		}
 		
-		DevMsg("MemberFuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
+//		DevMsg("MemberFuncThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pFuncPtr, this->m_pszFuncName);
 		return true;
 	}
 	
@@ -169,48 +134,6 @@ public:
 	}
 };
 
-#if 0
-template<class C, typename RET, typename... PARAMS>
-class MemberFuncThunk : public MemberFuncThunkBase<C, RET, PARAMS...>
-{
-public:
-	using FPtr = RET (C::*)(PARAMS...);
-	
-	MemberFuncThunk(const char *n_func) :
-		MemberFuncThunkBase(n_func) {}
-	
-	RET operator()(C *obj, PARAMS... args) const
-	{
-		auto pFunc = (FPtr)this->GetFuncPtr();
-		
-		assert(pFunc != nullptr);
-		assert(obj != nullptr);
-		
-		return (obj->*pFunc)(args...);
-	}
-};
-
-template<class C, typename RET, typename... PARAMS>
-class MemberFuncThunkConst : public MemberFuncThunkBase<C, RET, PARAMS...>
-{
-public:
-	using FPtr = RET (C::*)(PARAMS...) const;
-	
-	MemberFuncThunkConst(const char *n_func) :
-		MemberFuncThunkBase(n_func) {}
-	
-	RET operator()(const C *obj, PARAMS... args) const
-	{
-		auto pFunc = (FPtr)this->GetFuncPtr();
-		
-		assert(pFunc != nullptr);
-		assert(obj != nullptr);
-		
-		return (obj->*pFunc)(args...);
-	}
-};
-#endif
-
 
 template<class C, typename RET, typename... PARAMS>
 class MemberVFuncThunkBase : public ILinkage
@@ -252,7 +175,7 @@ public:
 			}
 		}
 		
-		DevMsg("MemberVFuncThunk::Link OK +0x%x \"%s\"\n", this->m_iVTIndex * 4, this->m_pszFuncName);
+//		DevMsg("MemberVFuncThunk::Link OK +0x%x \"%s\"\n", this->m_iVTIndex * 4, this->m_pszFuncName);
 		return true;
 	}
 	
@@ -321,53 +244,6 @@ public:
 };
 
 
-#if 0
-template<class C, typename RET, typename... PARAMS>
-class MemberVFuncThunk : public MemberVFuncThunkBase<C, RET, PARAMS...>
-{
-public:
-	using FPtr = RET (C::*)(PARAMS...);
-	
-	MemberVFuncThunk(const char *n_func) :
-		MemberVFuncThunkBase(n_func) {}
-	
-	RET operator()(C *obj, PARAMS... args) const
-	{
-		int vt_index = this->GetVTableIndex();
-		
-		assert(vt_index != -1);
-		assert(obj != nullptr);
-		
-		FPtr *pVT = *reinterpret_cast<FPtr *const *>(obj);
-		FPtr pFunc = pVT[vt_index];
-		return (obj->*pFunc)(args...);
-	}
-};
-
-template<class C, typename RET, typename... PARAMS>
-class MemberVFuncThunkConst : public MemberVFuncThunkBase<C, RET, PARAMS...>
-{
-public:
-	using FPtr = RET (C::*)(PARAMS...) const;
-	
-	MemberVFuncThunkConst(const char *n_func) :
-		MemberVFuncThunkBase(n_func) {}
-	
-	RET operator()(const C *obj, PARAMS... args) const
-	{
-		int vt_index = this->GetVTableIndex();
-		
-		assert(vt_index != -1);
-		assert(obj != nullptr);
-		
-		FPtr *pVT = *reinterpret_cast<FPtr *const *>(obj);
-		FPtr pFunc = pVT[vt_index];
-		return (obj->*pFunc)(args...);
-	}
-};
-#endif
-
-
 template<typename T>
 class GlobalThunk : public ILinkage
 {
@@ -385,7 +261,7 @@ public:
 			}
 		}
 		
-		DevMsg("GlobalThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pObjPtr, this->m_pszObjName);
+//		DevMsg("GlobalThunk::Link OK 0x%08x \"%s\"\n", (uintptr_t)this->m_pObjPtr, this->m_pszObjName);
 		return true;
 	}
 	
@@ -446,7 +322,7 @@ public:
 		
 		memcpy(m_pDest, rtti, SIZE);
 		
-		DevMsg("TypeInfoThunk::Link OK \"%s\"\n", this->m_pszName);
+//		DevMsg("TypeInfoThunk::Link OK \"%s\"\n", this->m_pszName);
 		return true;
 	}
 	
@@ -479,7 +355,7 @@ public:
 		
 		memcpy(m_pDest, (void *)((uintptr_t)vt + adj), SIZE);
 		
-		DevMsg("VTableThunk::Link OK \"%s\"\n", this->m_pszName);
+//		DevMsg("VTableThunk::Link OK \"%s\"\n", this->m_pszName);
 		return true;
 	}
 	
