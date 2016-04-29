@@ -152,6 +152,10 @@ extern SourceMod::IExtensionManager *smexts;
 #endif
 
 
+/* LZ4 */
+#include <lz4.h>
+
+
 /* Capstone */
 #include <capstone.h>
 

@@ -6,6 +6,7 @@ projectName = 'sigsegv'
 # smsdk_ext.cpp will be automatically added later
 sourceFiles = [
   'src/common.h',
+  'libs/lz4/lib/lz4.c',
   os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c'),
   'src/sm/detours.cpp',
   'src/sm/MemoryUtils.cpp',
@@ -180,6 +181,7 @@ binary.compiler.linkflags += [
 ]
 
 binary.compiler.includes += [
+  os.path.join(builder.currentSourcePath, 'libs', 'lz4', 'lib'),
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
 ]

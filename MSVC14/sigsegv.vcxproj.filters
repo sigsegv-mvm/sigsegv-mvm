@@ -296,6 +296,9 @@
     <ClCompile Include="..\src\re\nextbot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\libs\lz4\lib\lz4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h">
