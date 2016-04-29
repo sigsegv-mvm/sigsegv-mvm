@@ -4,11 +4,31 @@
 
 #include "link/link.h"
 #include "prop.h"
-#include "stub/baseanimating.h"
+#include "stub/baseplayer.h"
+
+
+class CPointEntity : public CBaseEntity {};
+
+class CPathTrack : public CPointEntity
+{
+public:
+	CPathTrack *GetNext() { return ft_GetNext(this); }
+	
+private:
+	static MemberFuncThunk<CPathTrack *, CPathTrack *> ft_GetNext;
+};
 
 
 class CItem : public CBaseAnimating {};
-class CTFPowerup : public CItem {};
+
+class CTFPowerup : public CItem
+{
+public:
+	float GetLifeTime() { return vt_GetLifeTime(this); }
+	
+private:
+	static MemberVFuncThunk<CTFPowerup *, float> vt_GetLifeTime;
+};
 
 class CSpellPickup : public CTFPowerup
 {
@@ -41,7 +61,6 @@ class CTFWearable : public CEconWearable {};
 class CTFPowerupBottle : public CTFWearable {};
 
 
-class CPointEntity : public CBaseEntity {};
 class CBaseTFBotHintEntity : public CPointEntity {};
 class CTFBotHintSentrygun : public CBaseTFBotHintEntity {};
 class CTFBotHintTeleporterExit : public CBaseTFBotHintEntity {};
@@ -60,6 +79,123 @@ public:
 private:
 	static GlobalThunk<CUtlVector<ITFBotHintEntityAutoList *>> m_ITFBotHintEntityAutoListAutoList;
 };
+
+
+class CBaseProp : public CBaseAnimating {};
+class CBreakableProp : public CBaseProp {};
+class CDynamicProp : public CBreakableProp {};
+class CTFItem : public CDynamicProp {};
+
+class CCaptureFlag : public CTFItem
+{
+public:
+	bool IsDisabled() const { return this->m_bDisabled; }
+	
+private:
+	DECL_SENDPROP(bool, m_bDisabled);
+};
+
+
+class ICaptureFlagAutoList
+{
+public:
+	static const CUtlVector<ICaptureFlagAutoList *>& AutoList() { return m_ICaptureFlagAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<ICaptureFlagAutoList *>> m_ICaptureFlagAutoListAutoList;
+};
+
+
+class NextBotCombatCharacter : public CBaseCombatCharacter {};
+class CTFBaseBoss : public NextBotCombatCharacter {};
+
+class CTFTankBoss : public CTFBaseBoss
+{
+public:
+	DECL_EXTRACT(CHandle<CPathTrack>, m_hCurrentNode);
+	DECL_EXTRACT(CUtlVector<float>,   m_NodeDists);
+	DECL_EXTRACT(float,               m_flTotalDistance);
+	DECL_EXTRACT(int,                 m_iCurrentNode);
+};
+
+
+class CBaseToggle : public CBaseEntity {};
+
+class CBaseTrigger : public CBaseToggle
+{
+public:
+	DECL_DATAMAP(bool, m_bDisabled);
+};
+
+class CUpgrades : public CBaseTrigger
+{
+public:
+	const char *GetUpgradeAttributeName(int index) const { return ft_GetUpgradeAttributeName(this, index); }
+	
+private:
+	static MemberFuncThunk<const CUpgrades *, const char *, int> ft_GetUpgradeAttributeName;
+};
+extern GlobalThunk<CHandle<CUpgrades>> g_hUpgradeEntity;
+
+
+class CCurrencyPack : public CTFPowerup
+{
+public:
+	bool IsDistributed() const { return this->m_bDistributed; }
+	int GetAmount() const      { return this->m_nAmount; }
+	
+private:
+	DECL_SENDPROP(bool, m_bDistributed);
+	DECL_EXTRACT (int,  m_nAmount);
+};
+
+
+class ICurrencyPackAutoList
+{
+public:
+	static const CUtlVector<ICurrencyPackAutoList *>& AutoList() { return m_ICurrencyPackAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<ICurrencyPackAutoList *>> m_ICurrencyPackAutoListAutoList;
+};
+
+
+class CFuncNavCost : public CBaseEntity
+{
+public:
+	bool HasTag(const char *groupname) const { return ft_HasTag(this, groupname); }
+	
+private:
+	static MemberFuncThunk<const CFuncNavCost *, bool, const char *> ft_HasTag;
+};
+
+class CFuncNavAvoid : public CFuncNavCost {};
+class CFuncNavPrefer : public CFuncNavCost {};
+
+
+class CCaptureZone : public CBaseTrigger {};
+
+
+class ICaptureZoneAutoList
+{
+public:
+	static const CUtlVector<ICaptureZoneAutoList *>& AutoList() { return m_ICaptureZoneAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> m_ICaptureZoneAutoListAutoList;
+};
+
+
+class CTeamControlPoint : public CBaseAnimating
+{
+public:
+	
+};
+
+
+class CTeamControlPointMaster : public CBaseEntity
+{
+public:
+	// GetControlPoint
+};
+extern GlobalThunk<CHandle<CTeamControlPointMaster>> g_hControlPointMasters;
 
 
 // 20151007a
