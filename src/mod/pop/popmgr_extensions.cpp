@@ -102,6 +102,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_flSpellDropRateCommon = 1.00f;
 			this->m_flSpellDropRateGiant  = 1.00f;
 			this->m_bNoReanimators        = false;
+			this->m_bNoMvMDeathTune       = false;
 			
 			this->m_MedievalMode.Reset();
 			this->m_SpellsEnabled.Reset();
@@ -114,6 +115,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		float m_flSpellDropRateCommon;
 		float m_flSpellDropRateGiant;
 		bool m_bNoReanimators;
+		bool m_bNoMvMDeathTune;
 		
 		CPopOverride_MedievalMode m_MedievalMode;
 		CPopOverride_ConVar<bool> m_SpellsEnabled;
@@ -198,6 +200,15 @@ namespace Mod_Pop_PopMgr_Extensions
 		return DETOUR_STATIC_CALL(CTFReviveMarker_Create)(player);
 	}
 	
+	DETOUR_DECL_MEMBER(void, CBaseEntity_EmitSound, const char *soundname, float soundtime, float *duration)
+	{
+		if (state.m_bNoMvMDeathTune && soundname != nullptr && strcmp(soundname, "MVM.PlayerDied") == 0) {
+			return;
+		}
+		
+		DETOUR_MEMBER_CALL(CBaseEntity_EmitSound)(soundname, soundtime, duration);
+	}
+	
 	
 	RefCount rc_CPopulationManager_Parse;
 	DETOUR_DECL_MEMBER(bool, CPopulationManager_Parse)
@@ -237,6 +248,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_flSpellDropRateGiant = Clamp(subkey->GetFloat(), 0.0f, 1.0f);
 				} else if (V_stricmp(name, "NoReanimators") == 0) {
 					state.m_bNoReanimators = subkey->GetBool();
+				} else if (V_stricmp(name, "NoMvMDeathTune") == 0) {
+					state.m_bNoMvMDeathTune = subkey->GetBool();
 				} else if (V_stricmp(name, "MedievalMode") == 0) {
 					state.m_MedievalMode.Set(subkey->GetBool());
 				} else if (V_stricmp(name, "GrapplingHook") == 0) {
@@ -278,6 +291,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup,       "CTFGameRules::DropSpellPickup");
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,         "CTFGameRules::IsUsingSpells");
 			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,             "CTFReviveMarker::Create");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_EmitSound,              "CBaseEntity::EmitSound [const char *, float, float *]");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");

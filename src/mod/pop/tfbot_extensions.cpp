@@ -3,10 +3,85 @@
 #include "stub/populators.h"
 #include "util/scope.h"
 #include "mod/pop/kv_conditional.h"
+#include "re/nextbot.h"
+#include "re/path.h"
+#include "stub/tfbot_behavior.h"
 
 
 namespace Mod_Pop_TFBot_Extensions
 {
+	/* mobber AI, based on CTFBotAttackFlagDefenders */
+	class CTFBotMobber : public IHotplugAction
+	{
+	public:
+		CTFBotMobber()
+		{
+			this->m_Attack = CTFBotAttack::New();
+		}
+		virtual ~CTFBotMobber()
+		{
+			if (this->m_Attack != nullptr) {
+				delete this->m_Attack;
+			}
+		}
+		
+		virtual const char *GetName() const override { return "Mobber"; }
+		
+		virtual ActionResult<CTFBot> OnStart(CTFBot *actor, Action<CTFBot> *action) override
+		{
+			this->m_PathFollower.SetMinLookAheadDistance(actor->GetDesiredPathLookAheadRange());
+			
+			this->m_hTarget = nullptr;
+			
+			return this->m_Attack->OnStart(actor, action);
+		}
+		
+		virtual ActionResult<CTFBot> Update(CTFBot *actor, float dt) override
+		{
+			const CKnownEntity *threat = actor->GetVisionInterface()->GetPrimaryKnownThreat(false);
+			if (threat != nullptr) {
+				actor->EquipBestWeaponForThreat(threat);
+			}
+			
+			ActionResult<CTFBot> result = this->m_Attack->Update(actor, dt);
+			if (result.transition != ActionTransition::DONE) {
+				return ActionResult<CTFBot>::Continue();
+			}
+			
+			if (this->m_hTarget == nullptr || !this->m_hTarget->IsAlive()) {
+				this->m_hTarget = actor->SelectRandomReachableEnemy();
+				
+				if (this->m_hTarget == nullptr) {
+					return ActionResult<CTFBot>::Continue();
+				}
+			}
+			
+			actor->GetVisionInterface()->AddKnownEntity(this->m_hTarget);
+			
+			auto nextbot = rtti_cast<INextBot *>(actor);
+			
+			if (this->m_ctRecomputePath.IsElapsed()) {
+				this->m_ctRecomputePath.Start(RandomFloat(1.0f, 3.0f));
+				
+				CTFBotPathCost cost_func(actor, DEFAULT_ROUTE);
+				this->m_PathFollower.Compute(nextbot, this->m_hTarget, cost_func, 0.0f, true);
+			}
+			
+			this->m_PathFollower.Update(nextbot);
+			
+			return ActionResult<CTFBot>::Continue();
+		}
+		
+	private:
+		CTFBotAttack *m_Attack = nullptr;
+		
+		CHandle<CTFPlayer> m_hTarget;
+		
+		PathFollower m_PathFollower;
+		CountdownTimer m_ctRecomputePath;
+	};
+	
+	
 	struct AddCond
 	{
 		ETFCond cond   = (ETFCond)-1;
@@ -16,10 +91,17 @@ namespace Mod_Pop_TFBot_Extensions
 	struct SpawnerData
 	{
 		std::vector<AddCond> addconds;
+		
+		bool action_mobber = false;
 	};
 	
 	
 	std::map<CTFBotSpawner *, SpawnerData> spawners;
+	
+	
+	/* this is really dodgy... should probably do this with the ECAttr
+	 * extension system, provided we ever finish that contraption */
+	std::vector<CHandle<CTFBot>> action_override_mobber;
 	
 	
 	DETOUR_DECL_MEMBER(void, CTFBotSpawner_dtor0)
@@ -81,6 +163,17 @@ namespace Mod_Pop_TFBot_Extensions
 		spawners[spawner].addconds.push_back(addcond);
 	}
 	
+	void Parse_Action(CTFBotSpawner *spawner, KeyValues *kv)
+	{
+		const char *value = kv->GetString();
+		
+		if (V_stricmp(value, "Mobber") == 0) {
+			spawners[spawner].action_mobber = true;
+		} else {
+			Warning("Unknown value \'%s\' for TFBot Action.\n", value);
+		}
+	}
+	
 	DETOUR_DECL_MEMBER(bool, CTFBotSpawner_Parse, KeyValues *kv)
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
@@ -94,6 +187,8 @@ namespace Mod_Pop_TFBot_Extensions
 			bool del = true;
 			if (V_stricmp(name, "AddCond") == 0) {
 				Parse_AddCond(spawner, subkey);
+			} else if (V_stricmp(name, "Action") == 0) {
+				Parse_Action(spawner, subkey);
 			} else {
 				del = false;
 			}
@@ -134,11 +229,36 @@ namespace Mod_Pop_TFBot_Extensions
 	//					DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
 						bot->m_Shared->AddCond(addcond.cond, addcond.duration);
 					}
+					
+					if (data.action_mobber) {
+						action_override_mobber.push_back(bot);
+					}
 				}
 			}
 		}
 		
 		return result;
+	}
+	
+	
+	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
+	{
+		bool override_mobber = false;
+		
+		for (auto it = action_override_mobber.begin(); it != action_override_mobber.end(); ) {
+			if (*it == actor) {
+				it = action_override_mobber.erase(it);
+				override_mobber = true;
+			} else {
+				++it;
+			}
+		}
+		
+		if (override_mobber) {
+			return new CTFBotMobber();
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
 	}
 	
 	
@@ -153,6 +273,8 @@ namespace Mod_Pop_TFBot_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFBotSpawner_Parse, "CTFBotSpawner::Parse");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotSpawner_Spawn, "CTFBotSpawner::Spawn");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
 		}
 		
 		virtual void OnUnload()

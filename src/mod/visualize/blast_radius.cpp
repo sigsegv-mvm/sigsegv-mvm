@@ -236,7 +236,7 @@ namespace Mod_Visualize_Blast_Radius
 				
 				if (cvar_spheretext.GetBool()) {
 					/* damage percent */
-					snprintf(buf, sizeof(buf), "%.0f%%%%", f * 100.0f);
+					snprintf(buf, sizeof(buf), "%.0f%%", f * 100.0f);
 					NDebugOverlay::EntityTextAtPosition(where_r, -2, buf, cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 					NDebugOverlay::EntityTextAtPosition(where_l, -2, buf, cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 					
@@ -260,8 +260,8 @@ namespace Mod_Visualize_Blast_Radius
 					where_r = radiusinfo->m_vecOrigin + (dist * rt);
 					where_l = radiusinfo->m_vecOrigin - (dist * rt);
 					
-					NDebugOverlay::EntityTextAtPosition(where_r, -2, "0%%", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
-					NDebugOverlay::EntityTextAtPosition(where_l, -2, "0%%", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
+					NDebugOverlay::EntityTextAtPosition(where_r, -2, "0%", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
+					NDebugOverlay::EntityTextAtPosition(where_l, -2, "0%", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 					
 					NDebugOverlay::EntityTextAtPosition(where_r, 0, ">>", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 					NDebugOverlay::EntityTextAtPosition(where_l, 0, "<<", cvar_duration_sphere.GetFloat(), 0xff, 0xff, 0xff, 0xff);
@@ -336,7 +336,7 @@ namespace Mod_Visualize_Blast_Radius
 				NDebugOverlay::EntityText(ENTINDEX(ent), line + 1, buf, cvar_duration_player.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 				
 				NDebugOverlay::EntityText(ENTINDEX(ent), line + 3, "Splash:", cvar_duration_player.GetFloat(), 0xff, 0xff, 0xff, 0xff);
-				snprintf(buf, sizeof(buf), "%.0f%%%%", ratio_actual * 100.0f);
+				snprintf(buf, sizeof(buf), "%.0f%%", ratio_actual * 100.0f);
 				NDebugOverlay::EntityText(ENTINDEX(ent), line + 4, buf, cvar_duration_player.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 				
 			//	NDebugOverlay::EntityText(ENTINDEX(ent), line + 6, "Dmg:", cvar_duration_player.GetFloat(), 0xff, 0xff, 0xff, 0xff);

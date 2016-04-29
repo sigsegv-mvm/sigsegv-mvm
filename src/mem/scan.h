@@ -360,7 +360,7 @@ inline void CScan<SCANNER>::DoScan()
 	
 	constexpr int INCR = (FWD ? ALIGN : -ALIGN);
 	
-	while (FWD ? (ptr < end) : (ptr > end)) {
+	while (FWD ? (ptr <= end) : (ptr >= end)) {
 		bool matched = scanner->CheckOne((const void *)ptr);
 		
 		if (RTYPE == ScanResults::FIRST && matched) {

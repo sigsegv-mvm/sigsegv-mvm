@@ -249,7 +249,7 @@ public:
 	CAddr_ISpatialPartition(const std::string& n_func, int vtidx) :
 		CAddr_InterfaceVFunc((const void **)&partition, "ISpatialPartition", n_func, vtidx) {}
 };
-static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox(   "EnumerateElementsInBox",    GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInBox));
+static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox   ("EnumerateElementsInBox",    GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInBox));
 static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInSphere));
 
 
@@ -259,6 +259,7 @@ public:
 	CAddr_IEngineTrace(const std::string& n_func, int vtidx) :
 		CAddr_InterfaceVFunc((const void **)&enginetrace, "IEngineTrace", n_func, vtidx) {}
 };
+static CAddr_IEngineTrace addr_IEngineTrace_TraceRay             ("TraceRay",              GetVIdxOfMemberFunc                                                             (&IEngineTrace::TraceRay));
 static CAddr_IEngineTrace addr_IEngineTrace_EnumerateEntities_ray("EnumerateEntities_ray", GetVIdxOfMemberFunc<IEngineTrace, void, const Ray_t&, bool, IEntityEnumerator *>(&IEngineTrace::EnumerateEntities));
 
 

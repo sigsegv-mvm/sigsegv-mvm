@@ -251,6 +251,29 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Fixed()
 	return SMCResult_Continue;
 }
 
+SMCResult CSigsegvGameConf::AddrEntry_Load_Pattern()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "seg", "seek", "mask" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym  = kv.at("sym");
+	const auto& seg  = kv.at("seg");
+	const auto& seek = kv.at("seek");
+	const auto& mask = kv.at("mask");
+	
+	auto a = new CAddr_Pattern(name, sym, seg, seek, mask);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
+	return SMCResult_Continue;
+}
+
 SMCResult CSigsegvGameConf::AddrEntry_Load_DataDescMap()
 {
 	const auto& name = this->m_AddrEntry_State.m_Name;

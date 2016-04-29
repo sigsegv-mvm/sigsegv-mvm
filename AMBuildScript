@@ -168,7 +168,7 @@ class ExtensionConfig(object):
       'GNUC',
     ]
     cxx.cflags += [
-      '-pipe',
+#      '-pipe',
       '-fno-strict-aliasing',
       '-Wall',
 #      '-Werror',
@@ -192,12 +192,13 @@ class ExtensionConfig(object):
       '-fvar-tracking-assignments',
       '-gsplit-dwarf',
       '-pthread',
+      '-Wno-unknown-pragmas',
       
       # the STB_GNU_UNIQUE 'feature' prevents dlclose from functioning
       '-fno-gnu-unique',
     ]
     cxx.cxxflags += [
-      '-std=c++11',
+      '-std=c++14',
       '-fno-exceptions',
 #      '-fno-threadsafe-statics',
 #      '-Wno-non-virtual-dtor',

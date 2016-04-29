@@ -3,14 +3,16 @@
 #include "re/path.h"
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
-#include "stub/tfbot_behavior.h"
 #include "stub/entities.h"
 
-#include "mod/ai/mvm_defender_bots_helpers.h"
-#include "mod/ai/mvm_defender_bots_purchaseupgrades.h"
-#include "mod/ai/mvm_defender_bots_gotoupgradestation.h"
-#include "mod/ai/mvm_defender_bots_collectmoney.h"
-#include "mod/ai/mvm_defender_bots_scout.h"
+#include "mod/ai/mvm_defender_bots/helpers.h"
+#include "mod/ai/mvm_defender_bots/actions/defender.h"
+#include "mod/ai/mvm_defender_bots/actions/attack_tank.h"
+#include "mod/ai/mvm_defender_bots/actions/defend_gate.h"
+#include "mod/ai/mvm_defender_bots/actions/collect_money.h"
+#include "mod/ai/mvm_defender_bots/actions/mark_giant.h"
+#include "mod/ai/mvm_defender_bots/actions/goto_upgrade_station.h"
+#include "mod/ai/mvm_defender_bots/actions/purchase_upgrades.h"
 
 
 #define TRACE_ENABLE 1
@@ -23,37 +25,13 @@ namespace Mod_AI_MvM_Defender_Bots
 	// TODO: is there ever any need to override/spoof TFGameRules()->GetGameType()?
 	
 	
-	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
+	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotTacticalMonitor_InitialContainedAction, CTFBot *actor)
 	{
-		
 		if (TFGameRules()->IsMannVsMachineMode() && actor->GetTeamNumber() == TF_TEAM_RED) {
-			if (actor->IsPlayerClass(TF_CLASS_SCOUT)) {
-				return new CTFBotMvMDefenderScout();
-			}
-			
-			if (actor->IsPlayerClass(TF_CLASS_ENGINEER)) {
-				return CTFBotEngineerBuild::New();
-			}
-			
-			if (actor->IsPlayerClass(TF_CLASS_MEDIC)) {
-				return CTFBotMedicHeal::New();
-			}
-			
-			if (actor->IsPlayerClass(TF_CLASS_SPY)) {
-				return CTFBotSpyInfiltrate::New();
-			}
-			
-			if (actor->IsPlayerClass(TF_CLASS_SNIPER)) {
-				auto weapon = actor->GetActiveTFWeapon();
-				if (weapon != nullptr && WeaponID_IsSniperRifle(weapon->GetWeaponID())) {
-					return CTFBotSniperLurk::New();
-				}
-			}
-			
-			return CTFBotSeekAndDestroy::New();
+			return new CTFBotMvMDefender();
 		}
 		
-		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
+		return DETOUR_MEMBER_CALL(CTFBotTacticalMonitor_InitialContainedAction)(actor);
 	}
 	
 	
@@ -131,11 +109,16 @@ namespace Mod_AI_MvM_Defender_Bots
 	
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotTacticalMonitor_OnCommandString, CTFBot *actor, const char *cmd)
 	{
-		if (V_stricmp(cmd, "gotoupgradestation") == 0) {
+		#warning put me back!
+	/*	if (V_stricmp(cmd, "gotoupgradestation") == 0) {
 			return ActionResult<CTFBot>::SuspendFor(new CTFBotGoToUpgradeStation(), "Going to an upgrade station.");
 		}
 		if (V_stricmp(cmd, "purchaseupgrades") == 0) {
 			return ActionResult<CTFBot>::SuspendFor(new CTFBotPurchaseUpgrades(), "Purchasing upgrades.");
+		}*/
+		
+		if (V_stricmp(cmd, "collectmoney") == 0 && CTFBotCollectMoney::IsPossible(actor)) {
+			return ActionResult<CTFBot>::SuspendFor(new CTFBotCollectMoney(), "Collecting money.");
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFBotTacticalMonitor_OnCommandString)(actor, cmd);
@@ -173,6 +156,9 @@ namespace Mod_AI_MvM_Defender_Bots
 		case TF_CLASS_SPY:
 			break;
 		}
+		
+		// TODO: make them switch back to their primary weapon
+		// otherwise, they'll stay on the most recently given item slot
 	}
 	
 	
@@ -184,6 +170,49 @@ namespace Mod_AI_MvM_Defender_Bots
 		if (bot->GetTeamNumber() == TF_TEAM_RED) {
 			GiveLoadout(bot);
 		}
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTFTankBoss_TankBossThink)
+	{
+		static CountdownTimer ctNodes;
+		
+		if (ctNodes.IsElapsed()) {
+			ctNodes.Start(0.5f);
+			
+			for (int i = 0; i < 2048; ++i) {
+				CBaseEntity *ent = UTIL_EntityByIndex(i);
+				if (ent == nullptr) continue;
+				
+				auto node = rtti_cast<CPathTrack *>(ent);
+				if (node == nullptr) continue;
+				
+				NDebugOverlay::Box(node->GetAbsOrigin(), Vector(-10.0f, -10.0f, -10.0f), Vector(10.0f, 10.0f, 10.0f),
+					0xff, 0xff, 0xff, 0x80, 0.5f);
+				NDebugOverlay::EntityTextAtPosition(node->GetAbsOrigin(), 0, CFmtStrN<16>("#%d", i), 0.5f, 0xff, 0xff, 0xff, 0xff);
+				
+				CPathTrack *next = node->GetNext();
+				if (next != nullptr) {
+					NDebugOverlay::HorzArrow(node->GetAbsOrigin(), next->GetAbsOrigin(), 3.0f, 0xff, 0xff, 0xff, 0xff, true, 0.5f);
+				}
+			}
+		}
+		
+		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		
+		NDebugOverlay::EntityText(ENTINDEX(tank), 0, CFmtStrN<256>("%.1f%%", GetTankProgress(tank) * 100.0f),
+			gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+		
+	//	NDebugOverlay::EntityText(ENTINDEX(tank), 0, CFmtStrN<256>("m_hCurrentNode:    #%d", ENTINDEX(*m_hCurrentNode)),
+	//		gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+	//	NDebugOverlay::EntityText(ENTINDEX(tank), 1, CFmtStrN<256>("m_iCurrentNode:    %d", *m_iCurrentNode),
+	//		gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+	//	NDebugOverlay::EntityText(ENTINDEX(tank), 2, CFmtStrN<256>("m_flTotalDistance: %.0f", *m_flTotalDistance),
+	//		gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+	//	NDebugOverlay::EntityText(ENTINDEX(tank), 3, CFmtStrN<256>("m_NodeDists[i]:    %.0f", (*m_NodeDists)[*m_iCurrentNode]),
+	//		gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+		
+		DETOUR_MEMBER_CALL(CTFTankBoss_TankBossThink)();
 	}
 	
 	
@@ -205,7 +234,7 @@ namespace Mod_AI_MvM_Defender_Bots
 	public:
 		CMod() : IMod("AI:MvM_Defender_Bots")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
+			MOD_ADD_DETOUR_MEMBER(CTFBotTacticalMonitor_InitialContainedAction, "CTFBotTacticalMonitor::InitialContainedAction");
 			
 			AddQuirks_IsBot(this);
 			AddQuirks_IsBotOfType(this);
@@ -225,19 +254,9 @@ namespace Mod_AI_MvM_Defender_Bots
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_Spawn, "CTFBot::Spawn");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFTankBoss_TankBossThink, "CTFTankBoss::TankBossThink");
+			
 			CollectMoney::AddDetours(this);
-		}
-		
-		virtual void OnUnload() override
-		{
-			/* order matters! */
-			
-			CTFBotGoToUpgradeStation::UnloadAll();
-			CTFBotPurchaseUpgrades::UnloadAll();
-			
-			CTFBotCollectMoney::UnloadAll();
-			CTFBotMarkGiants::UnloadAll();
-			CTFBotMvMDefenderScout::UnloadAll();
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
@@ -252,6 +271,84 @@ namespace Mod_AI_MvM_Defender_Bots
 			}
 			
 			UpdateVisibleCredits();
+			
+#if 0
+			/* remove me */
+			if (frame % 7 == 0) {
+				CCaptureFlag *flag = GetClosestFlagToHatch();
+				if (flag != nullptr) {
+					CNavArea *area = TheNavMesh->GetNavArea(flag->GetAbsOrigin());
+					if (area != nullptr) {
+						float flag_dist = reinterpret_cast<CTFNavArea *>(area)->GetIncursionDistance(TF_TEAM_BLUE);
+						
+						constexpr float D_LOW  =   0.0f;
+						constexpr float D_HIGH = 300.0f;
+						
+						for (auto area : (CUtlVector<CTFNavArea *>&)TheNavAreas) {
+							float dist = area->GetIncursionDistance(TF_TEAM_BLUE);
+							
+							if (dist < flag_dist - D_LOW)  continue;
+							if (dist > flag_dist + D_HIGH) continue;
+							
+							area->DrawFilled(0xff, 0xff, 0xff, 0x00, gpGlobals->interval_per_tick * 7, true, 0.0f);
+							area->DrawFilled(0xff, 0xff, 0xff, 0x40, gpGlobals->interval_per_tick * 7, true, 0.0f);
+						}
+					}
+				}
+			}
+#endif
+			
+#if 0
+			if (frame % 22 == 0) {
+				float inc_min = FLT_MAX;
+				float inc_max = FLT_MIN;
+				
+				for (auto area : (CUtlVector<CTFNavArea *>&)TheNavAreas) {
+					float inc = area->GetIncursionDistance(TF_TEAM_BLUE);
+					if (inc < 0.0f) continue;
+					
+					if (inc < inc_min) inc_min = inc;
+					if (inc > inc_max) inc_max = inc;
+				}
+				
+				for (auto area : (CUtlVector<CTFNavArea *>&)TheNavAreas) {
+					float val = area->GetIncursionDistance(TF_TEAM_BLUE);
+					float rat = RemapValClamped(val, 0.0f, inc_max, 0.0f, 1.0f);
+					
+					int r;
+					int g;
+					int b;
+					
+					if (rat < 0.25f) {
+						r = 0xff;
+						g = RemapValClamped(rat, 0.00f, 0.25f, 0.0f, 255.0f);
+						b = 0x00;
+					} else if (rat < 0.50f) {
+						r = RemapValClamped(rat, 0.25f, 0.50f, 255.0f, 0.0f);
+						g = 0xff;
+						b = 0x00;
+					} else if (rat < 0.75f) {
+						r = 0x00;
+						g = 0xff;
+						b = RemapValClamped(rat, 0.50f, 0.75f, 0.0f, 255.0f);
+					} else {
+						r = 0x00;
+						g = RemapValClamped(rat, 0.75f, 1.00f, 255.0f, 0.0f);
+						b = 0xff;
+					}
+					
+					area->DrawFilled(r, g, b, 0x00, 0.33f, true, 0.0f);
+					area->DrawFilled(r, g, b, 0x80, 0.33f, true, 0.0f);
+					
+					NDebugOverlay::EntityTextAtPosition(area->GetCenter(), 0,
+						CFmtStrN<64>("%.1f%%", rat * 100.0f),
+						0.33f, 0xff, 0xff, 0xff, 0xff);
+				//	NDebugOverlay::EntityTextAtPosition(area->GetCenter(), 1,
+				//		CFmtStrN<64>("%.0f HU", val),
+				//		0.33f, 0xff, 0xff, 0xff, 0xff);
+				}
+			}
+#endif
 		}
 		
 		void SetEnabled(bool enable)

@@ -18,6 +18,7 @@ public:
 	const QAngle& GetAbsAngles() const;
 //	const Vector& GetAbsVelocity() const;
 	bool IsEFlagSet(int nEFlagMask) const;
+	const matrix3x4_t& EntityToWorldTransform() const;
 	
 	/* getter/setter */
 	IServerNetworkable *GetNetworkable() const  { return this->m_Network.GetPtr(); }
@@ -49,6 +50,8 @@ public:
 	void Spawn()                                                                             {        vt_Spawn               (this); }
 	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity         (this, vVelocity, vAngVelocity); }
 	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter    (this); }
+	bool IsCombatItem() const                                                                { return vt_IsCombatItem        (this); }
+	int GetModelIndex() const                                                                { return vt_GetModelIndex       (this); }
 	
 	/* hack */
 	bool IsPlayer() const;
@@ -67,6 +70,7 @@ private:
 	DECL_DATAMAP(QAngle,                 m_angAbsRotation);
 	DECL_DATAMAP(Vector,                 m_vecAbsVelocity);
 	DECL_DATAMAP(IPhysicsObject *,       m_pPhysicsObject);
+	DECL_DATAMAP(matrix3x4_t,            m_rgflCoordinateFrame);
 	
 	DECL_SENDPROP(CCollisionProperty,   m_Collision);
 	DECL_SENDPROP(int,                  m_iTeamNum);
@@ -83,6 +87,7 @@ private:
 	static MemberFuncThunk<CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
 	static MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
 	static MemberFuncThunk<CBaseEntity *, float, const char *>                ft_GetNextThink;
+	static MemberFuncThunk<CBaseEntity *, void, const Vector&, Vector *>      ft_EntityToWorldSpace;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                    vt_EyeAngles;
@@ -90,6 +95,8 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_Spawn;
 	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> vt_GetVelocity;
 	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                    vt_WorldSpaceCenter;
+	static MemberVFuncThunk<const CBaseEntity *, bool>                             vt_IsCombatItem;
+	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -169,6 +176,14 @@ inline const Vector& CBaseEntity::GetAbsVelocity() const
 inline bool CBaseEntity::IsEFlagSet(int nEFlagMask) const
 {
 	return (this->m_iEFlags & nEFlagMask) != 0;
+}
+
+inline const matrix3x4_t& CBaseEntity::EntityToWorldTransform() const
+{
+	if (this->IsEFlagSet(EFL_DIRTY_ABSTRANSFORM)) {
+		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
+	}
+	return this->m_rgflCoordinateFrame;
 }
 
 

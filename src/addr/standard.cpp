@@ -334,3 +334,50 @@ bool IAddr_Func_EBPPrologue_UniqueConVar::FindAddrWin(uintptr_t& addr) const
 	return true;
 }
 #endif
+
+
+bool IAddr_Pattern::FindAddrWin(uintptr_t& addr) const
+{
+	using PatternScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+	
+	const char *str_seek = this->GetPattern();
+	const char *str_mask = this->GetMask();
+	
+	size_t strlen_seek = strlen(str_seek);
+	size_t strlen_mask = strlen(str_mask);
+	
+	if (strlen_seek != strlen_mask) {
+		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have differing lengths\n", this->GetName());
+		return false;
+	}
+	
+	if (strlen_seek % 2 == 1) {
+		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have odd number of characters\n", this->GetName());
+		return false;
+	}
+	
+	size_t len = strlen_seek / 2;
+	
+	ByteBuf seek(len);
+	ByteBuf mask(len);
+	
+	for (size_t i = 0; i < len; ++i) {
+		char buf[3];
+		buf[2] = '\0';
+		
+		memcpy(buf, str_seek + (i * 2), 2);
+		seek[i] = std::stoi(buf, nullptr, 0x10);
+		
+		memcpy(buf, str_mask + (i * 2), 2);
+		mask[i] = std::stoi(buf, nullptr, 0x10);
+	}
+	
+	CScan<PatternScanner> scan1(CLibSegBounds(this->GetLibrary(), this->GetSegment()), seek, mask);
+	if (!scan1.ExactlyOneMatch()) {
+		DevMsg("IAddr_Pattern: \"%s\": found %u pattern matches\n", this->GetName(), scan1.Matches().size());
+		return false;
+	}
+	
+	addr = (uintptr_t)scan1.FirstMatch();
+	return true;
+}

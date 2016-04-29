@@ -53,9 +53,6 @@
     <ClCompile Include="..\src\sizeof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\stub\nav.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\stub\gamerules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,9 +105,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\bot\multiclass_weapon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mod\credits\spawn_autocollect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\debug\revive_fast.cpp">
@@ -180,9 +174,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\stub\entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\demo\stringtable_limit.cpp">
@@ -269,9 +260,6 @@
     <ClCompile Include="..\src\mod\robot\no_canteens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mod\pop\tfbot_extensions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\sdk2013\strtools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -291,6 +279,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\debug\list_competitive_convars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stub\baseanimating.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stub\baseplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\re\nextbot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

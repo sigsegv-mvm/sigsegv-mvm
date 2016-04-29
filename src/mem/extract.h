@@ -99,6 +99,20 @@ bool IExtract<T>::Check()
 	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
+//	DevMsg("addr_min: %08x\n", addr_min);
+//	DevMsg("addr_max: %08x\n", addr_max);
+//	DevMsg("length:   %08x\n", this->m_iLength);
+//	
+//	DevMsg("m_BufExtract:\n");
+//	for (int i = 0; i < this->m_iLength; ++i) {
+//		DevMsg(" %02x", this->m_BufExtract[i]);
+//	}
+//	DevMsg("\nm_MaskExtract:\n");
+//	for (int i = 0; i < this->m_iLength; ++i) {
+//		DevMsg(" %02x", this->m_MaskExtract[i]);
+//	}
+//	DevMsg("\n");
+	
 	CScan<ExtractScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufExtract, this->m_MaskExtract);
 	if (!scan.ExactlyOneMatch()) {
 		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());

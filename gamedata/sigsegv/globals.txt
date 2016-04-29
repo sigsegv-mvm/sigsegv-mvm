@@ -30,6 +30,11 @@
 					type "sym"
 					sym  "TheNavMesh"
 				}
+				"TheNavAreas"
+				{
+					type "sym"
+					sym  "TheNavAreas"
+				}
 				
 				"g_pObjectiveResource"
 				{
@@ -53,6 +58,12 @@
 				{
 					type "sym"
 					sym  "g_MannVsMachineUpgrades"
+				}
+				
+				"g_hControlPointMasters"
+				{
+					type "sym"
+					sym  "g_hControlPointMasters"
 				}
 			}
 		}

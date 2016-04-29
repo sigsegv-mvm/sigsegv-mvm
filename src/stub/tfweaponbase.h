@@ -10,6 +10,8 @@
 class CBaseCombatWeapon : public CEconEntity
 {
 public:
+	bool IsMeleeWeapon() const { return ft_IsMeleeWeapon(this); }
+	
 	DECL_SENDPROP(float, m_flNextPrimaryAttack);
 	DECL_SENDPROP(float, m_flNextSecondaryAttack);
 	DECL_SENDPROP(float, m_flTimeWeaponIdle);
@@ -18,6 +20,9 @@ public:
 	DECL_SENDPROP(int,   m_iSecondaryAmmoType);
 	DECL_SENDPROP(int,   m_iClip1);
 	DECL_SENDPROP(int,   m_iClip2);
+	
+private:
+	static MemberFuncThunk<const CBaseCombatWeapon *, bool> ft_IsMeleeWeapon;
 };
 
 class CTFWeaponBase : public CBaseCombatWeapon
@@ -31,7 +36,15 @@ private:
 	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetPenetrateType;
 };
 
-class CTFWeaponBaseMelee : public CTFWeaponBase {};
+class CTFWeaponBaseMelee : public CTFWeaponBase
+{
+public:
+	int GetSwingRange() { return vt_GetSwingRange(this); }
+	
+private:
+	static MemberVFuncThunk<CTFWeaponBaseMelee *, int> vt_GetSwingRange;
+};
+
 class CTFWeaponBaseGun : public CTFWeaponBase {};
 
 class CTFSniperRifle : public CTFWeaponBaseGun {};

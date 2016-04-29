@@ -539,6 +539,18 @@
 					sym  "_ZNK24CTFWeaponBaseGrenadeProj11GetWeaponIDEv"
 				}
 				
+				"CTFWeaponBaseGrenadeProj::Explode"
+				{
+					type "sym"
+					sym  "_ZN24CTFWeaponBaseGrenadeProj7ExplodeEP10CGameTracei"
+				}
+				
+				"CTFPipebombLauncher::DetonateRemotePipebombs"
+				{
+					type "sym"
+					sym  "_ZN19CTFPipebombLauncher23DetonateRemotePipebombsEb"
+				}
+				
 				"DispatchParticleEffect [overload 1]"
 				{
 					type "sym"
@@ -580,7 +592,7 @@
 					sym  "_Z19StopParticleEffectsP11CBaseEntity"
 				}
 				
-				"CBaseEntity::EmitSound"
+				"CBaseEntity::EmitSound [const char *, float, float *]"
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity9EmitSoundEPKcfPf"
@@ -588,13 +600,23 @@
 				
 				"IGameSystem::Add"
 				{
-					type "sym"
-					sym  "_ZN11IGameSystem3AddEPS_"
+					type  "pattern"
+					sym   "_ZN11IGameSystem3AddEPS_"
+					seg   ".text"
+					seek  "558bec518b1514d58b108b0d0cd58b10568bf28d42013bc17e142bd1b908d58b104252e8d89c1c008b1514d58b10a108d58b1042891514d58b102bd64aa318d58b1085d27e1d8d0cb08d04950000000050518d410450e8055b4200a108d58b1083c40c8d04b08b750885c0740289306a0068b0de8f1068c4dd8f106a0056e81170420083c41485c074118d45fc8975fc50b91cd58b10e835981c005e8be55dc3"
+					mask  "ffffffffffff00000000ffff00000000ffffffffffffffffff00ffffff00000000ffffff00000000ffff00000000ff00000000ffffff00000000ffffffff00000000ffffff00ffffffffffffffffffffffffffffffffff00000000ff00000000ffffffffffffffffffffffff00ffffffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
+				//	addr  "0x227670"
+				//	build "3386059"
 				}
 				"IGameSystem::Remove"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_ZN11IGameSystem6RemoveEPS_"
+					seg  ".text"
+					seek "558bec51568bf18d45fc50b908d58b108975fcc706387a6d10e8a29708006a0068b0de8f1068c4dd8f106a0056e8f271420083c41485c074118d45fc8975fc50b91cd58b10e8769708005e8be55dc3"
+					mask "ffffffffffffffffffffffff00000000ffffffffff00000000ff00000000ffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
+				//	addr  "0x227a70"
+				//	build "3386059"
 				}
 				
 				"CBaseEntity::PhysicsSimulate"
@@ -854,6 +876,102 @@
 				{
 					type "sym"
 					sym  "_ZNK20CBaseCombatCharacter14Weapon_GetSlotEi"
+				}
+				
+				"CTFTankBoss::TankBossThink"
+				{
+					type "sym"
+					sym  "_ZN11CTFTankBoss13TankBossThinkEv"
+				}
+				
+				"CPathTrack::GetNext"
+				{
+					type "sym"
+					sym  "_ZN10CPathTrack7GetNextEv"
+				}
+				
+				"CTFTankBoss::GetBodyInterface"
+				{
+					type "sym"
+					sym  "_ZNK11CTFTankBoss16GetBodyInterfaceEv"
+				}
+				
+				"CTFGrenadePipebombProjectile::Create"
+				{
+					type "sym"
+					sym  "_ZN28CTFGrenadePipebombProjectile6CreateERK6VectorRK6QAngleS2_S2_P20CBaseCombatCharacterRK13CTFWeaponInfoif"
+				}
+				
+				"CFuncNavCost::HasTag"
+				{
+					type "sym"
+					sym  "_ZNK12CFuncNavCost6HasTagEPKc"
+				}
+				
+				"ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN20ICaptureZoneAutoList30m_ICaptureZoneAutoListAutoListE"
+				}
+				
+				"CBaseEntity::IsCombatItem"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity12IsCombatItemEv"
+				}
+				
+				"CTFWeaponBase::DeflectEntity"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase13DeflectEntityEP11CBaseEntityP9CTFPlayerR6VectorS5_S5_"
+				}
+				
+				"CTraceFilterSimple::ShouldHitEntity"
+				{
+					type "sym"
+					sym  "_ZN18CTraceFilterSimple15ShouldHitEntityEP13IHandleEntityi"
+				}
+				
+				"CBaseEntity::GetModelIndex"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity13GetModelIndexEv"
+				}
+				
+				"CGlobalEntityList::FindEntityByClassname"
+				{
+					type "sym"
+					sym  "_ZN17CGlobalEntityList21FindEntityByClassnameEP11CBaseEntityPKc"
+				}
+				
+				"CTFFlameEntity::FlameThink"
+				{
+					type "sym"
+					sym  "_ZN14CTFFlameEntity10FlameThinkEv"
+				}
+				
+				"CTFWeaponBaseMelee::GetSwingRange"
+				{
+					type "sym"
+					sym  "_ZN18CTFWeaponBaseMelee13GetSwingRangeEv"
+				}
+				
+				"CBaseCombatWeapon::IsMeleeWeapon"
+				{
+					type "sym"
+					sym  "_ZNK17CBaseCombatWeapon13IsMeleeWeaponEv"
+				}
+				
+				"CBaseCombatCharacter::Weapon_CanSwitchTo"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter18Weapon_CanSwitchToEP17CBaseCombatWeapon"
+				}
+				
+				"CBaseCombatCharacter::Weapon_Switch"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter13Weapon_SwitchEP17CBaseCombatWeaponi"
 				}
 			}
 		}

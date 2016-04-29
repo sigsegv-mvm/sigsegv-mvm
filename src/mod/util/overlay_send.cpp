@@ -4,6 +4,7 @@
 #include "stub/usermessages_sv.h"
 #include "util/float16.h"
 #include "util/scope.h"
+#include "util/socket.h"
 
 
 // TODO:
@@ -35,6 +36,18 @@
 
 #define MSG_BEGIN() \
 	if (cvar_trace.GetBool()) DevMsg("%s\n", __func__); \
+	bf_write *msg = sender.Begin(); \
+	int dbits = 0; \
+	int b1 = msg->GetNumBitsWritten();
+#define MSG_END() \
+	int b2 = msg->GetNumBitsWritten(); \
+	sender.End(); \
+	dbits += (b2 - b1); \
+	FUNC_STATS(dbits)
+
+#if 0
+#define MSG_BEGIN() \
+	if (cvar_trace.GetBool()) DevMsg("%s\n", __func__); \
 	bf_write *msg = TryStartMessage(); \
 	int dbits = 0; \
 	if (msg != nullptr) { \
@@ -45,10 +58,129 @@
 		dbits += (b2 - b1); \
 	} \
 	FUNC_STATS(dbits)
+#endif
 
 
 namespace Mod_Util_Overlay_Send
 {
+	ConVar cvar_mtu("sig_util_overlay_send_mtu", "65000", FCVAR_NOTIFY,
+		"The maximum size of UDP packets to send through the firehose");
+	
+	
+	class OverlaySend
+	{
+	public:
+		struct Message
+		{
+			Message(size_t bits, const uint8_t *src) :
+				bits(bits)
+			{
+				this->ptr = new uint8_t[BitByte(bits)];
+				memcpy(this->ptr, src, BitByte(bits));
+			}
+			~Message()
+			{
+				if (this->ptr != nullptr) {
+					delete[] this->ptr;
+					this->ptr = nullptr;
+				}
+			}
+			
+			Message(const Message&) = delete;
+			
+			size_t bits;
+			uint8_t *ptr = nullptr;
+		};
+		
+		bf_write *Begin()
+		{
+			assert(!this->m_bInProgress);
+			this->m_bInProgress = true;
+			
+			this->m_TempBuf.resize(cvar_mtu.GetInt());
+			this->m_Writer.StartWriting(this->m_TempBuf.data(), this->m_TempBuf.size());
+			
+			return &this->m_Writer;
+		}
+		
+		void End()
+		{
+			assert(this->m_bInProgress);
+			this->m_bInProgress = false;
+			
+			int bits = this->m_Writer.GetNumBitsWritten();
+			this->m_Queue.emplace_back(bits, this->m_TempBuf.data());
+		}
+		
+		void SendAll()
+		{
+			this->InitPacket();
+			
+			for (const auto& msg : this->m_Queue) {
+				this->SendOne(msg);
+			}
+			
+			this->Flush();
+			this->m_Queue.clear();
+		}
+		
+		void Flush()
+		{
+			if (this->m_nPacketBits > HeaderBits()) {
+				auto bits = reinterpret_cast<uint32_t *>(this->m_Packet.data());
+				*bits = this->m_nPacketBits - HeaderBits();
+				
+				auto tick = reinterpret_cast<int *>(this->m_Packet.data()) + 1;
+				*tick = gpGlobals->tickcount;
+				
+				Firehose_Send(OVERLAY_PORT, BitByte(this->m_nPacketBits), this->m_Packet.data());
+			}
+			
+			this->InitPacket();
+		}
+		
+	private:
+		static constexpr int HeaderBytes() { return 8; }
+		static constexpr int HeaderBits()  { return 64; }
+		
+		int DataBytesPerPacket() const
+		{
+			return cvar_mtu.GetInt() - HeaderBytes();
+		}
+		
+		void InitPacket()
+		{
+			this->m_Packet.resize(cvar_mtu.GetInt());
+			this->m_nPacketBits = HeaderBits();
+		}
+		
+		void SendOne(const Message& msg)
+		{
+			assert(BitByte(msg.bits) <= this->DataBytesPerPacket());
+			
+			if (BitByte(this->m_nPacketBits + msg.bits) > this->DataBytesPerPacket()) {
+				this->Flush();
+			}
+			
+			bf_write dst(this->m_Packet.data(), this->m_Packet.size());
+			dst.SeekToBit(this->m_nPacketBits);
+			dst.WriteBits(msg.ptr, msg.bits);
+			
+			this->m_nPacketBits += msg.bits;
+		}
+		
+		bool m_bInProgress = false;
+		std::vector<uint8_t> m_TempBuf;
+		bf_write m_Writer;
+		
+		std::list<Message> m_Queue;
+		
+		std::vector<uint8_t> m_Packet;
+		int m_nPacketBits = 0;
+	};
+	OverlaySend sender;
+	
+	
 	ConVar cvar_trace("sig_util_overlay_send_trace", "0", FCVAR_NOTIFY,
 		"Trace calls to NDebugOverlay functions");
 	ConVar cvar_nocon("sig_util_overlay_send_nocon", "0", FCVAR_NOTIFY,
@@ -60,6 +192,7 @@ namespace Mod_Util_Overlay_Send
 		"Interval at which to show statistics");
 	
 	
+#if 0
 	int msgid_Overlays = -1;
 	
 	
@@ -92,6 +225,7 @@ namespace Mod_Util_Overlay_Send
 		}
 		return msg;
 	}
+#endif
 	
 	
 	CBasePlayer *GetLocalPlayer()
@@ -101,8 +235,18 @@ namespace Mod_Util_Overlay_Send
 	}
 	
 	
+	void AdjustDuration(float& duration)
+	{
+		if (duration == 0.0f) {
+			duration = gpGlobals->interval_per_tick;
+		}
+	}
+	
+	
 	void Send_Box(const Vector& origin, const Vector& mins, const Vector& maxs, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_BOX, OVERLAY_TYPE_BITS);
@@ -119,6 +263,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_BoxDirection(const Vector& origin, const Vector& mins, const Vector& maxs, const Vector& orientation, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		QAngle angles = vec3_angle;
 		angles.y = UTIL_VecToYaw(orientation);
 		
@@ -139,6 +285,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_BoxAngles(const Vector& origin, const Vector& mins, const Vector& maxs, const QAngle& angles, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_BOX_ANGLES, OVERLAY_TYPE_BITS);
@@ -156,6 +304,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_SweptBox(const Vector& start, const Vector& end, const Vector& mins, const Vector& maxs, const QAngle& angles, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_SWEPT_BOX, OVERLAY_TYPE_BITS);
@@ -174,6 +324,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_EntityBounds(const CBaseEntity *pEntity, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		const CCollisionProperty *pCollide = pEntity->CollisionProp();
 		
 		MSG_BEGIN();
@@ -193,6 +345,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Line(const Vector& origin, const Vector& target, int r, int g, int b, bool noDepthTest, float duration)
 	{
+		AdjustDuration(duration);
+		
 		CBasePlayer *player = GetLocalPlayer();
 		if (player == nullptr) {
 			return;
@@ -230,6 +384,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Triangle(const Vector& p1, const Vector& p2, const Vector& p3, int r, int g, int b, int a, bool noDepthTest, float duration)
 	{
+		AdjustDuration(duration);
+		
 		CBasePlayer *player = GetLocalPlayer();
 		if (player == nullptr) {
 			return;
@@ -273,6 +429,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_EntityText(int entityID, int text_offset, const char *text, float flDuration, int r, int g, int b, int a)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_ENTITY_TEXT, OVERLAY_TYPE_BITS);
@@ -289,6 +447,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_EntityTextAtPosition(const Vector& origin, int text_offset, const char *text, float flDuration, int r, int g, int b, int a)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_ENTITY_TEXT_AT_POSITION, OVERLAY_TYPE_BITS);
@@ -313,6 +473,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Text(const Vector& origin, const char *text, bool bViewCheck, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		CBasePlayer *player = GetLocalPlayer();
 		if (player == nullptr) {
 			return;
@@ -348,12 +510,15 @@ namespace Mod_Util_Overlay_Send
 			msg->WriteUBitLong(OV_TEXT, OVERLAY_TYPE_BITS);
 			msg->WriteBitVec3Coord(origin);
 			msg->WriteString(text);
+			msg->WriteOneBit(bViewCheck);
 			_float16(&temp, flDuration); msg->WriteWord(temp);
 		MSG_END();
 	}
 	
 	void Send_ScreenText(float flXpos, float flYpos, const char *text, int r, int g, int b, int a, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_SCREEN_TEXT, OVERLAY_TYPE_BITS);
@@ -370,6 +535,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Cross3D_ext(const Vector& position, const Vector& mins, const Vector& maxs, int r, int g, int b, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_CROSS3D_EXT, OVERLAY_TYPE_BITS);
@@ -386,6 +553,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Cross3D_size(const Vector& position, float size, int r, int g, int b, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_CROSS3D_SIZE, OVERLAY_TYPE_BITS);
@@ -401,6 +570,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Cross3DOriented_ang(const Vector& position, const QAngle& angles, float size, int r, int g, int b, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_CROSS3D_ORIENTED_ANG, OVERLAY_TYPE_BITS);
@@ -422,6 +593,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_HorzArrow(const Vector& startPos, const Vector& endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_HORZ_ARROW, OVERLAY_TYPE_BITS);
@@ -439,6 +612,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_YawArrow(const Vector& startPos, float yaw, float length, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_YAW_ARROW, OVERLAY_TYPE_BITS);
@@ -457,6 +632,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_VertArrow(const Vector& startPos, const Vector& endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_VERT_ARROW, OVERLAY_TYPE_BITS);
@@ -474,6 +651,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Axis(const Vector& position, const QAngle& angles, float size, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_AXIS, OVERLAY_TYPE_BITS);
@@ -487,6 +666,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Sphere(const Vector& center, float radius, int r, int g, int b, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_SPHERE, OVERLAY_TYPE_BITS);
@@ -502,6 +683,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Circle(const Vector& position, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		CBasePlayer *player = GetLocalPlayer();
 		if (player == nullptr) {
 			return;
@@ -530,6 +713,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Circle_ang(const Vector& position, const QAngle& angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_CIRCLE_ANG, OVERLAY_TYPE_BITS);
@@ -547,6 +732,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Circle_axes(const Vector& position, const Vector& xAxis, const Vector& yAxis, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_CIRCLE_AXES, OVERLAY_TYPE_BITS);
@@ -565,6 +752,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_Sphere_ang(const Vector& position, const QAngle& angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		MSG_BEGIN();
 			uint16_t temp;
 			msg->WriteUBitLong(OV_SPHERE_ANG, OVERLAY_TYPE_BITS);
@@ -589,6 +778,8 @@ namespace Mod_Util_Overlay_Send
 	
 	void Send_LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration)
 	{
+		AdjustDuration(flDuration);
+		
 		CBasePlayer *player = GetLocalPlayer();
 		if (player == nullptr) {
 			return;
@@ -899,12 +1090,12 @@ namespace Mod_Util_Overlay_Send
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
 		CMod() : IMod("Util:Overlay_Send")
 		{
-			MOD_ADD_DETOUR_MEMBER(IServerGameDLL_GameFrame, "IServerGameDLL::GameFrame");
+		//	MOD_ADD_DETOUR_MEMBER(IServerGameDLL_GameFrame, "IServerGameDLL::GameFrame");
 			
 			MOD_ADD_DETOUR_STATIC(NDebugOverlay_Box,                  "NDebugOverlay::Box");
 			MOD_ADD_DETOUR_STATIC(NDebugOverlay_BoxDirection,         "NDebugOverlay::BoxDirection");
@@ -968,6 +1159,7 @@ namespace Mod_Util_Overlay_Send
 			MOD_ADD_DETOUR_STATIC(ConColorMsg,                             "ConColorMsg");
 		}
 		
+#if 0
 		virtual bool OnLoad() override
 		{
 			msgid_Overlays = usermessages->LookupUserMessage("Overlays");
@@ -982,11 +1174,23 @@ namespace Mod_Util_Overlay_Send
 			
 			return true;
 		}
+#endif
+		
+		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		
+		virtual void FrameUpdatePostEntityThink() override
+		{
+			sender.SendAll();
+		}
 		
 		void SetEnabled(bool enable)
 		{
+			this->m_bEnabled = enable;
 			this->ToggleAllDetours(enable);
 		}
+		
+	private:
+		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	

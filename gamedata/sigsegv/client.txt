@@ -73,27 +73,39 @@
 				
 				"[client] CDebugOverlay::DrawOverlay"
 				{
-					type  "fixed"
+					type  "pattern"
 					sym   "_ZN13CDebugOverlay11DrawOverlayEPNS_13OverlayBase_tE"
-					addr  "0x0e3350"
-					build "3354789"
 					lib   "engine"
+					seg   ".text"
+					seek  "558bec83ec348d45cc566a016863030000684c173110688c17311068043d491050e86a9bffff8b750883c4188b0683f8050f87b5010000"
+					mask  "ffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffff00000000ffffffffffffffffffffffffff00000000"
+				//	addr  "0x0e3350"
+				//	build "3354789"
+				//	lib   "engine"
 				}
 				"[client] RenderSphere [IMaterial *]"
 				{
-					type  "fixed"
+					type  "pattern"
 					sym   "_Z12RenderSphereRK6Vectorfii5ColorP9IMaterial"
-					addr  "0x25f1d0"
-					build "3354789"
 					lib   "engine"
+					seg   ".text"
+					seek  "538bdc83ec0883e4f083c404558b6b04896c24048bec81ec680200005657e81df7ffff8b0d7ccf67108b018b8088010000ffd08bf08975e085f67407"
+					mask  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
+				//	addr  "0x25f1d0"
+				//	build "3354789"
+				//	lib   "engine"
 				}
 				"[client] RenderWireframeSphere"
 				{
-					type  "fixed"
+					type  "pattern"
 					sym   "_Z21RenderWireframeSphereRK6Vectorfii5Colorb"
-					addr  "0x8006F0"
-					build "3354789"
 					lib   "client"
+					seg   ".text"
+					seek  "558bec81ec18020000535657e8dff6ffff8b5d108b4514438bfb895d100faff8488945f88d0c9dfcffffff8945dc0fafc8894dfc8b0da04ad7108b01ff90880100008bf08975e885f674078b068bceff5008"
+					mask  "ffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffff00ffffffffffff00"
+				//	addr  "0x8006F0"
+				//	build "3354789"
+				//	lib   "client"
 				}
 				
 				"[client] s_pVertexColor"
@@ -139,6 +151,15 @@
 					sym     "_ZN15C_BaseAnimating9DrawModelEi"
 					v_name  "C_BaseAnimating::DrawModel"
 					v_group "Other_Model_Rendering"
+					lib     "client"
+				}
+				
+				"[client] IGameSystem::UpdateAllSystems"
+				{
+					type    "func ebpprologue vprof"
+					sym     "_ZN11IGameSystem16UpdateAllSystemsEf"
+					v_name  "IGameSystem::UpdateAllSystems"
+					v_group "%s - %s"
 					lib     "client"
 				}
 			}

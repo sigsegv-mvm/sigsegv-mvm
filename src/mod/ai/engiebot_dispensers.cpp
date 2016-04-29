@@ -46,7 +46,7 @@ namespace Mod_AI_EngieBot_Dispensers
 	}
 	
 	
-	class CTFBotMvMEngineerBuildSGDispenser : public IHotplugAction<CTFBotMvMEngineerBuildSGDispenser>
+	class CTFBotMvMEngineerBuildSGDispenser : public IHotplugAction
 	{
 	public:
 		CTFBotMvMEngineerBuildSGDispenser(CTFBotHintSentrygun *hint) :
@@ -151,7 +151,7 @@ namespace Mod_AI_EngieBot_Dispensers
 		bool m_bNearHint = false;
 	};
 	
-	class CTFBotMvMEngineerBuildTEDispenser : public IHotplugAction<CTFBotMvMEngineerBuildTEDispenser>
+	class CTFBotMvMEngineerBuildTEDispenser : public IHotplugAction
 	{
 	public:
 		CTFBotMvMEngineerBuildTEDispenser(CTFBotHintTeleporterExit *hint) :
@@ -369,9 +369,6 @@ namespace Mod_AI_EngieBot_Dispensers
 		
 		virtual void OnUnload() override
 		{
-			CTFBotMvMEngineerBuildSGDispenser::UnloadAll();
-			CTFBotMvMEngineerBuildTEDispenser::UnloadAll();
-			
 			for (int i = 0; i < ITFBotHintEntityAutoList::AutoList().Count(); ++i) {
 				auto hint = rtti_cast<CBaseTFBotHintEntity *>(ITFBotHintEntityAutoList::AutoList()[i]);
 				if (hint != nullptr) {

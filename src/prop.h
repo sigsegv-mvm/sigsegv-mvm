@@ -168,7 +168,7 @@ template<typename T>
 class CProp_Extract : public IPropTyped<T>
 {
 public:
-	CProp_Extract(const char *obj, const char *mem, IExtract<T> *extractor) :
+	CProp_Extract(const char *obj, const char *mem, IExtract<T *> *extractor) :
 		IPropTyped<T>(obj, mem), m_Extractor(extractor) {}
 	virtual ~CProp_Extract()
 	{
@@ -194,11 +194,11 @@ private:
 			return false;
 		}
 		
-		off = this->m_Extractor->Extract();
+		off = (int)this->m_Extractor->Extract();
 		return true;
 	}
 	
-	IExtract<T> *m_Extractor;
+	IExtract<T *> *m_Extractor;
 };
 
 
@@ -256,6 +256,22 @@ public:
 	
 	operator U*() const { return this->GetRef(); }
 	U* operator=(U* val) = delete;
+};
+/* specialization for CUtlVector<U> */
+template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST>
+class CPropAccessor_Read<CUtlVector<U>, IPROP, PROP, ADJUST> : public CPropAccessor_Base<CUtlVector<U>, IPROP, PROP, ADJUST>
+{
+public:
+	using T = CUtlVector<U>;
+	
+	CPropAccessor_Read() = delete;
+	
+	operator const T&() const = delete;
+	const T* operator->() const { return this->GetPtr(); } /* dubious */
+	const T& operator=(const T& val) = delete;
+	
+	const U& operator[](int i) const { return this->GetRef()[i]; }
+	U& operator[](int i)             { return this->GetRef()[i]; }
 };
 
 

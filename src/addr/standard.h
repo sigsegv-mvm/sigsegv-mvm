@@ -376,4 +376,36 @@ protected:
 #endif
 
 
+class IAddr_Pattern : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetSegment() const = 0;
+	virtual const char *GetPattern() const = 0;
+	virtual const char *GetMask() const = 0;
+};
+
+class CAddr_Pattern : public IAddr_Pattern
+{
+public:
+	CAddr_Pattern(const std::string& name, const std::string& sym, const std::string& segment, const std::string& pattern, const std::string& mask) :
+		m_strName(name), m_strSymbol(sym), m_strSegment(segment), m_strPattern(pattern), m_strMask(mask) {}
+	
+	virtual const char *GetName() const override    { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override  { return this->m_strSymbol.c_str(); }
+	virtual const char *GetSegment() const override { return this->m_strSegment.c_str(); }
+	virtual const char *GetPattern() const override { return this->m_strPattern.c_str(); }
+	virtual const char *GetMask() const override    { return this->m_strMask.c_str(); }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strSegment;
+	std::string m_strPattern;
+	std::string m_strMask;
+};
+
+
 #endif

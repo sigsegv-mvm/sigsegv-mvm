@@ -35,7 +35,7 @@ namespace Mod_Credits_Spawn_AutoCollect
 		CMod() : IMod("Credits:Spawn_AutoCollect")
 		{
 			MOD_ADD_DETOUR_MEMBER(CCurrencyPack_ComeToRest, "CCurrencyPack::ComeToRest");
-			MOD_ADD_DETOUR_MEMBER(CNavMesh_GetNavArea,      "CNavMesh::GetNavArea");
+			MOD_ADD_DETOUR_MEMBER(CNavMesh_GetNavArea,      "CNavMesh::GetNavArea [vec]");
 		}
 		
 		void SetEnabled(bool enable)

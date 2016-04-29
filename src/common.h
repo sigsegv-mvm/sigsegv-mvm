@@ -30,20 +30,33 @@ class IEngineTrace;
 class IStaticPropMgrServer;
 class IGameEventManager2;
 class IEngineSound;
+class IVModelInfo;
 class IVDebugOverlay;
+
 class IPhysics;
+class IPhysicsCollision;
+
 class ISoundEmitterSystemBase;
+
 class IMaterialSystem;
+
 class CGlobalVars;
 class CBaseEntityList;
+
 class IVEngineClient;
 class IBaseClientDLL;
+
+class IEngineTool;
+class IServerTools;
+class IClientTools;
+
 namespace SourcePawn {
 	class ISourcePawnEngine;
 }
 namespace SourceMod {
 	class IExtensionManager;
 }
+
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
@@ -54,9 +67,11 @@ extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 extern IGameEventManager2 *gameeventmanager;
 extern IEngineSound *enginesound;
+extern IVModelInfo *modelinfo;
 extern IVDebugOverlay *debugoverlay;
 
 extern IPhysics *physics;
+extern IPhysicsCollision *physcollision;
 
 extern ISoundEmitterSystemBase *soundemitterbase;
 
@@ -67,6 +82,10 @@ extern CBaseEntityList *g_pEntityList;
 
 extern IVEngineClient *engineclient;
 extern IBaseClientDLL *clientdll;
+
+extern IEngineTool *enginetools;
+extern IServerTools *servertools;
+extern IClientTools *clienttools;
 
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
@@ -93,6 +112,7 @@ extern SourceMod::IExtensionManager *smexts;
 
 
 /* Boost */
+//#include <boost/asio.hpp>
 //#include <boost/thread.hpp>
 
 
@@ -101,6 +121,9 @@ extern SourceMod::IExtensionManager *smexts;
 
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 #include <libunwind.h>
 #define HAVE_DECL_BASENAME 1
 #include <libiberty/demangle.h>
@@ -118,6 +141,8 @@ extern SourceMod::IExtensionManager *smexts;
 #pragma warning(disable:4091)
 #include <Dbghelp.h>
 #pragma warning(default:4091)
+
+#include <Winsock2.h>
 
 /* namespace clash between Windows CreateEvent macro and IGameEventManager2::CreateEvent */
 #if defined CreateEvent
@@ -143,12 +168,13 @@ extern SourceMod::IExtensionManager *smexts;
 #include <string_t.h>
 #include "sdk2013/annotations.h"
 #include "sdk2013/basetypes.h"
-#include <vector.h>
-#include <tier1/utlvector.h>
+#include <mathlib/vector.h>
+#include "sdk2013/utlmemory.h"
+#include "sdk2013/utlvector.h"
 #include "sdk2013/shareddefs.h"
 #include "sdk2013/icvar.h"
 #include <tier0/dbg.h>
-#include <tier1/convar.h>
+#include "sdk2013/convar.h"
 #include "sdk2013/fmtstr.h"
 #include <tier1/KeyValues.h>
 #include <shareddefs.h>
@@ -182,7 +208,8 @@ extern SourceMod::IExtensionManager *smexts;
 #include <iclientnetworkable.h>
 #include <tier1/utldict.h>
 #include <mp_shareddefs.h>
-#include <materialsystem/imaterialsystem.h>
+//#include <materialsystem/imaterialsystem.h>
+#include "sdk2013/imaterialsystem.h"
 #include <materialsystem/imaterial.h>
 #include <particle_parse.h>
 #include <SoundEmitterSystem/isoundemittersystembase.h>
@@ -192,13 +219,17 @@ extern SourceMod::IExtensionManager *smexts;
 #include <ivmodelrender.h>
 #include <vcollide_parse.h>
 #include <steam/steamclientpublic.h>
+#include <tier1/netadr.h>
+#include <toolframework/ienginetool.h>
+#include <toolframework/itoolentity.h>
+#include <tier0/vprof.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
 
 
 /* AMTL */
-#include <amtl/am-string.h>
+//#include <amtl/am-string.h>
 
 
 /* MetaMod */

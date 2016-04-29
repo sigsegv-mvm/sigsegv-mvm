@@ -180,6 +180,12 @@
 					sym  "_ZN9CTFPlayer25ForgetFirstUpgradeForItemEP13CEconItemView"
 				}
 				
+				"CTFPlayer::CreateFeignDeathRagdoll"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23CreateFeignDeathRagdollERK15CTakeDamageInfobbb"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

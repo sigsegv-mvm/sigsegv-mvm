@@ -85,7 +85,7 @@
       </CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -125,7 +125,7 @@
       </CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -182,7 +182,6 @@
     <ClCompile Include="..\src\mod\bot\multiclass_weapon.cpp" />
     <ClCompile Include="..\src\mod\canteen\share_recall_canteen.cpp" />
     <ClCompile Include="..\src\mod\cond\reprogrammed.cpp" />
-    <ClCompile Include="..\src\mod\credits\spawn_autocollect.cpp" />
     <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
     <ClCompile Include="..\src\mod\debug\draw_cphyscollide.cpp" />
     <ClCompile Include="..\src\mod\debug\known_entities.cpp" />
@@ -202,7 +201,6 @@
     <ClCompile Include="..\src\mod\pop\kv_conditional.cpp" />
     <ClCompile Include="..\src\mod\pop\nested_complex_spawners.cpp" />
     <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp" />
-    <ClCompile Include="..\src\mod\pop\tfbot_extensions.cpp" />
     <ClCompile Include="..\src\mod\robot\no_canteens.cpp" />
     <ClCompile Include="..\src\mod\robot\standable_heads.cpp" />
     <ClCompile Include="..\src\mod\robot\ticklish.cpp" />
@@ -220,19 +218,20 @@
     <ClCompile Include="..\src\mod\visualize\minigun_deflect.cpp" />
     <ClCompile Include="..\src\mod\visualize\taunt_attacks.cpp" />
     <ClCompile Include="..\src\prop.cpp" />
+    <ClCompile Include="..\src\re\nextbot.cpp" />
     <ClCompile Include="..\src\sdk2013\debugoverlay_shared.cpp" />
     <ClCompile Include="..\src\sdk2013\strtools.cpp" />
     <ClCompile Include="..\src\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\src\sizeof.cpp" />
     <ClCompile Include="..\src\sm\MemoryUtils.cpp" />
+    <ClCompile Include="..\src\stub\baseanimating.cpp" />
     <ClCompile Include="..\src\stub\baseentity.cpp" />
+    <ClCompile Include="..\src\stub\baseplayer.cpp" />
     <ClCompile Include="..\src\stub\cdebugoverlay.cpp" />
     <ClCompile Include="..\src\stub\econ.cpp" />
-    <ClCompile Include="..\src\stub\entities.cpp" />
     <ClCompile Include="..\src\stub\gamerules.cpp" />
     <ClCompile Include="..\src\stub\igamesystem.cpp" />
     <ClCompile Include="..\src\stub\misc.cpp" />
-    <ClCompile Include="..\src\stub\nav.cpp" />
     <ClCompile Include="..\src\stub\objects.cpp" />
     <ClCompile Include="..\src\stub\particles.cpp" />
     <ClCompile Include="..\src\stub\populators.cpp" />
@@ -245,7 +244,9 @@
     <ClCompile Include="..\src\util\backtrace.cpp" />
     <ClCompile Include="..\src\util\prof.cpp" />
     <ClCompile Include="..\src\util\rtti.cpp" />
+    <ClCompile Include="..\src\util\socket.cpp" />
     <ClCompile Include="..\src\util\trace.cpp" />
+    <ClCompile Include="..\src\version.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />

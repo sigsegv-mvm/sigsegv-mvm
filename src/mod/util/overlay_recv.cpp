@@ -3,6 +3,7 @@
 #include "stub/usermessages_cl.h"
 #include "util/float16.h"
 #include "stub/cdebugoverlay.h"
+#include "util/socket.h"
 
 
 enum OverlayType_t
@@ -885,12 +886,113 @@ namespace Mod_Util_Overlay_Recv
 	}
 	
 	
+	struct DelayedPacket
+	{
+		DelayedPacket(int bits, int tick, const uint8_t *src) :
+			bits(bits), tick(tick)
+		{
+			this->ptr = new uint8_t[BitByte(bits)];
+			memcpy(this->ptr, src, BitByte(bits));
+		}
+		~DelayedPacket()
+		{
+			if (this->ptr != nullptr) {
+				delete[] this->ptr;
+				this->ptr = nullptr;
+			}
+		}
+		
+		DelayedPacket(const DelayedPacket&) = delete;
+		
+		int bits;
+		int tick;
+		uint8_t *ptr = nullptr;
+	};
+	
+	std::list<DelayedPacket> queued_packets;
+	
+	
+	void ProcessPacket(const DelayedPacket& packet)
+	{
+		bf_read src(packet.ptr, BitByte(packet.bits), packet.bits);
+		
+		while (src.GetNumBitsRead() < packet.bits) {
+			Hook_Overlays(src);
+		}
+		
+	//	DevMsg("POP:  %d bits @ tick %d\n", packet.bits, packet.tick);
+	}
+	
+	void ProcessQueuedPackets()
+	{
+		for (auto it = queued_packets.begin(); it != queued_packets.end(); ) {
+			const auto& packet = *it;
+			
+			if (packet.tick < enginetools->ClientTick()) {
+				ProcessPacket(packet);
+				it = queued_packets.erase(it);
+			} else {
+				++it;
+			}
+		}
+	}
+	
+	
+	FirehoseRecv *recv = nullptr;
+	void ReceivePackets()
+	{
+		static std::vector<uint8_t> buffer;
+		buffer.resize(65536);
+		
+		size_t len;
+		while ((len = recv->Recv(buffer.size(), buffer.data())) != 0) {
+		//	DevMsg("Received %u bytes\n", len);
+			
+			bf_read hdr(buffer.data(), buffer.size());
+			
+			uint32_t bits = hdr.ReadUBitLong(32);
+			uint32_t tick = hdr.ReadUBitLong(32);
+			
+			queued_packets.emplace_back(bits, tick, buffer.data() + 8);
+			
+		//	DevMsg("PUSH: %d bits @ tick %d\n", bits, tick);
+		}
+	}
+	
+	
+	DETOUR_DECL_STATIC(void, IGameSystem_UpdateAllSystems, float f1)
+	{
+		ReceivePackets();
+		ProcessQueuedPackets();
+		
+#if 0
+		static std::vector<uint8_t> packet;
+		packet.resize(65536);
+		
+		size_t len;
+		while ((len = recv->Recv(packet.size(), packet.data())) != 0) {
+		//	DevMsg("Received %u bytes\n", len);
+			
+			bf_read src(packet.data(), packet.size());
+			uint32_t bits = src.ReadUBitLong(32);
+			
+			float when = src.ReadFloat();
+			
+			while (src.GetNumBitsRead() < bits) {
+				Hook_Overlays(src);
+			}
+		}
+#endif
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
 		CMod() : IMod("Util:Overlay_Recv")
 		{
-			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawOverlay, "[client] CDebugOverlay::DrawOverlay");
+			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawOverlay,    "[client] CDebugOverlay::DrawOverlay");
+			MOD_ADD_DETOUR_STATIC(IGameSystem_UpdateAllSystems, "[client] IGameSystem::UpdateAllSystems");
 		}
 		
 		virtual void OnUnload() override
@@ -918,15 +1020,24 @@ namespace Mod_Util_Overlay_Recv
 	private:
 		void Enable()
 		{
+			recv = new FirehoseRecv(OVERLAY_PORT);
+			
+#if 0
 			if (usermessages->LookupUserMessage("Overlays") == -1) {
 				usermessages->Register("Overlays", -1);
 			}
 			
 			usermessages->HookMessage("Overlays", &Hook_Overlays);
+#endif
 		}
 		void Disable()
 		{
+			delete recv;
+			recv = nullptr;
+			
+#if 0
 			usermessages->UnHookMessage("Overlays", &Hook_Overlays);
+#endif
 		}
 		
 		bool m_bEnabled = false;

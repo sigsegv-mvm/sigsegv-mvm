@@ -248,6 +248,11 @@
 					type "sym"
 					sym  "_ZN21CTFBotTacticalMonitor15OnCommandStringEP6CTFBotPKc"
 				}
+				"CTFBotTacticalMonitor::InitialContainedAction"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotTacticalMonitor22InitialContainedActionEP6CTFBot"
+				}
 				
 				"CTFBotSpyAttack::Update"
 				{
@@ -277,6 +282,12 @@
 				{
 					type "sym"
 					sym  "_ZN25CTFBotAttackFlagDefenders6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotAttack::CTFBotAttack [C1]"
+				{
+					type "sym"
+					sym  "_ZN12CTFBotAttackC1Ev"
 				}
 			}
 		}

@@ -13,12 +13,17 @@
 		{
 			"addrs"
 			{
-				"CNavMesh::GetNavArea"
+				"CNavMesh::GetNavArea [vec]"
 				{
 					type    "func ebpprologue vprof"
 					sym     "_ZNK8CNavMesh10GetNavAreaERK6Vectorf"
 					v_name  "CNavMesh::GetNavArea"
 					v_group "NextBot"
+				}
+				"CNavMesh::GetNavArea [ent]"
+				{
+					type    "sym"
+					sym     "_ZNK8CNavMesh10GetNavAreaEP11CBaseEntityif"
 				}
 				"CNavMesh::GetNearestNavArea [vec]"
 				{
@@ -52,6 +57,26 @@
 					type "sym"
 					sym  "_ZNK8CNavArea21GetClosestPointOnAreaEPK6VectorPS0_"
 				}
+				"CNavArea::ComputeAdjacentConnectionHeightChange"
+				{
+					type "sym"
+					sym  "_ZNK8CNavArea37ComputeAdjacentConnectionHeightChangeEPKS_"
+				}
+				"CNavArea::ClearAllNavCostEntities"
+				{
+					type "sym"
+					sym  "_ZN8CNavArea23ClearAllNavCostEntitiesEv"
+				}
+				"CNavArea::Shift"
+				{
+					type "sym"
+					sym  "_ZN8CNavArea5ShiftERK6Vector"
+				}
+				"CNavArea::DrawFilled"
+				{
+					type "sym"
+					sym  "_ZNK8CNavArea10DrawFilledEiiiifbf"
+				}
 				
 				"CTFNavArea::IsBlocked"
 				{
@@ -65,11 +90,32 @@
 					type "sym"
 					sym  "_ZNK10CTFNavArea29IsValidForWanderingPopulationEv"
 				}
+				"CTFNavArea::IsBlocked"
+				{
+					type "sym"
+					sym  "_ZNK10CTFNavArea9IsBlockedEib"
+				}
+				"CTFNavArea::GetCombatIntensity"
+				{
+					type "sym"
+					sym  "_ZNK10CTFNavArea18GetCombatIntensityEv"
+				}
+				"CTFNavArea::GetNextIncursionArea"
+				{
+					type "sym"
+					sym  "_ZNK10CTFNavArea20GetNextIncursionAreaEi"
+				}
 				
 				"NavAreaTravelDistance<CTFBotPathCost>"
 				{
 					type "sym"
 					sym  "_Z21NavAreaTravelDistanceI14CTFBotPathCostEfP8CNavAreaS2_RT_f"
+				}
+				
+				"ISearchSurroundingAreasFunctor::IterateAdjacentAreas"
+				{
+					type "sym"
+					sym  "_ZN30ISearchSurroundingAreasFunctor20IterateAdjacentAreasEP8CNavAreaS1_f"
 				}
 			}
 		}

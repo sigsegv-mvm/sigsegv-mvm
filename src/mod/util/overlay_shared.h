@@ -47,4 +47,7 @@ constexpr int ENTITY_ID_BITS = 12;
 constexpr float MAX_OVERLAY_DIST_SQR = 90000000.0f;
 
 
+constexpr uint16_t OVERLAY_PORT = 30000;
+
+
 #endif

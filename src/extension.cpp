@@ -10,6 +10,8 @@
 #include "disasm/disasm.h"
 #include "factory.h"
 #include "concolor.h"
+#include "re/nextbot.h"
+#include "version.h"
 
 
 CExtSigsegv g_Ext;
@@ -22,9 +24,11 @@ IEngineTrace *enginetrace             = nullptr;
 IStaticPropMgrServer *staticpropmgr   = nullptr;
 IGameEventManager2 *gameeventmanager  = nullptr;
 IEngineSound *enginesound             = nullptr;
+IVModelInfo *modelinfo                = nullptr;
 IVDebugOverlay *debugoverlay          = nullptr;
 
-IPhysics *physics = nullptr;
+IPhysics *physics                = nullptr;
+IPhysicsCollision *physcollision = nullptr;
 
 ISoundEmitterSystemBase *soundemitterbase = nullptr;
 
@@ -40,6 +44,10 @@ SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
 SourceMod::IExtensionManager *smexts         = nullptr;
 
 //ISDKTools *g_pSDKTools = nullptr;
+
+IEngineTool *enginetools  = nullptr;
+IServerTools *servertools = nullptr;
+IClientTools *clienttools = nullptr;
 
 
 #if 0
@@ -87,9 +95,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	g_ModManager.Load();
 	
-#if !defined _WINDOWS
 	IGameSystem::Add(this);
-#endif
 	
 	for (int i = 0; i < 255; ++i) {
 		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
@@ -104,9 +110,9 @@ fail:
 
 void CExtSigsegv::SDK_OnUnload()
 {
-#if !defined _WINDOWS
 	IGameSystem::Remove(this);
-#endif
+	
+	IHotplugAction::UnloadAll();
 	
 	g_ModManager.Unload();
 	
@@ -129,10 +135,9 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 }
 
 
-ConVar cvar_build("sig_build", __DATE__ " " __TIME__, FCVAR_NONE);
 bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
-	DevMsg("CExtSigsegv: compiled @ " __DATE__ " " __TIME__ "\n");
+	DevMsg("CExtSigsegv: compiled @ %s %s\n", GetBuildDate(), GetBuildTime());
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
@@ -147,11 +152,16 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_CURRENT(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	GET_V_IFACE_CURRENT(GetEngineFactory, enginesound, IEngineSound, IENGINESOUND_SERVER_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetEngineFactory, modelinfo, IVModelInfo, VMODELINFO_SERVER_INTERFACE_VERSION);
 	
-	//GET_V_IFACE_CURRENT(GetEngineFactory, debugoverlay, IVDebugOverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetServerFactory, servertools, IServerTools, VSERVERTOOLS_INTERFACE_VERSION);
+	
+	/* optional stuff */
 	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
+	enginetools = (IEngineTool *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VENGINETOOL_INTERFACE_VERSION, 0);
 	
 	GET_V_IFACE_CURRENT(GetPhysicsFactory, physics, IPhysics, VPHYSICS_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetPhysicsFactory, physcollision, IPhysicsCollision, VPHYSICS_COLLISION_INTERFACE_VERSION);
 	
 	if (GetSoundEmitterSystemFactory() != nullptr) {
 		soundemitterbase = (ISoundEmitterSystemBase *)ismm->VInterfaceMatch(GetSoundEmitterSystemFactory(), SOUNDEMITTERSYSTEM_INTERFACE_VERSION, 0);
@@ -164,6 +174,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	if (GetClientFactory() != nullptr) {
 		GET_V_IFACE_CURRENT(GetEngineFactory, engineclient, IVEngineClient, VENGINE_CLIENT_INTERFACE_VERSION);
 		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
+		clienttools = (IClientTools *)ismm->VInterfaceMatch(GetClientFactory(), VCLIENTTOOLS_INTERFACE_VERSION, 0);
 	}
 	
 	gpGlobals = ismm->GetCGlobals();

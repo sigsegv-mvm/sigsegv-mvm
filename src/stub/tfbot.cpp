@@ -14,9 +14,9 @@ static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
 	0x8b, 0x93, 0x00, 0x00, 0x00, 0x00, // +0011  mov edx,DWORD PTR [ebx+0xVVVVVVVV]
 };
 
-struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType>
+struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType *>
 {
-	CExtract_CTFBot_m_nMission() : IExtract<CTFBot::MissionType>(sizeof(s_Buf_CTFBot_m_nMission)) {}
+	CExtract_CTFBot_m_nMission() : IExtract<CTFBot::MissionType *>(sizeof(s_Buf_CTFBot_m_nMission)) {}
 	
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
@@ -42,9 +42,9 @@ static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
 	0x68, 0x00, 0x00, 0x00, 0x00,             // +0009  push offset "mission_sentry_buster"
 };
 
-struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType>
+struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType *>
 {
-	CExtract_CTFBot_m_nMission() : IExtract<CTFBot::MissionType>(sizeof(s_Buf_CTFBot_m_nMission)) {}
+	CExtract_CTFBot_m_nMission() : IExtract<CTFBot::MissionType *>(sizeof(s_Buf_CTFBot_m_nMission)) {}
 	
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
@@ -124,6 +124,8 @@ MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBo
 MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBot::ft_ForgetSpy                   ("CTFBot::ForgetSpy");
 MemberFuncThunk<      CTFBot *, void, const char *                       > CTFBot::ft_AddItem                     ("CTFBot::AddItem");
 MemberFuncThunk<const CTFBot *, float                                    > CTFBot::ft_GetDesiredAttackRange       ("CTFBot::GetDesiredAttackRange");
+MemberFuncThunk<      CTFBot *, void, const CKnownEntity *               > CTFBot::ft_EquipBestWeaponForThreat    ("CTFBot::EquipBestWeaponForThreat");
+MemberFuncThunk<      CTFBot *, CTFPlayer *                              > CTFBot::ft_SelectRandomReachableEnemy  ("CTFBot::SelectRandomReachableEnemy");
 
 #if 0
 std::map<CHandle<CTFBot>, CTFBot::ExtendedAttr> CTFBot::s_ExtAttrs;

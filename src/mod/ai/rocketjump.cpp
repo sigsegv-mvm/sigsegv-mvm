@@ -8,7 +8,7 @@
 namespace Mod_AI_RocketJump
 {
 	/* base class */
-	class CTFBotRocketJump : public IHotplugAction<CTFBotRocketJump>
+	class CTFBotRocketJump : public IHotplugAction
 	{
 	protected:
 		CTFBotRocketJump() {}
@@ -284,11 +284,6 @@ namespace Mod_AI_RocketJump
 			
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyPushFromDamage,     "CTFPlayer::ApplyPushFromDamage");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAbsVelocityImpulse, "CTFPlayer::ApplyAbsVelocityImpulse");
-		}
-		
-		virtual void OnUnload() override
-		{
-			CTFBotRocketJump::UnloadAll();
 		}
 		
 		void SetEnabled(bool enable)

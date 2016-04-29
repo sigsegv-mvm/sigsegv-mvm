@@ -4,9 +4,10 @@
 
 IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
 
-MemberFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int> CBaseCombatCharacter::ft_Weapon_GetSlot("CBaseCombatCharacter::Weapon_GetSlot");
-
-MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *> CBaseCombatCharacter::vt_GetLastKnownArea(TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetLastKnownArea");
+MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       CBaseCombatCharacter::vt_Weapon_GetSlot    (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_GetSlot");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      CBaseCombatCharacter::vt_Weapon_CanSwitchTo(TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_CanSwitchTo");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> CBaseCombatCharacter::vt_Weapon_Switch     (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_Switch");
+MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     CBaseCombatCharacter::vt_GetLastKnownArea  (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetLastKnownArea");
 
 
 IMPL_DATAMAP(char, CBasePlayer, m_szNetname);

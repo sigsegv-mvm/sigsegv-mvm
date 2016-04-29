@@ -1,4 +1,3 @@
-#define FMTFUNCTION(a, b)
 int V_vsnprintfRet( OUT_Z_CAP(maxLenInCharacters) char *pDest, int maxLenInCharacters, PRINTF_FORMAT_STRING const char *pFormat, va_list params, bool *pbTruncated );
 
 

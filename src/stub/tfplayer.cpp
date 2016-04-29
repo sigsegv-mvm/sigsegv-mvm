@@ -32,6 +32,11 @@ MemberFuncThunk<      CTFPlayer *, int, int                > CTFPlayer::ft_GetAu
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");
 
 
+IMPL_SENDPROP(float, CTFRagdoll, m_flHeadScale,  CTFRagdoll);
+IMPL_SENDPROP(float, CTFRagdoll, m_flTorsoScale, CTFRagdoll);
+IMPL_SENDPROP(float, CTFRagdoll, m_flHandScale,  CTFRagdoll);
+
+
 bool CTFPlayer::IsPlayerClass(int iClass) const
 {
 	const CTFPlayerClass *pClass = this->GetPlayerClass();

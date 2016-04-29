@@ -251,6 +251,18 @@
 					sym  "_ZN6CTFBot5SpawnEv"
 				}
 				
+				"CTFBot::EquipBestWeaponForThreat"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot24EquipBestWeaponForThreatEPK12CKnownEntity"
+				}
+				
+				"CTFBot::SelectRandomReachableEnemy"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot26SelectRandomReachableEnemyEv"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

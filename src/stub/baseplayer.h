@@ -3,9 +3,9 @@
 
 
 #include "stub/baseanimating.h"
-#include "stub/nav.h"
 
 
+class CNavArea;
 class CBaseCombatWeapon;
 
 
@@ -14,16 +14,18 @@ class CBaseCombatCharacter : public CBaseFlex
 public:
 	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
 	
-	CBaseCombatWeapon *Weapon_GetSlot(int slot) const { return ft_Weapon_GetSlot(this, slot); }
-	
-	CNavArea *GetLastKnownArea() const { return vt_GetLastKnownArea(this); }
+	CBaseCombatWeapon *Weapon_GetSlot(int slot) const                      { return vt_Weapon_GetSlot    (this, slot); }
+	bool Weapon_CanSwitchTo(CBaseCombatWeapon *pWeapon)                    { return vt_Weapon_CanSwitchTo(this, pWeapon); }
+	bool Weapon_Switch(CBaseCombatWeapon *pWeapon, int viewmodelindex = 0) { return vt_Weapon_Switch     (this, pWeapon, viewmodelindex); }
+	CNavArea *GetLastKnownArea() const                                     { return vt_GetLastKnownArea  (this); }
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
 	
-	static MemberFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int> ft_Weapon_GetSlot;
-	
-	static MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *> vt_GetLastKnownArea;
+	static MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       vt_Weapon_GetSlot;
+	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      vt_Weapon_CanSwitchTo;
+	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> vt_Weapon_Switch;
+	static MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     vt_GetLastKnownArea;
 };
 
 class CBasePlayer : public CBaseCombatCharacter

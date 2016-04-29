@@ -243,6 +243,14 @@ private:
 	static StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> ft_GetEconItemViewByLoadoutSlot;
 };
 
+class CTFRagdoll : public CBaseAnimatingOverlay
+{
+public:
+	DECL_SENDPROP(float, m_flHeadScale);
+	DECL_SENDPROP(float, m_flTorsoScale);
+	DECL_SENDPROP(float, m_flHandScale);
+};
+
 
 inline CTFPlayer *CTFPlayerClassShared::GetOuter()
 {

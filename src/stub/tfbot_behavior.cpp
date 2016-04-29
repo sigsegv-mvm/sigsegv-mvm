@@ -51,6 +51,18 @@ uint32_t FindAdditionalVTable(const void **vt, ptrdiff_t diff)
 }
 
 
+static MemberFuncThunk<CTFBotAttack *, void> ft_CTFBotAttack_ctor("CTFBotAttack::CTFBotAttack [C1]");
+CTFBotAttack *CTFBotAttack::New()
+{
+	// TODO: verify sizeof(CTFBotAttack) in the game code at runtime
+	// TODO: verify that the addr for the ctor actually exists
+	
+	auto action = reinterpret_cast<CTFBotAttack *>(::operator new(sizeof(CTFBotAttack)));
+	ft_CTFBotAttack_ctor(action);
+	return action;
+}
+
+
 static MemberFuncThunk<CTFBotSeekAndDestroy *, void, float> ft_CTFBotSeekAndDestroy_ctor("CTFBotSeekAndDestroy::CTFBotSeekAndDestroy [C1]");
 CTFBotSeekAndDestroy *CTFBotSeekAndDestroy::New(float duration)
 {

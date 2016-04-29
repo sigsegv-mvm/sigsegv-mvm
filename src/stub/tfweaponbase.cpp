@@ -10,9 +10,14 @@ IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iSecondaryAmmoType,    CBaseCombatWeap
 IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iClip1,                CBaseCombatWeapon);
 IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iClip2,                CBaseCombatWeapon);
 
+MemberFuncThunk<const CBaseCombatWeapon *, bool> CBaseCombatWeapon::ft_IsMeleeWeapon("CBaseCombatWeapon::IsMeleeWeapon");
+
 
 MemberVFuncThunk<const CTFWeaponBase *, int> CTFWeaponBase::vt_GetWeaponID(     TypeName<CTFBonesaw>(),     "CTFBonesaw::GetWeaponID");
 MemberVFuncThunk<const CTFWeaponBase *, int> CTFWeaponBase::vt_GetPenetrateType(TypeName<CTFSniperRifle>(), "CTFSniperRifle::GetPenetrateType");
+
+
+MemberVFuncThunk<CTFWeaponBaseMelee *, int> CTFWeaponBaseMelee::vt_GetSwingRange(TypeName<CTFWeaponBaseMelee>(), "CTFWeaponBaseMelee::GetSwingRange");
 
 
 IMPL_SENDPROP(CHandle<CBaseEntity>, CWeaponMedigun, m_hHealingTarget, CWeaponMedigun);

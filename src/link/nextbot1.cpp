@@ -83,12 +83,16 @@ static MemberFuncThunk<const IContextualQuery *, QueryResponse,        const INe
 static MemberFuncThunk<const IContextualQuery *, const CKnownEntity *, const INextBot *, const CBaseCombatCharacter *, const CKnownEntity *, const CKnownEntity *> ft_IContextualQuery_SelectMoreDangerousThreat("IContextualQuery::SelectMoreDangerousThreat");
 
 /* Path */
-static MemberFuncThunk<const Path *, bool>                                                          ft_Path_IsValid                   ("Path::IsValid");
-static MemberFuncThunk<      Path *, bool, INextBot *, const Vector&, CTFBotPathCost&, float, bool> ft_Path_Compute_vec_CTFBotPathCost("Path::Compute_vec<CTFBotPathCost>");
+static MemberFuncThunk<const Path *, bool>                                                                   ft_Path_IsValid                       ("Path::IsValid");
+static MemberFuncThunk<      Path *, bool, INextBot *, const Vector&, CTFBotPathCost&, float, bool>          ft_Path_Compute_CTFBotPathCost_goal   ("Path::Compute<CTFBotPathCost> [goal]");
+static MemberFuncThunk<      Path *, bool, INextBot *, CBaseCombatCharacter *, CTFBotPathCost&, float, bool> ft_Path_Compute_CTFBotPathCost_subject("Path::Compute<CTFBotPathCost> [subject]");
 
 /* PathFollower */
 static MemberFuncThunk<PathFollower *, void, INextBot *> ft_PathFollower_Update                 ("PathFollower::Update");
 static MemberFuncThunk<PathFollower *, void, float>      ft_PathFollower_SetMinLookAheadDistance("PathFollower::SetMinLookAheadDistance");
+
+/* Behavior<CTFBot> */
+static MemberFuncThunk<const Behavior<CTFBot> *, INER *> ft_Behavior_FirstContainedResponder("Behavior<CTFBot>::FirstContainedResponder");
 
 /* Action<CTFBot> */
 static MemberFuncThunk<const Action<CTFBot> *, INER *>                                                                               ft_Action_INER_FirstContainedResponder(       "Action<CTFBot>::FirstContainedResponder"        " [INER]");
@@ -263,11 +267,14 @@ Vector IContextualQuery::SelectTargetPoint(const INextBot *nextbot, const CBaseC
 QueryResponse IContextualQuery::IsPositionAllowed(const INextBot *nextbot, const Vector& v1) const                                                                                         { return ft_IContextualQuery_IsPositionAllowed        (this, nextbot, v1);                     }
 const CKnownEntity *IContextualQuery::SelectMoreDangerousThreat(const INextBot *nextbot, const CBaseCombatCharacter *them, const CKnownEntity *threat1, const CKnownEntity *threat2) const { return ft_IContextualQuery_SelectMoreDangerousThreat(this, nextbot, them, threat1, threat2); }
 
-bool Path::IsValid() const                                                                                                                   { return ft_Path_IsValid                   (this); }
-template<> bool Path::Compute<CTFBotPathCost>(INextBot *nextbot, const Vector& vec, CTFBotPathCost& cost_func, float maxPathLength, bool b1) { return ft_Path_Compute_vec_CTFBotPathCost(this, nextbot, vec, cost_func, maxPathLength, b1); }
+bool Path::IsValid() const                                                                                                                           { return ft_Path_IsValid                       (this); }
+template<> bool Path::Compute<CTFBotPathCost>(INextBot *nextbot, const Vector& vec, CTFBotPathCost& cost_func, float maxPathLength, bool b1)         { return ft_Path_Compute_CTFBotPathCost_goal   (this, nextbot, vec, cost_func, maxPathLength, b1); }
+template<> bool Path::Compute<CTFBotPathCost>(INextBot *nextbot, CBaseCombatCharacter *who, CTFBotPathCost& cost_func, float maxPathLength, bool b1) { return ft_Path_Compute_CTFBotPathCost_subject(this, nextbot, who, cost_func, maxPathLength, b1); }
 
 void PathFollower::Update(INextBot *nextbot)           { ft_PathFollower_Update                 (this, nextbot); }
 void PathFollower::SetMinLookAheadDistance(float dist) { ft_PathFollower_SetMinLookAheadDistance(this, dist); }
+
+template<> INextBotEventResponder *Behavior<CTFBot>::FirstContainedResponder() const { return ft_Behavior_FirstContainedResponder(this); }
 
 template<> INextBotEventResponder *Action<CTFBot>::FirstContainedResponder() const                                                                    { return ft_Action_INER_FirstContainedResponder       (this);                           }
 template<> INextBotEventResponder *Action<CTFBot>::NextContainedResponder(INextBotEventResponder *prev) const                                         { return ft_Action_INER_NextContainedResponder        (this, prev);                     }

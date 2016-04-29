@@ -10,6 +10,10 @@ MemberVFuncThunk<const CGameRules *, const CViewVectors *> CGameRules::vt_GetVie
 MemberVFuncThunk<CMultiplayRules *, VoiceCommandMenuItem_t *, CBaseMultiplayerPlayer *, int, int> CMultiplayRules::vt_VoiceCommand(TypeName<CMultiplayRules>(), "CMultiplayRules::VoiceCommand");
 
 
+IMPL_SENDPROP(gamerules_roundstate_t, CTeamplayRoundBasedRules, m_iRoundState,  CTeamplayRoundBasedRulesProxy);
+IMPL_SENDPROP(int,                    CTeamplayRoundBasedRules, m_iWinningTeam, CTeamplayRoundBasedRulesProxy);
+
+
 IMPL_SENDPROP(bool, CTFGameRules, m_bPlayingMedieval,      CTFGameRulesProxy);
 IMPL_SENDPROP(bool, CTFGameRules, m_bPlayingMannVsMachine, CTFGameRulesProxy);
 

@@ -17,6 +17,20 @@ protected:
 };
 
 
+class CTFBotAttack : public ActionStub
+{
+public:
+	CTFBotAttack() = delete;
+	static CTFBotAttack *New();
+	
+private:
+	PathFollower m_PathFollower;      // +0x0034
+	ChasePath m_ChasePath;            // +0x4808
+	CountdownTimer m_ctRecomputePath; // +0x9008
+};
+SIZE_CHECK(CTFBotAttack, 0x9014);
+
+
 class CTFBotSeekAndDestroy : public ActionStub
 {
 public:
