@@ -14,6 +14,10 @@ class CBaseCombatCharacter : public CBaseFlex
 public:
 	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
 	
+	void AddGlowEffect()      {        ft_AddGlowEffect     (this); }
+	void RemoveGlowEffect()   {        ft_RemoveGlowEffect  (this); }
+	bool IsGlowEffectActive() { return ft_IsGlowEffectActive(this); }
+	
 	CBaseCombatWeapon *Weapon_GetSlot(int slot) const                      { return vt_Weapon_GetSlot    (this, slot); }
 	bool Weapon_CanSwitchTo(CBaseCombatWeapon *pWeapon)                    { return vt_Weapon_CanSwitchTo(this, pWeapon); }
 	bool Weapon_Switch(CBaseCombatWeapon *pWeapon, int viewmodelindex = 0) { return vt_Weapon_Switch     (this, pWeapon, viewmodelindex); }
@@ -21,6 +25,10 @@ public:
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
+	
+	static MemberFuncThunk<CBaseCombatCharacter *, void> ft_AddGlowEffect;
+	static MemberFuncThunk<CBaseCombatCharacter *, void> ft_RemoveGlowEffect;
+	static MemberFuncThunk<CBaseCombatCharacter *, bool> ft_IsGlowEffectActive;
 	
 	static MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       vt_Weapon_GetSlot;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      vt_Weapon_CanSwitchTo;

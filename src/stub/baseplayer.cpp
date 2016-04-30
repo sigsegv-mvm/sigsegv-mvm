@@ -4,6 +4,10 @@
 
 IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
 
+MemberFuncThunk<CBaseCombatCharacter *, void> CBaseCombatCharacter::ft_AddGlowEffect     ("CBaseCombatCharacter::AddGlowEffect");
+MemberFuncThunk<CBaseCombatCharacter *, void> CBaseCombatCharacter::ft_RemoveGlowEffect  ("CBaseCombatCharacter::RemoveGlowEffect");
+MemberFuncThunk<CBaseCombatCharacter *, bool> CBaseCombatCharacter::ft_IsGlowEffectActive("CBaseCombatCharacter::IsGlowEffectActive");
+
 MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       CBaseCombatCharacter::vt_Weapon_GetSlot    (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_GetSlot");
 MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      CBaseCombatCharacter::vt_Weapon_CanSwitchTo(TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_CanSwitchTo");
 MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> CBaseCombatCharacter::vt_Weapon_Switch     (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_Switch");

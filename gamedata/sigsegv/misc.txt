@@ -973,6 +973,28 @@
 					type "sym"
 					sym  "_ZN20CBaseCombatCharacter13Weapon_SwitchEP17CBaseCombatWeaponi"
 				}
+				
+				"CBaseCombatCharacter::AddGlowEffect"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter13AddGlowEffectEv"
+				}
+				"CBaseCombatCharacter::RemoveGlowEffect"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter16RemoveGlowEffectEv"
+				}
+				"CBaseCombatCharacter::IsGlowEffectActive"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter18IsGlowEffectActiveEv"
+				}
+				
+				"SendProxy_UInt8toInt32"
+				{
+					type "sym"
+					sym  "_Z22SendProxy_UInt8ToInt32PK8SendPropPKvS3_P8DVariantii"
+				}
 			}
 		}
 	}
