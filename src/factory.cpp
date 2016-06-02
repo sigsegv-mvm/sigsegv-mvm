@@ -126,7 +126,7 @@ static void *Sys_GetProcAddress( const char *pModuleName, const char *pName )
 	
 	/* avoid idiotic cases where we get a nullptr handle, which then makes us
 	 * dlopen ourselves */
-	if (hModule == nullptr) return nullptr;
+	if ((void *)hModule == nullptr) return nullptr;
 	
 #ifdef WIN32
 	return (void *)GetProcAddress( hModule, pName );

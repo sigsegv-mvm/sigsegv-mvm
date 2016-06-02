@@ -164,7 +164,7 @@ namespace Mod_AI_RocketJump
 		constexpr float duration = 1.0f;
 		
 		Vector vecAim = actor->EyePosition() + Vector(0.0f, 0.0f, -100.0f);
-		actor->GetBodyInterface()->AimHeadTowards(vecAim, IBody::LookAtPriorityType::OVERRIDE, duration, nullptr, "Aiming downward for a rocket jump");
+		actor->GetBodyInterface()->AimHeadTowards(vecAim, IBody::LookAtPriorityType::OVERRIDE_ALL, duration, nullptr, "Aiming downward for a rocket jump");
 		
 		this->m_itTimeout.Start();
 		

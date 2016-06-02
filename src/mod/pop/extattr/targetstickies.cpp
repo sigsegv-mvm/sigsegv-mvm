@@ -116,7 +116,7 @@ namespace Mod_Pop_ExtAttr_TargetStickies
 			
 			if (vision->IsAbleToSee(this->m_hTarget, IVision::FieldOfViewCheckType::DISREGARD_FOV, nullptr)) {
 				DevMsg("  able to see target; will look at it\n");
-				actor->GetBodyInterface()->AimHeadTowards(this->m_hTarget, IBody::LookAtPriorityType::OVERRIDE, 0.1f, nullptr, "Looking at target sticky");
+				actor->GetBodyInterface()->AimHeadTowards(this->m_hTarget, IBody::LookAtPriorityType::OVERRIDE_ALL, 0.1f, nullptr, "Looking at target sticky");
 			} else {
 				DevMsg("  unable to see target\n");
 			}

@@ -193,7 +193,7 @@ namespace ColorSpew
 	
 	SpewRetval_t Spew_ANSI_16Colors(SpewType_t type, const char *pMsg)
 	{
-		int c = map_ANSI16.Map(GetSpewOutputColor());
+		int c = map_ANSI16.Map(*GetSpewOutputColor());
 		
 		if (c < 8) {
 			printf("\e[%dm" "%s" "\e[0m", 30 + c, pMsg);
@@ -206,7 +206,7 @@ namespace ColorSpew
 	
 	SpewRetval_t Spew_ANSI_256Colors(SpewType_t type, const char *pMsg)
 	{
-		int c = map_ANSI256.Map(GetSpewOutputColor());
+		int c = map_ANSI256.Map(*GetSpewOutputColor());
 		
 		printf("\e[38;2;%dm" "%s" "\e[0m", 16 + c, pMsg);
 		
@@ -215,7 +215,7 @@ namespace ColorSpew
 	
 	SpewRetval_t Spew_ANSI_TrueColor(SpewType_t type, const char *pMsg)
 	{
-		Color c = GetSpewOutputColor();
+		Color c = *GetSpewOutputColor();
 		
 		printf("\e[38;2;%d;%d;%dm" "%s" "\e[0m", c.r(), c.g(), c.b(), pMsg);
 		

@@ -7,18 +7,9 @@
 #if defined __cplusplus
 
 
-//#if !defined __GNUC__
-//#define __attribute__(...)
-//#endif
-
-
-/* older versions of public/tier0/platform.h lack these definitions */
-#if defined POSIX
-#define stricmp    strcasecmp
-#define _stricmp   strcasecmp
-#define _snprintf  snprintf
-#define _vsnprintf vsnprintf
-#endif
+/* prevent naughty headers from idiotically flailing about with things they are
+ * too dumb to comprehend the purpose of */
+#define nullptr nullptr
 
 
 class IVEngineServer;
@@ -165,23 +156,24 @@ extern SourceMod::IExtensionManager *smexts;
 
 
 /* Source SDK */
-#define PRINTF_FORMAT_STRING
-#define FMTFUNCTION(...)
-
+#define RAD_TELEMETRY_DISABLED
 #include <Color.h>
 #include <string_t.h>
-#include "sdk2013/annotations.h"
-#include "sdk2013/basetypes.h"
+#include <tier0/annotations.h>
+#include <tier0/basetypes.h>
 #include <mathlib/vector.h>
-#include "sdk2013/utlmemory.h"
-#include "sdk2013/utlvector.h"
-#include "sdk2013/shareddefs.h"
-#include "sdk2013/icvar.h"
+#include <tier1/utlmemory.h>
+#include <tier1/utlstring.h>
+#include <tier1/utlvector.h>
+#include <tier1/utlrbtree.h>
+#include <tier1/utlmap.h>
+#include <tier1/utlbuffer.h>
+#include <shareddefs.h>
+#include <icvar.h>
 #include <tier0/dbg.h>
 #include "sdk2013/convar.h"
-#include "sdk2013/fmtstr.h"
+#include <tier1/fmtstr.h>
 #include <tier1/KeyValues.h>
-#include <shareddefs.h>
 #include <ehandle.h>
 #include <datamap.h>
 #include <predictioncopy.h>
@@ -193,7 +185,7 @@ extern SourceMod::IExtensionManager *smexts;
 #include <IStaticPropMgr.h>
 #include <ivdebugoverlay.h>
 #include "sdk2013/debugoverlay_shared.h"
-#include "sdk2013/util_shared.h"
+#include <util_shared.h>
 #include <ai_activity.h>
 #include <usercmd.h>
 #include <npcevent.h>
@@ -212,8 +204,7 @@ extern SourceMod::IExtensionManager *smexts;
 #include <iclientnetworkable.h>
 #include <tier1/utldict.h>
 #include <mp_shareddefs.h>
-//#include <materialsystem/imaterialsystem.h>
-#include "sdk2013/imaterialsystem.h"
+#include <materialsystem/imaterialsystem.h>
 #include <materialsystem/imaterial.h>
 #include <particle_parse.h>
 #include <SoundEmitterSystem/isoundemittersystembase.h>
@@ -227,6 +218,8 @@ extern SourceMod::IExtensionManager *smexts;
 #include <toolframework/ienginetool.h>
 #include <toolframework/itoolentity.h>
 #include <tier0/vprof.h>
+#include <networkstringtabledefs.h>
+#include <tier0/valve_minmax_off.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
@@ -251,8 +244,8 @@ extern SourceMod::IExtensionManager *smexts;
 #include <smsdk_ext.h>
 
 
-#define bf_write old_bf_write
-#define bf_read old_bf_read
+//#define bf_write old_bf_write
+//#define bf_read old_bf_read
 
 
 #endif

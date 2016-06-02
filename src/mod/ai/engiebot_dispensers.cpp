@@ -83,7 +83,7 @@ namespace Mod_AI_EngieBot_Dispensers
 				TRACE_MSG("range_to_hint < 200: crouching/aiming\n");
 				actor->PressCrouchButton();
 				actor->GetBodyInterface()->AimHeadTowards(this->m_hHint->GetAbsOrigin(),
-					IBody::LookAtPriorityType::OVERRIDE, 0.1f, nullptr, "Placing dispenser");
+					IBody::LookAtPriorityType::OVERRIDE_ALL, 0.1f, nullptr, "Placing dispenser");
 				
 				if (!this->m_bNearHint) {
 					this->m_bNearHint = true;
