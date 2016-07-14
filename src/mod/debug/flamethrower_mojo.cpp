@@ -5,51 +5,30 @@
 #include "util/scope.h"
 
 
-// !!!!!!!!!!!!!!!
-// tf_flamethrower_maxdamagedist = 350
-// yeah, that's a thing
-// (does it affect direct damage, ignition, or both?)
+// FINDINGS:
+// - the problem is specifically that flame entities exist for too long (thereby going farther)
+// - high latency (ping) in itself is not the problem
+// - short-term changes in ping, especially jitter, is *part*, but not all, of the problem
+// - the ultimate culprit is sv_clockcorrection_msecs (server-side clock correction)
+//   - the default value of this convar is 60
+//   - setting it to 0 completely solves the flame distance variance problem
+//     (but obviously might have other deleterious effects on who-knows-what)
+// 
+// Laggy, jittery clients plus server-side clock correction leads to
+// - flames lasting longer and therefore traveling farther before being removed
+// - greatly increased overall variance in flame duration/distance
 
 
-// thoughts:
-// is the server clock tick just horribly inconsistent?
-// how could/should net_fakelag affect entity simulation timing?
-// should print lifetime in ticks (and REAL time) of each flame particle
-// do flame particles JUST die when they reach the time-to-live, or also when they reach 0 vel or something?
-
-// sometimes, vecrand just completely stops working...
-// are flame particles sharing a random number generator with other crap (e.g. net_fakejitter)
-// and it's running out of entropy or some nonsense like that?
-
-
-// vecrand
-// - in CTFFlameEntity::Create
-// - via RandomVector (via rand, via RandomInt)
-
-// flametime variance
-// - in CTFFlameEntity::Spawn
-// - via random_valve->RandomFloat
-//   - which is a IUniformRandomStream
-
-
-// could it be that stuff is getting "replayed" due to prediction or something
-// (and they should be using SharedRandomFloat or whatever?)
-
-
-// STUFF WE'VE RULED OUT:
-// - it's not vecrand
-// - it's not float
-// - drag seems suspicious but doesn't seem to actually be responsible
-// - forcing client-side prediction off doesn't fix it
-// - setting RR priority on srcds changes nothing
-// - client-side interp doesn't matter
-// - completely disabling lag compensation doesn't do anything
-// - it's not clock correction
-
-// - the actual time that the flame entities survive does seem to increase accordingly with mojo
-// - sudden DECREASES in ping make the flames go farther
-
-
+// STUFF THAT I HAVE RULED OUT:
+// - random number generation (for tf_flamethrower_vecrand or for tf_flamethrower_flametime)
+// - anything related to tf_flamethrower_float or tf_flamethrower_drag
+// - client side prediction
+// - insufficient CPU priority on dedicated server (RT prio had no effect)
+// - skipping ticks or thinks
+// - client side interp
+// - lag compensation
+// - client-side clock drift correction
+// - server gpGlobals->curtime not agreeing with reality (Plat_FloatTime etc)
 
 
 namespace Mod_Debug_Flamethrower_Mojo
@@ -242,14 +221,6 @@ namespace Mod_Debug_Flamethrower_Mojo
 		min = sorted.front();
 		max = sorted.back();
 	}
-	
-	
-	// maybe every frame, draw this set of info visually for each flamethrower: (probably with Cross3D overlays)
-	// - owner's abs origin
-	// - owner's wsc
-	// - owner's eye pos
-	// - CTFFlameThrower::GetFlameOriginPos
-	// - CTFFlameThrower::GetVisualMuzzlePos
 	
 	
 	DETOUR_DECL_STATIC(int, D_RandomInt, int iMinVal, int iMaxVal)
