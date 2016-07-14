@@ -1250,6 +1250,12 @@
 					type "sym"
 					sym  "_ZN23CLagCompensationManager21FinishLagCompensationEP11CBasePlayer"
 				}
+				
+				"CTFFlameEntity::RemoveFlame"
+				{
+					type "sym"
+					sym  "_ZN14CTFFlameEntity11RemoveFlameEv"
+				}
 			}
 		}
 	}
