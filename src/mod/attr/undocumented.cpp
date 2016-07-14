@@ -36,11 +36,6 @@ namespace Mod_Attr_Undocumented
 		{
 			MOD_ADD_DETOUR_STATIC(CAttributeManager_ApplyAttributeFloatWrapper, "CAttributeManager::ApplyAttributeFloatWrapper");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -49,6 +44,6 @@ namespace Mod_Attr_Undocumented
 		"Mod: enable undocumented attribute classes",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

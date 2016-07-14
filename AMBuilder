@@ -13,13 +13,14 @@ sourceFiles = [
   'src/sdk2013/debugoverlay_shared.cpp',
   'src/sdk2013/util_shared.cpp',
   'src/common.cpp',
-  'src/version.cpp',
+  'src/version.c',
   'src/sizeof.cpp',
   'src/extension.cpp',
   'src/factory.cpp',
   'src/gameconf.cpp',
   'src/library.cpp',
   'src/concolor.cpp',
+  'src/convar_restore.cpp',
   'src/disasm/disasm.cpp',
   'src/addr/addr.cpp',
   'src/addr/standard.cpp',
@@ -33,7 +34,10 @@ sourceFiles = [
   'src/util/backtrace.cpp',
   'src/util/rtti.cpp',
   'src/util/prof.cpp',
-  'src/util/socket.cpp',
+  'src/util/socket_old.cpp',
+  'src/util/firehose_base.cpp',
+  'src/util/firehose_send.cpp',
+  'src/util/firehose_recv.cpp',
   'src/stub/baseentity.cpp',
   'src/stub/gamerules.cpp',
   'src/stub/misc.cpp',
@@ -55,6 +59,7 @@ sourceFiles = [
   'src/stub/baseplayer.cpp',
   'src/stub/baseanimating.cpp',
   'src/stub/dt_send.cpp',
+  'src/stub/upgrades.cpp',
   'src/link/link.cpp',
   'src/link/nextbot1.cpp',
   'src/link/nextbot2.cpp',
@@ -64,17 +69,23 @@ sourceFiles = [
   'src/mod/ai/engiebot_dispensers.cpp',
   'src/mod/ai/engiebot_nopush.cpp',
   'src/mod/ai/improved_useitem.cpp',
-  'src/mod/ai/lookat_oneplayer.cpp',
+  'src/mod/ai/focus_one_player.cpp',
   'src/mod/ai/prevent_postmortem_updates.cpp',
   'src/mod/ai/rocketjump.cpp',
   'src/mod/ai/wrapassassin_altfire.cpp',
   'src/mod/ai/nextboteventresponder_hooks.cpp',
   'src/mod/ai/mvm_defender_bots.cpp',
+  'src/mod/ai/mvm_defender_bots/quirks/isfakeclient.cpp',
   'src/mod/ai/mvm_defender_bots/quirks/isbot.cpp',
   'src/mod/ai/mvm_defender_bots/quirks/isbotoftype.cpp',
   'src/mod/ai/mvm_defender_bots/quirks/getlastknownarea.cpp',
   'src/mod/ai/mvm_defender_bots/quirks/mannvsmachinemode.cpp',
   'src/mod/ai/mvm_defender_bots/quirks/steamid.cpp',
+  'src/mod/ai/mvm_defender_bots/trackers.cpp',
+  'src/mod/ai/mvm_defender_bots/trackers/credits.cpp',
+  'src/mod/ai/mvm_defender_bots/trackers/flags.cpp',
+  'src/mod/ai/mvm_defender_bots/trackers/gates.cpp',
+  'src/mod/ai/mvm_defender_bots/trackers/tanks.cpp',
   'src/mod/ai/mvm_defender_bots/actions/defender.cpp',
   'src/mod/ai/mvm_defender_bots/actions/attack_tank.cpp',
   'src/mod/ai/mvm_defender_bots/actions/defend_gate.cpp',
@@ -82,10 +93,12 @@ sourceFiles = [
   'src/mod/ai/mvm_defender_bots/actions/mark_giant.cpp',
   'src/mod/ai/mvm_defender_bots/actions/goto_upgrade_station.cpp',
   'src/mod/ai/mvm_defender_bots/actions/purchase_upgrades.cpp',
+  'src/mod/ai/mvm_defender_bots/actions/prewave.cpp',
   'src/mod/attr/undocumented.cpp',
   'src/mod/bot/kill_before_forcespec.cpp',
   'src/mod/bot/medieval_nonmelee.cpp',
   'src/mod/bot/multiclass_weapon.cpp',
+  'src/mod/bot/runfast.cpp',
   'src/mod/canteen/share_recall_canteen.cpp',
   'src/mod/cond/reprogrammed.cpp',
   'src/mod/credits/spawn_autocollect.cpp',
@@ -111,13 +124,28 @@ sourceFiles = [
   'src/mod/debug/sticky_detonation_order.cpp',
   'src/mod/debug/feigndeath_ragdoll.cpp',
   'src/mod/debug/deflect_angle.cpp',
+  'src/mod/debug/deflect_angle_v2.cpp',
   'src/mod/debug/nextbot.cpp',
+  'src/mod/debug/tank_destroy_animation.cpp',
+  'src/mod/debug/stringtables.cpp',
+  'src/mod/debug/popmgr_exploit.cpp',
+  'src/mod/debug/sentry_crouch_aim.cpp',
+  'src/mod/debug/vprof_record.cpp',
+  'src/mod/debug/changelevel.cpp',
+  'src/mod/debug/client_player_track.cpp',
+  'src/mod/debug/onkilled_before_mainaction_start.cpp',
+  'src/mod/debug/airblastvuln.cpp',
+  'src/mod/debug/flamethrower_mojo.cpp',
+#  'src/mod/debug/override_step_sound.cpp',
   'src/mod/demo/stringtable_limit.cpp',
   'src/mod/etc/limp_projectiles.cpp',
+  'src/mod/etc/override_move_speed.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
   'src/mod/mvm/explosive_headshot_on_everything.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
+  'src/mod/mvm/refund_exploit_fix.cpp',
+  'src/mod/mvm/medigunshield_damage.cpp',
   'src/mod/perf/flame_breakable_collision.cpp',
   'src/mod/pop/eventpopfile_improvements.cpp',
 #  'src/mod/pop/extattr/parse.cpp',
@@ -127,7 +155,11 @@ sourceFiles = [
   'src/mod/pop/nested_complex_spawners.cpp',
   'src/mod/pop/popmgr_extensions.cpp',
   'src/mod/pop/tfbot_extensions.cpp',
+  'src/mod/pop/wave_extensions.cpp',
+  'src/mod/pop/tank_extensions.cpp',
 #  'src/mod/pop/ecattr_extensions.cpp',
+  'src/mod/prof/flame_breakable_collision.cpp',
+  'src/mod/prof/attr_munge.cpp',
   'src/mod/robot/no_canteens.cpp',
   'src/mod/robot/standable_heads.cpp',
   'src/mod/robot/ticklish.cpp',
@@ -140,6 +172,10 @@ sourceFiles = [
   'src/mod/util/overlay_recv.cpp',
   'src/mod/util/overlay_send.cpp',
   'src/mod/util/jumboframes.cpp',
+#  'src/mod/util/vprof_remote.cpp',
+  'src/mod/util/vprof_recv.cpp',
+  'src/mod/util/vprof_send.cpp',
+  'src/mod/util/debugoverlay_font.cpp',
   'src/mod/visualize/airblast.cpp',
   'src/mod/visualize/blast_radius.cpp',
   'src/mod/visualize/dispenser_radius.cpp',
@@ -149,6 +185,9 @@ sourceFiles = [
   'src/mod/visualize/jar_radius.cpp',
   'src/mod/visualize/projectile_trail.cpp',
   'src/mod/visualize/projectile_speed.cpp',
+  'src/mod/visualize/hitboxes.cpp',
+  'src/mod/visualize/melee_range.cpp',
+  'src/mod/visualize/damage_force.cpp',
 ]
 
 ###############
@@ -172,6 +211,16 @@ for sdk_name in Extension.sdks:
   binary = Extension.HL2Config(project, projectName + '.ext.' + sdk.ext, sdk)
 
 
+# always touch autogen.h, so that src/version.c will be forced to rebuild;
+# otherwise GetBuildDate and GetBuildTime would contain stale information
+_, autogen = builder.AddCommand(
+  inputs  = builder.ALWAYS_DIRTY,
+  outputs = [ 'autogen.h' ],
+  argv    = [ 'touch', 'autogen.h' ],
+)
+binary.compiler.sourcedeps += autogen
+
+
 binary.compiler.cflags += [ '-include', 'common.h' ]
 
 binary.compiler.linkflags += [
@@ -183,6 +232,7 @@ binary.compiler.linkflags += [
 ]
 
 binary.compiler.includes += [
+  os.path.join(builder.buildPath), # for autogen.h
   os.path.join(builder.currentSourcePath, 'libs', 'lz4', 'lib'),
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
@@ -193,6 +243,5 @@ binary.compiler.linkflags += [
   '../wrapper.o',
 ]
 
-Extension.extensions = builder.Add(project)
 
-# TODO: always touch version.cpp before building so the dates get updated
+Extension.extensions = builder.Add(project)

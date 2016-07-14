@@ -71,6 +71,15 @@
 //					lib  "engine"
 //				}
 				
+				"[client] CDebugOverlay::DrawAllOverlays"
+				{
+					type  "pattern"
+					sym   "_ZN13CDebugOverlay15DrawAllOverlaysEv"
+					lib   "engine"
+					seg   ".text"
+					seek  "558beca1c43c491083ec20837830000f840601000053576a0168e5030000689417311068d41731108d45e068043d491050e84aa0ffff8b3da03c491083c41833db85ff0f8493000000f30f100db01e2f1056"
+					mask  "ffffffff00000000ffffffffffffffffff00000000ffffff00ff00000000ff00000000ff00000000ffffffff00000000ffff00000000ffff00000000ffffffffffffffffff00000000ffffffff00000000ff"
+				}
 				"[client] CDebugOverlay::DrawOverlay"
 				{
 					type  "pattern"
@@ -161,6 +170,46 @@
 					v_name  "IGameSystem::UpdateAllSystems"
 					v_group "%s - %s"
 					lib     "client"
+				}
+				
+				"[client] CTFGameMovement::ProcessMovement"
+				{
+					type "pattern"
+					sym  "_ZN15CTFGameMovement15ProcessMovementEP12C_BasePlayerP9CMoveData"
+					seg  ".text"
+					seek "558bec56578b7d088bf185ff746f538b5d0c85db7466e85586dcffc7868806000000000000"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff0000000000000000"
+//					seek "558bec56578b7d088bf185ff746f538b5d0c85db7466e85586dcffc78688060000000000008bcf8b078b800c020000ffd033c9895e0884c00f45cf898ea8070000894e048bcec7433c000002ffe82ed3ffff8bcee8c70400008bcee8f00700008bcee8b9f0ffff8bcee842f7ffff8b068bceff50348bcee82459dcff5b5f5e5dc20800"
+//					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff0000000000000000ffffffffffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffff00000000ffffff00000000ffffff00000000ffffff00000000ffffff00000000ffffffffffff00ffffff00000000ffffffffffffff"
+					lib  "client"
+				}
+				
+				"[client] CViewRender::Render"
+				{
+					type    "func ebpprologue vprof"
+					sym     "TODO"
+					v_name  "CViewRender::Render"
+					v_group "CViewRender::Render"
+					lib     "client"
+				}
+				
+				"[client] CDebugOverlay::Paint"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN13CDebugOverlay5PaintEv"
+					vtable ".?AVCDebugOverlay@@"
+					idx    "0x80" // this is relatively likely to break whenever vgui::Panel gets updated next...
+					lib    "client"
+				}
+				
+				"[client] CMatSurface::DrawColoredText [va_list]"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec81ec000c000056ff75108bf1ff750c8b06ff5050ff75208b068bceff751cff7518ff7514ff504cff75288d8500fcffffff7524680004000050"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					lib  "vguimatsurface"
 				}
 			}
 		}

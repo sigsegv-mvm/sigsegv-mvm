@@ -168,11 +168,6 @@ namespace Mod_Debug_Parachute_Warp
 			
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_SetAbsOrigin, "CBaseEntity::SetAbsOrigin");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -181,6 +176,6 @@ namespace Mod_Debug_Parachute_Warp
 		"Debug: parachute warp",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

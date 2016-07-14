@@ -6,6 +6,9 @@
 #include "prop.h"
 
 
+class CBaseCombatCharacter;
+
+
 class CServerNetworkProperty : public IServerNetworkable {};
 
 
@@ -35,31 +38,37 @@ public:
 	CBaseEntity *GetGroundEntity() const        { return this->m_hGroundEntity; }
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
 	IPhysicsObject *VPhysicsGetObject() const   { return this->m_pPhysicsObject; }
+	int GetFlags() const                        { return this->m_fFlags; }
 	
 	/* thunk */
-	void Remove()                                                                            {        ft_Remove              (this); }
-	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition(this); }
-	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches        (this, pszClassOrWildcard); }
-	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin        (this, absOrigin); }
-	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles        (this, absAngles); }
-	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound           (this, soundname, soundtime, duration); }
-	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink        (this, szContext); }
-	Vector EyePosition()                                                                     { return vt_EyePosition         (this); }
-	const QAngle& EyeAngles()                                                                { return vt_EyeAngles           (this); }
-	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity      (this, pOwner); }
-	void Spawn()                                                                             {        vt_Spawn               (this); }
-	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity         (this, vVelocity, vAngVelocity); }
-	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter    (this); }
-	bool IsCombatItem() const                                                                { return vt_IsCombatItem        (this); }
-	int GetModelIndex() const                                                                { return vt_GetModelIndex       (this); }
+	void Remove()                                                                            {        ft_Remove                  (this); }
+	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition    (this); }
+	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches            (this, pszClassOrWildcard); }
+	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin            (this, absOrigin); }
+	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles            (this, absAngles); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound               (this, soundname, soundtime, duration); }
+	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink            (this, szContext); }
+	Vector EyePosition()                                                                     { return vt_EyePosition             (this); }
+	const QAngle& EyeAngles()                                                                { return vt_EyeAngles               (this); }
+	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity          (this, pOwner); }
+	void Spawn()                                                                             {        vt_Spawn                   (this); }
+	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity             (this, vVelocity, vAngVelocity); }
+	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter        (this); }
+	bool IsCombatItem() const                                                                { return vt_IsCombatItem            (this); }
+	int GetModelIndex() const                                                                { return vt_GetModelIndex           (this); }
+	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer(this); }
 	
 	/* hack */
+	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
 	bool IsPlayer() const;
 	bool IsBaseObject() const;
 	
 	/* network vars */
 	void NetworkStateChanged();
 	void NetworkStateChanged(void *pVar);
+	
+	/* TODO: make me private again! */
+	DECL_SENDPROP(int,                  m_fFlags);
 	
 private:
 	DECL_DATAMAP(CServerNetworkProperty, m_Network);
@@ -97,6 +106,7 @@ private:
 	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                    vt_WorldSpaceCenter;
 	static MemberVFuncThunk<const CBaseEntity *, bool>                             vt_IsCombatItem;
 	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
+	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>           vt_MyCombatCharacterPointer;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

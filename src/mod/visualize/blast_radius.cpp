@@ -228,6 +228,8 @@ namespace Mod_Visualize_Blast_Radius
 			float ratio_center = 1.00f;
 			float ratio_edge   = (damage_edge / damage_center);
 			
+			DevMsg("hi %f\n", radiusinfo->m_flFalloff);
+			
 			for (float f = 1.0f; f >= radiusinfo->m_flFalloff - 0.01f; f -= 0.1f) {
 				float dist = RemapValClamped(f, 1.0f, radiusinfo->m_flFalloff, 0.0f, radiusinfo->m_flRadius);
 				
@@ -359,11 +361,6 @@ namespace Mod_Visualize_Blast_Radius
 			MOD_ADD_DETOUR_MEMBER(CTFRadiusDamageInfo_ApplyToEntity, "CTFRadiusDamageInfo::ApplyToEntity");
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_TakeDamage,            "CBaseEntity::TakeDamage");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -372,6 +369,6 @@ namespace Mod_Visualize_Blast_Radius
 		"Visualization: draw sphere representing blast radius",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

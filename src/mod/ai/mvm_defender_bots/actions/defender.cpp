@@ -5,6 +5,7 @@
 #include "mod/ai/mvm_defender_bots/actions/mark_giant.h"
 #include "mod/ai/mvm_defender_bots/actions/goto_upgrade_station.h"
 #include "mod/ai/mvm_defender_bots/actions/purchase_upgrades.h"
+#include "mod/ai/mvm_defender_bots/actions/prewave.h"
 #include "stub/tfbot_behavior.h"
 
 
@@ -31,6 +32,8 @@ namespace Mod_AI_MvM_Defender_Bots
 	
 	ActionResult<CTFBot> CTFBotMvMDefender::OnStart(CTFBot *actor, Action<CTFBot> *action)
 	{
+		return ActionResult<CTFBot>::ChangeTo(new CTFBotPreWave(), "Doing pre-wave stuff.");
+		
 		// TODO
 		return ActionResult<CTFBot>::Continue();
 	}

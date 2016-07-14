@@ -119,7 +119,7 @@ namespace Mod_Pop_Nested_Complex_Spawners
 			if (cvar_trace.GetBool()) {
 				DevMsg("%*s[%s] \"%s\" %s\n", rlevel * 2, "",
 					(sp_tfbot != nullptr ? "TFBot" : "Tank"),
-					count.icon, ClassFlags_ToString(count.flags));
+					STRING(count.icon), ClassFlags_ToString(count.flags));
 			}
 			counts.push_back(count);
 			++num_spawned;
@@ -267,11 +267,6 @@ namespace Mod_Pop_Nested_Complex_Spawners
 			MOD_ADD_DETOUR_MEMBER(CRandomChoiceSpawner_IsMiniBoss,   "CRandomChoiceSpawner::IsMiniBoss");
 			MOD_ADD_DETOUR_MEMBER(CRandomChoiceSpawner_HasAttribute, "CRandomChoiceSpawner::HasAttribute");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -280,6 +275,6 @@ namespace Mod_Pop_Nested_Complex_Spawners
 		"Mod: calculate correct wave class counts for nested complex spawners using a recursive algorithm",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -74,11 +74,6 @@ namespace Mod_Debug_Sticky_Detonation_Order
 			MOD_ADD_DETOUR_MEMBER(CTFWeaponBaseGrenadeProj_Explode,            "CTFWeaponBaseGrenadeProj::Explode");
 			MOD_ADD_DETOUR_MEMBER(CTFPipebombLauncher_DetonateRemotePipebombs, "CTFPipebombLauncher::DetonateRemotePipebombs");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -87,6 +82,6 @@ namespace Mod_Debug_Sticky_Detonation_Order
 		"Debug: diagnose weird effects due to stickybomb detonation order",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -13,11 +13,6 @@ namespace Mod_MvM_Explosive_Headshot_On_Everything
 		{
 			
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -26,6 +21,6 @@ namespace Mod_MvM_Explosive_Headshot_On_Everything
 		"Mod: enable explosive headshot on all hitscan weapons",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

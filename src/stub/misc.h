@@ -11,6 +11,11 @@ class CTFBotMvMEngineerBuildSentryGun;
 
 class CFlaggedEntitiesEnum;
 
+class CRConClient;
+
+
+CRConClient& RCONClient();
+
 
 #if 0
 extern StaticFuncThunk<const char *, const char *, int> TranslateWeaponEntForClass;

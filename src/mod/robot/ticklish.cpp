@@ -29,11 +29,6 @@ namespace Mod_Robot_Ticklish
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_CanBeForcedToLaugh, "CTFPlayer::CanBeForcedToLaugh");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -42,6 +37,6 @@ namespace Mod_Robot_Ticklish
 		"Mod: allow robots to be tickled (e.g. by the Holiday Punch)",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

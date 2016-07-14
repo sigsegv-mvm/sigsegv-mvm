@@ -195,7 +195,7 @@ namespace Mod_Visualize_Projectile_Trail
 			};
 			static size_t idx = 0;
 			
-			colors.insert(std::make_pair(proj, s_Rainbow[idx++ % EXTENT(s_Rainbow, 0)]));
+			colors.insert(std::make_pair(proj, s_Rainbow[idx++ % countof(s_Rainbow)]));
 		}
 		
 		return colors.at(proj);
@@ -252,9 +252,7 @@ namespace Mod_Visualize_Projectile_Trail
 	public:
 		CMod() : IMod("Visualize:Projectile_Trail") {}
 		
-		void SetEnabled(bool enable) { this->m_bEnabled = enable; }
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -268,9 +266,6 @@ namespace Mod_Visualize_Projectile_Trail
 				TrailOverlay(proj);
 			}
 		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -279,6 +274,6 @@ namespace Mod_Visualize_Projectile_Trail
 		"Visualization: projectile trail overlay",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

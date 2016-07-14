@@ -9,3 +9,4 @@ MSVC14/*.user
 MSVC14/*.opendb
 MSVC14/*.sdf
 MSVC14/.vs
+MSVC14/*.VC.db

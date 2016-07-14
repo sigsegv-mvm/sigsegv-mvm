@@ -91,7 +91,12 @@ namespace Mod_Pop_PopMgr_Extensions
 			m_SpellsEnabled("tf_spells_enabled"),
 			m_GrapplingHook("tf_grapplinghook_enable"),
 			m_RespecEnabled("tf_mvm_respec_enabled"),
-			m_RespecLimit("tf_mvm_respec_limit")
+			m_RespecLimit("tf_mvm_respec_limit"),
+			m_BonusRatioHalf("tf_mvm_currency_bonus_ratio_min"),
+			m_BonusRatioFull("tf_mvm_currency_bonus_ratio_max"),
+			m_FixedBuybacks("tf_mvm_buybacks_method"),
+			m_BuybacksPerWave("tf_mvm_buybacks_per_wave"),
+			m_DeathPenalty("tf_mvm_death_penalty")
 		{
 			this->Reset();
 		}
@@ -109,6 +114,11 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_GrapplingHook.Reset();
 			this->m_RespecEnabled.Reset();
 			this->m_RespecLimit.Reset();
+			this->m_BonusRatioHalf.Reset();
+			this->m_BonusRatioFull.Reset();
+			this->m_FixedBuybacks.Reset();
+			this->m_BuybacksPerWave.Reset();
+			this->m_DeathPenalty.Reset();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -117,11 +127,16 @@ namespace Mod_Pop_PopMgr_Extensions
 		bool m_bNoReanimators;
 		bool m_bNoMvMDeathTune;
 		
-		CPopOverride_MedievalMode m_MedievalMode;
-		CPopOverride_ConVar<bool> m_SpellsEnabled;
-		CPopOverride_ConVar<bool> m_GrapplingHook;
-		CPopOverride_ConVar<bool> m_RespecEnabled;
-		CPopOverride_ConVar<int>  m_RespecLimit;
+		CPopOverride_MedievalMode  m_MedievalMode;
+		CPopOverride_ConVar<bool>  m_SpellsEnabled;
+		CPopOverride_ConVar<bool>  m_GrapplingHook;
+		CPopOverride_ConVar<bool>  m_RespecEnabled;
+		CPopOverride_ConVar<int>   m_RespecLimit;
+		CPopOverride_ConVar<float> m_BonusRatioHalf;
+		CPopOverride_ConVar<float> m_BonusRatioFull;
+		CPopOverride_ConVar<bool>  m_FixedBuybacks;
+		CPopOverride_ConVar<int>   m_BuybacksPerWave;
+		CPopOverride_ConVar<int>   m_DeathPenalty;
 	};
 	PopState state;
 	
@@ -258,6 +273,16 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_RespecEnabled.Set(subkey->GetBool());
 				} else if (V_stricmp(name, "RespecLimit") == 0) {
 					state.m_RespecLimit.Set(subkey->GetInt());
+				} else if (V_stricmp(name, "BonusRatioHalf") == 0) {
+					state.m_BonusRatioHalf.Set(subkey->GetFloat());
+				} else if (V_stricmp(name, "BonusRatioFull") == 0) {
+					state.m_BonusRatioFull.Set(subkey->GetFloat());
+				} else if (V_stricmp(name, "FixedBuybacks") == 0) {
+					state.m_FixedBuybacks.Set(subkey->GetBool());
+				} else if (V_stricmp(name, "BuybacksPerWave") == 0) {
+					state.m_BuybacksPerWave.Set(subkey->GetInt());
+				} else if (V_stricmp(name, "DeathPenalty") == 0) {
+					state.m_DeathPenalty.Set(subkey->GetInt());
 				} else {
 					del = false;
 				}
@@ -297,26 +322,15 @@ namespace Mod_Pop_PopMgr_Extensions
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");
 		}
 		
-		virtual void OnUnload()
+		virtual void OnUnload() override
 		{
 			state.Reset();
 		}
 		
-		void SetEnabled(bool enable)
+		virtual void OnDisable() override
 		{
-			this->ToggleAllDetours(enable);
-			
-			if (!enable) {
-				state.Reset();
-			}
-			
-			this->m_bEnabled = enable;
+			state.Reset();
 		}
-		
-		bool IsEnabled() const { return this->m_bEnabled; }
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -325,7 +339,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		"Mod: enable extended KV in CPopulationManager::Parse",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

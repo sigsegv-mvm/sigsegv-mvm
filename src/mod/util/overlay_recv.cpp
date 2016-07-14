@@ -3,7 +3,7 @@
 #include "stub/usermessages_cl.h"
 #include "util/float16.h"
 #include "stub/cdebugoverlay.h"
-#include "util/socket.h"
+#include "util/socket_old.h"
 
 
 enum OverlayType_t
@@ -41,28 +41,8 @@ struct OverlaySphere_t : public OverlayBase_t
 
 namespace Mod_Util_Overlay_Recv
 {
-	/* for OVERLAY_SPHERE, CDebugOverlay::DrawOverlay calls the IMaterial *
-	 * version of RenderSphere, which is extremely ugly */
-	DETOUR_DECL_STATIC(void, CDebugOverlay_DrawOverlay, OverlayBase_t *pOverlay)
-	{
-		if (pOverlay->m_Type == OVERLAY_SPHERE) {
-			OverlaySphere_t *pSphere = static_cast<OverlaySphere_t *>(pOverlay);
-			
-			if (pSphere->a > 0) {
-				RenderSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
-					Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), false);
-			}
-			
-			RenderWireframeSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
-				Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), true);
-		} else {
-			DETOUR_STATIC_CALL(CDebugOverlay_DrawOverlay)(pOverlay);
-		}
-	}
-	
-	
 	ConVar cvar_trace("sig_util_overlay_recv_trace", "0", FCVAR_NOTIFY,
-		"Trace overlay usermessages as they are received");
+		"Trace overlay messages as they are received");
 	
 	ConVar cvar_sphere_ntheta("sig_util_overlay_recv_ntheta", "16", FCVAR_NOTIFY,
 		"Set nTheta value for CDebugOverlay::AddSphereOverlay");
@@ -879,7 +859,7 @@ namespace Mod_Util_Overlay_Recv
 			case OV_BANDWIDTH_TEST:          BandwidthTest(msg);        break;
 				
 			default:
-				Warning("Unknown overlay type %d\n");
+				Warning("Unknown overlay type\n");
 				break;
 			}
 //		}
@@ -960,10 +940,32 @@ namespace Mod_Util_Overlay_Recv
 	}
 	
 	
-	DETOUR_DECL_STATIC(void, IGameSystem_UpdateAllSystems, float f1)
+	/* for OVERLAY_SPHERE, CDebugOverlay::DrawOverlay calls the IMaterial *
+	 * version of RenderSphere, which is extremely ugly */
+	DETOUR_DECL_STATIC(void, CDebugOverlay_DrawOverlay, OverlayBase_t *pOverlay)
+	{
+		if (pOverlay->m_Type == OVERLAY_SPHERE) {
+			OverlaySphere_t *pSphere = static_cast<OverlaySphere_t *>(pOverlay);
+			
+			if (pSphere->a > 0) {
+				RenderSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
+					Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), false);
+			}
+			
+			RenderWireframeSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
+				Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), true);
+		} else {
+			DETOUR_STATIC_CALL(CDebugOverlay_DrawOverlay)(pOverlay);
+		}
+	}
+	
+	
+	DETOUR_DECL_STATIC(void, CDebugOverlay_DrawAllOverlays)
 	{
 		ReceivePackets();
 		ProcessQueuedPackets();
+		
+		DETOUR_STATIC_CALL(CDebugOverlay_DrawAllOverlays)();
 		
 #if 0
 		static std::vector<uint8_t> packet;
@@ -986,39 +988,37 @@ namespace Mod_Util_Overlay_Recv
 	}
 	
 	
+	// stale text overlays are cleared:
+	// CDebugOverlay::ClearDeadOverlays
+	// via CIVDebugOverlay::ClearDeadOverlays
+	// via IVDebugOverlay::ClearDeadOverlays
+	// via CDebugOverlay::Paint
+	
+	// stale non-text overlays are cleared:
+	// CDebugOverlay::DrawAllOverlays
+	// via CDebugOverlay::Draw3DOverlays
+	// via CVRenderView::Draw3DDebugOverlays
+	
+	
+	// the real solution:
+	// may as well keep receiving when we do, but
+	// what we really need to do is
+	// (a) not clear dead overlays when painting
+	// (b) do clear dead overlays when receiving
+	
+	
 	class CMod : public IMod
 	{
 	public:
 		CMod() : IMod("Util:Overlay_Recv")
 		{
-			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawOverlay,    "[client] CDebugOverlay::DrawOverlay");
-			MOD_ADD_DETOUR_STATIC(IGameSystem_UpdateAllSystems, "[client] IGameSystem::UpdateAllSystems");
-		}
-		
-		virtual void OnUnload() override
-		{
-			this->SetEnabled(false);
-		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
+			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawOverlay,     "[client] CDebugOverlay::DrawOverlay");
+			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawAllOverlays, "[client] CDebugOverlay::DrawAllOverlays");
 			
-			if (this->m_bEnabled != enable) {
-				if (enable) {
-					this->Enable();
-				} else {
-					this->Disable();
-				}
-				
-				this->m_bEnabled = enable;
-			}
+		//	MOD_ADD_DETOUR_MEMBER(IVDebugOverlay_ClearDeadOverlays, "IVDebugOverlay::ClearDeadOverlays");
 		}
 		
-		bool IsEnabled() const { return this->m_bEnabled; }
-		
-	private:
-		void Enable()
+		virtual void OnEnable() override
 		{
 			recv = new FirehoseRecv(OVERLAY_PORT);
 			
@@ -1030,7 +1030,7 @@ namespace Mod_Util_Overlay_Recv
 			usermessages->HookMessage("Overlays", &Hook_Overlays);
 #endif
 		}
-		void Disable()
+		virtual void OnDisable() override
 		{
 			delete recv;
 			recv = nullptr;
@@ -1039,8 +1039,6 @@ namespace Mod_Util_Overlay_Recv
 			usermessages->UnHookMessage("Overlays", &Hook_Overlays);
 #endif
 		}
-		
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -1049,6 +1047,6 @@ namespace Mod_Util_Overlay_Recv
 		"Utility: overlay forwarding: client receive",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

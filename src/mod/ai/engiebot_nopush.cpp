@@ -47,11 +47,6 @@ namespace Mod_AI_EngieBot_NoPush
 			MOD_ADD_DETOUR_MEMBER(CTFBotMvMEngineerBuildTeleportExit_Update, "CTFBotMvMEngineerBuildTeleportExit::Update");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAbsVelocityImpulse,         "CTFPlayer::ApplyAbsVelocityImpulse");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -60,6 +55,6 @@ namespace Mod_AI_EngieBot_NoPush
 		"Mod: remove MvM engiebots' push force when spawning and building",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

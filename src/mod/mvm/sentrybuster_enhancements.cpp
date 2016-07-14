@@ -2,6 +2,8 @@
 #include "re/nextbot.h"
 #include "stub/tfbot.h"
 
+#include <effect_dispatch_data.h>
+
 
 namespace Mod_MvM_SentryBuster_Enhancements
 {
@@ -63,10 +65,31 @@ namespace Mod_MvM_SentryBuster_Enhancements
 	// try: create entity and do SetParent
 	
 	
+	void DispatchParticleEffect_Filtered(const char *pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity *pEntity, const char *pszAttachmentName, bool bResetAllParticles = false)
+	{
+		int iAttachment = -1;
+		
+#if 0
+		auto pAnimating = rtti_cast<CBaseAnimating *>(pEntity);
+		if (pAnimating != nullptr) {
+			iAttachment = pAnimating->LookupAttachment(pszAttachmentName);
+			if (iAttachment <= 0) {
+				Warning("Model '%s' doesn't have attachment '%s' to attach particle system '%s' to.\n", STRING(pAnimating->GetModelName()), pszAttachmentName, pszParticleName);
+				return;
+			}
+		}
+#endif
+		
+		// TODO
+		
+		
+	}
+	
+	
 	/* works */
 	CON_COMMAND(sig_mvm_sentrybuster_enhancements_test1, "DispatchParticleEffect")
 	{
-		INextBot *selected = TheNextBots()->GetSelectedBot();
+		INextBot *selected = TheNextBots().GetSelectedBot();
 		if (selected == nullptr) {
 			DevMsg("No bot selected.\n");
 			return;
@@ -93,7 +116,7 @@ namespace Mod_MvM_SentryBuster_Enhancements
 	/* works */
 	CON_COMMAND(sig_mvm_sentrybuster_enhancements_test2, "GlowEffect")
 	{
-		INextBot *selected = TheNextBots()->GetSelectedBot();
+		INextBot *selected = TheNextBots().GetSelectedBot();
 		if (selected == nullptr) {
 			DevMsg("No bot selected.\n");
 			return;
@@ -138,41 +161,18 @@ namespace Mod_MvM_SentryBuster_Enhancements
 			
 		}
 		
-		virtual void OnUnload() override
-		{
-			this->SetEnabled(false);
-			
-		}
-		
-		void SetEnabled(bool enable)
-		{
-		//	this->ToggleAllDetours(enable);
-			
-			if (this->m_bEnabled != enable) {
-				if (enable) {
-					this->Enable();
-				} else {
-					this->Disable();
-				}
-				
-				this->m_bEnabled = enable;
-			}
-		}
-		
-	private:
-		void Enable()
+		virtual void OnEnable() override
 		{
 			DevMsg("enable\n");
 			this->m_GlowProxy.Override(GlowProxy);
 		}
-		void Disable()
+		virtual void OnDisable() override
 		{
 			DevMsg("disable\n");
 			this->m_GlowProxy.Restore();
 		}
 		
-		bool m_bEnabled = false;
-		
+	private:
 		SendProxyOverride m_GlowProxy;
 	};
 	CMod s_Mod;
@@ -182,6 +182,6 @@ namespace Mod_MvM_SentryBuster_Enhancements
 		"Mod: enhanced sentry busters",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

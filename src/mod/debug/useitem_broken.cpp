@@ -4,6 +4,7 @@
 #include "util/scope.h"
 #include "util/trace.h"
 #include "util/backtrace.h"
+#include "util/misc.h"
 
 
 //#include "../mvm-reversed/server/tf/bot/behavior/tf_bot_use_item.h"
@@ -153,7 +154,7 @@ namespace Mod_Debug_UseItem_Broken
 			"TF_WEAPON_CHARGED_SMG",
 		};
 		
-		if (id >= 0 && id < (int)std::extent<decltype(names)>::value) {
+		if (id >= 0 && id < countof(names)) {
 			return names[id];
 		} else {
 			return "???";
@@ -331,11 +332,6 @@ namespace Mod_Debug_UseItem_Broken
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_EquipRequiredWeapon, "CTFBot::EquipRequiredWeapon");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -344,6 +340,6 @@ namespace Mod_Debug_UseItem_Broken
 		"Debug: brokenness of CTFBotUseItem since Tough Break update",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -109,7 +109,7 @@ void AddrManager::CC_ListAddrs(const CCommand& cmd)
 			Msg("%-8s %s\n", "INITIAL", addr->GetName());
 			break;
 		case IAddr::State::OK:
-			Msg("%08x %s\n", addr->GetAddr(), addr->GetName());
+			Msg("%08x %s\n", (uintptr_t)addr->GetAddr(), addr->GetName());
 			break;
 		case IAddr::State::FAIL:
 			Msg("%-8s %s\n", "FAIL", addr->GetName());

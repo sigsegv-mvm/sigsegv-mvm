@@ -13,6 +13,11 @@
 		{
 			"addrs"
 			{
+				"CTFBotMainAction::OnStart"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction7OnStartEP6CTFBotP6ActionIS0_E"
+				}
 				"CTFBotMainAction::Update"
 				{
 					type "sym"
@@ -288,6 +293,12 @@
 				{
 					type "sym"
 					sym  "_ZN12CTFBotAttackC1Ev"
+				}
+				
+				"CTFBotPushToCapturePoint::Update"
+				{
+					type "sym"
+					sym  "_ZN24CTFBotPushToCapturePoint6UpdateEP6CTFBotf"
 				}
 			}
 		}

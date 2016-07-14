@@ -39,7 +39,7 @@ namespace Mod_Pop_KV_Conditional
 		
 		bool OnLoad()
 		{
-			this->ToggleAllDetours(true);
+			this->Enable();
 			return true;
 		}
 	};

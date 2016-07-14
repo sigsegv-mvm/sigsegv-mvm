@@ -39,7 +39,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <HL2SDKOBVALVE>..\..\hl2sdk-tf2</HL2SDKOBVALVE>
+    <HL2SDKOBVALVE>..\..\hl2sdk-sdk2013</HL2SDKOBVALVE>
     <MMSOURCE110>..\..\mmsource-1.10</MMSOURCE110>
     <SOURCEMOD18>..\..\sourcemod</SOURCEMOD18>
   </PropertyGroup>
@@ -103,6 +103,14 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -142,6 +150,14 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -164,6 +180,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\concolor.cpp" />
+    <ClCompile Include="..\src\convar_restore.cpp" />
     <ClCompile Include="..\src\disasm\disasm.cpp" />
     <ClCompile Include="..\src\extension.cpp" />
     <ClCompile Include="..\src\factory.cpp" />
@@ -178,7 +195,6 @@
     <ClCompile Include="..\src\mem\scan.cpp" />
     <ClCompile Include="..\src\mod.cpp" />
     <ClCompile Include="..\src\mod\ai\engiebot_nopush.cpp" />
-    <ClCompile Include="..\src\mod\ai\lookat_oneplayer.cpp" />
     <ClCompile Include="..\src\mod\ai\wrapassassin_altfire.cpp" />
     <ClCompile Include="..\src\mod\attr\undocumented.cpp" />
     <ClCompile Include="..\src\mod\bot\kill_before_forcespec.cpp" />
@@ -187,6 +203,7 @@
     <ClCompile Include="..\src\mod\canteen\share_recall_canteen.cpp" />
     <ClCompile Include="..\src\mod\cond\reprogrammed.cpp" />
     <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
+    <ClCompile Include="..\src\mod\debug\client_player_track.cpp" />
     <ClCompile Include="..\src\mod\debug\draw_cphyscollide.cpp" />
     <ClCompile Include="..\src\mod\debug\known_entities.cpp" />
     <ClCompile Include="..\src\mod\debug\list_competitive_convars.cpp" />
@@ -199,12 +216,15 @@
     <ClCompile Include="..\src\mod\debug\suicide_bomber.cpp" />
     <ClCompile Include="..\src\mod\debug\useitem_broken.cpp" />
     <ClCompile Include="..\src\mod\debug\usermsg_overflow.cpp" />
+    <ClCompile Include="..\src\mod\debug\vprof_record.cpp" />
     <ClCompile Include="..\src\mod\demo\stringtable_limit.cpp" />
+    <ClCompile Include="..\src\mod\etc\override_move_speed.cpp" />
     <ClCompile Include="..\src\mod\mvm\disposable_dispenser.cpp" />
     <ClCompile Include="..\src\mod\pop\eventpopfile_improvements.cpp" />
     <ClCompile Include="..\src\mod\pop\kv_conditional.cpp" />
-    <ClCompile Include="..\src\mod\pop\nested_complex_spawners.cpp" />
     <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp" />
+    <ClCompile Include="..\src\mod\prof\attr_munge.cpp" />
+    <ClCompile Include="..\src\mod\prof\flame_breakable_collision.cpp" />
     <ClCompile Include="..\src\mod\robot\no_canteens.cpp" />
     <ClCompile Include="..\src\mod\robot\standable_heads.cpp" />
     <ClCompile Include="..\src\mod\robot\ticklish.cpp" />
@@ -212,9 +232,13 @@
     <ClCompile Include="..\src\mod\sniper\head_uncap.cpp" />
     <ClCompile Include="..\src\mod\util\console_recv.cpp" />
     <ClCompile Include="..\src\mod\util\console_send.cpp" />
+    <ClCompile Include="..\src\mod\util\debugoverlay_font.cpp" />
     <ClCompile Include="..\src\mod\util\listenserverhost.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_send.cpp" />
+    <ClCompile Include="..\src\mod\util\vprof_recv.cpp" />
+    <ClCompile Include="..\src\mod\util\vprof_remote.cpp" />
+    <ClCompile Include="..\src\mod\util\vprof_send.cpp" />
     <ClCompile Include="..\src\mod\visualize\airblast.cpp" />
     <ClCompile Include="..\src\mod\visualize\blast_radius.cpp" />
     <ClCompile Include="..\src\mod\visualize\dispenser_radius.cpp" />
@@ -224,7 +248,7 @@
     <ClCompile Include="..\src\prop.cpp" />
     <ClCompile Include="..\src\re\nextbot.cpp" />
     <ClCompile Include="..\src\sdk2013\debugoverlay_shared.cpp" />
-    <ClCompile Include="..\src\sdk2013\strtools.cpp" />
+    <ClCompile Include="..\src\sdk2013\util_shared.cpp" />
     <ClCompile Include="..\src\sdk\smsdk_ext.cpp" />
     <ClCompile Include="..\src\sizeof.cpp" />
     <ClCompile Include="..\src\sm\MemoryUtils.cpp" />
@@ -238,7 +262,6 @@
     <ClCompile Include="..\src\stub\misc.cpp" />
     <ClCompile Include="..\src\stub\objects.cpp" />
     <ClCompile Include="..\src\stub\particles.cpp" />
-    <ClCompile Include="..\src\stub\populators.cpp" />
     <ClCompile Include="..\src\stub\projectiles.cpp" />
     <ClCompile Include="..\src\stub\tfbot.cpp" />
     <ClCompile Include="..\src\stub\tfplayer.cpp" />
@@ -246,11 +269,17 @@
     <ClCompile Include="..\src\stub\tf_objective_resource.cpp" />
     <ClCompile Include="..\src\stub\usermessages.cpp" />
     <ClCompile Include="..\src\util\backtrace.cpp" />
+    <ClCompile Include="..\src\util\firehose_base.cpp" />
+    <ClCompile Include="..\src\util\firehose_recv.cpp" />
+    <ClCompile Include="..\src\util\firehose_send.cpp" />
     <ClCompile Include="..\src\util\prof.cpp" />
     <ClCompile Include="..\src\util\rtti.cpp" />
-    <ClCompile Include="..\src\util\socket.cpp" />
+    <ClCompile Include="..\src\util\socket_old.cpp" />
     <ClCompile Include="..\src\util\trace.cpp" />
-    <ClCompile Include="..\src\version.cpp" />
+    <ClCompile Include="..\src\version.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />
@@ -264,5 +293,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\boost.1.60.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost.1.60.0.0\build\native\boost.targets'))" />
+  </Target>
+  <ItemGroup>
+    <TouchFiles Include="..\src\version.c" />
+  </ItemGroup>
+  <Target Name="UpdateVersion" BeforeTargets="PrepareForBuild">
+    <Touch Files="@(TouchFiles)" />
   </Target>
 </Project>

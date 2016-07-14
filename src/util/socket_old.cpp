@@ -1,14 +1,14 @@
-#include "util/socket.h"
+#include "util/socket_old.h"
 
 
-size_t FirehoseRecv::Recv(size_t len, uint8_t *dst)
+size_t FirehoseRecv_Old::Recv(size_t len, uint8_t *dst)
 {
 	if (!this->m_bOpened) {
-		Warning("FirehoseRecv: attempting to receive on non-opened socket!\n");
+		Warning("FirehoseRecv_Old: attempting to receive on non-opened socket!\n");
 		return 0;
 	}
 	if (!this->m_bReady) {
-		Warning("FirehoseRecv: attempting to receive on non-ready socket!\n");
+		Warning("FirehoseRecv_Old: attempting to receive on non-ready socket!\n");
 		return 0;
 	}
 	
@@ -16,14 +16,14 @@ size_t FirehoseRecv::Recv(size_t len, uint8_t *dst)
 	int result = recvfrom(this->m_Socket, (char *)dst, len, 0, nullptr, nullptr);
 	
 	if (result < 0 && WSAGetLastError() != WSAEWOULDBLOCK) {
-		Warning("FirehoseRecv: recvfrom failed: %d\n", WSAGetLastError());
+		Warning("FirehoseRecv_Old: recvfrom failed: %d\n", WSAGetLastError());
 		return 0;
 	}
 #else
 	ssize_t result = recvfrom(this->m_Socket, dst, len, MSG_DONTWAIT, nullptr, nullptr);
 	
 	if (result < 0 && errno != EWOULDBLOCK) {
-		Warning("FirehoseRecv: recvfrom failed: %s\n", strerror(errno));
+		Warning("FirehoseRecv_Old: recvfrom failed: %s\n", strerror(errno));
 		return 0;
 	}
 #endif
@@ -36,13 +36,13 @@ size_t FirehoseRecv::Recv(size_t len, uint8_t *dst)
 }
 
 
-void FirehoseRecv::Open()
+void FirehoseRecv_Old::Open()
 {
 	if (this->m_bOpened) return;
 	
 	this->m_Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (this->m_Socket < 0) {
-		Warning("FirehoseRecv: socket creation failed: %s\n", strerror(errno));
+		Warning("FirehoseRecv_Old: socket creation failed: %s\n", strerror(errno));
 		return;
 	}
 	this->m_bOpened = true;
@@ -50,7 +50,7 @@ void FirehoseRecv::Open()
 #if defined _WINDOWS
 	unsigned long nonblock = 1;
 	if (ioctlsocket(this->m_Socket, FIONBIO, &nonblock) == SOCKET_ERROR) {
-		Warning("FirehoseRecv: ioctlsocket failed: %d", WSAGetLastError());
+		Warning("FirehoseRecv_Old: ioctlsocket failed: %d", WSAGetLastError());
 		return;
 	}
 	
@@ -60,7 +60,7 @@ void FirehoseRecv::Open()
 	addr.sin_port        = htons(this->m_nPort);
 	
 	if (bind(this->m_Socket, (const sockaddr *)&addr, sizeof(addr)) < 0) {
-		Warning("FirehoseRecv: bind failed: %d\n", WSAGetLastError());
+		Warning("FirehoseRecv_Old: bind failed: %d\n", WSAGetLastError());
 		return;
 	}
 #endif
@@ -68,7 +68,7 @@ void FirehoseRecv::Open()
 	this->m_bReady = true;
 }
 
-void FirehoseRecv::Close()
+void FirehoseRecv_Old::Close()
 {
 	if (!this->m_bOpened) return;
 	
@@ -85,6 +85,8 @@ void FirehoseRecv::Close()
 
 void Firehose_Send(uint16_t port, size_t len, const uint8_t *src)
 {
+//	auto t_begin = std::chrono::high_resolution_clock::now();
+	
 	for (int i = 1; i <= gpGlobals->maxClients; ++i) {
 		INetChannelInfo *info = engine->GetPlayerNetInfo(i);
 		if (info == nullptr) continue;
@@ -105,9 +107,18 @@ void Firehose_Send(uint16_t port, size_t len, const uint8_t *src)
 		sockaddr_in addr;
 		c_addr.ToSockadr((sockaddr *)&addr);
 		
-		if (sendto(s, (const char *)src, len, 0, (const sockaddr *)&addr, sizeof(addr)) < 0) {
-			Warning("Firehose_Send: sendto failed: %s\n", strerror(errno));
-		}
+//		bool retry;
+//		do {
+//			retry = false;
+//			
+			if (sendto(s, (const char *)src, len, 0, (const sockaddr *)&addr, sizeof(addr)) < 0) {
+//				if (errno == ENOBUFS) {
+//					retry = true;
+//				} else {
+					Warning("Firehose_Send: sendto failed: %s\n", strerror(errno));
+//				}
+			}
+//		} while (retry);
 		
 #if defined _WINDOWS
 		closesocket(s);
@@ -115,6 +126,11 @@ void Firehose_Send(uint16_t port, size_t len, const uint8_t *src)
 		close(s);
 #endif
 	}
+	
+//	auto t_end = std::chrono::high_resolution_clock::now();
+	
+//	auto dt = t_end - t_begin;
+//	DevMsg("Firehose_Send: %lld ns\n", std::chrono::duration_cast<std::chrono::nanoseconds>(dt).count());
 }
 
 #if 0

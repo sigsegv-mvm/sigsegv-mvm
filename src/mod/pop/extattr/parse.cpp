@@ -53,11 +53,6 @@ namespace Mod_Pop_ExtAttr_Parse
 			MOD_ADD_DETOUR_MEMBER(CTFBot_OnEventChangeAttributes, "CTFBot::OnEventChangeAttributes");
 		}
 		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
-		
 		// TODO: should we clear the ext attr map at
 		// - mod load?
 		// - mod unload?
@@ -69,6 +64,6 @@ namespace Mod_Pop_ExtAttr_Parse
 		"Mod: enable parsing of mod-specific extended bot attributes in MvM pop files",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

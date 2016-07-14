@@ -36,11 +36,6 @@ namespace Mod_AI_WrapAssassin_AltFire
 			MOD_ADD_DETOUR_MEMBER(CTFBot_OpportunisticallyUseWeaponAbilities, "CTFBot::OpportunisticallyUseWeaponAbilities");
 			MOD_ADD_DETOUR_MEMBER(CTFBat_Giftwrap_GetWeaponID,                "CTFBat_Giftwrap::GetWeaponID");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -49,6 +44,6 @@ namespace Mod_AI_WrapAssassin_AltFire
 		"Mod: make bots fire Wrap Assassin balls, similar to how they use the Sandman",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

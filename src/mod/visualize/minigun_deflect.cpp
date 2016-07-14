@@ -140,11 +140,6 @@ namespace Mod_Visualize_Minigun_Deflect
 			MOD_ADD_DETOUR_MEMBER(ISpatialPartition_EnumerateElementsInSphere, "ISpatialPartition::EnumerateElementsInSphere");
 			MOD_ADD_DETOUR_STATIC(CalcDistanceToLineSegment,                   "CalcDistanceToLineSegment");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -153,7 +148,7 @@ namespace Mod_Visualize_Minigun_Deflect
 		"Visualization: draw cylinder used for heavy's projectile deflection upgrade",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 	

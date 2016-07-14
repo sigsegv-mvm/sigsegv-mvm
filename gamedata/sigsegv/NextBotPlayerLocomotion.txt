@@ -18,6 +18,11 @@
 					type "sym"
 					sym  "_ZN16PlayerLocomotion6UpdateEv"
 				}
+				"PlayerLocomotion::Jump"
+				{
+					type "sym"
+					sym  "_ZN16PlayerLocomotion4JumpEv"
+				}
 			}
 		}
 	}

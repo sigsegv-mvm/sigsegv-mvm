@@ -1,14 +1,15 @@
 #include "stub/tfweaponbase.h"
 
 
-IMPL_SENDPROP(float, CBaseCombatWeapon, m_flNextPrimaryAttack,   CBaseCombatWeapon);
-IMPL_SENDPROP(float, CBaseCombatWeapon, m_flNextSecondaryAttack, CBaseCombatWeapon);
-IMPL_SENDPROP(float, CBaseCombatWeapon, m_flTimeWeaponIdle,      CBaseCombatWeapon);
-IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iState,                CBaseCombatWeapon);
-IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iPrimaryAmmoType,      CBaseCombatWeapon);
-IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iSecondaryAmmoType,    CBaseCombatWeapon);
-IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iClip1,                CBaseCombatWeapon);
-IMPL_SENDPROP(int,   CBaseCombatWeapon, m_iClip2,                CBaseCombatWeapon);
+IMPL_SENDPROP(float,                         CBaseCombatWeapon, m_flNextPrimaryAttack,   CBaseCombatWeapon);
+IMPL_SENDPROP(float,                         CBaseCombatWeapon, m_flNextSecondaryAttack, CBaseCombatWeapon);
+IMPL_SENDPROP(float,                         CBaseCombatWeapon, m_flTimeWeaponIdle,      CBaseCombatWeapon);
+IMPL_SENDPROP(int,                           CBaseCombatWeapon, m_iState,                CBaseCombatWeapon);
+IMPL_SENDPROP(int,                           CBaseCombatWeapon, m_iPrimaryAmmoType,      CBaseCombatWeapon);
+IMPL_SENDPROP(int,                           CBaseCombatWeapon, m_iSecondaryAmmoType,    CBaseCombatWeapon);
+IMPL_SENDPROP(int,                           CBaseCombatWeapon, m_iClip1,                CBaseCombatWeapon);
+IMPL_SENDPROP(int,                           CBaseCombatWeapon, m_iClip2,                CBaseCombatWeapon);
+IMPL_SENDPROP(CHandle<CBaseCombatCharacter>, CBaseCombatWeapon, m_hOwner,                CBaseCombatWeapon);
 
 MemberFuncThunk<const CBaseCombatWeapon *, bool> CBaseCombatWeapon::ft_IsMeleeWeapon("CBaseCombatWeapon::IsMeleeWeapon");
 

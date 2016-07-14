@@ -291,11 +291,6 @@ namespace Mod_Debug_Suicide_Bomber
 			
 			MOD_ADD_DETOUR_MEMBER(Path_Compute_vec_CTFBotPathCost, "Path::Compute_vec<CTFBotPathCost>");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -304,7 +299,7 @@ namespace Mod_Debug_Suicide_Bomber
 		"Debug: enable debug statements for CTFBotMissionSuicideBomber",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 

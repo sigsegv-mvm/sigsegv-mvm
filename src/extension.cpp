@@ -12,20 +12,23 @@
 #include "concolor.h"
 #include "re/nextbot.h"
 #include "version.h"
+#include "convar_restore.h"
 
 
 CExtSigsegv g_Ext;
 SMEXT_LINK(&g_Ext);
 
-IServerGameClients *serverGameClients = nullptr;
-ICvar *icvar                          = nullptr;
-ISpatialPartition *partition          = nullptr;
-IEngineTrace *enginetrace             = nullptr;
-IStaticPropMgrServer *staticpropmgr   = nullptr;
-IGameEventManager2 *gameeventmanager  = nullptr;
-IEngineSound *enginesound             = nullptr;
-IVModelInfo *modelinfo                = nullptr;
-IVDebugOverlay *debugoverlay          = nullptr;
+IFileSystem *filesystem                          = nullptr;
+IServerGameClients *serverGameClients            = nullptr;
+ICvar *icvar                                     = nullptr;
+ISpatialPartition *partition                     = nullptr;
+IEngineTrace *enginetrace                        = nullptr;
+IStaticPropMgrServer *staticpropmgr              = nullptr;
+IGameEventManager2 *gameeventmanager             = nullptr;
+INetworkStringTableContainer *networkstringtable = nullptr;
+IEngineSound *enginesound                        = nullptr;
+IVModelInfo *modelinfo                           = nullptr;
+IVDebugOverlay *debugoverlay                     = nullptr;
 
 IPhysics *physics                = nullptr;
 IPhysicsCollision *physcollision = nullptr;
@@ -33,6 +36,11 @@ IPhysicsCollision *physcollision = nullptr;
 ISoundEmitterSystemBase *soundemitterbase = nullptr;
 
 IMaterialSystem *g_pMaterialSystem = nullptr;
+
+vgui::ISchemeManager *g_pVGuiSchemeManager = nullptr;
+
+vgui::ISurface *g_pVGuiSurface         = nullptr;
+IMatSystemSurface *g_pMatSystemSurface = nullptr;
 
 CGlobalVars *gpGlobals         = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
@@ -48,6 +56,8 @@ SourceMod::IExtensionManager *smexts         = nullptr;
 IEngineTool *enginetools  = nullptr;
 IServerTools *servertools = nullptr;
 IClientTools *clienttools = nullptr;
+
+IVProfExport *vprofexport = nullptr;
 
 
 #if 0
@@ -95,7 +105,9 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	g_ModManager.Load();
 	
+#if !defined _WINDOWS
 	IGameSystem::Add(this);
+#endif
 	
 	for (int i = 0; i < 255; ++i) {
 		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
@@ -110,7 +122,11 @@ fail:
 
 void CExtSigsegv::SDK_OnUnload()
 {
+	ConVar_Restore::Save();
+	
+#if !defined _WINDOWS
 	IGameSystem::Remove(this);
+#endif
 	
 	IHotplugAction::UnloadAll();
 	
@@ -141,6 +157,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
+	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetServerFactory, serverGameClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
@@ -151,6 +168,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_CURRENT(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	GET_V_IFACE_CURRENT(GetEngineFactory, networkstringtable, INetworkStringTableContainer, INTERFACENAME_NETWORKSTRINGTABLESERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, enginesound, IEngineSound, IENGINESOUND_SERVER_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, modelinfo, IVModelInfo, VMODELINFO_SERVER_INTERFACE_VERSION);
 	
@@ -171,18 +189,30 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 		g_pMaterialSystem = (IMaterialSystem *)ismm->VInterfaceMatch(GetMaterialSystemFactory(), MATERIAL_SYSTEM_INTERFACE_VERSION, 0);
 	}
 	
+	if (GetVGUIFactory() != nullptr) {
+		g_pVGuiSchemeManager = (vgui::ISchemeManager *)ismm->VInterfaceMatch(GetVGUIFactory(), VGUI_SCHEME_INTERFACE_VERSION, 0);
+	}
+	
+	if (GetVGUIMatSurfaceFactory() != nullptr) {
+		g_pVGuiSurface = (vgui::ISurface *)ismm->VInterfaceMatch(GetVGUIMatSurfaceFactory(), VGUI_SURFACE_INTERFACE_VERSION, 0);
+		g_pMatSystemSurface = (IMatSystemSurface *)ismm->VInterfaceMatch(GetVGUIMatSurfaceFactory(), MAT_SYSTEM_SURFACE_INTERFACE_VERSION, 0);
+	}
+	
 	if (GetClientFactory() != nullptr) {
 		GET_V_IFACE_CURRENT(GetEngineFactory, engineclient, IVEngineClient, VENGINE_CLIENT_INTERFACE_VERSION);
 		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
 		clienttools = (IClientTools *)ismm->VInterfaceMatch(GetClientFactory(), VCLIENTTOOLS_INTERFACE_VERSION, 0);
 	}
 	
+	GET_V_IFACE_CURRENT(GetEngineFactory, vprofexport, IVProfExport, "VProfExport001");
+	
 	gpGlobals = ismm->GetCGlobals();
 	
-	LibMgr::SetPtr(Library::SERVER, (void *)ismm->GetServerFactory(false));
-	LibMgr::SetPtr(Library::ENGINE, (void *)ismm->GetEngineFactory(false));
-	LibMgr::SetPtr(Library::TIER0,  (void *)&MemAllocScratch);
-	LibMgr::SetPtr(Library::CLIENT, (void *)clientdll);
+	LibMgr::SetPtr(Library::SERVER,         (void *)ismm->GetServerFactory(false));
+	LibMgr::SetPtr(Library::ENGINE,         (void *)ismm->GetEngineFactory(false));
+	LibMgr::SetPtr(Library::TIER0,          (void *)&MemAllocScratch);
+	LibMgr::SetPtr(Library::CLIENT,         (void *)clientdll);
+	LibMgr::SetPtr(Library::VGUIMATSURFACE, (void *)g_pVGuiSurface);
 	
 	return true;
 }
@@ -195,6 +225,8 @@ bool CExtSigsegv::SDK_OnMetamodUnload(char *error, size_t maxlen)
 
 bool CExtSigsegv::RegisterConCommandBase(ConCommandBase *pCommand)
 {
+	ConVar_Restore::Register(pCommand);
+	
 	META_REGCVAR(pCommand);
 	return true;
 }
@@ -238,4 +270,11 @@ void CExtSigsegv::LoadSoundOverrides()
 	if (soundemitterbase != nullptr) {
 		soundemitterbase->AddSoundOverrides("scripts/sigsegv_sound_overrides.txt", true);
 	}
+}
+
+
+//ConVar cvar_build("sig_build", __DATE__ " " __TIME__, FCVAR_NONE);
+CON_COMMAND(sig_build, "")
+{
+	Msg("%s %s\n", GetBuildDate(), GetBuildTime());
 }

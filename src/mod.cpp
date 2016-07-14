@@ -48,8 +48,8 @@ void IHasPatches::ToggleAllPatches(bool enable)
 {
 	if (!this->CanTogglePatches()) return;
 	
-	DevMsg("IHasPatches::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
-		(enable ? "ON" : "OFF"));
+//	DevMsg("IHasPatches::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
+//		(enable ? "ON" : "OFF"));
 	
 	for (auto patch : this->m_Patches) {
 		if (enable) {
@@ -115,8 +115,8 @@ void IHasDetours::ToggleDetour(const char *name, bool enable)
 {
 	if (!this->CanToggleDetours()) return;
 	
-	DevMsg("IHasDetours::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
-		(enable ? "ON" : "OFF"));
+//	DevMsg("IHasDetours::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
+//		(enable ? "ON" : "OFF"));
 	
 	this->m_Detours.at(name)->Toggle(enable);
 }
@@ -126,8 +126,8 @@ void IHasDetours::ToggleAllDetours(bool enable)
 {
 	if (!this->CanToggleDetours()) return;
 	
-	DevMsg("IHasDetours::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
-		(enable ? "ON" : "OFF"));
+//	DevMsg("IHasDetours::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
+//		(enable ? "ON" : "OFF"));
 	
 	for (auto& pair : this->m_Detours) {
 		IDetour *detour = pair.second;
@@ -160,10 +160,23 @@ void IMod::InvokeUnload()
 {
 	DevMsg("IMod::InvokeUnload: \"%s\"\n", this->GetName());
 	
+	this->Disable();
+	
 	this->OnUnload();
 	
 	this->UnloadDetours();
 	this->UnloadPatches();
+}
+
+
+void IMod::Toggle(bool enable)
+{
+	DevMsg("IMod::Toggle: \"%s\" %s\n", this->GetName(), (enable ? "ON" : "OFF"));
+	
+	IToggleable::Toggle(enable);
+	
+	this->ToggleAllPatches(enable);
+	this->ToggleAllDetours(enable);
 }
 
 

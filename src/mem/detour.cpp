@@ -437,6 +437,22 @@ void CFuncBacktrace::TracePost()
 }
 
 
+void CFuncVProf::TracePre()
+{
+	if (g_VProfCurrentProfile.IsEnabled()) {
+		g_VProfCurrentProfile.EnterScope(this->m_strVProfName.c_str(), 0,
+			this->m_strVProfGroup.c_str(), false, BUDGETFLAG_OTHER);
+	}
+}
+
+void CFuncVProf::TracePost()
+{
+	if (g_VProfCurrentProfile.IsEnabled()) {
+		g_VProfCurrentProfile.ExitScope();
+	}
+}
+
+
 CDetouredFunc::CDetouredFunc(void *func_ptr) :
 	m_pFunc(func_ptr)
 {

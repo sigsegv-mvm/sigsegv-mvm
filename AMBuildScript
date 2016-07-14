@@ -182,7 +182,7 @@ class ExtensionConfig(object):
       '-fdiagnostics-color=always',
       '-fno-omit-frame-pointer',
       '-Og',
-      '-masm=intel',
+#      '-masm=intel',
       '-maccumulate-outgoing-args',
 #      '-Q',
       '-Winvalid-pch',
@@ -194,11 +194,14 @@ class ExtensionConfig(object):
       '-pthread',
       '-Wno-unknown-pragmas',
       
-      '-Wno-reorder',      # CUtlRBTree
-      '-Wno-sign-compare', # CUtlBuffer
+      '-Wno-sign-compare',    # for tier1/utlbuffer.h
+      '-Wno-address',         # for tier0/dbg.h
+      '-Wno-nonnull-compare', # for tier0/dbg.h
       
       # the STB_GNU_UNIQUE 'feature' prevents dlclose from functioning
       '-fno-gnu-unique',
+      
+#      '-Wa,--compress-debug-sections=zlib',
     ]
     cxx.cxxflags += [
       '-std=c++14',
@@ -211,6 +214,8 @@ class ExtensionConfig(object):
 #      '-fabi-version=0',
 #      '-fabi-compat-version=2', # GCC 4.6.1
       '-Wabi',
+      
+      '-Wno-reorder', # for tier1/utlrbtree.h
     ]
     cxx.linkflags += [
       '-pthread',
@@ -219,6 +224,9 @@ class ExtensionConfig(object):
       '-Wl,--no-undefined',
       '-Wl,--threads', # crashy
       '-Wl,--wrap,__assert_fail',
+      
+#      '-Wa,--compress-debug-sections=zlib',
+#      '-Wl,--compress-debug-sections=zlib',
     ]
 #    if builder.options.opt != '1':
 #      cxx.linkflags += ['-Wl,-Ur'] # incremental link

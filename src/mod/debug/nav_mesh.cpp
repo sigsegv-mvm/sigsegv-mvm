@@ -60,9 +60,7 @@ namespace Mod_Debug_Nav_Mesh
 	public:
 		CMod() : IMod("Debug:Nav_Mesh") {}
 		
-		void SetEnabled(bool enable) { this->m_bEnabled = enable; }
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -74,8 +72,6 @@ namespace Mod_Debug_Nav_Mesh
 		}
 		
 	private:
-		bool m_bEnabled = false;
-		
 		CountdownTimer m_ctUpdate;
 	};
 	CMod s_Mod;
@@ -85,6 +81,6 @@ namespace Mod_Debug_Nav_Mesh
 		"Debug: nav mesh stuff",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

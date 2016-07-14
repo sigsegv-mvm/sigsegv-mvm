@@ -144,11 +144,6 @@ namespace Mod_Demo_StringTable_Limit
 			MOD_ADD_DETOUR_MEMBER(bf_read_ctor,              "[engine] bf_read::bf_read");
 			MOD_ADD_DETOUR_MEMBER(bf_write_ctor,             "[engine] bf_write::bf_write");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -157,6 +152,6 @@ namespace Mod_Demo_StringTable_Limit
 		"Mod: override 512KB string table limit in demos",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -59,11 +59,6 @@ namespace Mod_MvM_ChangeClass_AnyTime
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_HandleCommand_JoinClass, "CTFPlayer::HandleCommand_JoinClass");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsReadyToPlay,           "CTFPlayer::IsReadyToPlay");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -72,6 +67,6 @@ namespace Mod_MvM_ChangeClass_AnyTime
 		"Mod: allow changing class during waves",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

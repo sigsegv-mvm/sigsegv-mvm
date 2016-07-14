@@ -18,7 +18,13 @@ enum MvMWaveClassFlags : unsigned int
 };
 
 
-class CBaseTeamObjectiveResource : public CBaseEntity {};
+class CBaseTeamObjectiveResource : public CBaseEntity
+{
+public:
+	
+private:
+	
+};
 
 class CTFObjectiveResource : public CBaseTeamObjectiveResource
 {

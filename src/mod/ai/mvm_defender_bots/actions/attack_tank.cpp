@@ -101,6 +101,7 @@ namespace Mod_AI_MvM_Defender_Bots
 	
 	bool CTFBotAttackTank::IsPossible(CTFBot *actor)
 	{
+#if 0
 		bool is_possible = false;
 		
 		ForEachTank([&](CTFTankBoss *tank, bool& done){
@@ -109,11 +110,13 @@ namespace Mod_AI_MvM_Defender_Bots
 		});
 		
 		return is_possible;
+#endif
 	}
 	
 	
 	bool CTFBotAttackTank::SelectTarget()
 	{
+#if 0
 		CTFTankBoss *best_tank = nullptr;
 		float best_progress = FLT_MIN;
 		
@@ -132,6 +135,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		
 		this->m_hTarget = best_tank;
 		return true;
+#endif
 	}
 	
 	

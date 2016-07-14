@@ -1,0 +1,11 @@
+#ifndef _INCLUDE_SIGSEGV_MOD_AI_MVM_DEFENDER_BOTS_UPGRADES_DEMO_H_
+#define _INCLUDE_SIGSEGV_MOD_AI_MVM_DEFENDER_BOTS_UPGRADES_DEMO_H_
+
+
+namespace Mod_AI_MvM_Defender_Bots
+{
+	
+}
+
+
+#endif

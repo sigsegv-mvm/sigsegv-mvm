@@ -69,11 +69,6 @@ namespace Mod_Debug_Client_Desync
 			MOD_ADD_DETOUR_MEMBER(C_TFPlayer_OnPreDataChanged, "[client] C_TFPlayer::OnPreDataChanged");
 			MOD_ADD_DETOUR_MEMBER(C_TFPlayer_OnDataChanged,    "[client] C_TFPlayer::OnDataChanged");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -82,7 +77,7 @@ namespace Mod_Debug_Client_Desync
 		"Debug: diagnose client entity state desynchronization",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 

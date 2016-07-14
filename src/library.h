@@ -9,6 +9,7 @@ enum class Library : int
 	ENGINE,
 	TIER0,
 	CLIENT,
+	VGUIMATSURFACE,
 };
 
 

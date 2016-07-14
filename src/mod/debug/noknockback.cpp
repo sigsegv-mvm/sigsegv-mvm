@@ -9,17 +9,25 @@ namespace Mod_Debug_NoKnockback
 	}
 	
 	
+	ConVar cvar_airblast("sig_debug_noknockback_airblast", "0", FCVAR_NOTIFY,
+		"Debug: also disable ApplyAirBlastImpulse");
+	
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
+	{
+		if (!cvar_airblast.GetBool()) {
+			DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
+		}
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
 		CMod() : IMod("Debug:NoKnockback")
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyPushFromDamage, "CTFPlayer::ApplyPushFromDamage");
-		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
+			
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAirBlastImpulse, "CTFPlayer::ApplyAirBlastImpulse");
 		}
 	};
 	CMod s_Mod;
@@ -29,6 +37,6 @@ namespace Mod_Debug_NoKnockback
 		"Debug: disable all damage-induced knockback effects",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

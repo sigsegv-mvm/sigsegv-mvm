@@ -127,7 +127,7 @@ namespace RTTI
 		exclude.emplace_back(R"(^\.\?AVCTFQuest.*$)");
 		exclude.emplace_back(R"(^\.\?AVCWorkshop_.*$)");
 		
-		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0}) {
+		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0, Library::CLIENT}) {
 			Prof::Begin();
 			CScan<TDScanner> scan1(CLibSegBounds(lib, ".data"), ".?AV");
 			Prof::End("TD scan");

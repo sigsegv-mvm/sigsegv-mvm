@@ -6,6 +6,40 @@
 #include "mem/detour.h"
 
 
+class IToggleable
+{
+public:
+	IToggleable(bool start = false) :
+		m_bEnabled(start) {}
+	virtual ~IToggleable() {}
+	
+	bool IsEnabled() const { return this->m_bEnabled; }
+	
+	virtual void Toggle(bool enable)
+	{
+		if (this->m_bEnabled != enable) {
+			if (enable) {
+				this->OnEnable();
+			} else {
+				this->OnDisable();
+			}
+			
+			this->m_bEnabled = enable;
+		}
+	}
+	
+	void Enable()  { this->Toggle(true); }
+	void Disable() { this->Toggle(false); }
+	
+protected:
+	virtual void OnEnable() = 0;
+	virtual void OnDisable() = 0;
+	
+private:
+	bool m_bEnabled;
+};
+
+
 class IHasPatches
 {
 public:
@@ -70,19 +104,24 @@ private:
 };
 
 
-class IMod : public AutoList<IMod>, public IHasPatches, public IHasDetours
+class IMod : public AutoList<IMod>, public IToggleable, public IHasPatches, public IHasDetours
 {
 public:
 	virtual ~IMod() {}
 	
 	virtual const char *GetName() const override final { return this->m_pszName; }
 	
-	virtual bool OnLoad()   { return true; }
-	virtual void OnUnload() {}
+	virtual void Toggle(bool enable) override;
 	
 protected:
 	IMod(const char *name) :
-		m_pszName(name) {}
+		IToggleable(false), m_pszName(name) {}
+	
+	virtual void OnEnable() override  {}
+	virtual void OnDisable() override {}
+	
+	virtual bool OnLoad()   { return true; }
+	virtual void OnUnload() {}
 	
 private:
 	void InvokeLoad();

@@ -113,11 +113,6 @@ namespace Mod_Debug_Penetration
 			MOD_ADD_DETOUR_MEMBER(CBulletPenetrateEnum_EnumEntity,    "CBulletPenetrateEnum::EnumEntity");
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_DispatchTraceAttack,    "CBaseEntity::DispatchTraceAttack");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -126,6 +121,6 @@ namespace Mod_Debug_Penetration
 		"Debug: penetration",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

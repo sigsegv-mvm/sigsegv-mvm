@@ -91,11 +91,6 @@ namespace Mod_Canteen_Share_Recall_Canteen
 			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_AddCond,               "CTFPlayerShared::AddCond");
 			MOD_ADD_DETOUR_MEMBER(CTFPowerupBottle_ReapplyProvision,     "CTFPowerupBottle::ReapplyProvision");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -104,6 +99,6 @@ namespace Mod_Canteen_Share_Recall_Canteen
 		"Mod: allow Recall Canteens to be shared with the Canteen Specialist upgrade",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

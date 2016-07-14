@@ -15,8 +15,8 @@ namespace Mod_AI_NextBotEventResponder_Hooks
 	// OK   OnMoveToSuccess (PathFollower::CheckProgress)
 	// OK   OnMoveToFailure (ChasePath::RefreshPath)
 	
-	// TODO OnStuck
-	// TODO OnUnStuck
+	// OK   OnStuck (ILocomotion::StuckMonitor)
+	// OK   OnUnStuck (PathFollower::Update? / ILocomotion::ClearStuckStatus?)
 	
 	// TODO OnPostureChanged
 	// TODO OnAnimationActivityComplete
@@ -26,20 +26,26 @@ namespace Mod_AI_NextBotEventResponder_Hooks
 	// OK   OnIgnite
 	// OK   OnInjured
 	// OK   OnKilled
-	// TODO OnOtherKilled
+	// OK   OnOtherKilled
+	//      - CBaseCombatCharacter::Event_Killed
+	//      - NextBotCombatCharacter::Event_Killed
 	
-	// TODO OnSight
-	// TODO OnLostSight
+	// OK   OnSight     (IVision::UpdateKnownEntities)
+	// OK   OnLostSight (IVision::UpdateKnownEntities)
 	
-	// TODO OnSound
-	// TODO OnSpokeConcept
-	// TODO OnWeaponFired
+	// NOPE OnSound
+	// NOPE OnSpokeConcept
+	// OK   OnWeaponFired
+	//      - CTFGameStats::Event_PlayerFiredWeapon
+	//      - CTFFlameThrower::FireAirBlast
+	//      - CTFPlayerShared::FadeInvis
+	//      - CTFBot::Touch
 	
 	// OK   OnNavAreaChanged
-	// TODO OnModelChanged
-	// TODO OnPickUp
-	// TODO OnDrop
-	// OK   OnActorEmoted
+	// NOPE OnModelChanged
+	// OK   OnPickUp (CTFBot::FireGameEvent "teamplay_flag_event")
+	// NOPE OnDrop
+	// OK   OnActorEmoted (CMultiplayRules::VoiceCommand)
 	
 	// TODO OnCommandAttack
 	// TODO OnCommandApproach
@@ -52,9 +58,9 @@ namespace Mod_AI_NextBotEventResponder_Hooks
 	// TODO OnShoved
 	// TODO OnBlinded
 	
-	// TODO OnTerritoryContested
-	// TODO OnTerritoryCaptured
-	// TODO OnTerritoryLost
+	// OK   OnTerritoryContested (CTFBot::FireGameEvent "teamplay_point_startcapture")
+	// OK   OnTerritoryCaptured  (CTFBot::FireGameEvent "teamplay_point_captured")
+	// OK   OnTerritoryLost      (CTFBot::FireGameEvent "teamplay_point_captured")
 	
 	// TODO OnWin
 	// TODO OnLose
@@ -67,11 +73,6 @@ namespace Mod_AI_NextBotEventResponder_Hooks
 		{
 			
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -80,6 +81,6 @@ namespace Mod_AI_NextBotEventResponder_Hooks
 		"Mod: enable previously unfired INextBotEventResponder events",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

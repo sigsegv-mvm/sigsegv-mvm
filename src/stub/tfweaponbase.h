@@ -10,18 +10,22 @@
 class CBaseCombatWeapon : public CEconEntity
 {
 public:
+	CBaseCombatCharacter *GetOwner() const { return this->m_hOwner; }
+	
 	bool IsMeleeWeapon() const { return ft_IsMeleeWeapon(this); }
 	
-	DECL_SENDPROP(float, m_flNextPrimaryAttack);
-	DECL_SENDPROP(float, m_flNextSecondaryAttack);
-	DECL_SENDPROP(float, m_flTimeWeaponIdle);
-	DECL_SENDPROP(int,   m_iState);
-	DECL_SENDPROP(int,   m_iPrimaryAmmoType);
-	DECL_SENDPROP(int,   m_iSecondaryAmmoType);
-	DECL_SENDPROP(int,   m_iClip1);
-	DECL_SENDPROP(int,   m_iClip2);
+	DECL_SENDPROP(float,                         m_flNextPrimaryAttack);
+	DECL_SENDPROP(float,                         m_flNextSecondaryAttack);
+	DECL_SENDPROP(float,                         m_flTimeWeaponIdle);
+	DECL_SENDPROP(int,                           m_iState);
+	DECL_SENDPROP(int,                           m_iPrimaryAmmoType);
+	DECL_SENDPROP(int,                           m_iSecondaryAmmoType);
+	DECL_SENDPROP(int,                           m_iClip1);
+	DECL_SENDPROP(int,                           m_iClip2);
 	
 private:
+	DECL_SENDPROP(CHandle<CBaseCombatCharacter>, m_hOwner);
+	
 	static MemberFuncThunk<const CBaseCombatWeapon *, bool> ft_IsMeleeWeapon;
 };
 
@@ -64,6 +68,8 @@ public:
 private:
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hHealingTarget);
 };
+
+class CTFFlameThrower : public CTFWeaponBaseGun {};
 
 
 bool WeaponID_IsSniperRifle(int id);

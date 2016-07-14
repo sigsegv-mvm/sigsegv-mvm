@@ -178,9 +178,7 @@ namespace Mod_Debug_Grenade_Logger
 	public:
 		CMod() : IMod("Debug:Grenade_Logger") {}
 		
-		void SetEnabled(bool enable) { this->m_bEnabled = enable; }
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -191,9 +189,6 @@ namespace Mod_Debug_Grenade_Logger
 				RecordData(proj);
 			}
 		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -202,6 +197,6 @@ namespace Mod_Debug_Grenade_Logger
 		"Debug: log grenade data to a CSV file",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

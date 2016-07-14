@@ -26,11 +26,6 @@ namespace Mod_Pop_ExtAttr_AlwaysFireWeaponAlt
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_FireWeaponAtEnemy, "CTFBotMainAction::FireWeaponAtEnemy");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -39,6 +34,6 @@ namespace Mod_Pop_ExtAttr_AlwaysFireWeaponAlt
 		"Extended bot attr: AlwaysFireWeaponAlt",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

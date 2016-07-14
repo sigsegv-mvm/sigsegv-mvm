@@ -43,11 +43,6 @@ namespace Mod_Debug_PopMgr_MultiParse
 				this->AddDetour(new CFuncTrace(Library::SERVER, pattern));
 			}
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -56,6 +51,6 @@ namespace Mod_Debug_PopMgr_MultiParse
 		"Debug: figure out why tf_mvm_popfile parses the popfile about 4 times",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

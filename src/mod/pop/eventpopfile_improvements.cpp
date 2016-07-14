@@ -56,11 +56,6 @@ namespace Mod_Pop_EventPopfile_Improvements
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_UpdateObjectiveResource, "CPopulationManager::UpdateObjectiveResource");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -69,6 +64,6 @@ namespace Mod_Pop_EventPopfile_Improvements
 		"Mod: set tf_forced_holiday based on EventPopfile; disable zombie souls for sentry busters",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

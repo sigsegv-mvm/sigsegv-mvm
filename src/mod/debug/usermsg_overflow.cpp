@@ -110,11 +110,6 @@ namespace Mod_Debug_UserMsg_Overflow
 			
 			MOD_ADD_DETOUR_MEMBER(CMannVsMachineStats_SendUpgradesToPlayer, "CMannVsMachineStats::SendUpgradesToPlayer");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -123,6 +118,6 @@ namespace Mod_Debug_UserMsg_Overflow
 		"Debug: buffer overflow in net message (svc_UserMessage)",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -4,7 +4,7 @@
 #include "stub/usermessages_sv.h"
 #include "util/float16.h"
 #include "util/scope.h"
-#include "util/socket.h"
+#include "util/socket_old.h"
 
 
 // TODO:
@@ -12,6 +12,12 @@
 // LZ4?
 // re-encode colors with fewer bits if possible
 // detour the NDebugOverlay implementations that we use in our own mods
+
+
+// Fixing ENOBUFS in sendto():
+// - use a separate thread for packet sending
+// - queue packets up for sending
+// - in the thread, if we get ENOBUFS, sleep for a bit and then retry
 
 
 #define FUNC_STATS(dbits) \
@@ -44,21 +50,6 @@
 	sender.End(); \
 	dbits += (b2 - b1); \
 	FUNC_STATS(dbits)
-
-#if 0
-#define MSG_BEGIN() \
-	if (cvar_trace.GetBool()) DevMsg("%s\n", __func__); \
-	bf_write *msg = TryStartMessage(); \
-	int dbits = 0; \
-	if (msg != nullptr) { \
-		int b1 = msg->GetNumBitsWritten();
-#define MSG_END() \
-		int b2 = msg->GetNumBitsWritten(); \
-		engine->MessageEnd(); \
-		dbits += (b2 - b1); \
-	} \
-	FUNC_STATS(dbits)
-#endif
 
 
 namespace Mod_Util_Overlay_Send
@@ -1176,21 +1167,12 @@ namespace Mod_Util_Overlay_Send
 		}
 #endif
 		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
 			sender.SendAll();
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->m_bEnabled = enable;
-			this->ToggleAllDetours(enable);
-		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -1199,7 +1181,7 @@ namespace Mod_Util_Overlay_Send
 		"Utility: overlay forwarding: server send",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

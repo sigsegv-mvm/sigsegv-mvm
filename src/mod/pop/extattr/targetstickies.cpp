@@ -315,11 +315,6 @@ namespace Mod_Pop_ExtAttr_TargetStickies
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotVision_CollectPotentiallyVisibleEntities, "CTFBotVision::CollectPotentiallyVisibleEntities");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -328,7 +323,7 @@ namespace Mod_Pop_ExtAttr_TargetStickies
 		"Extended bot attr: TargetStickies",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 

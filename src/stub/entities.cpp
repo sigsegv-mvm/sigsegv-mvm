@@ -94,6 +94,47 @@ struct CExtract_CTFTankBoss_m_iCurrentNode :
 #endif
 
 
+#if defined _LINUX
+
+static constexpr uint8_t s_Buf_CTeamControlPointMaster_m_ControlPoints[] = {
+	0x55,                                     // +0000  push ebp
+	0x89, 0xe5,                               // +0001  mov ebp,esp
+	0x56,                                     // +0003  push esi
+	0x8b, 0x45, 0x08,                         // +0004  mov eax,[ebp+this]
+	0x53,                                     // +0007  push ebx
+	0x8b, 0x75, 0x0c,                         // +0008  mov esi,[ebp+0xc]
+	0x0f, 0xb7, 0x98, 0x7a, 0x03, 0x00, 0x00, // +000B  movzx ebx,word ptr [eax+0xVVVVVVVV]
+};
+
+struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMap<int, CTeamControlPoint *> *>
+{
+	using T = CUtlMap<int, CTeamControlPoint *> *;
+	
+	CExtract_CTeamControlPointMaster_m_ControlPoints() : IExtract<T>(sizeof(s_Buf_CTeamControlPointMaster_m_ControlPoints)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CTeamControlPointMaster_m_ControlPoints);
+		
+		mask.SetRange(0x0b + 3, 4, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTeamControlPointMaster::PointLastContestedAt"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x000b + 3; }
+	virtual T AdjustValue(T val) const override        { return reinterpret_cast<T>((uintptr_t)val - 0x12); }
+};
+
+#elif defined _WINDOWS
+
+// TODO
+
+#endif
+
+
 MemberFuncThunk<CPathTrack *, CPathTrack *> CPathTrack::ft_GetNext("CPathTrack::GetNext");
 
 
@@ -113,7 +154,8 @@ IMPL_SENDPROP(bool, CTFBotHintEngineerNest, m_bHasActiveTeleporter, CTFBotHintEn
 GlobalThunk<CUtlVector<ITFBotHintEntityAutoList *>> ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList("ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList");
 
 
-IMPL_SENDPROP(bool, CCaptureFlag, m_bDisabled, CCaptureFlag);
+IMPL_SENDPROP(bool, CCaptureFlag, m_bDisabled,   CCaptureFlag);
+IMPL_SENDPROP(int,  CCaptureFlag, m_nFlagStatus, CCaptureFlag);
 
 
 GlobalThunk<CUtlVector<ICaptureFlagAutoList *>> ICaptureFlagAutoList::m_ICaptureFlagAutoListAutoList("ICaptureFlagAutoList::m_ICaptureFlagAutoListAutoList");
@@ -145,4 +187,9 @@ MemberFuncThunk<const CFuncNavCost *, bool, const char *> CFuncNavCost::ft_HasTa
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");
 
 
-GlobalThunk<CHandle<CTeamControlPointMaster>> g_hControlPointMasters("g_hControlPointMasters");
+IMPL_EXTRACT(CTeamControlPointMaster::ControlPointMap, CTeamControlPointMaster, m_ControlPoints, new CExtract_CTeamControlPointMaster_m_ControlPoints());
+
+GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters("g_hControlPointMasters");
+
+
+GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList("ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList");

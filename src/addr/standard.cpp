@@ -229,7 +229,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 	
 	auto vfptr = p_VT[this->GetVTableIndex()];
 	if (vfptr != p_func) {
-		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": func addr (0x%08x) doesn't match vtable entry (0x%08x)\n", this->GetName(), p_func, vfptr);
+		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": func addr (0x%08x) doesn't match vtable entry (0x%08x)\n", this->GetName(), (uintptr_t)p_func, (uintptr_t)vfptr);
 		return false;
 	}
 	

@@ -267,19 +267,16 @@ public:
 	
 	operator T&() const
 	{
-		/* hack: handle gnarly dependency cases where: addr >> thunk >> addr */
-//		if (this->m_pObjPtr == nullptr) {
-//			(void)this->Link(nullptr, 0);
-//		}
-		
 		assert(this->m_pObjPtr != nullptr);
-		return *m_pObjPtr;
+		return this->GetRef();
 	}
 	
 	T& operator->() const
 	{
-		return *m_pObjPtr;
+		return this->GetRef();
 	}
+	
+	T& GetRef() const { return *this->m_pObjPtr; }
 	
 protected:
 	T *GetPtr() const { return this->m_pObjPtr; }

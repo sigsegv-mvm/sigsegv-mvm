@@ -19,6 +19,11 @@
 					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
 					unistr "mult_aiming_knockback_resistance"
 				}
+				"CTFPlayer::ApplyAirBlastImpulse"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20ApplyAirBlastImpulseERK6Vector"
+				}
 				"CTFPlayer::ApplyPushFromDamage"
 				{
 					type "sym"
@@ -186,6 +191,48 @@
 					sym  "_ZN9CTFPlayer23CreateFeignDeathRagdollERK15CTakeDamageInfobbb"
 				}
 				
+				"CTFPlayer::MedicGetChargeLevel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19MedicGetChargeLevelEPP13CTFWeaponBase"
+				}
+				
+				"CTFPlayer::DoTauntAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13DoTauntAttackEv"
+				}
+				
+				"CTFPlayer::TeamFortress_CalculateMaxSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEv"
+				}
+				
+				"CTFPlayer::OnTakeDamage"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12OnTakeDamageERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::UpdateModel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11UpdateModelEv"
+				}
+				
+				"CTFPlayer::GetOverrideStepSound"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20GetOverrideStepSoundEPKc"
+				}
+				
+				"CTFPlayer::GetSceneSoundToken"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18GetSceneSoundTokenEv"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -220,6 +267,12 @@
 				{
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared14IsInvulnerableEv"
+				}
+				
+				"CTFPlayerClassShared::SetCustomModel"
+				{
+					type "sym"
+					sym  "_ZN20CTFPlayerClassShared14SetCustomModelEPKcb"
 				}
 				
 				"CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot"

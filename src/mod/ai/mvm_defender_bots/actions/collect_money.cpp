@@ -1,108 +1,16 @@
 #include "mod.h"
 #include "mod/ai/mvm_defender_bots/actions/collect_money.h"
 #include "mod/ai/mvm_defender_bots/helpers.h"
+#include "mod/ai/mvm_defender_bots/trackers.h"
 #include "stub/gamerules.h"
 #include "util/scope.h"
 
 
 namespace Mod_AI_MvM_Defender_Bots
 {
-	struct CreditInfo
-	{
-		std::map<CHandle<CTFBot>, float> t_lastseen;
-		
-		bool WasEverSeen() const
-		{
-			return !t_lastseen.empty();
-		}
-		
-		float GetTimeSinceLastSeen() const
-		{
-			float t_least = FLT_MAX;
-			
-			for (const auto& pair : t_lastseen) {
-				t_least = Min(t_least, gpGlobals->curtime - pair.second);
-			}
-			
-			return t_least;
-		}
-	};
-	
-	
-	class CreditTracker
-	{
-	public:
-		static void Update()
-		{
-			constexpr int UPDATE_INTERVAL = 7;
-			
-			static long frame = 0;
-			++frame;
-			
-			if (frame % UPDATE_INTERVAL != 0) return;
-			
-			/* remove entries for obsolete currency packs */
-			for (auto it = s_CreditInfos.begin(); it != s_CreditInfos.end(); ) {
-				if ((*it).first == nullptr) {
-					it = s_CreditInfos.erase(it);
-				} else {
-					++it;
-				}
-			}
-			
-			/* add/update entries for currently visible currency packs */
-			ForEachCurrencyPack([](CCurrencyPack *pack, bool& done1){
-				ForEachDefenderBot([=](CTFBot *bot, bool& done2){
-					if (!bot->IsAlive()) return true;
-					
-					if (bot->GetVisionInterface()->IsAbleToSee(pack, IVision::FieldOfViewCheckType::USE_FOV, nullptr)) {
-						s_CreditInfos[pack].t_lastseen[bot] = gpGlobals->curtime;
-					}
-					
-					return true;
-				});
-				
-				return true;
-			});
-			
-			for (const auto& pair1 : s_CreditInfos) {
-				CCurrencyPack *pack    = pair1.first;
-				const CreditInfo& info = pair1.second;
-				
-				int line = 0;
-				for (const auto& pair2 : info.t_lastseen) {
-					CTFBot *bot      = pair2.first;
-					float t_lastseen = pair2.second;
-					
-					NDebugOverlay::EntityText(ENTINDEX(pack), line, CFmtStrN<256>("%-20s %.1f", bot->GetPlayerName(), gpGlobals->curtime - t_lastseen),
-						UPDATE_INTERVAL * gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
-					
-					bool recent = (gpGlobals->curtime - t_lastseen < 0.2f);
-					NDebugOverlay::HorzArrow(bot->EyePosition(), pack->GetAbsOrigin(), 1.0f,
-						(recent ? 0xff : 0x80),
-						(recent ? 0xff : 0x80),
-						(recent ? 0xff : 0x80),
-						(recent ? 0xff : 0x80),
-						true, UPDATE_INTERVAL * gpGlobals->interval_per_tick);
-					
-					++line;
-				}
-			}
-		}
-		
-	private:
-		static std::map<CHandle<CCurrencyPack>, CreditInfo> s_CreditInfos;
-		
-	public:
-		static decltype(s_CreditInfos)& GetCreditInfos() { return s_CreditInfos; }
-	};
-	std::map<CHandle<CCurrencyPack>, CreditInfo> CreditTracker::s_CreditInfos;
-	
-	
-	void UpdateVisibleCredits()
-	{
-		CreditTracker::Update();
-	}
+	// currency magnet range: (absorigin to absorigin)
+	// scout: 288 HU
+	// other: 72 HU
 	
 	
 	float GetTimeUntilRemoved(CTFPowerup *powerup)
@@ -193,88 +101,14 @@ namespace Mod_AI_MvM_Defender_Bots
 		if (!TFGameRules()->IsMannVsMachineMode()) return false;
 		if (!actor->IsPlayerClass(TF_CLASS_SCOUT)) return false;
 		
-		if (!CreditTracker::GetCreditInfos().empty()) {
-			return true;
-		} else {
-			return false;
-		}
+		if (TheCreditTracker.SelectCurrencyPack() == nullptr) return false;
+		
+		return true;
 	}
 	
 	
 	void CTFBotCollectMoney::SelectCurrencyPack()
 	{
-		for (const auto& pair : CreditTracker::GetCreditInfos()) {
-			this->m_hCurrencyPack = pair.first;
-		}
+		this->m_hCurrencyPack = TheCreditTracker.SelectCurrencyPack();
 	}
-	
-	
-	namespace CollectMoney
-	{
-#if 0
-		RefCount rc_IVision_UpdateKnownEntities;
-		DETOUR_DECL_MEMBER(void, IVision_UpdateKnownEntities)
-		{
-			SCOPED_INCREMENT(rc_IVision_UpdateKnownEntities);
-			DETOUR_MEMBER_CALL(IVision_UpdateKnownEntities)();
-		}
-		
-		DETOUR_DECL_MEMBER(bool, CTFBotVision_IsIgnored, CBaseEntity *ent)
-		{
-			if (rc_IVision_UpdateKnownEntities == 0) {
-				if (strcmp(ent->GetClassname(), "item_currencypack") == 0) {
-					return true;
-				}
-			}
-			
-			return DETOUR_MEMBER_CALL(CTFBotVision_IsIgnored)(ent);
-		}
-		
-		
-		DETOUR_DECL_MEMBER(void, CTFBotVision_CollectPotentiallyVisibleEntities, CUtlVector<CBaseEntity *> *ents)
-		{
-			DETOUR_MEMBER_CALL(CTFBotVision_CollectPotentiallyVisibleEntities)(ents);
-			
-			IVision *vision = reinterpret_cast<IVision *>(this);
-			
-			if (vision->GetBot()->GetEntity()->GetTeamNumber() == TF_TEAM_RED) {
-				for (int i = 0; i < ICurrencyPackAutoList::AutoList().Count(); ++i) {
-					auto pack = rtti_cast<CCurrencyPack *>(ICurrencyPackAutoList::AutoList()[i]);
-					if (pack == nullptr) continue;
-					
-					ents->AddToTail(pack);
-				}
-			}
-		}
-#endif
-		
-		
-//		DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotTacticalMonitor_Update, CTFBot *actor, float dt)
-//		{
-//			if (CTFBotCollectMoney::IsPossible(actor)) {
-//				return ActionResult<CTFBot>::SuspendFor(new CTFBotCollectMoney(), "Collecting money.");
-//			}
-//			
-//			return DETOUR_MEMBER_CALL(CTFBotTacticalMonitor_Update)(actor, dt);
-//		}
-		
-		
-		#define AddDetour_Member(detour, addr) \
-			mod->AddDetour(new CDetour(addr, GET_MEMBER_CALLBACK(detour), GET_MEMBER_INNERPTR(detour)))
-		#define AddDetour_Static(detour, addr) \
-			mod->AddDetour(new CDetour(addr, GET_STATIC_CALLBACK(detour), GET_STATIC_INNERPTR(detour)))
-		
-		void AddDetours(IMod *mod)
-		{
-//			AddDetour_Member(IVision_UpdateKnownEntities,                    "IVision::UpdateKnownEntities");
-//			AddDetour_Member(CTFBotVision_IsIgnored,                         "CTFBotVision::IsIgnored");
-//			AddDetour_Member(CTFBotVision_CollectPotentiallyVisibleEntities, "CTFBotVision::CollectPotentiallyVisibleEntities");
-			
-//			AddDetour_Member(CTFBotTacticalMonitor_Update, "CTFBotTacticalMonitor::Update");
-		}
-	}
-	
-	// TODO: need TacticalMonitor::Update hook
-	// - should call CTFBotCollectMoney::IsPossible
-	// - if is possible, should SuspendFor it
 }

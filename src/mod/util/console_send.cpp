@@ -10,11 +10,6 @@ namespace Mod_Util_Console_Send
 		{
 			
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -23,6 +18,6 @@ namespace Mod_Util_Console_Send
 		"Utility: console forwarding: server send",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

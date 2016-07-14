@@ -84,11 +84,6 @@ namespace Mod_Sniper_Head_Uncap
 		{
 			this->AddPatch(new CPatch_CTFSniperRifleDecap_SniperRifleChargeRateMod());
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllPatches(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -97,6 +92,6 @@ namespace Mod_Sniper_Head_Uncap
 		"Mod: remove the 6-head cap on the Bazaar Bargain",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

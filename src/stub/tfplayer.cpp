@@ -6,6 +6,8 @@ IMPL_SENDPROP(int,      CTFPlayerClassShared, m_iClass,         CTFPlayer);
 IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszClassIcon,   CTFPlayer);
 IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszCustomModel, CTFPlayer);
 
+MemberFuncThunk<CTFPlayerClassShared *, void, const char *, bool> CTFPlayerClassShared::ft_SetCustomModel("CTFPlayerClassShared::SetCustomModel");
+
 
 IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,    CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,  CTFPlayer);
@@ -23,10 +25,13 @@ IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);
 IMPL_SENDPROP(bool,            CTFPlayer, m_bIsMiniBoss, CTFPlayer);
 IMPL_SENDPROP(int,             CTFPlayer, m_nCurrency,   CTFPlayer);
 
-MemberFuncThunk<      CTFPlayer *, void, int, bool         > CTFPlayer::ft_ForceChangeTeam          ("CTFPlayer::ForceChangeTeam");
-MemberFuncThunk<      CTFPlayer *, void, int, int          > CTFPlayer::ft_StartBuildingObjectOfType("CTFPlayer::StartBuildingObjectOfType");
-MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> CTFPlayer::ft_HasTheFlag               ("CTFPlayer::HasTheFlag");
-MemberFuncThunk<      CTFPlayer *, int, int                > CTFPlayer::ft_GetAutoTeam              ("CTFPlayer::GetAutoTeam");
+MemberFuncThunk<      CTFPlayer *, void, int, bool         > CTFPlayer::ft_ForceChangeTeam               ("CTFPlayer::ForceChangeTeam");
+MemberFuncThunk<      CTFPlayer *, void, int, int          > CTFPlayer::ft_StartBuildingObjectOfType     ("CTFPlayer::StartBuildingObjectOfType");
+MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> CTFPlayer::ft_HasTheFlag                    ("CTFPlayer::HasTheFlag");
+MemberFuncThunk<      CTFPlayer *, int, int                > CTFPlayer::ft_GetAutoTeam                   ("CTFPlayer::GetAutoTeam");
+MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase ** > CTFPlayer::ft_MedicGetChargeLevel           ("CTFPlayer::MedicGetChargeLevel");
+MemberFuncThunk<const CTFPlayer *, float                   > CTFPlayer::ft_TeamFortress_CalculateMaxSpeed("CTFPlayer::TeamFortress_CalculateMaxSpeed");
+MemberFuncThunk<      CTFPlayer *, void                    > CTFPlayer::ft_UpdateModel                   ("CTFPlayer::UpdateModel");
 
 
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");

@@ -204,7 +204,7 @@ namespace Mod_Debug_Deflect_Angle
 			MOD_ADD_DETOUR_MEMBER(CTraceFilterSimple_ShouldHitEntity, "CTraceFilterSimple::ShouldHitEntity");
 		}
 		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -213,15 +213,6 @@ namespace Mod_Debug_Deflect_Angle
 			
 			
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-			this->m_bEnabled = enable;
-		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -230,7 +221,7 @@ namespace Mod_Debug_Deflect_Angle
 		"Debug: projectile deflection angle bug",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

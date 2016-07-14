@@ -5,6 +5,7 @@
 #include "link/link.h"
 #include "prop.h"
 #include "stub/baseplayer.h"
+#include "stub/tf_shareddefs.h"
 
 
 class CPointEntity : public CBaseEntity {};
@@ -89,10 +90,14 @@ class CTFItem : public CDynamicProp {};
 class CCaptureFlag : public CTFItem
 {
 public:
+	bool IsDropped()        { return (this->m_nFlagStatus == TF_FLAGINFO_DROPPED); }
+	bool IsHome()           { return (this->m_nFlagStatus == TF_FLAGINFO_NONE); }
+	bool IsStolen()         { return (this->m_nFlagStatus == TF_FLAGINFO_STOLEN); }
 	bool IsDisabled() const { return this->m_bDisabled; }
 	
 private:
 	DECL_SENDPROP(bool, m_bDisabled);
+	DECL_SENDPROP(int,  m_nFlagStatus);
 };
 
 
@@ -193,9 +198,21 @@ public:
 class CTeamControlPointMaster : public CBaseEntity
 {
 public:
-	// GetControlPoint
+	using ControlPointMap = CUtlMap<int, CTeamControlPoint *>;
+	DECL_EXTRACT(ControlPointMap, m_ControlPoints);
 };
-extern GlobalThunk<CHandle<CTeamControlPointMaster>> g_hControlPointMasters;
+extern GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters;
+
+
+class CTFFlameEntity : public CBaseEntity {};
+
+class ITFFlameEntityAutoList
+{
+public:
+	static const CUtlVector<ITFFlameEntityAutoList *>& AutoList() { return m_ITFFlameEntityAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> m_ITFFlameEntityAutoListAutoList;
+};
 
 
 // 20151007a

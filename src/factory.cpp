@@ -25,61 +25,25 @@ CreateInterfaceFn GetFactory_NoExt(const char *name)
 }
 
 
-CreateInterfaceFn GetClientFactory()
-{
-	static bool init = false;
-	static CreateInterfaceFn factory = nullptr;
-	
-	if (!init) {
-		factory = GetFactory_NoExt("client");
-		
-		if (factory == nullptr) {
-			Warning("GetClientFactory: factory is nullptr\n");
-		}
-		
-		init = true;
+#define DEF_GET_FACTORY(funcname, libname) \
+	CreateInterfaceFn funcname() \
+	{ \
+		static bool init = false; \
+		static CreateInterfaceFn factory = nullptr; \
+		if (!init) { \
+			factory = GetFactory_NoExt(libname); \
+			if (factory == nullptr) Warning(#funcname ": factory is nullptr\n"); \
+			init = true; \
+		} \
+		return factory; \
 	}
-	
-	return factory;
-}
 
 
-CreateInterfaceFn GetSoundEmitterSystemFactory()
-{
-	static bool init = false;
-	static CreateInterfaceFn factory = nullptr;
-	
-	if (!init) {
-		factory = GetFactory_NoExt("soundemittersystem");
-		
-		if (factory == nullptr) {
-			Warning("GetSoundEmitterSystemFactory: factory is nullptr\n");
-		}
-		
-		init = true;
-	}
-	
-	return factory;
-}
-
-
-CreateInterfaceFn GetMaterialSystemFactory()
-{
-	static bool init = false;
-	static CreateInterfaceFn factory = nullptr;
-	
-	if (!init) {
-		factory = GetFactory_NoExt("materialsystem");
-		
-		if (factory == nullptr) {
-			Warning("GetMaterialSystemFactory: factory is nullptr\n");
-		}
-		
-		init = true;
-	}
-	
-	return factory;
-}
+DEF_GET_FACTORY(GetClientFactory,             "client");
+DEF_GET_FACTORY(GetSoundEmitterSystemFactory, "soundemittersystem");
+DEF_GET_FACTORY(GetMaterialSystemFactory,     "materialsystem");
+DEF_GET_FACTORY(GetVGUIFactory,               "vgui2");
+DEF_GET_FACTORY(GetVGUIMatSurfaceFactory,     "vguimatsurface");
 
 
 /* all of the stuff below is in tier1, but we can't use the versions in tier1

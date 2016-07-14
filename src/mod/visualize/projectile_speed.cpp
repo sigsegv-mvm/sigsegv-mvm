@@ -144,9 +144,7 @@ namespace Mod_Visualize_Projectile_Speed
 	public:
 		CMod() : IMod("Visualize:Projectile_Speed") {}
 		
-		void SetEnabled(bool enable) { this->m_bEnabled = enable; }
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -160,9 +158,6 @@ namespace Mod_Visualize_Projectile_Speed
 				SpeedOverlay(proj);
 			}
 		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -171,6 +166,6 @@ namespace Mod_Visualize_Projectile_Speed
 		"Visualization: projectile speed overlay",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

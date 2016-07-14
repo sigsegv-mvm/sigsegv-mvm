@@ -6,7 +6,25 @@
 #include "stub/tfbot.h"
 
 
-class CPopulationManager;
+class CWave;
+
+
+class CPopulationManager : public CPointEntity
+{
+public:
+	bool LoadMvMMission(KeyValues *kv) { return ft_LoadMvMMission(this, kv); }
+	CWave *GetCurrentWave()            { return ft_GetCurrentWave(this); }
+	
+	using SteamIDMap = CUtlMap<uint64_t, int>;
+	DECL_EXTRACT(SteamIDMap, m_RespecPoints);
+	
+private:
+	static MemberFuncThunk<CPopulationManager *, bool, KeyValues *> ft_LoadMvMMission;
+	static MemberFuncThunk<CPopulationManager *, CWave *>           ft_GetCurrentWave;
+};
+extern GlobalThunk<CPopulationManager *> g_pPopulationManager;
+
+
 class IPopulationSpawner;
 
 

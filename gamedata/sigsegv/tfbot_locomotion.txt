@@ -23,6 +23,11 @@
 					type "sym"
 					sym  "_ZNK16CTFBotLocomotion19IsEntityTraversableEP11CBaseEntityN11ILocomotion16TraverseWhenTypeE"
 				}
+				"CTFBotLocomotion::GetRunSpeed"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotLocomotion11GetRunSpeedEv"
+				}
 			}
 		}
 	}

@@ -93,6 +93,8 @@ namespace Mod_Pop_TFBot_Extensions
 		std::vector<AddCond> addconds;
 		
 		bool action_mobber = false;
+		
+		bool use_human_model = false;
 	};
 	
 	
@@ -189,6 +191,8 @@ namespace Mod_Pop_TFBot_Extensions
 				Parse_AddCond(spawner, subkey);
 			} else if (V_stricmp(name, "Action") == 0) {
 				Parse_Action(spawner, subkey);
+			} else if (V_stricmp(name, "UseHumanModel") == 0) {
+				spawners[spawner].use_human_model = subkey->GetBool();
 			} else {
 				del = false;
 			}
@@ -211,27 +215,42 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	RefCount rc_CTFBotSpawner_Spawn;
+	CTFBotSpawner *current_spawner = nullptr;
 	DETOUR_DECL_MEMBER(int, CTFBotSpawner_Spawn, const Vector& where, CUtlVector<CHandle<CBaseEntity>> *ents)
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
+		SCOPED_INCREMENT(rc_CTFBotSpawner_Spawn);
+		current_spawner = spawner;
+		
 		auto result = DETOUR_MEMBER_CALL(CTFBotSpawner_Spawn)(where, ents);
 		
-		FOR_EACH_VEC((*ents), i) {
-			CTFBot *bot = ToTFBot((*ents)[i]);
-			if (bot != nullptr) {
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-	//				DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
-					for (auto addcond : data.addconds) {
-	//					DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
-						bot->m_Shared->AddCond(addcond.cond, addcond.duration);
-					}
-					
-					if (data.action_mobber) {
-						action_override_mobber.push_back(bot);
+		if (ents != nullptr) {
+			auto it = spawners.find(spawner);
+			if (it != spawners.end()) {
+				SpawnerData& data = (*it).second;
+				
+				FOR_EACH_VEC((*ents), i) {
+					CTFBot *bot = ToTFBot((*ents)[i]);
+					if (bot != nullptr) {
+		//				DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
+						for (auto addcond : data.addconds) {
+		//					DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
+							bot->m_Shared->AddCond(addcond.cond, addcond.duration);
+						}
+						
+						if (data.action_mobber) {
+							action_override_mobber.push_back(bot);
+						}
+						
+						if (data.use_human_model) {
+							// calling SetCustomModel with a nullptr string *seems* to reset the model
+							// dunno what the bool parameter should be; I think it doesn't matter for the nullptr case
+							bot->GetPlayerClass()->SetCustomModel(nullptr, true);
+							bot->UpdateModel();
+							bot->SetBloodColor(BLOOD_COLOR_RED);
+						}
 					}
 				}
 			}
@@ -262,6 +281,21 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+//	// TEST! REMOVE ME!
+//	DETOUR_DECL_MEMBER(const char *, CTFPlayer_GetOverrideStepSound, const char *pszBaseStepSoundName)
+//	{
+//		DevMsg("CTFPlayer::OverrideStepSound(\"%s\")\n", pszBaseStepSoundName);
+//		return pszBaseStepSoundName;
+//	}
+//	
+//	// TEST! REMOVE ME!
+//	DETOUR_DECL_MEMBER(const char *, CTFPlayer_GetSceneSoundToken)
+//	{
+//		DevMsg("CTFPlayer::GetSceneSoundToken\n");
+//		return "";
+//	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -275,28 +309,21 @@ namespace Mod_Pop_TFBot_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFBotSpawner_Spawn, "CTFBotSpawner::Spawn");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
+			
+			// TEST! REMOVE ME!
+//			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetOverrideStepSound, "CTFPlayer::GetOverrideStepSound");
+//			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetSceneSoundToken,   "CTFPlayer::GetSceneSoundToken");
 		}
 		
-		virtual void OnUnload()
+		virtual void OnUnload() override
 		{
 			spawners.clear();
 		}
 		
-		void SetEnabled(bool enable)
+		virtual void OnDisable() override
 		{
-			this->ToggleAllDetours(enable);
-			
-			if (!enable) {
-				spawners.clear();
-			}
-			
-			this->m_bEnabled = enable;
+			spawners.clear();
 		}
-		
-		bool IsEnabled() const { return this->m_bEnabled; }
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -305,7 +332,7 @@ namespace Mod_Pop_TFBot_Extensions
 		"Mod: enable extended KV in CTFBotSpawner::Parse",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	
@@ -319,3 +346,22 @@ namespace Mod_Pop_TFBot_Extensions
 	};
 	CKVCond_TFBot cond;
 }
+
+/*
+Current UseHumanModel mod:
+- Fix voices
+- Fix step sound
+
+- Fix bullet impact sounds?
+- Fix impact particles
+
+- Fix idle sound
+- Fix death sound
+- Sentry buster model/blood
+*/
+
+// TODO: look for random one-off cases of MVM_ or M_MVM_ strings
+// (e.g. engineer voice lines and stuff)
+
+// voices:
+// server detour of CTFPlayer::GetSceneSoundToken

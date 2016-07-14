@@ -8,26 +8,6 @@ namespace Mod_Util_Console_Recv
 	public:
 		CMod() : IMod("Util:Console_Recv") {}
 		
-		virtual void OnUnload() override
-		{
-			this->SetEnabled(false);
-		}
-		
-		void SetEnabled(bool enable)
-		{
-			if (this->m_bEnabled != enable) {
-				if (enable) {
-					this->Enable();
-				} else {
-					this->Disable();
-				}
-				
-				this->m_bEnabled = enable;
-			}
-		}
-		
-		bool IsEnabled() const { return this->m_bEnabled; }
-		
 		virtual void FireGameEvent(IGameEvent *event)
 		{
 			if (strcmp(event->GetName(), "console_forward") == 0) {
@@ -40,17 +20,14 @@ namespace Mod_Util_Console_Recv
 			}
 		}
 		
-	private:
-		void Enable()
+		virtual void OnEnable() override
 		{
 			gameeventmanager->AddListener(this, "console_forward", false);
 		}
-		void Disable()
+		virtual void OnDisable() override
 		{
 			gameeventmanager->RemoveListener(this);
 		}
-		
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -59,6 +36,6 @@ namespace Mod_Util_Console_Recv
 		"Utility: console forwarding: client receive",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

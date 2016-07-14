@@ -63,26 +63,15 @@ namespace Mod_Pop_ECAttr_Extensions
 			
 		}
 		
-		virtual void OnUnload()
+		virtual void OnUnload() override
 		{
 			extdata.clear();
 		}
 		
-		void SetEnabled(bool enable)
+		virtual void OnDisable() override
 		{
-			this->ToggleAllDetours(enable);
-			
-			if (!enable) {
-				extdata.clear();
-			}
-			
-			this->m_bEnabled = enable;
+			extdata.clear();
 		}
-		
-		bool IsEnabled() const { return this->m_bEnabled; }
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -91,7 +80,7 @@ namespace Mod_Pop_ECAttr_Extensions
 		"Mod: enable extended KV in EventChangeAttributes",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

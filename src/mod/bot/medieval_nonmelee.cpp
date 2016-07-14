@@ -68,11 +68,6 @@ namespace Mod_Bot_Medieval_NonMelee
 		{
 			this->AddPatch(new CPatch_CTFBot_EquipRequiredWeapon());
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllPatches(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -81,6 +76,6 @@ namespace Mod_Bot_Medieval_NonMelee
 		"Mod: allow bots in Medieval Mode to use weapons in non-melee slots",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -94,10 +94,12 @@ class CTeamplayRoundBasedRules : public CTeamplayRules
 public:
 	gamerules_roundstate_t State_Get() { return this->m_iRoundState; }
 	int GetWinningTeam()               { return this->m_iWinningTeam; }
+	bool IsPlayerReady(int iIndex)     { return this->m_bPlayerReady[iIndex]; }
 	
 private:
 	DECL_SENDPROP(gamerules_roundstate_t, m_iRoundState);
 	DECL_SENDPROP(int,                    m_iWinningTeam);
+	DECL_SENDPROP(bool[33],               m_bPlayerReady);
 };
 
 class CTFGameRules : public CTeamplayRoundBasedRules
@@ -105,10 +107,11 @@ class CTFGameRules : public CTeamplayRoundBasedRules
 public:
 	bool IsMannVsMachineMode() const { return this->m_bPlayingMannVsMachine; }
 	
-	bool CanUpgradeWithAttrib(CTFPlayer *player, int slot, unsigned short attr, CMannVsMachineUpgrades *upgrade) { return ft_CanUpgradeWithAttrib(this, player, slot, attr, upgrade); }
-	int GetCostForUpgrade(CMannVsMachineUpgrades *upgrade, int slot, int pclass, CTFPlayer *player)              { return ft_GetCostForUpgrade   (this, upgrade, slot, pclass, player); }
-	int GetUpgradeTier(int index)                                                                                { return ft_GetUpgradeTier      (this, index); }
-	bool IsUpgradeTierEnabled(CTFPlayer *player, int slot, int tier)                                             { return ft_IsUpgradeTierEnabled(this, player, slot, tier); }
+	bool CanUpgradeWithAttrib(CTFPlayer *player, int slot, unsigned short attr, CMannVsMachineUpgrades *upgrade) { return ft_CanUpgradeWithAttrib               (this, player, slot, attr, upgrade); }
+	int GetCostForUpgrade(CMannVsMachineUpgrades *upgrade, int slot, int pclass, CTFPlayer *player)              { return ft_GetCostForUpgrade                  (this, upgrade, slot, pclass, player); }
+	int GetUpgradeTier(int index)                                                                                { return ft_GetUpgradeTier                     (this, index); }
+	bool IsUpgradeTierEnabled(CTFPlayer *player, int slot, int tier)                                             { return ft_IsUpgradeTierEnabled               (this, player, slot, tier); }
+	void PlayerReadyStatus_UpdatePlayerState(CTFPlayer *player, bool state)                                      { return ft_PlayerReadyStatus_UpdatePlayerState(this, player, state); }
 	
 	DECL_SENDPROP(bool, m_bPlayingMedieval);
 	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
@@ -118,6 +121,7 @@ private:
 	static MemberFuncThunk<CTFGameRules *, int, CMannVsMachineUpgrades *, int, int, CTFPlayer *>             ft_GetCostForUpgrade;
 	static MemberFuncThunk<CTFGameRules *, int, int>                                                         ft_GetUpgradeTier;
 	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, int>                                      ft_IsUpgradeTierEnabled;
+	static MemberFuncThunk<CTFGameRules *, void, CTFPlayer *, bool>                                          ft_PlayerReadyStatus_UpdatePlayerState;
 };
 
 

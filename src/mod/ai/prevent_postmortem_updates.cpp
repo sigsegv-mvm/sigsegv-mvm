@@ -24,11 +24,6 @@ namespace Mod_AI_Prevent_Postmortem_Updates
 		{
 			MOD_ADD_DETOUR_MEMBER(Action_CTFBot_OnKilled, "Action<CTFBot>::OnKilled");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -37,6 +32,6 @@ namespace Mod_AI_Prevent_Postmortem_Updates
 		"Mod: fix bugs caused by CTFBot AI Update functions being called after bots have died",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

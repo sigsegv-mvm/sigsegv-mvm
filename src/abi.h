@@ -54,7 +54,7 @@ struct __RTTI_BaseClassDescriptor
 
 struct __RTTI_BaseClassArray
 {
-	__RTTI_BaseClassDescriptor *arrayOfBaseClassDescriptors[];
+	__RTTI_BaseClassDescriptor *arrayOfBaseClassDescriptors[0];
 };
 
 struct __RTTI_ClassHierarchyDescriptor

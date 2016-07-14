@@ -142,11 +142,6 @@ namespace Mod_Debug_Draw_CPhysCollide
 		{
 			return (engineclient != nullptr);
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -155,6 +150,6 @@ namespace Mod_Debug_Draw_CPhysCollide
 		"Debug: draw CPhysCollide on all entities",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

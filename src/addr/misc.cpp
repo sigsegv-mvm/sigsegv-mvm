@@ -206,6 +206,10 @@ class IAddr_InterfaceVFunc : public IAddr
 public:
 	virtual bool FindAddrLinux(uintptr_t& addr) const override
 	{
+		if (this->GetInterfacePtr() == nullptr || this->GetVTableIndex() == -1) {
+			return false;
+		}
+		
 		const uintptr_t *vtable = *(const uintptr_t **)(this->GetInterfacePtr());
 		addr = vtable[this->GetVTableIndex()];
 		return true;
@@ -213,8 +217,7 @@ public:
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
-		// when GetVIdxOfMemberFunc is fixed for MSVC, un-break this
-		return false;
+		return FindAddrLinux(addr);
 	}
 	
 	virtual const void *GetInterfacePtr() const = 0;
@@ -263,15 +266,16 @@ static CAddr_IEngineTrace addr_IEngineTrace_TraceRay             ("TraceRay",   
 static CAddr_IEngineTrace addr_IEngineTrace_EnumerateEntities_ray("EnumerateEntities_ray", GetVIdxOfMemberFunc<IEngineTrace, void, const Ray_t&, bool, IEntityEnumerator *>(&IEngineTrace::EnumerateEntities));
 
 
-#if 0
 class CAddr_IVDebugOverlay : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IVDebugOverlay(const std::string& n_func, int vtidx) :
 		CAddr_InterfaceVFunc((const void **)&debugoverlay, "IVDebugOverlay", n_func, vtidx) {}
 };
-static CAddr_IVDebugOverlay addr_IVDebugOverlay_AddEntityTextOverlay("AddEntityTextOverlay", GetVIdxOfMemberFunc(&IVDebugOverlay::AddEntityTextOverlay));
-#endif
+//static CAddr_IVDebugOverlay addr_IVDebugOverlay_AddEntityTextOverlay("AddEntityTextOverlay", GetVIdxOfMemberFunc(&IVDebugOverlay::AddEntityTextOverlay));
+
+// WARNING WARNING: only works on windows!
+static CAddr_IVDebugOverlay addr_IVDebugOverlay_ClearDeadOverlays("ClearDeadOverlays", 0xd/*GetVIdxOfMemberFunc(&IVDebugOverlay::ClearDeadOverlays)*/);
 
 
 class CAddr_IServerGameDLL : public CAddr_InterfaceVFunc
@@ -667,3 +671,151 @@ struct CAddr_Client_CDebugOverlay_AddSphereOverlay : public IAddr_Client_CDebugO
 	}
 };
 static CAddr_Client_CDebugOverlay_AddSphereOverlay addr_client_CDebugOverlay_AddSphereOverlay;
+
+
+class CAddr_RCONClient : public IAddr_Sym
+{
+public:
+	CAddr_RCONClient()
+	{
+		this->SetLibrary(Library::ENGINE);
+	}
+	
+	virtual const char *GetName() const override   { return "RCONClient"; }
+	virtual const char *GetSymbol() const override { return "_Z10RCONClientv"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using MyScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 0x10>;
+		
+		/* RconPasswordChanged_f */
+		constexpr uint8_t buf[] = {
+			0x55,                         // +0000  push ebp
+			0x8b, 0xec,                   // +0001  mov ebp,esp
+			0x83, 0xec, 0x08,             // +0003  sub esp,0x8
+			0x56,                         // +0006  push esi
+			0xff, 0x75, 0x08,             // +0007  push [ebp+0x8]
+			0x8d, 0x4d, 0xf8,             // +000A  lea ecx,[ebp-0x8]
+			0xe8, 0xce, 0xa3, 0x0f, 0x00, // +000D  call 0x????????
+			0x8b, 0x45, 0xfc,             // +0012  mov eax,[ebp-0x4]
+			0x8b, 0x70, 0x24,             // +0015  mov esi,[eax+0x24]
+			0x56,                         // +0018  push esi
+			0xe8, 0xf2, 0x09, 0xf7, 0xff, // +0019  call 0xVVVVVVVV
+			0x8b, 0xc8,                   // +001E  mov ecx,eax
+			0xe8, 0x0b, 0x12, 0xf7, 0xff, // +0020  call CRConClient::SetPassword
+			0xb9, 0x8c, 0x6a, 0x3c, 0x10, // +0025  mov ecx,0x????????
+			0xe8, 0x01, 0xbd, 0xfe, 0xff, // +002A  call 0x????????
+			0x56,                         // +002F  push esi
+			0xb9, 0xc8, 0x6a, 0x3c, 0x10, // +0030  mov ecx,0x????????
+			0xe8, 0x96, 0x1a, 0x10, 0x00, // +0035  call 0x????????
+			0x5e,                         // +003A  pop esi
+			0x8b, 0xe5,                   // +003B  mov esp,ebp
+			0x5d,                         // +003D  pop ebp
+			0xc3,                         // +003E  ret
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		mask.SetRange(0x0d + 1, 4, 0x00);
+		mask.SetRange(0x19 + 1, 4, 0x00);
+		mask.SetRange(0x20 + 1, 4, 0x00);
+		mask.SetRange(0x25 + 1, 4, 0x00);
+		mask.SetRange(0x2a + 1, 4, 0x00);
+		mask.SetRange(0x30 + 1, 4, 0x00);
+		mask.SetRange(0x35 + 1, 4, 0x00);
+		
+		CScan<MyScanner> scan1(CLibSegBounds(Library::ENGINE, ".text"), seek, mask);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		auto rel = *(uintptr_t *)((uintptr_t)scan1.FirstMatch() + 0x1a);
+		addr = rel + (uintptr_t)scan1.FirstMatch() + 0x1e;
+		
+		return true;
+	}
+};
+static CAddr_RCONClient addr_RCONClient;
+
+
+// HACK: we already included tier0/memalloc.h with NO_MALLOC_OVERRIDE, so we don't get IMemAlloc or g_pMemAlloc
+#ifdef NO_MALLOC_OVERRIDE
+class IMemAlloc
+{
+public:
+	virtual void *Alloc( size_t nSize ) = 0;
+	virtual void *Realloc( void *pMem, size_t nSize ) = 0;
+	virtual void Free( void *pMem ) = 0;
+	virtual void *Expand_NoLongerSupported( void *pMem, size_t nSize ) = 0;
+};
+MEM_INTERFACE IMemAlloc *g_pMemAlloc;
+#endif
+
+class CAddr_IMemAlloc : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IMemAlloc(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&g_pMemAlloc, "IMemAlloc", n_func, vtidx) {}
+};
+#if defined _WINDOWS
+#pragma message("CAddr_IMemAlloc is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")
+static CAddr_IMemAlloc addr_IMemAlloc_Alloc  ("Alloc",   0x01);
+static CAddr_IMemAlloc addr_IMemAlloc_Realloc("Realloc", 0x03);
+static CAddr_IMemAlloc addr_IMemAlloc_Free   ("Free",    0x05);
+#else
+static CAddr_IMemAlloc addr_IMemAlloc_Alloc  ("Alloc",   GetVIdxOfMemberFunc<IMemAlloc, void *, size_t>        (&IMemAlloc::Alloc));
+static CAddr_IMemAlloc addr_IMemAlloc_Realloc("Realloc", GetVIdxOfMemberFunc<IMemAlloc, void *, void *, size_t>(&IMemAlloc::Realloc));
+static CAddr_IMemAlloc addr_IMemAlloc_Free   ("Free",    GetVIdxOfMemberFunc<IMemAlloc, void, void *>          (&IMemAlloc::Free));
+#endif
+
+
+#if 0
+class CAddr_IMatSystemSurface : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IMatSystemSurface(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc((const void **)&g_pMatSystemSurface, "IMatSystemSurface", n_func, vtidx) {}
+};
+#if defined _WINDOWS
+#pragma message("CAddr_IMatSystemSurface is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")
+static CAddr_IMatSystemSurface addr_IMatSystemSurface_DrawColoredText("DrawColoredText", 0xa2);
+#else
+static CAddr_IMatSystemSurface addr_IMatSystemSurface_DrawColoredText("DrawColoredText", GetVIdxOfMemberFunc(&IMatSystemSurface::DrawColoredText));
+#endif
+#endif
+
+
+#if 0
+class CAddr_CAttributeManager_AttribHookValue : public IAddr_Func_EBPPrologue_VProf
+{
+public:
+	CAddr_CAttributeManager_AttribHookValue(const std::string& name, const std::string& sym, uint8_t frame_size) :
+		m_strName(name), m_strSymbol(sym), m_iFrameSize(frame_size) {}
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		if (!IAddr_Func_EBPPrologue_VProf::FindAddrWin(addr)) return false;
+		
+		uint8_t buf[] = {
+			0x55, 0x8b, 0xec, 0x83, 0xec, this->m_iFrameSize,
+		};
+		return (memcmp((void *)addr, buf, sizeof(buf)) == 0);
+	}
+	
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetVProfName() const override  { return "CAttributeManager::AttribHookValue"; }
+	virtual const char *GetVProfGroup() const override { return "Attributes"; }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	uint8_t m_iFrameSize;
+};
+static CAddr_CAttributeManager_AttribHookValue addr_CAttributeManager_AttribHookValue_int  ("CAttributeManager::AttribHookValue<int>",   "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb", 0x24);
+static CAddr_CAttributeManager_AttribHookValue addr_CAttributeManager_AttribHookValue_float("CAttributeManager::AttribHookValue<float>", "_ZN17CAttributeManager15AttribHookValueIfEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb", 0x28);
+#endif

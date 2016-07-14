@@ -1,5 +1,5 @@
-#ifndef _INCLUDE_SIGSEGV_UTIL_SOCKET_H_
-#define _INCLUDE_SIGSEGV_UTIL_SOCKET_H_
+#ifndef _INCLUDE_SIGSEGV_UTIL_SOCKET_OLD_H_
+#define _INCLUDE_SIGSEGV_UTIL_SOCKET_OLD_H_
 
 
 #if 0
@@ -20,15 +20,15 @@ private:
 };
 #endif
 
-class FirehoseRecv
+class FirehoseRecv_Old
 {
 public:
-	FirehoseRecv(uint16_t port) :
+	FirehoseRecv_Old(uint16_t port) :
 		m_nPort(port)
 	{
 		this->Open();
 	}
-	~FirehoseRecv()
+	~FirehoseRecv_Old()
 	{
 		this->Close();
 	}
@@ -49,6 +49,9 @@ private:
 
 
 void Firehose_Send(uint16_t port, size_t len, const uint8_t *src);
+
+
+#define FirehoseRecv FirehoseRecv_Old
 
 
 #endif

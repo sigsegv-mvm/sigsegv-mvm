@@ -227,6 +227,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		CNavArea *start_area = this->GetActor()->GetLastKnownArea();
 		
 		// TODO: do this in a less horrific manner
+		// TODO: use servertools->FindEntityByClassname
 		std::vector<UpgradeStationInfo> stations;
 		for (int i = 0; i < 2048; ++i) {
 			CBaseEntity *ent = UTIL_EntityByIndex(i);

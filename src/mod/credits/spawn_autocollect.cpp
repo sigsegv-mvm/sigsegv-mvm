@@ -37,11 +37,6 @@ namespace Mod_Credits_Spawn_AutoCollect
 			MOD_ADD_DETOUR_MEMBER(CCurrencyPack_ComeToRest, "CCurrencyPack::ComeToRest");
 			MOD_ADD_DETOUR_MEMBER(CNavMesh_GetNavArea,      "CNavMesh::GetNavArea [vec]");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -50,6 +45,6 @@ namespace Mod_Credits_Spawn_AutoCollect
 		"Mod: auto-collect credits that land in the bots' spawn area",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

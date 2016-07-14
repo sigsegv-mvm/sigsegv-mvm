@@ -188,6 +188,21 @@ public:
 };
 
 
+class CFuncVProf : public IDetour_SymRegex, public ITrace
+{
+public:
+	CFuncVProf(Library lib, const char *pattern, const char *vprof_name, const char *vprof_group) :
+		IDetour_SymRegex(lib, pattern), m_strVProfName(vprof_name), m_strVProfGroup(vprof_group) {}
+	
+	virtual void TracePre() override;
+	virtual void TracePost() override;
+	
+private:
+	std::string m_strVProfName;
+	std::string m_strVProfGroup;
+};
+
+
 class CDetouredFunc
 {
 public:

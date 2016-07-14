@@ -29,11 +29,6 @@ namespace Mod_Perf_Flame_Breakable_Collision
 			MOD_ADD_DETOUR_MEMBER(CTFFlameEntity_FlameThink,               "CTFFlameEntity::FlameThink");
 			MOD_ADD_DETOUR_MEMBER(CGlobalEntityList_FindEntityByClassname, "CGlobalEntityList::FindEntityByClassname");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -42,6 +37,6 @@ namespace Mod_Perf_Flame_Breakable_Collision
 		"Mod: improve MvM flame entity performance by eliding func_breakable classname lookups",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

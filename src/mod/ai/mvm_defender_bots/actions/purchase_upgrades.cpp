@@ -1,43 +1,7 @@
 #include "mod/ai/mvm_defender_bots/actions/purchase_upgrades.h"
 #include "mod/ai/mvm_defender_bots/actions/goto_upgrade_station.h"
 #include "stub/gamerules.h"
-
-
-// sizeof: 0x15c
-struct CMannVsMachineUpgrades
-{
-	char m_szAttribute[0x40]; // +0x000
-	char m_szIcon[MAX_PATH];  // +0x040
-	float m_flIncrement;      // +0x144
-	float m_flCap;            // +0x148
-	int m_nCost;              // +0x14c
-	int m_iUIGroup;           // +0x150
-	int m_iQuality;           // +0x154
-	int m_iTier;              // +0x158
-};
-
-
-/* TODO: move this into a stub file */
-class CMannVsMachineUpgradeManager;
-extern GlobalThunk<CMannVsMachineUpgradeManager> g_MannVsMachineUpgrades;
-
-class CMannVsMachineUpgradeManager
-{
-public:
-	static CUtlVector<CMannVsMachineUpgrades>& Upgrades()
-	{
-		CMannVsMachineUpgradeManager& instance = g_MannVsMachineUpgrades;
-		return instance.m_Upgrades;
-	}
-	
-private:
-	uint8_t pad_00[0x0c];
-	CUtlVector<CMannVsMachineUpgrades> m_Upgrades;
-	CUtlMap<const char *, int> m_UpgradeMap;
-};
-SIZE_CHECK(CMannVsMachineUpgradeManager, 0x3c);
-
-GlobalThunk<CMannVsMachineUpgradeManager> g_MannVsMachineUpgrades("g_MannVsMachineUpgrades");
+#include "stub/upgrades.h"
 
 
 namespace Mod_AI_MvM_Defender_Bots

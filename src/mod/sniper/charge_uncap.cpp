@@ -124,11 +124,6 @@ namespace Mod_Sniper_Charge_Uncap
 			this->AddPatch(new CPatch_UncapChargeRate_CTFSniperRifle());
 			this->AddPatch(new CPatch_UncapChargeRate_CTFSniperRifleClassic());
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllPatches(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -137,6 +132,6 @@ namespace Mod_Sniper_Charge_Uncap
 		"Mod: remove the 200 percent upper limit on sniper rifle charge rate",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

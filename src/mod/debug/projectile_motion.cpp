@@ -90,9 +90,7 @@ namespace Mod_Debug_Projectile_Motion
 	public:
 		CMod() : IMod("Debug:Projectile_Motion") {}
 		
-		void SetEnabled(bool enable) { this->m_bEnabled = enable; }
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -143,9 +141,6 @@ namespace Mod_Debug_Projectile_Motion
 				DragCoefficientOverlay();
 			}
 		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -154,7 +149,7 @@ namespace Mod_Debug_Projectile_Motion
 		"Debug: projectile motion",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

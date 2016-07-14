@@ -6,6 +6,7 @@
 #include "stub/entities.h"
 
 #include "mod/ai/mvm_defender_bots/helpers.h"
+#include "mod/ai/mvm_defender_bots/trackers.h"
 #include "mod/ai/mvm_defender_bots/actions/defender.h"
 #include "mod/ai/mvm_defender_bots/actions/attack_tank.h"
 #include "mod/ai/mvm_defender_bots/actions/defend_gate.h"
@@ -68,6 +69,7 @@ namespace Mod_AI_MvM_Defender_Bots
 	 * well as tanks */
 	void Enhancement_NotifyDefendersAboutBombs()
 	{
+#if 0
 		std::set<CBaseEntity *> bombs;
 		
 		ForEachFlag([&](CCaptureFlag *flag, bool& done){
@@ -104,6 +106,7 @@ namespace Mod_AI_MvM_Defender_Bots
 			
 			return true;
 		});
+#endif
 	}
 	
 	
@@ -173,6 +176,7 @@ namespace Mod_AI_MvM_Defender_Bots
 	}
 	
 	
+#if 0
 	DETOUR_DECL_MEMBER(void, CTFTankBoss_TankBossThink)
 	{
 		static CountdownTimer ctNodes;
@@ -214,8 +218,10 @@ namespace Mod_AI_MvM_Defender_Bots
 		
 		DETOUR_MEMBER_CALL(CTFTankBoss_TankBossThink)();
 	}
+#endif
 	
 	
+	void AddQuirks_IsFakeClient(IMod *mod);
 	void AddQuirks_IsBot(IMod *mod);
 	void AddQuirks_IsBotOfType(IMod *mod);
 	void AddQuirks_GetLastKnownArea(IMod *mod);
@@ -223,9 +229,57 @@ namespace Mod_AI_MvM_Defender_Bots
 	void AddQuirks_SteamID(IMod *mod);
 	
 	
-	namespace CollectMoney
+	/* show team ownership of nav areas based on flag position and owner capture
+	 * points */
+	void DrawOverlay_Ownership(long frame)
 	{
-		void AddDetours(IMod *mod);
+		if (frame % 3 != 0) return;
+		
+		// TODO: default ownership when there's no bomb is wrong
+		// TODO: handle areas that have incursion value of -1.0f
+		
+		float flag_inc = 0.0f;
+		
+		CCaptureFlag *flag = TheFlagTracker.GetFrontFlag();
+		if (flag != nullptr) {
+			auto area = static_cast<CTFNavArea *>(TheNavMesh->GetNearestNavArea(flag));
+			if (area != nullptr) {
+				flag_inc = area->GetIncursionDistance(TF_TEAM_RED);
+			}
+		}
+		
+		for (auto area : (CUtlVector<CTFNavArea *>&)TheNavAreas) {
+			float inc = area->GetIncursionDistance(TF_TEAM_RED);
+			
+			if (inc < 0.0f || area->HasTFAttributes(BLUE_SPAWN_ROOM)) {
+				/* gray */
+			//	area->DrawFilled(0x80, 0x80, 0x80, 0x00, 3 * gpGlobals->interval_per_tick, true, 0.0f);
+				area->DrawFilled(0x80, 0x80, 0x80, 0x80, 3 * gpGlobals->interval_per_tick, true, 3.0f);
+			} else {
+				if (flag_inc > 0.0f && inc > flag_inc) {
+					/* blue */
+				//	area->DrawFilled(0x20, 0x20, 0xff, 0x00, 3 * gpGlobals->interval_per_tick, true, 0.0f);
+					area->DrawFilled(0x20, 0x20, 0xff, 0x80, 3 * gpGlobals->interval_per_tick, true, 3.0f);
+				} else {
+					/* red */
+				//	area->DrawFilled(0xff, 0x20, 0x20, 0x00, 3 * gpGlobals->interval_per_tick, true, 0.0f);
+					area->DrawFilled(0xff, 0x20, 0x20, 0x80, 3 * gpGlobals->interval_per_tick, true, 3.0f);
+				}
+			}
+		}
+		
+#if 0
+		for (const auto& pair : TheFlagTracker.GetFlagInfos()) {
+			CCaptureFlag *flag   = pair.first;
+			const FlagInfo& info = pair.second;
+			
+			NDebugOverlay::EntityText(ENTINDEX(flag), 0, "FLAG", 3 * gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+			NDebugOverlay::EntityText(ENTINDEX(flag), 2, "Hatch path dist:", 3 * gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+			NDebugOverlay::EntityText(ENTINDEX(flag), 3, CFmtStrN<256>("%.0f HU", info.hatch_path_dist), 3 * gpGlobals->interval_per_tick, 0xff, 0xff, 0xff, 0xff);
+		}
+#endif
+		
+		// TODO: draw gates
 	}
 	
 	
@@ -236,6 +290,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFBotTacticalMonitor_InitialContainedAction, "CTFBotTacticalMonitor::InitialContainedAction");
 			
+			AddQuirks_IsFakeClient(this);
 			AddQuirks_IsBot(this);
 			AddQuirks_IsBotOfType(this);
 			AddQuirks_GetLastKnownArea(this);
@@ -253,13 +308,9 @@ namespace Mod_AI_MvM_Defender_Bots
 			MOD_ADD_DETOUR_MEMBER(CTFBotTacticalMonitor_OnCommandString, "CTFBotTacticalMonitor::OnCommandString");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_Spawn, "CTFBot::Spawn");
-			
-			MOD_ADD_DETOUR_MEMBER(CTFTankBoss_TankBossThink, "CTFTankBoss::TankBossThink");
-			
-			CollectMoney::AddDetours(this);
 		}
 		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -270,7 +321,7 @@ namespace Mod_AI_MvM_Defender_Bots
 				Enhancement_NotifyDefendersAboutBombs();
 			}
 			
-			UpdateVisibleCredits();
+			UpdateTrackers();
 			
 #if 0
 			/* remove me */
@@ -349,16 +400,9 @@ namespace Mod_AI_MvM_Defender_Bots
 				}
 			}
 #endif
+			
+			DrawOverlay_Ownership(frame);
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-			this->m_bEnabled = enable;
-		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -367,7 +411,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		"Mod: make red TFBots in MvM do things other than stand around uselessly",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 
@@ -435,6 +479,7 @@ namespace Mod_AI_MvM_Defender_Bots
 // - buy back into game if it's urgent
 // - spy prioritization for giants
 // - spy logic for using sapper on enemies
+// - teach bots how to use reverse path on two-way teles
 
 
 /* references to MvM gamemode / bots that may need some overriding:
@@ -446,16 +491,12 @@ TODO
 0x548 CBasePlayer::IsFakeClient
 ===============================
 _ZN12CTFGameRules17IsSpawnPointValidEP11CBaseEntityP11CBasePlayerb21PlayerTeamSpawnMode_t
-_ZN12CTFGameRules40PlayerReadyStatus_HaveMinPlayersToEnableEv
 
 0x6ec CBasePlayer::IsBot
 ========================
 _ZN11CBaseObject18FindSnapToBuildPosEPS_
 _ZN11CBaseObject18FindSnapToBuildPosEPS_
 _ZN12CTFGameRules16ChangePlayerNameEP9CTFPlayerPKc
-_ZN12CTFGameRules18ClientDisconnectedEP7edict_t
-_ZN12CTFGameRules18ClientDisconnectedEP7edict_t
-_ZN12CTFGameRules40PlayerReadyStatus_HaveMinPlayersToEnableEv
 _ZN13CObjectSapper5SpawnEv (OF_ALLOW_REPEAT_PLACEMENT)
 _ZN13CTFWeaponBase20ApplyOnHitAttributesEP11CBaseEntityP9CTFPlayerRK15CTakeDamageInfo
 _ZN14CWeaponMedigun18FindAndHealTargetsEv

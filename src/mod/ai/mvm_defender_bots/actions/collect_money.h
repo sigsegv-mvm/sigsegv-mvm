@@ -10,9 +10,6 @@
 
 namespace Mod_AI_MvM_Defender_Bots
 {
-	void UpdateVisibleCredits();
-	
-	
 	/* collect a currency pack */
 	class CTFBotCollectMoney : public IHotplugAction
 	{

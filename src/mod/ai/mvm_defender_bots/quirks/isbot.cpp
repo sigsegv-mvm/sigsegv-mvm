@@ -73,5 +73,14 @@ namespace Mod_AI_MvM_Defender_Bots
 		AddQuirk_IsBot("CTFPlayer::RememberUpgrade");
 		AddQuirk_IsBot("CTFPlayer::ForgetFirstUpgradeForItem");
 		#warning ManageRegularWeapons may break canteen non-auto-equip
+		
+		/* QUIRK: bots are skipped in deciding whether to allow readying up */
+		AddQuirk_IsBot("CTFGameRules::PlayerReadyStatus_HaveMinPlayersToEnable");
+		
+		/* QUIRK: bots are skipped in unreadying players when someone leaves */
+		AddQuirk_IsBot("CTFGameRules::ClientDisconnected");
+		
+		/* QUIRK: bots are skipped when getting lobby members */
+		AddQuirk_IsBot("CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo");
 	}
 }

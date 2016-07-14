@@ -23,6 +23,76 @@
 					type "sym"
 					sym  "_ZN18CPopulationManager23UpdateObjectiveResourceEv"
 				}
+				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
+				}
+				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"
+				{
+					type "sym"
+					sym  "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
+				}
+				"CPopulationManager::RemovePlayerAndItemUpgradesFromHistory"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager38RemovePlayerAndItemUpgradesFromHistoryEP9CTFPlayer"
+				}
+				"CPopulationManager::GetNumRespecsAvailableForPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager31GetNumRespecsAvailableForPlayerEP9CTFPlayer"
+				}
+				"CPopulationManager::SetNumRespecsForPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
+				}
+				"CPopulationManager::AddRespecToPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
+				}
+				"CPopulationManager::RemoveRespecFromPlayer"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager22RemoveRespecFromPlayerEP9CTFPlayer"
+				}
+				"CPopulationManager::LoadMvMMission"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager14LoadMvMMissionEP9KeyValues"
+				}
+				"CPopulationManager::ResetRespecPoints"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager17ResetRespecPointsEv"
+				}
+				"CPopulationManager::Initialize"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager10InitializeEv"
+				}
+				"CPopulationManager::JumpToWave"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager10JumpToWaveEjf"
+				}
+				"CPopulationManager::WaveEnd"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager7WaveEndEb"
+				}
+				"CPopulationManager::RestoreCheckpoint"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager17RestoreCheckpointEv"
+				}
+				"CPopulationManager::GetCurrentWave"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager14GetCurrentWaveEv"
+				}
 				
 				"CMissionPopulator::Parse"
 				{
@@ -50,6 +120,16 @@
 					type "sym"
 					sym  "_ZN5CWave5ParseEP9KeyValues"
 				}
+				"CWave::~CWave [D0]"
+				{
+					type "sym"
+					sym  "_ZN5CWaveD0Ev"
+				}
+				"CWave::~CWave [D2]"
+				{
+					type "sym"
+					sym  "_ZN5CWaveD2Ev"
+				}
 				
 				"IPopulationSpawner::GetClassIcon"
 				{
@@ -65,6 +145,27 @@
 				{
 					type "sym"
 					sym  "_ZN18IPopulationSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
+				}
+				
+				"CTankSpawner::~CTankSpawner [D0]"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawnerD0Ev"
+				}
+				"CTankSpawner::~CTankSpawner [D2]"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawnerD2Ev"
+				}
+				"CTankSpawner::Parse"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawner5ParseEP9KeyValues"
+				}
+				"CTankSpawner::Spawn"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
 				}
 				
 				"CTFBotSpawner::~CTFBotSpawner [D0]"

@@ -7,19 +7,16 @@
 #if defined __cplusplus
 
 
-/* prevent naughty headers from idiotically flailing about with things they are
- * too dumb to comprehend the purpose of */
-#define nullptr nullptr
-
-
 class IVEngineServer;
 class IServerGameDLL;
+class IFileSystem;
 class IServerGameClients;
 class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
 class IStaticPropMgrServer;
 class IGameEventManager2;
+class INetworkStringTableContainer;
 class IEngineSound;
 class IVModelInfo;
 class IVDebugOverlay;
@@ -31,6 +28,12 @@ class ISoundEmitterSystemBase;
 
 class IMaterialSystem;
 
+namespace vgui {
+	class ISchemeManager;
+	class ISurface;
+}
+class IMatSystemSurface;
+
 class CGlobalVars;
 class CBaseEntityList;
 
@@ -40,6 +43,8 @@ class IBaseClientDLL;
 class IEngineTool;
 class IServerTools;
 class IClientTools;
+
+class IVProfExport;
 
 namespace SourcePawn {
 	class ISourcePawnEngine;
@@ -51,12 +56,14 @@ namespace SourceMod {
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
+extern IFileSystem *filesystem;
 extern IServerGameClients *serverGameClients;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
 extern IStaticPropMgrServer *staticpropmgr;
 extern IGameEventManager2 *gameeventmanager;
+extern INetworkStringTableContainer *networkstringtable;
 extern IEngineSound *enginesound;
 extern IVModelInfo *modelinfo;
 extern IVDebugOverlay *debugoverlay;
@@ -68,6 +75,11 @@ extern ISoundEmitterSystemBase *soundemitterbase;
 
 extern IMaterialSystem *g_pMaterialSystem;
 
+extern vgui::ISchemeManager *g_pVGuiSchemeManager;
+
+extern vgui::ISurface *g_pVGuiSurface;
+extern IMatSystemSurface *g_pMatSystemSurface;
+
 extern CGlobalVars *gpGlobals;
 extern CBaseEntityList *g_pEntityList;
 
@@ -78,24 +90,33 @@ extern IEngineTool *enginetools;
 extern IServerTools *servertools;
 extern IClientTools *clienttools;
 
+extern IVProfExport *vprofexport;
+
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
 
 
 /* C++ standard library */
 #include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <regex>
 #include <string>
 #include <thread>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
+#include <cinttypes>
+using namespace std::literals;
 
 
 /* STL */
+#include <deque>
 #include <list>
 #include <map>
 #include <set>
@@ -110,10 +131,18 @@ extern SourceMod::IExtensionManager *smexts;
 /* Posix specific */
 #if defined _LINUX || defined _OSX
 
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include <libunwind.h>
 #define HAVE_DECL_BASENAME 1
@@ -134,6 +163,7 @@ extern SourceMod::IExtensionManager *smexts;
 #pragma warning(default:4091)
 
 #include <Winsock2.h>
+#include <WS2tcpip.h>
 
 /* namespace clash between Windows CreateEvent macro and IGameEventManager2::CreateEvent */
 #if defined CreateEvent
@@ -153,6 +183,12 @@ extern SourceMod::IExtensionManager *smexts;
 
 /* Approximate Nearest Neighbor */
 #include <ANN/ANN.h>
+
+
+/* Source's public/video/ivideoservices.h is naughty and uses the preprocessor
+ * to override nullptr; so prevent that header from being included */
+#define IVIDEOSERVICES_H
+class IVideoRecorder;
 
 
 /* Source SDK */
@@ -220,6 +256,11 @@ extern SourceMod::IExtensionManager *smexts;
 #include <tier0/vprof.h>
 #include <networkstringtabledefs.h>
 #include <tier0/valve_minmax_off.h>
+#include <tier1/stringpool.h>
+#include <filesystem.h>
+#include <vgui/IScheme.h>
+#include <vgui/ISurface.h>
+#include <VGuiMatSurface/IMatSystemSurface.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>

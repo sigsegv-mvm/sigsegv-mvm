@@ -180,13 +180,19 @@
 				
 				"CAttributeManager::AttribHookValue<int>"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
+					seg  ".text"
+					seek "558bec83ec248b0d8cc26a105333db895ddc895de08b4108895df0895df45785c0743e6894106f1068b8106f106890806c10683c1e92106a7768c8106f10535353538d4ddc5150"
+					mask "ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffffff00000000ffffffffffffffffff"
 				}
 				"CAttributeManager::AttribHookValue<float>"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_ZN17CAttributeManager15AttribHookValueIfEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
+					seg  ".text"
+					seek "558bec83ec288b0d8cc26a105333db895dd8895ddc8b4108895dec895df05685c0743e6894106f1068b8106f106890806c1068481e92106a7768c8106f10535353538d4dd85150"
+					mask "ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffffff00000000ffffffffffffffffff"
 				}
 				"CAttributeManager::ApplyAttributeFloatWrapper"
 				{
@@ -805,43 +811,6 @@
 					sym  "_ZN19CMannVsMachineStats20ResetUpgradeSpendingEP9CTFPlayer"
 				}
 				
-				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
-				}
-				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"
-				{
-					type "sym"
-					sym  "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
-				}
-				"CPopulationManager::RemovePlayerAndItemUpgradesFromHistory"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager38RemovePlayerAndItemUpgradesFromHistoryEP9CTFPlayer"
-				}
-				
-				"CPopulationManager::GetNumRespecsAvailableForPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager31GetNumRespecsAvailableForPlayerEP9CTFPlayer"
-				}
-				"CPopulationManager::SetNumRespecsForPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
-				}
-				"CPopulationManager::AddRespecToPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
-				}
-				"CPopulationManager::RemoveRespecFromPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager22RemoveRespecFromPlayerEP9CTFPlayer"
-				}
-				
 				"CGameRules::GetViewVectors"
 				{
 					type "sym"
@@ -940,14 +909,19 @@
 				
 				"CGlobalEntityList::FindEntityByClassname"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_ZN17CGlobalEntityList21FindEntityByClassnameEP11CBaseEntityPKc"
+					seg  ".text"
+					seek "558bec5356578bf98b4d0885c974158b01ff50088b3081e6ff0f00004603f68b34f7eb068bb70400010085f674318b5d0c8b3e85ff75106880a47010ff1574f26a1083c404eb11395f5c741c538bcfe8ac9ffaff84c075108b760c85f675d25f5e33c05b5dc208008bc75f5e5b5dc20800"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
 				
 				"CTFFlameEntity::FlameThink"
 				{
-					type "sym"
-					sym  "_ZN14CTFFlameEntity10FlameThinkEv"
+					type    "func ebpprologue vprof"
+					sym     "_ZN14CTFFlameEntity10FlameThinkEv"
+					v_name  "CTFFlameEntity::FlameThink"
+					v_group "%s Collision"
 				}
 				
 				"CTFWeaponBaseMelee::GetSwingRange"
@@ -994,6 +968,287 @@
 				{
 					type "sym"
 					sym  "_Z22SendProxy_UInt8ToInt32PK8SendPropPKvS3_P8DVariantii"
+				}
+				
+				"CBaseCombatCharacter::IsAbleToSee [CBaseEntity *]"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter11IsAbleToSeeEPK11CBaseEntityNS_20FieldOfViewCheckTypeE"
+				}
+				"CBaseCombatCharacter::IsAbleToSee [CBaseCombatCharacter *]"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter11IsAbleToSeeEPS_NS_20FieldOfViewCheckTypeE"
+				}
+				
+				"CBaseAnimating::LookupSequence"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating14LookupSequenceEPKc"
+				}
+				
+				"CTFTankDestruction::Spawn"
+				{
+					type "sym"
+					sym  "_ZN18CTFTankDestruction5SpawnEv"
+				}
+				
+				"CTFGameRules::PlayerReadyStatus_UpdatePlayerState"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules35PlayerReadyStatus_UpdatePlayerStateEP9CTFPlayerb"
+				}
+				"CTFGameRules::PlayerReadyStatus_HaveMinPlayersToEnable"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules40PlayerReadyStatus_HaveMinPlayersToEnableEv"
+				}
+				
+				"CTFGameRules::ClientDisconnected"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules18ClientDisconnectedEP7edict_t"
+				}
+				
+				"CTeamControlPointMaster::PointLastContestedAt"
+				{
+					type "sym"
+					sym  "_ZN23CTeamControlPointMaster20PointLastContestedAtEi"
+				}
+				
+				"CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules22GetAllPlayersLobbyInfoER10CUtlVectorI17LobbyPlayerInfo_t10CUtlMemoryIS1_iEEb"
+				}
+				
+				"CMannVsMachineStats::RoundEvent_WaveEnd"
+				{
+					type "sym"
+					sym  "_ZN19CMannVsMachineStats18RoundEvent_WaveEndEb"
+				}
+				
+				"CBaseAnimating::DrawServerHitboxes"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating18DrawServerHitboxesEfb"
+				}
+				
+//				"CRConClient::SendCmd"
+//				{
+//					type "pattern"
+//					sym  "_ZN11CRConClient7SendCmdEPKc"
+//					seg  ".text"
+//					seek "558bec83ec30538bd956578d4b34e8dd86fdff85c07f336a018d7b5c578d4b34e84baf070085c079216a008bcf"
+//					mask "ffffffffffffffffffffffffffffff00000000ffffff00ffffffffffffffffffff00000000ffffff00ffffffff"
+//					lib  "engine"
+//				}
+				
+				"CRConClient::SendResponse"
+				{
+					type "pattern"
+					sym  "_ZN11CRConClient12SendResponseER10CUtlBufferb"
+					seg  ".text"
+					seek "558bec807d0c00538bd9742f807b70007529e819e9ffff8d4b34e8118dfdff85c07e5c8b45088d8ba4000000ff701cff30e8ba0019005b5dc20800"
+					mask "ffffffffffffffffffffff00ffffffffff00ff00000000ffffffff00000000ffffff00ffffffffffffffffffffffffffffff00000000ffffffffff"
+					lib  "engine"
+				}
+				"CRConClient::BuildResponse"
+				{
+					type "pattern"
+					sym  "_ZN11CRConClient13BuildResponseER10CUtlBuffer23ServerDataRequestType_tPKcS4_"
+					seg  ".text"
+					seek "558bec568b7508578bf96a00f646150175098bcee867f31100eb0e682c652f1056e84a15190083c40c"
+					mask "ffffffffffffffffffffffffffffffffff00ffffff00000000ff00ff00000000ffff00000000ffffff"
+					lib  "engine"
+				}
+				
+				"CServerRemoteAccess::SendVProfData"
+				{
+					type "sym"
+					sym  "_ZN19CServerRemoteAccess13SendVProfDataEjbPvi"
+					lib  "engine"
+				}
+				
+				"WriteRemoteVProfData"
+				{
+					type "sym"
+					sym  "_Z20WriteRemoteVProfDatav"
+					lib  "engine"
+				}
+				
+				"CBasePlayer::Weapon_ShootPosition"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer20Weapon_ShootPositionEv"
+				}
+				
+				"CBaseEntity::MyCombatCharacterPointer"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity24MyCombatCharacterPointerEv"
+				}
+				
+				"CTFWeaponBaseMelee::DoSwingTraceInternal"
+				{
+					type "sym"
+					sym  "_ZN18CTFWeaponBaseMelee20DoSwingTraceInternalER10CGameTracebP10CUtlVectorIS0_10CUtlMemoryIS0_iEE"
+				}
+				
+				"CVProfRecorder::Record_WriteTimings_R"
+				{
+					type "sym"
+					sym  "_ZN14CVProfRecorder21Record_WriteTimings_REPK10CVProfNode"
+					lib  "engine"
+				}
+				
+				"CVProfNode::MarkFrame"
+				{
+					type "sym"
+					sym  "_ZN10CVProfNode9MarkFrameEv"
+					lib  "tier0"
+				}
+				
+				"VProfRecord_Snapshot"
+				{
+					type "pattern"
+					sym  "_Z20VProfRecord_Snapshotv"
+					seg  ".text"
+					seek "a19cf3651083f801750ab9a0d96510e9dcfaffff83f8027517803dc4f3651000750e6a006affb9a0d96510e8c0f1ffffc3"
+					mask "ff00000000ffffffffffff00000000ff00000000ffffffffffffff00000000ffffffffffffffff00000000ff00000000ff"
+					lib  "engine"
+				}
+				
+				"VProfRecord_StartOrStop"
+				{
+					type "pattern"
+					sym  "_Z23VProfRecord_StartOrStopv"
+					seg  ".text"
+					seek "803d04913c100074288b0d60052f10ff810c10000083b90c10000001750c81c118100000ff1544062f10c60504913c1000803d05913c100074218b0d60052f10ff890c100000750c81c118100000ff1540062f10c60505913c1000c3"
+					mask "ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffff00000000ffff00000000ffff"
+					lib  "engine"
+					
+					// WARNING:
+					// the windows pattern is actually for VProfExport_StartOrStop
+				}
+				
+				"CTFGameMovement::ProcessMovement"
+				{
+					type "sym"
+					sym  "_ZN15CTFGameMovement15ProcessMovementEP11CBasePlayerP9CMoveData"
+				}
+				
+				"CBaseCombatCharacter::SetBloodColor"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter13SetBloodColorEi"
+				}
+				
+				"CUtlConstStringBase<char>::Set"
+				{
+					type "sym"
+					sym  "_ZN19CUtlConstStringBaseIcE3SetEPKc"
+				}
+				
+				"GlobalAttrModifier_TFHalloweenAttribHookMunger"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZL46GlobalAttrModifier_TFHalloweenAttribHookMungerPKcP19CUtlConstStringBaseIcE"
+					unistr "%s__halloween"
+				}
+				
+				"GlobalAttrModifier_MvMAttribHookMunger"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZL38GlobalAttrModifier_MvMAttribHookMungerPKcP19CUtlConstStringBaseIcE"
+					unistr "%s__mvm"
+				}
+				
+				"V_vsnprintfRet"
+				{
+					type "pattern"
+					sym  "_Z14V_vsnprintfRetPciPKcS_Pb"
+					seg  ".text"
+					seek "558bec568b750c57ff75148b7d08ff75105657e8003601008b551883c41085d2741385c078083bc67d0433c9eb05b901000000880a85c078043bc67c07c64437ff008bc65f5e5dc3"
+					mask "ffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+				}
+				
+				"CBaseAnimating::LookupAttachment"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating16LookupAttachmentEPKc"
+				}
+				
+				"CRecipientFilter::RemoveRecipientsByPVS"
+				{
+					type "sym"
+					sym  "_ZN16CRecipientFilter21RemoveRecipientsByPVSERK6Vector"
+				}
+				
+				"CBasePlayer::PlayStepSound"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer13PlayStepSoundER6VectorP13surfacedata_tfb"
+				}
+				
+				"SV_ReplicateConVarChange"
+				{
+					type "sym"
+					sym  "_Z24SV_ReplicateConVarChangePK6ConVarPKc"
+					lib  "engine"
+				}
+				
+				"CTFMedigunShield::ShieldTouch"
+				{
+					type "sym"
+					sym  "_ZN16CTFMedigunShield11ShieldTouchEP11CBaseEntity"
+				}
+				
+				"CTraceFilterDeflection::ShouldHitEntity"
+				{
+					type "sym"
+					sym  "_ZN22CTraceFilterDeflection15ShouldHitEntityEP13IHandleEntityi"
+				}
+				
+				"ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN22ITFFlameEntityAutoList32m_ITFFlameEntityAutoListAutoListE"
+				}
+				
+				"CTFFlameThrower::GetFlameOriginPos"
+				{
+					type "sym"
+					sym  "_ZN15CTFFlameThrower17GetFlameOriginPosEv"
+				}
+				
+				"CTFFlameEntity::Create"
+				{
+					type "sym"
+					sym  "_ZN14CTFFlameEntity6CreateERK6VectorRK6QAngleP11CBaseEntityfifbb"
+				}
+				
+				"UTIL_Remove"
+				{
+					type "sym"
+					sym  "_Z11UTIL_RemoveP11CBaseEntity"
+				}
+				
+				"CBaseCombatCharacter::GiveAmmo"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter8GiveAmmoEiib"
+				}
+				
+				"CLagCompensationManager::StartLagCompensation"
+				{
+					type "sym"
+					sym  "_ZN23CLagCompensationManager20StartLagCompensationEP11CBasePlayerP8CUserCmd"
+				}
+				"CLagCompensationManager::FinishLagCompensation"
+				{
+					type "sym"
+					sym  "_ZN23CLagCompensationManager21FinishLagCompensationEP11CBasePlayer"
 				}
 			}
 		}

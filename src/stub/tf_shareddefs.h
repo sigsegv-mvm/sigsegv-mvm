@@ -283,6 +283,11 @@ enum
 };
 
 
+#define TF_FLAGINFO_NONE		0
+#define TF_FLAGINFO_STOLEN		(1<<0)
+#define TF_FLAGINFO_DROPPED		(1<<1)
+
+
 /* I invented this function, because this particular idiom comes up frequently;
  * I can't seem to actually find it anywhere in the 2013 SDK or the 2007 leak,
  * so I don't know if it actually is an inlined function or just a copypasta */

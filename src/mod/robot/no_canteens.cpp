@@ -32,11 +32,6 @@ namespace Mod_Robot_No_Canteens
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetLoadoutItem, "CTFPlayer::GetLoadoutItem");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -45,6 +40,6 @@ namespace Mod_Robot_No_Canteens
 		"Mod: don't give stock canteens to robots, because that's idiotic",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

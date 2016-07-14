@@ -588,12 +588,6 @@ namespace Mod_Util_JumboFrames
 			
 			MOD_ADD_DETOUR_MEMBER(CNetChan_GetMaxRoutablePayloadSize, "CNetChan::GetMaxRoutablePayloadSize");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllPatches(enable);
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -602,7 +596,7 @@ namespace Mod_Util_JumboFrames
 		"Utility: override packet size limits",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 	
 	

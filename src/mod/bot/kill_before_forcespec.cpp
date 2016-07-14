@@ -41,11 +41,6 @@ namespace Mod_Bot_Kill_Before_ForceSpec
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ForceChangeTeam, "CTFPlayer::ForceChangeTeam");
 		//	MOD_ADD_DETOUR_MEMBER(CTFBot_ChangeTeam,         "CTFBot::ChangeTeam");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -54,6 +49,6 @@ namespace Mod_Bot_Kill_Before_ForceSpec
 		"Mod: fix bugs caused by bots not being killed before being switched to spectator",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

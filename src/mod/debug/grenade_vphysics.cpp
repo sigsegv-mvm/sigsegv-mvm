@@ -290,13 +290,7 @@ namespace Mod_Debug_Grenade_VPhysics
 			MOD_ADD_DETOUR_STATIC(CBaseEntity_CreateNoSpawn, "CBaseEntity::CreateNoSpawn");
 		}
 		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-			this->m_bEnabled = enable;
-		}
-		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->m_bEnabled; }
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
@@ -320,9 +314,6 @@ namespace Mod_Debug_Grenade_VPhysics
 				RefillBots();
 			}
 		}
-		
-	private:
-		bool m_bEnabled = false;
 	};
 	CMod s_Mod;
 	
@@ -331,6 +322,6 @@ namespace Mod_Debug_Grenade_VPhysics
 		"Debug: grenade vphysics",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

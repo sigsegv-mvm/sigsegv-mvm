@@ -54,11 +54,6 @@ namespace Mod_Debug_Revive_Fast
 			MOD_ADD_DETOUR_MEMBER(CTFReviveMarker_AddMarkerHealth, "CTFReviveMarker::AddMarkerHealth");
 			MOD_ADD_DETOUR_MEMBER(CTFReviveMarker_ReviveThink,     "CTFReviveMarker::ReviveThink");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -67,6 +62,6 @@ namespace Mod_Debug_Revive_Fast
 		"Debug: diagnose instant revives",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

@@ -54,11 +54,6 @@ namespace Mod_Visualize_Dispenser_Radius
 		{
 			MOD_ADD_DETOUR_MEMBER(CObjectDispenser_DispenseThink, "CObjectDispenser::DispenseThink");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -67,6 +62,6 @@ namespace Mod_Visualize_Dispenser_Radius
 		"Visualization: dispenser radius",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }

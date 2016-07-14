@@ -5,6 +5,8 @@
 CreateInterfaceFn GetClientFactory();
 CreateInterfaceFn GetSoundEmitterSystemFactory();
 CreateInterfaceFn GetMaterialSystemFactory();
+CreateInterfaceFn GetVGUIFactory();
+CreateInterfaceFn GetVGUIMatSurfaceFactory();
 
 
 #endif

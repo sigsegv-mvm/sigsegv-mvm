@@ -651,7 +651,7 @@ namespace Mod_Debug_Known_Entities
 				}
 			} else {
 				if (obsoletes.find(idx) != obsoletes.end()) {
-					DevMsg("[%8.3f] -Obsolete #d\n", gpGlobals->curtime, idx);
+					DevMsg("[%8.3f] -Obsolete #%d\n", gpGlobals->curtime, idx);
 				}
 				obsoletes.erase(idx);
 			}
@@ -692,7 +692,7 @@ namespace Mod_Debug_Known_Entities
 	{
 		DETOUR_MEMBER_CALL(INextBot_Update)();
 		
-		INextBot *selected = TheNextBots()->GetSelectedBot();
+		INextBot *selected = TheNextBots().GetSelectedBot();
 		if (thebot != selected) {
 			thebot = selected;
 			ResetData();
@@ -831,9 +831,8 @@ namespace Mod_Debug_Known_Entities
 		//	MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_OnInjured, "CTFBotMainAction::OnInjured");
 		}
 		
-		void SetEnabled(bool enable)
+		virtual void OnEnable() override
 		{
-			this->ToggleAllDetours(enable);
 			ResetData();
 		}
 	};
@@ -844,7 +843,7 @@ namespace Mod_Debug_Known_Entities
 		"Debug: show detailed information about a bot's known entities",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
 

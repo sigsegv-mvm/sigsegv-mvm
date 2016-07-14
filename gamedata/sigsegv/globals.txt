@@ -65,6 +65,12 @@
 					type "sym"
 					sym  "g_hControlPointMasters"
 				}
+				
+				"g_pPopulationManager"
+				{
+					type "sym"
+					sym  "g_pPopulationManager"
+				}
 			}
 		}
 	}

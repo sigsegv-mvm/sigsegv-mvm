@@ -164,6 +164,7 @@ public:
 	bool IsClass(int iClass) const { return (this->m_iClass == iClass); }
 	
 	int GetClassIndex() const { return this->m_iClass; }
+	void SetCustomModel(const char *s1, bool b1) { ft_SetCustomModel(this, s1, b1); }
 	// TODO: accessor for m_iszClassIcon
 	// TODO: accessor for m_iszCustomModel
 	
@@ -171,6 +172,8 @@ private:
 	DECL_SENDPROP(int,      m_iClass);
 	DECL_SENDPROP(string_t, m_iszClassIcon);
 	DECL_SENDPROP(string_t, m_iszCustomModel);
+	
+	static MemberFuncThunk<CTFPlayerClassShared *, void, const char *, bool> ft_SetCustomModel;
 };
 class CTFPlayerClass : public CTFPlayerClassShared {};
 
@@ -212,10 +215,13 @@ public:
 	
 	CTFWeaponBase *GetActiveTFWeapon() const;
 	
-	void ForceChangeTeam(int team, bool b1)                      {        ft_ForceChangeTeam          (this, team, b1); }
-	void StartBuildingObjectOfType(int iType, int iMode)         {        ft_StartBuildingObjectOfType(this, iType, iMode); }
-	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag               (this, p1, i1); }
-	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam              (this, team); }
+	void ForceChangeTeam(int team, bool b1)                      {        ft_ForceChangeTeam               (this, team, b1); }
+	void StartBuildingObjectOfType(int iType, int iMode)         {        ft_StartBuildingObjectOfType     (this, iType, iMode); }
+	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag                    (this, p1, i1); }
+	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam                   (this, team); }
+	float MedicGetChargeLevel(CTFWeaponBase **medigun = nullptr) { return ft_MedicGetChargeLevel           (this, medigun); }
+	float TeamFortress_CalculateMaxSpeed() const                 { return ft_TeamFortress_CalculateMaxSpeed(this); }
+	void UpdateModel()                                           {        ft_UpdateModel                   (this); }
 	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
@@ -231,6 +237,9 @@ private:
 	static MemberFuncThunk<      CTFPlayer *, void, int, int          > ft_StartBuildingObjectOfType;
 	static MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> ft_HasTheFlag;
 	static MemberFuncThunk<      CTFPlayer *, int, int                > ft_GetAutoTeam;
+	static MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase ** > ft_MedicGetChargeLevel;
+	static MemberFuncThunk<const CTFPlayer *, float                   > ft_TeamFortress_CalculateMaxSpeed;
+	static MemberFuncThunk<      CTFPlayer *, void                    > ft_UpdateModel;
 //	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int     > ft_Taunt;
 };
 

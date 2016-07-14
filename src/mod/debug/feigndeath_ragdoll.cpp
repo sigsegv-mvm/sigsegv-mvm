@@ -36,11 +36,6 @@ namespace Mod_Debug_FeignDeath_Ragdoll
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_CreateFeignDeathRagdoll, "CTFPlayer::CreateFeignDeathRagdoll");
 			MOD_ADD_DETOUR_STATIC(CreateEntityByName,                "CreateEntityByName");
 		}
-		
-		void SetEnabled(bool enable)
-		{
-			this->ToggleAllDetours(enable);
-		}
 	};
 	CMod s_Mod;
 	
@@ -49,6 +44,6 @@ namespace Mod_Debug_FeignDeath_Ragdoll
 		"Debug: investigate spy croissant issues",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
-			s_Mod.SetEnabled(var.GetBool());
+			s_Mod.Toggle(var.GetBool());
 		});
 }
