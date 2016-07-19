@@ -140,6 +140,7 @@ sourceFiles = [
   'src/mod/demo/stringtable_limit.cpp',
   'src/mod/etc/limp_projectiles.cpp',
   'src/mod/etc/override_move_speed.cpp',
+  'src/mod/etc/medicgun_beam_machinery.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
   'src/mod/mvm/explosive_headshot_on_everything.cpp',

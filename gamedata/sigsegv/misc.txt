@@ -1256,6 +1256,12 @@
 					type "sym"
 					sym  "_ZN14CTFFlameEntity11RemoveFlameEv"
 				}
+				
+				"CWeaponMedigun::AllowedToHealTarget"
+				{
+					type "sym"
+					sym  "_ZN14CWeaponMedigun19AllowedToHealTargetEP11CBaseEntity"
+				}
 			}
 		}
 	}
