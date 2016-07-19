@@ -32,7 +32,7 @@ CreateInterfaceFn GetFactory_NoExt(const char *name)
 		static CreateInterfaceFn factory = nullptr; \
 		if (!init) { \
 			factory = GetFactory_NoExt(libname); \
-			if (factory == nullptr) Warning(#funcname ": factory is nullptr\n"); \
+			if (factory == nullptr) DevWarning(#funcname ": factory is nullptr\n"); \
 			init = true; \
 		} \
 		return factory; \
@@ -66,9 +66,9 @@ void *GetModuleHandle(const char *name)
 
     if( (handle=dlopen(name, RTLD_NOW))==NULL)
     {
-            printf("DLOPEN Error:%s\n",dlerror());
-            // couldn't open this file
-            return NULL;
+    	DevWarning("DLOPEN Error: %s\n", dlerror());
+        // couldn't open this file
+        return NULL;
     }
 
 	// read "man dlopen" for details
