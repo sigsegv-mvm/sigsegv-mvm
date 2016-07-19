@@ -36,8 +36,8 @@ inline void IndentMsg(const char *format, ...)
 class ScopedTrace
 {
 public:
-	ScopedTrace(const char *func_name) :
-		m_strFuncName(func_name)
+	ScopedTrace(const char *func_name, bool disable) :
+		m_strFuncName(func_name), m_bDisabled(disable)
 	{
 		this->m_szEnterMsg[0] = '\0';
 		this->m_szExitMsg[0]  = '\0';
@@ -74,6 +74,11 @@ public:
 private:
 	void Enter()
 	{
+		if (this->m_bDisabled) return;
+		
+		assert(!this->m_bEntered);
+		this->m_bEntered = true;
+		
 #if TRACE_TERSE
 		constexpr auto strEnter = "";
 #else
@@ -90,6 +95,11 @@ private:
 	
 	void Exit()
 	{
+		if (this->m_bDisabled) return;
+		
+		assert(this->m_bEntered);
+		this->m_bEntered = false;
+		
 		TraceLevel::Decrement();
 		
 #if !TRACE_TERSE
@@ -104,6 +114,9 @@ private:
 	
 	char m_szEnterMsg[1024];
 	char m_szExitMsg[1024];
+	
+	bool m_bEntered  = false;
+	bool m_bDisabled = false;
 };
 
 
@@ -134,13 +147,17 @@ inline std::string GetTheActualFunctionName(const std::string& func, const std::
 
 #endif
 
-#define TRACE(...) ScopedTrace _trace(TRACE_FUNC_NAME); _trace.PrintEnterMsg(__VA_ARGS__)
-#define TRACE_EXIT(...) _trace.SetExitMsg(__VA_ARGS__)
-#define TRACE_MSG(...) IndentMsg(__VA_ARGS__)
+// TRACE_ENABLE = 1
+#define TRACE(...)          ScopedTrace _trace(TRACE_FUNC_NAME, false);   _trace.PrintEnterMsg(__VA_ARGS__)
+#define TRACE_IF(pred, ...) ScopedTrace _trace(TRACE_FUNC_NAME, !(pred)); _trace.PrintEnterMsg(__VA_ARGS__)
+#define TRACE_EXIT(...)     _trace.SetExitMsg(__VA_ARGS__)
+#define TRACE_MSG(...)      IndentMsg(__VA_ARGS__)
 
 #else
 
+// TRACE_ENABLE = 0
 #define TRACE(...)
+#define TRACE_IF(...)
 #define TRACE_EXIT(...)
 #define TRACE_MSG(...)
 
