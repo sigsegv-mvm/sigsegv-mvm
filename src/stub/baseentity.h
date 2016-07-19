@@ -68,7 +68,8 @@ public:
 	void NetworkStateChanged(void *pVar);
 	
 	/* TODO: make me private again! */
-	DECL_SENDPROP(int,                  m_fFlags);
+	DECL_SENDPROP(int, m_fFlags);
+	DECL_DATAMAP(int, m_nNextThinkTick);
 	
 private:
 	DECL_DATAMAP(CServerNetworkProperty, m_Network);

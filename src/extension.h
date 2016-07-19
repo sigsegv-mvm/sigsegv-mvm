@@ -25,7 +25,7 @@ public:
 //	virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlen) override;
 #endif
 	
-	bool RegisterConCommandBase(ConCommandBase *pCommand);
+	virtual bool RegisterConCommandBase(ConCommandBase *pCommand) override;
 	
 private:
 	virtual void LevelInitPreEntity() override;

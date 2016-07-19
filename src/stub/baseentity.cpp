@@ -12,6 +12,7 @@ IMPL_DATAMAP(QAngle,                 CBaseEntity, m_angAbsRotation);
 IMPL_DATAMAP(Vector,                 CBaseEntity, m_vecAbsVelocity);
 IMPL_DATAMAP(IPhysicsObject*,        CBaseEntity, m_pPhysicsObject);
 IMPL_DATAMAP(matrix3x4_t,            CBaseEntity, m_rgflCoordinateFrame);
+IMPL_DATAMAP(int,                    CBaseEntity, m_nNextThinkTick);
 
 IMPL_SENDPROP(CCollisionProperty,   CBaseEntity, m_Collision,     CBaseEntity);
 IMPL_SENDPROP(int,                  CBaseEntity, m_iTeamNum,      CBaseEntity);

@@ -2,7 +2,24 @@
 #include "stub/entities.h"
 #include "stub/tfweaponbase.h"
 #include "stub/tfplayer.h"
+#include "stub/projectiles.h"
 #include "util/scope.h"
+#include "util/backtrace.h"
+
+
+#define TRACE_ENABLE 0
+#define TRACE_TERSE  0
+#include "util/trace.h"
+
+
+/* from CBaseEntity */
+typedef void (CBaseEntity::*BASEPTR)();
+enum thinkmethods_t
+{
+	THINK_FIRE_ALL_FUNCTIONS,
+	THINK_FIRE_BASE_ONLY,
+	THINK_FIRE_ALL_BUT_BASE,
+};
 
 
 // FINDINGS:
@@ -31,37 +48,159 @@
 // - server gpGlobals->curtime not agreeing with reality (Plat_FloatTime etc)
 
 
+// MORE SPECIFIC FINDINGS:
+// - flames are missing several of their first thinks when mojo is in effect
+// - when missing thinks occur:
+//   CBaseEntity::PhysicsRunSpecificThink is not calling CBaseEntity::PhysicsDispatchThink
+//   - this, in turn, is due to GetNextThinkTick(nContextIndex) being <= 0 or > gpGlobals->tickcount
+
+
+// EVEN MORE SPECIFIC FINDINGS:
+// - CTFFlameEntity::Create (and therefore CTFFlameEntity::Spawn as well) are called
+//   from a tree originating in CBasePlayer::PhysicsSimulate, CBasePlayer::PlayerRunCommand, etc
+// - so the gpGlobals->curtime those functions see is WRONG
+// - and they use this gpGlobals->curtime to set the first think time, as well as the end of its time-to-live!
+// - but then, the CTFFlameEntity itself sees the actual gpGlobals->curtime
+//   and its thinks are based on the actual gpGlobals->curtime
+
+// gpGlobals->curtime specifically gets whacked in CPlayerMove::RunCommand:
+//     gpGlobals->curtime = player->m_nTickBase * TICK_INTERVAL;
+
+
+/*
+  2  ffc23180  f16de0c8  DispatchSpawn(CBaseEntity*)+0x1f8
+  3  ffc231c0  f12b4b81  CBaseEntity::Create(char const*, Vector const&, QAngle const&, CBaseEntity*)+0x31
+  4  ffc231e0  f1134c8b  CTFFlameEntity::Create(Vector const&, QAngle const&, CBaseEntity*, float, int, float, bool, bool)+0x3b
+  5  ffc232b0  dd11851e  ???+0x0
+  6  ffc23300  f11367e1  CTFFlameThrower::PrimaryAttack() [clone .part.170]+0x4b1
+  7  ffc234c0  f1136e12  CTFFlameThrower::ItemPostFrame()+0x232
+  8  ffc23540  f0f1891f  CBasePlayer::ItemPostFrame()+0x2cf
+  9  ffc235c0  f142bd26  CBasePlayer::PostThink()+0x426
+ 10  ffc236c0  f1686c74  CTFPlayer::PostThink()+0x14
+ 11  ffc23750  f14394c0  CPlayerMove::RunPostThink(CBasePlayer*)+0xc0
+ 12  ffc237c0  f1439e86  CPlayerMove::RunCommand(CBasePlayer*, CUserCmd*, IMoveHelper*)+0x8e6
+ 13  ffc23880  f141a12c  CBasePlayer::PlayerRunCommand(CUserCmd*, IMoveHelper*)+0x9c
+ 14  ffc238a0  f1662825  CTFPlayer::PlayerRunCommand(CUserCmd*, IMoveHelper*)+0x125
+ 15  ffc23910  f14333a7  CBasePlayer::PhysicsSimulate()+0x607
+ 16  ffc239e0  f140344b  Physics_SimulateEntity(CBaseEntity*)+0x45b
+ 17  ffc23a70  dd117c0d  ???+0x0
+ 18  ffc23ab0  f140390a  Physics_RunThinkFunctions(bool)+0x22a
+ 19  ffc23b80  dd117708  ???+0x0
+ 20  ffc23ba0  f1336ed1  CServerGameDLL::GameFrame(bool)+0x161
+ 21  ffc23c20  eaf17334  ???+0x0
+ 22  ffc23c70  dd112fbb  ???+0x0
+ 23  ffc23c90  f5f1acb7  SV_Think(bool)+0x1b7
+ 24  ffc23d10  f5f1beb9  SV_Frame(bool)+0x179
+ 25  ffc23d80  f5e8e5a7  _Host_RunFrame_Server(bool)+0x177
+ 26  ffc23e10  f5e8f2b9  _Host_RunFrame(float)+0x449
+*/
+
+
 namespace Mod_Debug_Flamethrower_Mojo
 {
-	RefCount rc_CTFFlameEntity_Create;
-	RefCount rc_CTFFlameEntity_FlameThink;
-	
-	
-	std::map<CHandle<CBaseEntity>, Vector> flame_pos_start;
-	std::map<CHandle<CBaseEntity>, float>  flame_realtime_start;
-	std::map<CHandle<CBaseEntity>, int>    flame_tick_start;
-	std::map<CHandle<CBaseEntity>, Color>  flame_color;
-	std::map<CHandle<CBaseEntity>, int>    flame_thinks;
-	std::map<CHandle<CBaseEntity>, bool>   flame_thought_this_tick;
-	std::map<CHandle<CBaseEntity>, bool>   flame_spawned_this_tick;
-	
-	std::deque<double> recent_dists;
-	
-	
-	Color ChooseColor()
+	Color RainbowGenerator()
 	{
 		static long i = 0;
 		
 		switch ((i++) % 8) {
-		case 0: return Color(0xff, 0x00, 0x00, 0xff);
-		case 1: return Color(0xff, 0x80, 0x00, 0xff);
-		case 2: return Color(0xff, 0xff, 0x00, 0xff);
-		case 3: return Color(0x00, 0xff, 0x00, 0xff);
-		case 4: return Color(0x00, 0xff, 0xff, 0xff);
-		case 5: return Color(0x00, 0x00, 0xff, 0xff);
-		case 6: return Color(0x80, 0x00, 0xff, 0xff);
-		case 7: return Color(0xff, 0x00, 0xff, 0xff);
-		default: return Color(0x00, 0x00, 0x00, 0x00);
+		case 0:  return Color(0xff, 0x00, 0x00, 0xff); // red
+		case 1:  return Color(0xff, 0x80, 0x00, 0xff); // orange
+		case 2:  return Color(0xff, 0xff, 0x00, 0xff); // yellow
+		case 3:  return Color(0x00, 0xff, 0x00, 0xff); // green
+		case 4:  return Color(0x00, 0xff, 0xff, 0xff); // cyan
+		case 5:  return Color(0x00, 0x00, 0xff, 0xff); // blue
+		case 6:  return Color(0x80, 0x00, 0xff, 0xff); // violet
+		case 7:  return Color(0xff, 0x00, 0xff, 0xff); // magenta
+		default: return Color(0x00, 0x00, 0x00, 0x00); // black
+		}
+	}
+	
+	Color MakeColorLighter(Color c)
+	{
+		c[0] += (0xff - c[0]) / 2;
+		c[1] += (0xff - c[1]) / 2;
+		c[2] += (0xff - c[2]) / 2;
+		
+		return c;
+	}
+	
+	
+	struct FlameInfo
+	{
+		FlameInfo(CTFFlameEntity *flame)
+		{
+			init_origin   = flame->GetAbsOrigin();
+			init_curtime  = gpGlobals->curtime;
+			init_realtime = Plat_FloatTime();
+			init_tick     = gpGlobals->tickcount;
+			
+			col    = RainbowGenerator();
+			col_lt = MakeColorLighter(col);
+			
+			num_thinks    = 0;
+			missed_thinks = 0;
+			
+			hit_an_entity = false;
+			
+			spawned_this_tick = true;
+			thought_this_tick = false;
+			removed_this_tick = false;
+		}
+		
+		FlameInfo(const FlameInfo&) = delete;
+		
+		
+		Vector init_origin;
+		float  init_curtime;
+		float  init_realtime;
+		int    init_tick;
+		
+		Color col;
+		Color col_lt;
+		
+		int num_thinks;
+		int missed_thinks;
+		
+		bool hit_an_entity;
+		
+		bool spawned_this_tick;
+		bool thought_this_tick;
+		bool removed_this_tick;
+	};
+	std::map<CHandle<CBaseEntity>, FlameInfo> flames;
+	std::vector<decltype(flames)::iterator> dead_flames;
+	
+	
+	RefCount rc_CTFFlameEntity_Create;
+	RefCount rc_CTFFlameEntity_FlameThink;
+	RefCount rc_CTFFlameEntity_OnCollide;
+	
+	
+	std::deque<double> stats_dist;
+	
+	std::deque<int> stats_thinks_total;
+	std::deque<int> stats_thinks_missed;
+	
+	std::deque<bool> stats_hit;
+	
+	
+	ConVar cvar_fix("sig_debug_flamethrower_mojo_fix", "0", FCVAR_NOTIFY,
+		"Debug: apply a fix for flame entities being created/spawned in the wrong timespace");
+	
+	
+	float saved_curtime;
+	void BeginTimeFix()
+	{
+		if (cvar_fix.GetBool()) {
+			Warning("Fix is enabled but it doesn't actually quite work correctly!\n");
+			saved_curtime = gpGlobals->curtime;
+			gpGlobals->curtime = engine->GetServerTime();
+		}
+	}
+	void EndTimeFix()
+	{
+		if (cvar_fix.GetBool()) {
+			gpGlobals->curtime = saved_curtime;
 		}
 	}
 	
@@ -79,6 +218,8 @@ namespace Mod_Debug_Flamethrower_Mojo
 	
 	DETOUR_DECL_STATIC(CTFFlameEntity *, CTFFlameEntity_Create, const Vector& origin, const QAngle& angles, CBaseEntity *owner, float f1, int i1, float f2, bool b1, bool b2)
 	{
+		BeginTimeFix();
+		
 		SCOPED_INCREMENT(rc_CTFFlameEntity_Create);
 		
 		auto result = DETOUR_STATIC_CALL(CTFFlameEntity_Create)(origin, angles, owner, f1, i1, f2, b1, b2);
@@ -87,22 +228,31 @@ namespace Mod_Debug_Flamethrower_Mojo
 		//	DevMsg("[CTFFlameEntity::Create]  [%+6.1f %+6.1f %+6.1f]\n",
 		//		result->GetAbsOrigin().x, result->GetAbsOrigin().y, result->GetAbsOrigin().z);
 			
-			flame_pos_start[result]         = result->GetAbsOrigin();
-			flame_realtime_start[result]    = Plat_FloatTime();
-			flame_tick_start[result]        = gpGlobals->tickcount;
-			flame_color[result]             = ChooseColor();
-			flame_thinks[result]            = 0;
-			flame_thought_this_tick[result] = false;
-			flame_spawned_this_tick[result] = true;
+			flames.emplace(std::make_pair(result, result));
 			
-			Vector velocity;
-			result->GetVelocity(&velocity, nullptr);
-			
+		//	Vector velocity;
+		//	result->GetVelocity(&velocity, nullptr);
 		//	DevMsg("New flame entity speed: %.0f\n", velocity.Length());
 		//	NDebugOverlay::EntityTextAtPosition(result->GetAbsOrigin(), 0, CFmtStrN<64>("%.0f", velocity.Length()), 1.0f, 0xff, 0xff, 0xff, 0xff);
 		}
 		
+	//	BACKTRACE();
+		
+	//	DevMsg("CTFFlameEntity::Create: curtime = %.3f, tickcount = %d, realtime = %.3f\n", gpGlobals->curtime, gpGlobals->tickcount, gpGlobals->realtime);
+		
+		EndTimeFix();
+		
 		return result;
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTFFlameEntity_Spawn)
+	{
+		DETOUR_MEMBER_CALL(CTFFlameEntity_Spawn)();
+		
+	//	BACKTRACE();
+		
+	//	DevMsg("CTFFlameEntity::Spawn: curtime = %.3f, tickcount = %d, realtime = %.3f\n", gpGlobals->curtime, gpGlobals->tickcount, gpGlobals->realtime);
 	}
 	
 	
@@ -122,36 +272,48 @@ namespace Mod_Debug_Flamethrower_Mojo
 	{
 		auto flame = reinterpret_cast<CTFFlameEntity *>(this);
 		
-		auto it = flame_pos_start.find(flame);
-		if (it != flame_pos_start.end()) {
-			const Vector& pos_start = (*it).second;
+		auto it = flames.find(flame);
+		if (it != flames.end()) {
+			FlameInfo& info = (*it).second;
+			
+			const Vector& pos_start = info.init_origin;
 			const Vector& pos_end   = flame->GetAbsOrigin();
 			float dist = (pos_end - pos_start).Length();
 			
-			int dTick = gpGlobals->tickcount - flame_tick_start[flame];
-			float dRealTime = Plat_FloatTime() - flame_realtime_start[flame];
+			int delta_tick       = gpGlobals->tickcount - info.init_tick;
+			float delta_curtime  = gpGlobals->curtime   - info.init_curtime;
+			float delta_realtime = Plat_FloatTime()     - info.init_realtime;
 			
 		//	NDebugOverlay::EntityTextAtPosition(pos_end, 0, CFmtStrN<64>("%.0f", dist), cvar_dead_flame_duration.GetFloat(), 0xff, 0xff, 0xff, 0xff);
-		//	NDebugOverlay::EntityTextAtPosition(pos_end, 0, CFmtStrN<64>("%dt", dTick), cvar_dead_flame_duration.GetFloat(), 0xff, 0xff, 0xff, 0xff);
-		//	NDebugOverlay::EntityTextAtPosition(pos_end, 1, CFmtStrN<64>("%.3fs", dRealTime), cvar_dead_flame_duration.GetFloat(), 0xff, 0xff, 0xff, 0xff);
+		//	NDebugOverlay::EntityTextAtPosition(pos_end, 0, CFmtStrN<64>("%dt", delta_tick), cvar_dead_flame_duration.GetFloat(), 0xff, 0xff, 0xff, 0xff);
+		//	NDebugOverlay::EntityTextAtPosition(pos_end, 1, CFmtStrN<64>("%.3fs", delta_realtime), cvar_dead_flame_duration.GetFloat(), 0xff, 0xff, 0xff, 0xff);
 			
-			NDebugOverlay::EntityBounds(flame, 0xff, 0xff, 0xff, 0x00, cvar_dead_flame_duration.GetFloat());
+			NDebugOverlay::EntityBounds(flame, 0xff, 0xff, 0xff, 0x10, cvar_dead_flame_duration.GetFloat());
 		//	NDebugOverlay::Cross3D(flame->WorldSpaceCenter(), 3.0f, 0xff, 0xff, 0xff, false, cvar_dead_flame_duration.GetFloat());
 			
-			recent_dists.push_back(dist);
-			while (recent_dists.size() > cvar_stats_qty.GetInt()) {
-				recent_dists.pop_front();
+			stats_dist.push_back(dist);
+			while (stats_dist.size() > cvar_stats_qty.GetInt()) {
+				stats_dist.pop_front();
 			}
 			
-			flame_pos_start.erase(it);
-			flame_tick_start.erase(flame_tick_start.find(flame));
-			flame_realtime_start.erase(flame_realtime_start.find(flame));
-			flame_color.erase(flame_color.find(flame));
-			flame_thinks.erase(flame_thinks.find(flame));
-			flame_thought_this_tick.erase(flame_thought_this_tick.find(flame));
-			flame_spawned_this_tick.erase(flame_spawned_this_tick.find(flame));
-		}
+			stats_thinks_total.push_back(info.num_thinks + info.missed_thinks);
+			while (stats_thinks_total.size() > cvar_stats_qty.GetInt()) {
+				stats_thinks_total.pop_front();
+			}
+			stats_thinks_missed.push_back(info.missed_thinks);
+			while (stats_thinks_missed.size() > cvar_stats_qty.GetInt()) {
+				stats_thinks_missed.pop_front();
+			}
 			
+			stats_hit.push_back(info.hit_an_entity);
+		//	while (stats_hit.size() > cvar_stats_qty.GetInt()) {
+		//		stats_hit.pop_front();
+		//	}
+			
+			info.removed_this_tick = true;
+			dead_flames.push_back(it);
+		}
+		
 		//	DevMsg("[CTFFlameEntity::RemoveFlame]  [%+6.1f %+6.1f %+6.1f]\n",
 		//		flame->GetAbsOrigin().x, flame->GetAbsOrigin().y, flame->GetAbsOrigin().z);
 		
@@ -159,44 +321,192 @@ namespace Mod_Debug_Flamethrower_Mojo
 	}
 	
 	
+	ConVar cvar_backtrace_think("sig_debug_flamethrower_mojo_backtrace_think", "0", FCVAR_NOTIFY,
+		"Debug: enable backtrace dumping in CTFFlameEntity::FlameThink");
+	
+	
 	DETOUR_DECL_MEMBER(void, CTFFlameEntity_FlameThink)
 	{
-		SCOPED_INCREMENT(rc_CTFFlameEntity_FlameThink);
-		
 		auto flame = reinterpret_cast<CTFFlameEntity *>(this);
 		
-		flame_thought_this_tick[flame] = true;
+		TRACE("@%.3f #%d", gpGlobals->curtime, ENTINDEX(flame));
 		
-		int& thinks = flame_thinks[flame];
-		++thinks;
+		SCOPED_INCREMENT(rc_CTFFlameEntity_FlameThink);
 		
-	//	Color c = flame_color[flame];
-	//	c[0] += (0xff - c[0]) / 2;
-	//	c[1] += (0xff - c[1]) / 2;
-	//	c[2] += (0xff - c[2]) / 2;
+		if (cvar_backtrace_think.GetBool()) {
+			BACKTRACE();
+		}
 		
-	//	NDebugOverlay::Cross3D(flame->WorldSpaceCenter(), 3.0f, c.r(), c.g(), c.b(), true, gpGlobals->interval_per_tick);
-	//	NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), 0, CFmtStrN<256>("THINK#%d", thinks), gpGlobals->interval_per_tick, c.r(), c.g(), c.b(), 0xff);
+		auto it = flames.find(flame);
+		if (it != flames.end()) {
+			FlameInfo& info = (*it).second;
+			
+			info.thought_this_tick = true;
+			int num_thinks = info.num_thinks++;
+		}
 		
 		DETOUR_MEMBER_CALL(CTFFlameEntity_FlameThink)();
 	}
+	
+	
+	ConVar cvar_show_traces("sig_debug_flamethrower_mojo_show_traces", "0", FCVAR_NOTIFY,
+		"Debug: enable debug overlays for IEngineTrace::TraceRay");
 	
 	
 	DETOUR_DECL_MEMBER(void, IEngineTrace_TraceRay, const Ray_t& ray, unsigned int fMask, ITraceFilter *pTraceFilter, trace_t *pTrace)
 	{
 		DETOUR_MEMBER_CALL(IEngineTrace_TraceRay)(ray, fMask, pTraceFilter, pTrace);
 		
-		if (rc_CTFFlameEntity_FlameThink > 0 && fMask == MASK_SOLID) {
+		if (cvar_show_traces.GetBool() && rc_CTFFlameEntity_FlameThink > 0 && rc_CTFFlameEntity_OnCollide <= 0 && fMask == MASK_SOLID) {
 			auto m_pPassEnt = *reinterpret_cast<IHandleEntity **>((uintptr_t)pTraceFilter + 0x4);
 			
 			auto flame = rtti_cast<CTFFlameEntity *>(m_pPassEnt);
 			if (flame != nullptr) {
-				Color c = flame_color[flame];
-				
-				NDebugOverlay::Line(pTrace->startpos, pTrace->endpos, c.r(), c.g(), c.b(), true, gpGlobals->interval_per_tick);
+				auto it = flames.find(flame);
+				if (it != flames.end()) {
+					FlameInfo& info = (*it).second;
+					
+					/* this is the condition that FlameThink uses to check if the flame hit a wall;
+					 * if true, it skips collision detection and immediately calls RemoveFlame */
+					if (pTrace->startsolid || pTrace->fraction < 1.0f) {
+						Vector vecDir = (pTrace->endpos - pTrace->startpos);
+						VectorNormalize(vecDir);
+						
+						Vector better_endpos = pTrace->endpos + (vecDir * flame->CollisionProp()->OBBMaxs().x);
+						
+						NDebugOverlay::EntityTextAtPosition(better_endpos, -2, "HIT WALL", 0.10f, 0xff, 0xff, 0xff, 0xff);
+						NDebugOverlay::Line(pTrace->startpos, better_endpos, 0xff, 0xff, 0xff, true, 0.10f);
+						NDebugOverlay::Sphere(better_endpos, vec3_angle, 2.0f, 0xff, 0xff, 0xff, 0x80, true, 0.10f);
+					} else {
+						NDebugOverlay::Line(pTrace->startpos, pTrace->endpos, info.col.r(), info.col.g(), info.col.b(), true, gpGlobals->interval_per_tick);
+					}
+				}
 			}
 		}
 	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTFFlameEntity_OnCollide, CBaseEntity *pOther)
+	{
+		SCOPED_INCREMENT(rc_CTFFlameEntity_OnCollide);
+		
+		auto flame = reinterpret_cast<CTFFlameEntity *>(this);
+		
+		auto it = flames.find(flame);
+		if (it != flames.end()) {
+			FlameInfo& info = (*it).second;
+			
+			info.hit_an_entity = true;
+			
+			NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -2, "HIT", 0.10f, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+		}
+		
+		DETOUR_MEMBER_CALL(CTFFlameEntity_OnCollide)(pOther);
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CBaseProjectile_CollideWithTeammatesThink)
+	{
+		auto proj = reinterpret_cast<CBaseProjectile *>(this);
+		
+		Vector vecText        = proj->WorldSpaceCenter() + Vector(-10.0f, 0.0f, 45.0f);
+		Vector vecArrowTop    = proj->WorldSpaceCenter() + Vector(  0.0f, 0.0f, 40.0f);
+		Vector vecArrowBottom = proj->WorldSpaceCenter() + Vector(  0.0f, 0.0f,  3.0f);
+		
+		NDebugOverlay::EntityTextAtPosition(vecText, 0, "CollideWithTeammatesThink", 1.00f, 0xff, 0xff, 0xff, 0xff);
+		NDebugOverlay::VertArrow(vecArrowTop, vecArrowBottom, 1.0f, 0xff, 0xff, 0xff, 0x00, true, 1.00f);
+		NDebugOverlay::EntityBounds(proj, 0xff, 0xff, 0xff, 0x10, 1.00f);
+		
+		DETOUR_MEMBER_CALL(CBaseProjectile_CollideWithTeammatesThink)();
+	}
+	
+	
+	DETOUR_DECL_STATIC(int, D_RandomInt, int iMinVal, int iMaxVal)
+	{
+		auto result = DETOUR_STATIC_CALL(D_RandomInt)(iMinVal, iMaxVal);
+		
+		if (rc_CTFFlameEntity_Create > 0) {
+			DevMsg("RandomInt(%d, %d) = %d\n", iMinVal, iMaxVal, result);
+		}
+		
+		return result;
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CLagCompensationManager_StartLagCompensation, CBasePlayer *player, CUserCmd *cmd)
+	{
+		/* do nothing */
+	}
+	
+	DETOUR_DECL_MEMBER(void, CLagCompensationManager_FinishLagCompensation, CBasePlayer *player)
+	{
+		/* do nothing */
+	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////
+	// BEGIN ENTITY SIMULATION / THINK TRACING /////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
+	
+	DETOUR_DECL_MEMBER(void, IServerGameDLL_GameFrame, bool simulating)
+	{
+		TRACE("@%.3f", gpGlobals->curtime);
+		DETOUR_MEMBER_CALL(IServerGameDLL_GameFrame)(simulating);
+	}
+	
+	DETOUR_DECL_STATIC(void, Physics_RunThinkFunctions, bool simulating)
+	{
+		TRACE("@%.3f", gpGlobals->curtime);
+		DETOUR_STATIC_CALL(Physics_RunThinkFunctions)(simulating);
+	}
+	
+	DETOUR_DECL_STATIC(void, Physics_SimulateEntity, CBaseEntity *pEntity)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(pEntity);
+		TRACE_IF(flame != nullptr, "@%.3f #%d", gpGlobals->curtime, ENTINDEX(flame));
+		DETOUR_STATIC_CALL(Physics_SimulateEntity)(pEntity);
+	}
+	
+	DETOUR_DECL_MEMBER(void, CBaseEntity_PhysicsSimulate)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(reinterpret_cast<CBaseEntity *>(this));
+		TRACE_IF(flame != nullptr, "@%.3f #%d", gpGlobals->curtime, ENTINDEX(flame));
+		DETOUR_MEMBER_CALL(CBaseEntity_PhysicsSimulate)();
+	}
+	
+	DETOUR_DECL_MEMBER(void, CBaseEntity_PhysicsNoclip)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(reinterpret_cast<CBaseEntity *>(this));
+		TRACE_IF(flame != nullptr, "@%.3f #%d", gpGlobals->curtime, ENTINDEX(flame));
+		DETOUR_MEMBER_CALL(CBaseEntity_PhysicsNoclip)();
+	}
+	
+	DETOUR_DECL_MEMBER(void, CBaseEntity_PhysicsRunThink, thinkmethods_t thinkMethod)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(reinterpret_cast<CBaseEntity *>(this));
+		TRACE_IF(flame != nullptr, "@%.3f #%d [thinkMethod: %d]", gpGlobals->curtime, ENTINDEX(flame), (int)thinkMethod);
+		DETOUR_MEMBER_CALL(CBaseEntity_PhysicsRunThink)(thinkMethod);
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CBaseEntity_PhysicsRunSpecificThink, int nContextIndex, BASEPTR thinkFunc)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(reinterpret_cast<CBaseEntity *>(this));
+		TRACE_IF(flame != nullptr, "@%.3f #%d [nContextIndex: %d] [thinkFunc: %08x]", gpGlobals->curtime, ENTINDEX(flame), nContextIndex, *reinterpret_cast<uintptr_t *>(&thinkFunc));
+		auto result = DETOUR_MEMBER_CALL(CBaseEntity_PhysicsRunSpecificThink)(nContextIndex, thinkFunc);
+		TRACE_EXIT("%s", (result ? "TRUE" : "FALSE"));
+		return result;
+	}
+	
+	DETOUR_DECL_MEMBER(void, CBaseEntity_PhysicsDispatchThink, BASEPTR thinkFunc)
+	{
+		auto flame = rtti_cast<CTFFlameEntity *>(reinterpret_cast<CBaseEntity *>(this));
+		TRACE_IF(flame != nullptr, "@%.3f #%d [thinkFunc: %08x]", gpGlobals->curtime, ENTINDEX(flame), *reinterpret_cast<uintptr_t *>(&thinkFunc));
+		DETOUR_MEMBER_CALL(CBaseEntity_PhysicsDispatchThink)(thinkFunc);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////
+	// END ENTITY SIMULATION / THINK TRACING ///////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	
 	
 	ConVar cvar_stats_interval("sig_debug_flamethrower_mojo_stats_interval", "0.25", FCVAR_NOTIFY,
@@ -206,10 +516,10 @@ namespace Mod_Debug_Flamethrower_Mojo
 	ConVar cvar_stats_screenpos_y("sig_debug_flamethrower_mojo_stats_screenpos_y", "0.05", FCVAR_NOTIFY,
 		"Debug: where to put the statistics overlay");
 	
-	void DrawStatTextLine(int line, const char *text)
+	void DrawStatTextLine(int line, const char *text, int r = 0xff, int g = 0xff, int b = 0xff, int a = 0xff)
 	{
 		NDebugOverlay::ScreenText(cvar_stats_screenpos_x.GetFloat(), cvar_stats_screenpos_y.GetFloat() + (line * 0.0175f),
-			text, 0xff, 0xff, 0xff, 0xff, cvar_stats_interval.GetFloat());
+			text, r, g, b, a, cvar_stats_interval.GetFloat());
 	}
 	
 	
@@ -220,10 +530,10 @@ namespace Mod_Debug_Flamethrower_Mojo
 	ConVar cvar_net_screenpos_y("sig_debug_flamethrower_mojo_net_screenpos_y", "0.05", FCVAR_NOTIFY,
 		"Debug: where to put the network overlay");
 	
-	void DrawNetTextLine(int line, const char *text)
+	void DrawNetTextLine(int line, const char *text, int r = 0xff, int g = 0xff, int b = 0xff, int a = 0xff)
 	{
 		NDebugOverlay::ScreenText(cvar_net_screenpos_x.GetFloat(), cvar_net_screenpos_y.GetFloat() + (line * 0.0175f),
-			text, 0xff, 0xff, 0xff, 0xff, cvar_net_interval.GetFloat());
+			text, r, g, b, a, cvar_net_interval.GetFloat());
 	}
 	
 	
@@ -259,21 +569,21 @@ namespace Mod_Debug_Flamethrower_Mojo
 	
 	double ComputeStdDev(double mean)
 	{
-		if (recent_dists.size() < 2) return 0.0;
+		if (stats_dist.size() < 2) return 0.0;
 		
 		double accum = 0.0;
 		
-		std::for_each(recent_dists.begin(), recent_dists.end(), [&](const double dist){
+		std::for_each(stats_dist.begin(), stats_dist.end(), [&](const double dist){
 			accum += Square(dist - mean);
 		});
 		
-		return sqrt(accum / (recent_dists.size() - 1));
+		return sqrt(accum / (stats_dist.size() - 1));
 	}
 	
 	
 	void ComputeQuartiles(double& min, double& q1, double& median, double& q3, double& max)
 	{
-		if (recent_dists.empty()) {
+		if (stats_dist.empty()) {
 			min    = 0.0;
 			q1     = 0.0;
 			median = 0.0;
@@ -282,15 +592,15 @@ namespace Mod_Debug_Flamethrower_Mojo
 			return;
 		}
 		
-		auto n_q1 = recent_dists.size() / 4;
-		auto n_q2 = recent_dists.size() / 2;
+		auto n_q1 = stats_dist.size() / 4;
+		auto n_q2 = stats_dist.size() / 2;
 		auto n_q3 = n_q1 + n_q2;
 		
-		n_q1 = Clamp(n_q1, 0U, recent_dists.size());
-		n_q2 = Clamp(n_q2, 0U, recent_dists.size());
-		n_q3 = Clamp(n_q3, 0U, recent_dists.size());
+		n_q1 = Clamp(n_q1, 0U, stats_dist.size());
+		n_q2 = Clamp(n_q2, 0U, stats_dist.size());
+		n_q3 = Clamp(n_q3, 0U, stats_dist.size());
 		
-		std::vector<double> sorted(recent_dists.begin(), recent_dists.end());
+		std::vector<double> sorted(stats_dist.begin(), stats_dist.end());
 		std::sort(sorted.begin(), sorted.end());
 		
 		q1     = sorted[n_q1];
@@ -302,27 +612,8 @@ namespace Mod_Debug_Flamethrower_Mojo
 	}
 	
 	
-	DETOUR_DECL_STATIC(int, D_RandomInt, int iMinVal, int iMaxVal)
-	{
-		auto result = DETOUR_STATIC_CALL(D_RandomInt)(iMinVal, iMaxVal);
-		
-		if (rc_CTFFlameEntity_Create > 0) {
-			DevMsg("RandomInt(%d, %d) = %d\n", iMinVal, iMaxVal, result);
-		}
-		
-		return result;
-	}
-	
-	
-	DETOUR_DECL_MEMBER(void, CLagCompensationManager_StartLagCompensation, CBasePlayer *player, CUserCmd *cmd)
-	{
-		/* do nothing */
-	}
-	
-	DETOUR_DECL_MEMBER(void, CLagCompensationManager_FinishLagCompensation, CBasePlayer *player)
-	{
-		/* do nothing */
-	}
+	ConVar cvar_show_thinks("sig_debug_flamethrower_mojo_show_thinks", "0", FCVAR_NOTIFY,
+		"Debug: show think overlays on active flame entities");
 	
 	
 	void PostThink_DrawFlames()
@@ -331,46 +622,49 @@ namespace Mod_Debug_Flamethrower_Mojo
 			auto flame = rtti_cast<CTFFlameEntity *>(ITFFlameEntityAutoList::AutoList()[i]);
 			if (flame == nullptr) continue;
 			
-			Color c = flame_color[flame];
-			
-			NDebugOverlay::EntityBounds(flame, c.r(), c.g(), c.b(), 0x10, gpGlobals->interval_per_tick);
-		//	NDebugOverlay::Cross3D(flame->WorldSpaceCenter(), 3.0f, 0xff, 0xff, 0xff, false, gpGlobals->interval_per_tick);
-			
-			Color c_light = c;
-			c_light[0] += (0xff - c_light[0]) / 2;
-			c_light[1] += (0xff - c_light[1]) / 2;
-			c_light[2] += (0xff - c_light[2]) / 2;
-			
-			bool thought;
-			bool think_missed_initial = false;
-			bool think_missed_removed = false;
-			
-			if (flame_thought_this_tick.find(flame) != flame_thought_this_tick.end()) {
-				thought = flame_thought_this_tick[flame];
+			auto it = flames.find(flame);
+			if (it != flames.end()) {
+				FlameInfo& info = (*it).second;
 				
-				if (flame_spawned_this_tick[flame]) {
-					think_missed_initial = true;
-				}
-			} else {
-				thought = false;
-				think_missed_removed = true;
-			}
-			
-			if (thought) {
-				int think_num = flame_thinks[flame];
+				NDebugOverlay::EntityBounds(flame, info.col.r(), info.col.g(), info.col.b(), 0x10, gpGlobals->interval_per_tick);
+			//	NDebugOverlay::Cross3D(flame->WorldSpaceCenter(), 3.0f, 0xff, 0xff, 0xff, false, gpGlobals->interval_per_tick);
 				
-				NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "THINK", gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
-				NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(),  0, CFmtStrN<64>("#%d", think_num), gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
-			} else {
-				if (think_missed_initial) {
-					NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "SPAWN", gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
-				} else if (think_missed_removed) {
-					NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "DEAD", gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
-				} else {
-					NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "MISSED", gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
-					NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(),  0, "THINK!", gpGlobals->interval_per_tick, c_light.r(), c_light.g(), c_light.b(), 0xff);
+				if (cvar_show_thinks.GetBool()) {
+					if (info.thought_this_tick) {
+						NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "THINK", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+						NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(),  0, CFmtStrN<64>("#%d", info.num_thinks), gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+					} else {
+						if (info.spawned_this_tick) {
+							NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "SPAWN", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+						} else if (info.removed_this_tick) {
+							NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "DEAD", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+						} else {
+							++info.missed_thinks;
+							
+							NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), -1, "MISSED", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+							NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(),  0, "THINK!", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+						}
+					}
+					
+					if (info.missed_thinks != 0) {
+						NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), 5, CFmtStrN<64>("%d MISSED", info.missed_thinks), gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+						NDebugOverlay::EntityTextAtPosition(flame->WorldSpaceCenter(), 6, "THINKS!!", gpGlobals->interval_per_tick, info.col_lt.r(), info.col_lt.g(), info.col_lt.b(), 0xff);
+					}
 				}
 			}
+		}
+		
+		for (int i = gpGlobals->maxClients + 1; i < 2048; ++i) {
+			auto bolt = rtti_cast<CTFProjectile_HealingBolt *>(UTIL_EntityByIndex(i));
+			if (bolt == nullptr) continue;
+			
+			NDebugOverlay::EntityBounds(bolt, 0xff, 0xff, 0xff, 0x10, gpGlobals->interval_per_tick);
+			
+			/* de-bloat the box slightly so it won't interfere with the CollideWithTeammatesThink box */
+			Vector vecMins = bolt->CollisionProp()->OBBMins() + Vector(0.01f, 0.01f, 0.01f);
+			Vector vecMaxs = bolt->CollisionProp()->OBBMaxs() - Vector(0.01f, 0.01f, 0.01f);
+			
+			NDebugOverlay::Box(bolt->WorldSpaceCenter(), vecMins, vecMaxs, 0x40, 0x40, 0x40, 0x00, 1.00f);
 		}
 	}
 	
@@ -380,33 +674,55 @@ namespace Mod_Debug_Flamethrower_Mojo
 		if (ctPyroOverlay.IsElapsed()) {
 			ctPyroOverlay.Start(1.00f);
 			
-			for (int i = gpGlobals->maxClients + 1; i < 2048; ++i) {
-				auto flamer = rtti_cast<CTFFlameThrower *>(UTIL_EntityByIndex(i));
-				if (flamer == nullptr) continue;
+			for (int i = 1; i <= gpGlobals->maxClients; ++i) {
+				CBasePlayer *player = UTIL_PlayerByIndex(i);
+				if (player == nullptr) continue;
 				
-				CTFPlayer *owner = ToTFPlayer(flamer->GetOwner());
-				if (owner != nullptr) {
-					NDebugOverlay::EntityBounds(owner, 0xff, 0xff, 0xff, 0x00, 1.00f);
+				NDebugOverlay::EntityBounds(player, 0xff, 0xff, 0xff, 0x00, 1.00f);
+				
+				if (!player->IsBot()) {
+					Vector vecFwd;
+					player->EyeVectors(&vecFwd);
+					Vector vecStart = player->EyePosition() + Vector(0.0f, 0.0f, 50.0f);
 					
-					if (!owner->IsBot()) {
-						Vector vecFwd;
-						owner->EyeVectors(&vecFwd);
-						Vector vecStart = owner->EyePosition() + Vector(0.0f, 0.0f, 50.0f);
-						
-					//	NDebugOverlay::Line(vecStart, vecStart + (500.0f * vecFwd), 0x80, 0x80, 0x80, true, 1.00f);
-						
-						NDebugOverlay::EntityTextAtPosition(vecStart + (-30.0f * vecFwd) + Vector(0.0f, 0.0f, 15.0f), 0, "HAMMER", 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
-						NDebugOverlay::EntityTextAtPosition(vecStart + (-30.0f * vecFwd) + Vector(0.0f, 0.0f, 15.0f), 1, " UNITS", 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
+				//	NDebugOverlay::Line(vecStart, vecStart + (500.0f * vecFwd), 0x80, 0x80, 0x80, true, 1.00f);
 					
-						for (float x = 0.0f; x <= 500.0f; x += 20.0f) {
-							Vector vecHash1 = vecStart + (x * vecFwd) + Vector(0.0f, 0.0f,  10.0f);
-							Vector vecHash2 = vecStart + (x * vecFwd) + Vector(0.0f, 0.0f, -50.0f);
-							Vector vecHash3 = vecStart + ((x - 3.0f) * vecFwd) + Vector(0.0f, 0.0f,  15.0f);
-							
-							NDebugOverlay::Line(vecHash1, vecHash2, 0x80, 0x80, 0x80, true, 1.00f);
-							NDebugOverlay::EntityTextAtPosition(vecHash3, 0, CFmtStrN<64>("%.0f", x), 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
-						}
+					NDebugOverlay::EntityTextAtPosition(vecStart + (-30.0f * vecFwd) + Vector(0.0f, 0.0f, 15.0f), 0, "HAMMER", 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
+					NDebugOverlay::EntityTextAtPosition(vecStart + (-30.0f * vecFwd) + Vector(0.0f, 0.0f, 15.0f), 1, " UNITS", 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
+				
+					for (float x = 0.0f; x <= 500.0f; x += 20.0f) {
+						Vector vecHash1 = vecStart + (x * vecFwd) + Vector(0.0f, 0.0f,  10.0f);
+						Vector vecHash2 = vecStart + (x * vecFwd) + Vector(0.0f, 0.0f, -50.0f);
+						Vector vecHash3 = vecStart + ((x - 3.0f) * vecFwd) + Vector(0.0f, 0.0f,  15.0f);
+						
+						NDebugOverlay::Line(vecHash1, vecHash2, 0x80, 0x80, 0x80, true, 1.00f);
+						NDebugOverlay::EntityTextAtPosition(vecHash3, 0, CFmtStrN<64>("%.0f", x), 1.00f, 0xc0, 0xc0, 0xc0, 0xff);
 					}
+				}
+			}
+		}
+	}
+	
+	void PostThink_MedicOverlay()
+	{
+		static CountdownTimer ctMedicOverlay;
+		if (ctMedicOverlay.IsElapsed()) {
+			ctMedicOverlay.Start(0.100f);
+			
+			for (int i = 1; i <= gpGlobals->maxClients; ++i) {
+				CTFPlayer *player = ToTFPlayer(UTIL_PlayerByIndex(i));
+				if (player == nullptr) return;
+				
+				if (player->IsBot()) {
+					Vector vecAbove = player->GetAbsOrigin() + Vector(0.0f, 0.0f, 93.0f);
+					
+					float hp_ratio = (float)player->GetHealth() / (float)player->GetMaxHealth();
+					
+					int r = RemapValClamped(hp_ratio, 0.50f, 1.00f, 255.0f,   0.0f);
+					int g = RemapValClamped(hp_ratio, 0.00f, 0.50f,   0.0f, 255.0f);
+					
+					NDebugOverlay::EntityTextAtPosition(vecAbove, 0, CFmtStrN<64>("%s", player->GetPlayerName()), 0.100f, 0xff, 0xff, 0xff, 0xff);
+					NDebugOverlay::EntityTextAtPosition(vecAbove, 2, CFmtStrN<64>("%3d HP", player->GetHealth()), 0.100f, r, g, 0x00, 0xff);
 				}
 			}
 		}
@@ -418,11 +734,14 @@ namespace Mod_Debug_Flamethrower_Mojo
 		if (ctStatOverlay.IsElapsed()) {
 			ctStatOverlay.Start(cvar_stats_interval.GetFloat());
 			
-			double sum    = std::accumulate(recent_dists.begin(), recent_dists.end(), 0.0);
-			double mean   = sum / (double)recent_dists.size();
+#if 0
+			double sum    = std::accumulate(stats_dist.begin(), stats_dist.end(), 0.0);
+			double mean   = sum / (double)stats_dist.size();
 			double stddev = ComputeStdDev(mean);
 			
-			DrawStatTextLine( 0, CFmtStrN<256>("DISTANCE STATISTICS FOR THE LAST %u FLAMES:", recent_dists.size()));
+			if (stats_dist.size() == 0) mean = 0.0;
+			
+			DrawStatTextLine( 0, CFmtStrN<256>("DISTANCE STATISTICS FOR THE LAST %u FLAMES:", stats_dist.size()));
 			
 			DrawStatTextLine( 2, CFmtStrN<256>("  Mean: %4.0f HU", mean));
 			DrawStatTextLine( 3, CFmtStrN<256>("StdDev: %4.0f HU", stddev));
@@ -439,6 +758,45 @@ namespace Mod_Debug_Flamethrower_Mojo
 			float range = max - min;
 			
 			DrawStatTextLine(11, CFmtStrN<256>(" Range: %4.0f HU  (max-min)", range));
+#endif
+			
+			// let's draw hit ratio stats instead of distance stats, shall we?
+			
+			int n_hit   = 0;
+			int n_miss  = 0;
+			int n_total = 0;
+			std::for_each(stats_hit.begin(), stats_hit.end(), [&](const bool hit){
+				if (hit) ++n_hit; else ++n_miss;
+				++n_total;
+			});
+			
+			double r_hit  = (double)n_hit  / (double)n_total;
+			double r_miss = (double)n_miss / (double)n_total;
+			
+			Color c_hit (0xc0, 0xc0, 0xc0, 0xff);
+			Color c_miss(0xc0, 0xc0, 0xc0, 0xff);
+			
+			if (n_total == 0) {
+				r_hit  = 0.0;
+				r_miss = 0.0;
+			} else {
+				// hit: @100% green; @75% yellow; @50% red
+				c_hit[0] = (uint8_t)RemapValClamped(r_hit, 0.75, 1.00, 255.0,   0.0);
+				c_hit[1] = (uint8_t)RemapValClamped(r_hit, 0.50, 0.75,   0.0, 255.0);
+				c_hit[2] = 0x00;
+				
+				// miss: @50% red; @25% yellow; @0% green
+				c_miss[0] = (uint8_t)RemapValClamped(r_miss, 0.00, 0.25,   0.0, 255.0);
+				c_miss[1] = (uint8_t)RemapValClamped(r_miss, 0.25, 0.50, 255.0,   0.0);
+				c_miss[2] = 0x00;
+			}
+			
+			DrawStatTextLine(0, "FLAME HIT STATISTICS:");
+			
+			DrawStatTextLine(2, "        FLAMES  PERCENT");
+			DrawStatTextLine(3, CFmtStrN<256>("TOTAL:  %6u", stats_hit.size()));
+			DrawStatTextLine(4, CFmtStrN<256>("HITS:   %6u    %3.0f %%", n_hit, r_hit  * 100.0f), c_hit.r(),  c_hit.g(),  c_hit.b(),  0xff);
+			DrawStatTextLine(5, CFmtStrN<256>("MISSES: %6u    %3.0f %%", n_miss, r_miss * 100.0f), c_miss.r(), c_miss.g(), c_miss.b(), 0xff);
 		}
 	}
 	
@@ -519,7 +877,6 @@ namespace Mod_Debug_Flamethrower_Mojo
 			}
 		}
 	}
-
 	
 	
 	class CMod : public IMod, public IFrameUpdateListener
@@ -531,38 +888,61 @@ namespace Mod_Debug_Flamethrower_Mojo
 			
 			MOD_ADD_DETOUR_STATIC(CTFFlameEntity_Create, "CTFFlameEntity::Create");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFFlameEntity_Spawn, "CTFFlameEntity::Spawn");
+			
 			MOD_ADD_DETOUR_MEMBER(CTFFlameEntity_RemoveFlame, "CTFFlameEntity::RemoveFlame");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFFlameEntity_FlameThink, "CTFFlameEntity::FlameThink");
 			
 			MOD_ADD_DETOUR_MEMBER(IEngineTrace_TraceRay, "IEngineTrace::TraceRay");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFFlameEntity_OnCollide, "CTFFlameEntity::OnCollide");
+			
+			MOD_ADD_DETOUR_MEMBER(CBaseProjectile_CollideWithTeammatesThink, "CBaseProjectile::CollideWithTeammatesThink");
+			
 		//	this->AddDetour(new CDetour("RandomInt", reinterpret_cast<void *>(&RandomInt), GET_STATIC_CALLBACK(D_RandomInt), GET_STATIC_INNERPTR(D_RandomInt)));
 			
 		//	MOD_ADD_DETOUR_MEMBER(CLagCompensationManager_StartLagCompensation,  "CLagCompensationManager::StartLagCompensation");
 		//	MOD_ADD_DETOUR_MEMBER(CLagCompensationManager_FinishLagCompensation, "CLagCompensationManager::FinishLagCompensation");
+			
+			MOD_ADD_DETOUR_MEMBER(IServerGameDLL_GameFrame,            "IServerGameDLL::GameFrame");
+			MOD_ADD_DETOUR_STATIC(Physics_RunThinkFunctions,           "Physics_RunThinkFunctions");
+			MOD_ADD_DETOUR_STATIC(Physics_SimulateEntity,              "Physics_SimulateEntity");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PhysicsSimulate,         "CBaseEntity::PhysicsSimulate");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PhysicsNoclip,           "CBaseEntity::PhysicsNoclip");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PhysicsRunThink,         "CBaseEntity::PhysicsRunThink");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PhysicsRunSpecificThink, "CBaseEntity::PhysicsRunSpecificThink");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PhysicsDispatchThink,    "CBaseEntity::PhysicsDispatchThink");
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
 		
 		virtual void FrameUpdatePreEntityThink() override
 		{
-			for (auto& pair : flame_thought_this_tick) {
-				pair.second = false;
+			for (auto& pair : flames) {
+				pair.second.spawned_this_tick = false;
+				pair.second.thought_this_tick = false;
 			}
-			for (auto& pair : flame_spawned_this_tick) {
-				pair.second = false;
-			}
+			
+		//	DevMsg("\nPreEntityThink:  curtime = %.3f, tickcount = %d, realtime = %.3f\n", gpGlobals->curtime, gpGlobals->tickcount, gpGlobals->realtime);
 		}
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
+		//	DevMsg("PostEntityThink: curtime = %.3f, tickcount = %d, realtime = %.3f\n", gpGlobals->curtime, gpGlobals->tickcount, gpGlobals->realtime);
+			
 			PostThink_DrawFlames();
 			PostThink_PyroOverlay();
+			PostThink_MedicOverlay();
 			PostThink_StatOverlay();
 			PostThink_NetOverlay();
 			PostThink_ParamOverlay();
 			PostThink_RefillAmmo();
+			
+			for (auto it : dead_flames) {
+				flames.erase(it);
+			}
+			dead_flames.clear();
 		}
 	};
 	CMod s_Mod;

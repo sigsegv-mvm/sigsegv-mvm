@@ -1257,6 +1257,60 @@
 					sym  "_ZN14CTFFlameEntity11RemoveFlameEv"
 				}
 				
+				"CTFFlameEntity::OnCollide"
+				{
+					type "sym"
+					sym  "_ZN14CTFFlameEntity9OnCollideEP11CBaseEntity"
+				}
+				
+				"Physics_RunThinkFunctions"
+				{
+					type "sym"
+					sym  "_Z25Physics_RunThinkFunctionsb"
+				}
+				
+				"Physics_SimulateEntity"
+				{
+					type "sym"
+					sym  "_Z22Physics_SimulateEntityP11CBaseEntity"
+				}
+				
+				"CBaseEntity::PhysicsNoclip"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity13PhysicsNoclipEv"
+				}
+				
+				"CBaseEntity::PhysicsRunThink"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity15PhysicsRunThinkENS_14thinkmethods_tE"
+				}
+				
+				"CBaseEntity::PhysicsRunSpecificThink"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity23PhysicsRunSpecificThinkEiMS_FvvE"
+				}
+				
+				"CBaseEntity::PhysicsDispatchThink"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity20PhysicsDispatchThinkEMS_FvvE"
+				}
+				
+				"CTFFlameEntity::Spawn"
+				{
+					type "sym"
+					sym  "_ZN14CTFFlameEntity5SpawnEv"
+				}
+				
+				"CBaseProjectile::CollideWithTeammatesThink"
+				{
+					type "sym"
+					sym  "_ZN15CBaseProjectile25CollideWithTeammatesThinkEv"
+				}
+				
 				"CWeaponMedigun::AllowedToHealTarget"
 				{
 					type "sym"

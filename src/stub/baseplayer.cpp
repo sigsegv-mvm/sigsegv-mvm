@@ -20,6 +20,8 @@ MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            C
 
 IMPL_DATAMAP(char, CBasePlayer, m_szNetname);
 
+IMPL_SENDPROP(int, CBasePlayer, m_nTickBase, CBasePlayer);
+
 MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors("CBasePlayer::EyeVectors");
 MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID("CBasePlayer::GetSteamID");
 

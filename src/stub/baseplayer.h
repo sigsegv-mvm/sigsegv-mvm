@@ -59,6 +59,8 @@ public:
 	void ForceRespawn()                                            {        vt_ForceRespawn        (this); }
 	Vector Weapon_ShootPosition()                                  { return vt_Weapon_ShootPosition(this); }
 	
+	DECL_SENDPROP(int, m_nTickBase);
+	
 private:
 	DECL_DATAMAP(char, m_szNetname);
 	
