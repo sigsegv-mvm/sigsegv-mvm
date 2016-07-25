@@ -18,36 +18,41 @@ namespace Mod_Debug_Nav_Mesh
 	
 	
 	ConVar cvar_mode("sig_debug_nav_mesh_mode", "", FCVAR_NOTIFY,
-		"Debug: nav mesh debug mode");
+		"Debug: nav mesh debug mode(s): all, blocked, spawn");
 	
 	
 	void UpdateOverlays()
 	{
 		const char *mode = cvar_mode.GetString();
 		
-		if (V_stricmp(mode, "spawn") == 0) {
+		if (V_stristr(mode, "all") != nullptr) {
 			ForEachArea([](CTFNavArea *area){
-				Extent ext;
-				area->GetExtent(&ext);
-				
-				TFNavAttributeType attr = area->GetTFAttributes();
-				
-				bool red_spawn  = ((attr & RED_SPAWN_ROOM)  != 0);
-				bool blu_spawn  = ((attr & BLUE_SPAWN_ROOM) != 0);
-				bool spawn_exit = ((attr & SPAWN_ROOM_EXIT) != 0);
-				
-				if (red_spawn) {
-					if (spawn_exit) {
-						NDebugOverlay::Box(ext.lo, vec3_origin, (ext.hi - ext.lo), 0xff, 0x80, 0x80, 0x40, INTERVAL);
+				area->DrawFilled(0xc0, 0xc0, 0xc0, 0x00, INTERVAL, true, 1.0f);
+			});
+		}
+		
+		if (V_stristr(mode, "blocked") != nullptr) {
+			ForEachArea([](CTFNavArea *area){
+				if (area->HasTFAttributes(BLOCKED)) {
+					area->DrawFilled(0xff, 0xff, 0x00, 0x40, INTERVAL, true, 2.0f);
+				}
+			});
+		}
+		
+		if (V_stristr(mode, "spawn") != nullptr) {
+			ForEachArea([](CTFNavArea *area){
+				if (area->HasTFAttributes(RED_SPAWN_ROOM)) {
+					if (area->HasTFAttributes(SPAWN_ROOM_EXIT)) {
+						area->DrawFilled(0xff, 0x80, 0x80, 0x40, INTERVAL, true, 2.0f);
 					} else {
-						NDebugOverlay::Box(ext.lo, vec3_origin, (ext.hi - ext.lo), 0xff, 0x00, 0x00, 0x40, INTERVAL);
+						area->DrawFilled(0xff, 0x00, 0x00, 0x40, INTERVAL, true, 2.0f);
 					}
 				}
-				if (blu_spawn) {
-					if (spawn_exit) {
-						NDebugOverlay::Box(ext.lo, vec3_origin, (ext.hi - ext.lo), 0x80, 0x80, 0xff, 0x40, INTERVAL);
+				if (area->HasTFAttributes(BLUE_SPAWN_ROOM)) {
+					if (area->HasTFAttributes(SPAWN_ROOM_EXIT)) {
+						area->DrawFilled(0x80, 0x80, 0xff, 0x40, INTERVAL, true, 2.0f);
 					} else {
-						NDebugOverlay::Box(ext.lo, vec3_origin, (ext.hi - ext.lo), 0x00, 0x00, 0xff, 0x40, INTERVAL);
+						area->DrawFilled(0x00, 0x00, 0xff, 0x40, INTERVAL, true, 2.0f);
 					}
 				}
 			});

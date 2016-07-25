@@ -1316,6 +1316,24 @@
 					type "sym"
 					sym  "_ZN14CWeaponMedigun19AllowedToHealTargetEP11CBaseEntity"
 				}
+				
+				"CObjectTeleporter::RecieveTeleportingPlayer"
+				{
+					type "sym"
+					sym  "_ZN17CObjectTeleporter24RecieveTeleportingPlayerEP9CTFPlayer"
+				}
+				
+				"CTFGameRules::CalcDominationAndRevenge"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules24CalcDominationAndRevengeEP9CTFPlayerP11CBaseEntityS1_bPi"
+				}
+				
+				"CBaseAnimating::SetModelScale"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating13SetModelScaleEff"
+				}
 			}
 		}
 	}

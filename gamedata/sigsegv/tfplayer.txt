@@ -233,6 +233,18 @@
 					sym  "_ZN9CTFPlayer18GetSceneSoundTokenEv"
 				}
 				
+				"CTFPlayer::Weapon_OwnsThisID"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17Weapon_OwnsThisIDEi"
+				}
+				
+				"CTFPlayer::GetObjectOfType"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer15GetObjectOfTypeEii"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

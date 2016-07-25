@@ -32,6 +32,8 @@ MemberFuncThunk<      CTFPlayer *, int, int                > CTFPlayer::ft_GetAu
 MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase ** > CTFPlayer::ft_MedicGetChargeLevel           ("CTFPlayer::MedicGetChargeLevel");
 MemberFuncThunk<const CTFPlayer *, float                   > CTFPlayer::ft_TeamFortress_CalculateMaxSpeed("CTFPlayer::TeamFortress_CalculateMaxSpeed");
 MemberFuncThunk<      CTFPlayer *, void                    > CTFPlayer::ft_UpdateModel                   ("CTFPlayer::UpdateModel");
+MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int    > CTFPlayer::ft_Weapon_OwnsThisID             ("CTFPlayer::Weapon_OwnsThisID");
+MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int > CTFPlayer::ft_GetObjectOfType               ("CTFPlayer::GetObjectOfType");
 
 
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");

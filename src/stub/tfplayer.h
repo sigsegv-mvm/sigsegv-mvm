@@ -6,6 +6,7 @@
 #include "stub/econ.h"
 
 
+class CBaseObject;
 class CTFWeaponBase;
 class CTFPlayer;
 enum ETFFlagType {};
@@ -222,6 +223,8 @@ public:
 	float MedicGetChargeLevel(CTFWeaponBase **medigun = nullptr) { return ft_MedicGetChargeLevel           (this, medigun); }
 	float TeamFortress_CalculateMaxSpeed() const                 { return ft_TeamFortress_CalculateMaxSpeed(this); }
 	void UpdateModel()                                           {        ft_UpdateModel                   (this); }
+	CTFWeaponBase *Weapon_OwnsThisID(int id) const               { return ft_Weapon_OwnsThisID             (this, id); }
+	CBaseObject *GetObjectOfType(int iType, int iMode)           { return ft_GetObjectOfType               (this, iType, iMode); }
 	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
@@ -240,6 +243,8 @@ private:
 	static MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase ** > ft_MedicGetChargeLevel;
 	static MemberFuncThunk<const CTFPlayer *, float                   > ft_TeamFortress_CalculateMaxSpeed;
 	static MemberFuncThunk<      CTFPlayer *, void                    > ft_UpdateModel;
+	static MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int    > ft_Weapon_OwnsThisID;
+	static MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int > ft_GetObjectOfType;
 //	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int     > ft_Taunt;
 };
 

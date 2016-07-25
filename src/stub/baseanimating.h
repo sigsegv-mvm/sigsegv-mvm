@@ -10,12 +10,14 @@ class CBaseAnimating : public CBaseEntity
 public:
 	float GetModelScale() const { return this->m_flModelScale; }
 	
+	void SetModelScale(float scale, float change_duration = 0.0f)          { ft_SetModelScale     (this, scale, change_duration); }
 	void DrawServerHitboxes(float duration = 0.0f, bool monocolor = false) { ft_DrawServerHitboxes(this, duration, monocolor); }
 	
 private:
 	DECL_SENDPROP(float, m_flModelScale);
 	
-	static MemberFuncThunk<CBaseAnimating *, void, float, bool> ft_DrawServerHitboxes;
+	static MemberFuncThunk<CBaseAnimating *, void, float, float> ft_SetModelScale;
+	static MemberFuncThunk<CBaseAnimating *, void, float, bool>  ft_DrawServerHitboxes;
 };
 
 class CBaseAnimatingOverlay : public CBaseAnimating {};

@@ -5,16 +5,25 @@
 
 namespace Mod_Cond_Reprogrammed
 {
+	ConVar cvar_hellmet("sig_cond_reprogrammed_hellmet", "1", FCVAR_NOTIFY,
+		"Mod: make some dumb tweaks to TF_COND_REPROGRAMMED that Hell-met requested");
+	
+	
 	void OnAddReprogrammed(CTFPlayer *player)
 	{
 		DevMsg("OnAddReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
 		
-		player->m_Shared->StunPlayer(5.0f, 0.65f, TF_STUNFLAG_NOSOUNDOREFFECT | TF_STUNFLAG_SLOWDOWN, nullptr);
+		if (!cvar_hellmet.GetBool()) {
+			player->m_Shared->StunPlayer(5.0f, 0.65f, TF_STUNFLAG_NOSOUNDOREFFECT | TF_STUNFLAG_SLOWDOWN, nullptr);
+		}
+		
 		player->ForceChangeTeam(TF_TEAM_RED, false);
 		
 		/* this used to be in CTFPlayerShared::OnAddReprogrammed on the client
 		 * side, but we now have to do it from the server side */
-		DispatchParticleEffect("sapper_sentry1_fx", PATTACH_POINT_FOLLOW, player, "head");
+		if (!cvar_hellmet.GetBool()) {
+			DispatchParticleEffect("sapper_sentry1_fx", PATTACH_POINT_FOLLOW, player, "head");
+		}
 	}
 	
 	void OnRemoveReprogrammed(CTFPlayer *player)
@@ -25,7 +34,9 @@ namespace Mod_Cond_Reprogrammed
 		
 		/* this is far from ideal; we can only remove ALL particle effects from
 		 * the server side */
-		StopParticleEffects(player);
+		if (!cvar_hellmet.GetBool()) {
+			StopParticleEffects(player);
+		}
 	}
 	
 	

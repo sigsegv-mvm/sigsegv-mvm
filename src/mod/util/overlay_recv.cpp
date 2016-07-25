@@ -6,39 +6,6 @@
 #include "util/socket_old.h"
 
 
-enum OverlayType_t
-{
-	OVERLAY_BOX = 0,
-	OVERLAY_SPHERE,
-	OVERLAY_LINE,
-	OVERLAY_TRIANGLE,
-	OVERLAY_SWEPT_BOX,
-	OVERLAY_BOX2,
-};
-
-
-struct OverlayBase_t
-{
-	OverlayType_t m_Type;
-	int m_nCreationTick;
-	int m_nServerCount;
-	float m_flEndTime;
-	OverlayBase_t *m_pNextOverlay;
-};
-
-struct OverlaySphere_t : public OverlayBase_t
-{
-	Vector vOrigin;
-	float flRadius;
-	int nTheta;
-	int nPhi;
-	int r;
-	int g;
-	int b;
-	int a;
-};
-
-
 namespace Mod_Util_Overlay_Recv
 {
 	ConVar cvar_trace("sig_util_overlay_recv_trace", "0", FCVAR_NOTIFY,
@@ -940,26 +907,6 @@ namespace Mod_Util_Overlay_Recv
 	}
 	
 	
-	/* for OVERLAY_SPHERE, CDebugOverlay::DrawOverlay calls the IMaterial *
-	 * version of RenderSphere, which is extremely ugly */
-	DETOUR_DECL_STATIC(void, CDebugOverlay_DrawOverlay, OverlayBase_t *pOverlay)
-	{
-		if (pOverlay->m_Type == OVERLAY_SPHERE) {
-			OverlaySphere_t *pSphere = static_cast<OverlaySphere_t *>(pOverlay);
-			
-			if (pSphere->a > 0) {
-				RenderSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
-					Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), false);
-			}
-			
-			RenderWireframeSphere(pSphere->vOrigin, pSphere->flRadius, pSphere->nTheta, pSphere->nPhi,
-				Color(pSphere->r, pSphere->g, pSphere->b, pSphere->a), true);
-		} else {
-			DETOUR_STATIC_CALL(CDebugOverlay_DrawOverlay)(pOverlay);
-		}
-	}
-	
-	
 	DETOUR_DECL_STATIC(void, CDebugOverlay_DrawAllOverlays)
 	{
 		ReceivePackets();
@@ -1012,7 +959,6 @@ namespace Mod_Util_Overlay_Recv
 	public:
 		CMod() : IMod("Util:Overlay_Recv")
 		{
-			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawOverlay,     "[client] CDebugOverlay::DrawOverlay");
 			MOD_ADD_DETOUR_STATIC(CDebugOverlay_DrawAllOverlays, "[client] CDebugOverlay::DrawAllOverlays");
 			
 		//	MOD_ADD_DETOUR_MEMBER(IVDebugOverlay_ClearDeadOverlays, "IVDebugOverlay::ClearDeadOverlays");

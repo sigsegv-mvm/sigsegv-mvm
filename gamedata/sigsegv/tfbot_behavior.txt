@@ -271,6 +271,11 @@
 					sym  "_ZN25CTFBotStickybombSentrygun6UpdateEP6CTFBotf"
 				}
 				
+				"CTFBotFetchFlag::OnStart"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotFetchFlag7OnStartEP6CTFBotP6ActionIS0_E"
+				}
 				"CTFBotFetchFlag::Update"
 				{
 					type "sym"

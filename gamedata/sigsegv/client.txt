@@ -211,6 +211,16 @@
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 					lib  "vguimatsurface"
 				}
+				
+				"[client] C_SniperDot::ClientThink"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec83ec1c53568bf18b0d20d3cd1057e8da33e9ff84c00f84b6010000"
+					mask "ffffffffffffffffffffffff00000000ffff00000000ffffffffffffffff"
+					lib  "client"
+				}
 			}
 		}
 	}

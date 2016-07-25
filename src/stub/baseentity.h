@@ -70,6 +70,7 @@ public:
 	/* TODO: make me private again! */
 	DECL_SENDPROP(int, m_fFlags);
 	DECL_DATAMAP(int, m_nNextThinkTick);
+	DECL_SENDPROP(char, m_lifeState);
 	
 private:
 	DECL_DATAMAP(CServerNetworkProperty, m_Network);
@@ -86,7 +87,6 @@ private:
 	DECL_SENDPROP(int,                  m_iTeamNum);
 	DECL_SENDPROP(int,                  m_iMaxHealth);
 	DECL_SENDPROP(int,                  m_iHealth);
-	DECL_SENDPROP(char,                 m_lifeState);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOwnerEntity);
 	

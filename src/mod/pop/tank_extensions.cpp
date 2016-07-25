@@ -10,6 +10,7 @@ namespace Mod_Pop_Tank_Extensions
 	struct SpawnerData
 	{
 		bool disable_smokestack = false;
+		float scale             = 1.00f;
 	};
 	
 	
@@ -51,6 +52,9 @@ namespace Mod_Pop_Tank_Extensions
 			if (V_stricmp(name, "DisableSmokestack") == 0) {
 			//	DevMsg("Got \"DisableSmokeStack\" = %d\n", subkey->GetBool());
 				spawners[spawner].disable_smokestack = subkey->GetBool();
+			} else if (V_stricmp(name, "Scale") == 0) {
+			//	DevMsg("Got \"Scale\" = %f\n", subkey->GetFloat());
+				spawners[spawner].scale = subkey->GetFloat();
 			} else {
 				del = false;
 			}
@@ -84,7 +88,25 @@ namespace Mod_Pop_Tank_Extensions
 		SCOPED_INCREMENT(rc_CTankSpawner_Spawn);
 		current_spawner = spawner;
 		
-		return DETOUR_MEMBER_CALL(CTankSpawner_Spawn)(where, ents);
+		auto result = DETOUR_MEMBER_CALL(CTankSpawner_Spawn)(where, ents);
+		
+		if (ents != nullptr) {
+			auto it = spawners.find(spawner);
+			if (it != spawners.end()) {
+				SpawnerData& data = (*it).second;
+				
+				FOR_EACH_VEC((*ents), i) {
+					auto tank = rtti_cast<CTFTankBoss *>((*ents)[i]);
+					if (tank != nullptr) {
+						if (data.scale != 1.00f) {
+							tank->SetModelScale(data.scale);
+						}
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	

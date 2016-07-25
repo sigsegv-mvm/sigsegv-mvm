@@ -218,6 +218,7 @@
     <ClCompile Include="..\src\mod\debug\usermsg_overflow.cpp" />
     <ClCompile Include="..\src\mod\debug\vprof_record.cpp" />
     <ClCompile Include="..\src\mod\demo\stringtable_limit.cpp" />
+    <ClCompile Include="..\src\mod\etc\laserdot_fix.cpp" />
     <ClCompile Include="..\src\mod\etc\override_move_speed.cpp" />
     <ClCompile Include="..\src\mod\mvm\disposable_dispenser.cpp" />
     <ClCompile Include="..\src\mod\pop\eventpopfile_improvements.cpp" />
@@ -234,6 +235,7 @@
     <ClCompile Include="..\src\mod\util\console_send.cpp" />
     <ClCompile Include="..\src\mod\util\debugoverlay_font.cpp" />
     <ClCompile Include="..\src\mod\util\listenserverhost.cpp" />
+    <ClCompile Include="..\src\mod\util\overlay_enhancements.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_send.cpp" />
     <ClCompile Include="..\src\mod\util\vprof_recv.cpp" />
