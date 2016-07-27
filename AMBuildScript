@@ -181,15 +181,11 @@ class ExtensionConfig(object):
       '-fno-diagnostics-show-caret',
       '-fdiagnostics-color=always',
       '-fno-omit-frame-pointer',
-      '-Og',
 #      '-masm=intel',
       '-maccumulate-outgoing-args',
 #      '-Q',
       '-Winvalid-pch',
       '-rdynamic',
-      '-gdwarf-4',
-      '-g2',
-      '-fvar-tracking-assignments',
       '-gsplit-dwarf',
       '-pthread',
       '-Wno-unknown-pragmas',
@@ -218,9 +214,10 @@ class ExtensionConfig(object):
       '-Wno-reorder', # for tier1/utlrbtree.h
     ]
     cxx.linkflags += [
+      '-m32',
       '-pthread',
       '-fuse-ld=gold',
-      '-m32',
+      '-fno-use-linker-plugin',
       '-Wl,--no-undefined',
       '-Wl,--threads', # crashy
       '-Wl,--wrap,__assert_fail',
@@ -230,7 +227,41 @@ class ExtensionConfig(object):
     ]
 #    if builder.options.opt != '1':
 #      cxx.linkflags += ['-Wl,-Ur'] # incremental link
-
+    
+    if builder.options.debug == '1':
+      if builder.options.opt == '1':
+        cxx.cflags += [
+          '-gdwarf-4',
+          '-g1'
+        ]
+      else:
+        cxx.cflags += [
+          '-gdwarf-4',
+          '-g2',
+          '-fvar-tracking-assignments',
+        ]
+    
+    if builder.options.opt == '1':
+      cxx.cflags += [
+        '-Os',
+      ]
+      cxx.linkflags += [
+        '-Wl,-O2',
+        '-Wl,--gc-sections',
+      ]
+    else:
+      cxx.cflags += [
+        '-Og',
+      ]
+      cxx.linkflags += [
+        '-Wl,-O0',
+        '-Wl,--no-gc-sections',
+        
+        # we could have incremental linking but I guess ambuild just likes to delete the old library file, sigh
+#        '-Wl,--incremental',
+#        '-Wl,--incremental-base,sigsegv.ext.2.tf2.so.old',
+      ]
+    
     have_gcc = ('gcc' in cxx.version.vendor_name)
     have_clang = ('clang' in cxx.version.vendor_name)
     if cxx.version >= 'clang-3.6':
@@ -252,9 +283,6 @@ class ExtensionConfig(object):
 
     if have_gcc:
       cxx.cflags += ['-mfpmath=sse']
-
-    if builder.options.opt == '1':
-      cxx.cflags += ['-O3']
 
   def configure_msvc(self, cxx):
     if builder.options.debug == '1':
