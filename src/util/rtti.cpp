@@ -8,11 +8,11 @@ namespace RTTI
 {
 	// Windows: str typeinfo(T).raw_name() => _TypeDescriptor*
 	// Linux:   str typeinfo(T).name()     => abi::__class_type_info*
-	static std::map<std::string, const rtti_t *> s_RTTI;
+	static std::unordered_map<std::string, const rtti_t *> s_RTTI;
 	
 	// Windows: str typeinfo(T).raw_name() => void **
 	// Linux:   str typeinfo(T).name()     => void **
-	static std::map<std::string, const void **> s_VT;
+	static std::unordered_map<std::string, const void **> s_VT;
 	
 	
 	void PreLoad()
@@ -167,7 +167,7 @@ namespace RTTI
 			
 			
 			Prof::Begin();
-			std::map<COLScanner *, std::string> scannermap_COL;
+			std::unordered_map<COLScanner *, std::string> scannermap_COL;
 			std::vector<COLScanner *> scanners_COL;
 			for (const auto& pair : s_RTTI) {
 				auto name = pair.first;
@@ -184,7 +184,7 @@ namespace RTTI
 			Prof::End("COL scan");
 			
 			Prof::Begin();
-			std::map<std::string, const __RTTI_CompleteObjectLocator *> results_COL;
+			std::unordered_map<std::string, const __RTTI_CompleteObjectLocator *> results_COL;
 			for (auto scanner : scanners_COL) {
 				auto& name = scannermap_COL[scanner];
 				
@@ -209,7 +209,7 @@ namespace RTTI
 			
 			
 			Prof::Begin();
-			std::map<VTScanner *, std::string> scannermap_VT;
+			std::unordered_map<VTScanner *, std::string> scannermap_VT;
 			std::vector<VTScanner *> scanners_VT;
 			for (const auto& pair : results_COL) {
 				auto name  = pair.first;
