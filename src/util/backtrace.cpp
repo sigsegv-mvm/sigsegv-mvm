@@ -4,6 +4,7 @@
 
 #if defined _LINUX || defined _OSX
 
+
 const char *try_demangle(const char *mangled)
 {
 	if (strlen(mangled) == 0) {
@@ -52,6 +53,55 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 }
 
 
+void cached_get_proc_name(unw_cursor_t *cp, const char **p_name, unw_word_t *p_off)
+{
+	struct CacheEntry
+	{
+		std::string name;
+		unw_word_t off;
+	};
+	
+	static std::unordered_map<unw_word_t, CacheEntry> cache;
+	static constexpr size_t MAX_ENTRIES = 4096;
+	
+	unw_word_t r_ip;
+	unw_get_reg(cp, UNW_REG_IP, &r_ip);
+	
+	auto it = cache.find(r_ip);
+	if (it != cache.end()) {
+		/* cache hit */
+		*p_name = (*it).second.name.c_str();
+		*p_off  = (*it).second.off;
+		return;
+	}
+	
+	/* evict if necessary */
+	while (cache.size() >= MAX_ENTRIES) {
+		auto it = cache.begin();
+		std::advance(it, RandomInt(0, cache.size() - 1));
+		
+		cache.erase(it);
+	}
+	
+	/* create new cache entry */
+	char buf[0x1000];
+	buf[0] = '\0';
+	unw_word_t off = 0;
+	if (unw_get_proc_name(cp, buf, sizeof(buf), &off) == -UNW_ENOINFO) {
+		sym_get_proc_name(cp, buf, sizeof(buf), &off);
+	}
+	
+	const char *demangled = try_demangle(buf);
+	auto& entry = cache[r_ip];
+	entry.name = demangled;
+	entry.off  = off;
+	free((void *)demangled);
+	
+	*p_name = entry.name.c_str();
+	*p_off  = entry.off;
+}
+
+
 void print_backtrace()
 {
 	unw_context_t ctx;
@@ -64,7 +114,6 @@ void print_backtrace()
 		"FRM", "ESP", "EIP", "FUNC");
 	
 	int f_idx = 1;
-	char f_name[0x1000];
 	while (unw_step(&cur) > 0) {
 		unw_word_t r_ip;
 		unw_get_reg(&cur, UNW_REG_IP, &r_ip);
@@ -72,16 +121,12 @@ void print_backtrace()
 		unw_word_t r_sp;
 		unw_get_reg(&cur, UNW_REG_SP, &r_sp);
 		
-		f_name[0] = '\0';
+		const char *f_name = nullptr;
 		unw_word_t off = 0;
 		
-		if (unw_get_proc_name(&cur, f_name, sizeof(f_name), &off) == -UNW_ENOINFO) {
-			sym_get_proc_name(&cur, f_name, sizeof(f_name), &off);
-		}
+		cached_get_proc_name(&cur, &f_name, &off);
 		
-		const char *demangled = try_demangle(f_name);
-		DevMsg("%3d  %08x  %08x  %s+0x%x\n", f_idx, r_sp, r_ip, demangled, off);
-		free((void *)demangled);
+		DevMsg("%3d  %08x  %08x  %s+0x%x\n", f_idx, r_sp, r_ip, f_name, off);
 		
 		++f_idx;
 		
