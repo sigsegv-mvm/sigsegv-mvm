@@ -346,13 +346,22 @@ bool IAddr_Pattern::FindAddrWin(uintptr_t& addr) const
 	size_t strlen_seek = strlen(str_seek);
 	size_t strlen_mask = strlen(str_mask);
 	
+	if (strlen_seek == 0) {
+		DevMsg("IAddr_Pattern: \"%s\": empty pattern\n", this->GetName());
+		return false;
+	}
+	if (strlen_mask == 0) {
+		DevMsg("IAddr_Pattern: \"%s\": empty mask\n", this->GetName());
+		return false;
+	}
+	
 	if (strlen_seek != strlen_mask) {
-		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have differing lengths\n", this->GetName());
+		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have differing numbers of digits\n", this->GetName());
 		return false;
 	}
 	
 	if (strlen_seek % 2 == 1) {
-		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have odd number of characters\n", this->GetName());
+		DevMsg("IAddr_Pattern: \"%s\": pattern and mask have odd number of digits\n", this->GetName());
 		return false;
 	}
 	
@@ -380,4 +389,29 @@ bool IAddr_Pattern::FindAddrWin(uintptr_t& addr) const
 	
 	addr = (uintptr_t)scan1.FirstMatch();
 	return true;
+}
+
+
+void CAddr_Pattern::ProcessStrings()
+{
+	/* remove all non-hex characters from the pattern and mask;
+	 * this should allow more creative formatting in the conf file */
+	
+	std::vector<char> buf_pattern;
+	for (auto c : this->m_strPattern) {
+		if (isxdigit(c)) {
+			buf_pattern.push_back(c);
+		}
+	}
+	buf_pattern.push_back('\0');
+	this->m_strPattern = buf_pattern.data();
+	
+	std::vector<char> buf_mask;
+	for (auto c : this->m_strMask) {
+		if (isxdigit(c)) {
+			buf_mask.push_back(c);
+		}
+	}
+	buf_mask.push_back('\0');
+	this->m_strMask = buf_mask.data();
 }

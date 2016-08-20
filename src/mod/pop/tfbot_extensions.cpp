@@ -48,7 +48,8 @@ namespace Mod_Pop_TFBot_Extensions
 				return ActionResult<CTFBot>::Continue();
 			}
 			
-			if (this->m_hTarget == nullptr || !this->m_hTarget->IsAlive()) {
+			/* added teamnum check to fix some TF_COND_REPROGRAMMED quirks */
+			if (this->m_hTarget == nullptr || !this->m_hTarget->IsAlive() || this->m_hTarget->GetTeamNumber() == actor->GetTeamNumber()) {
 				this->m_hTarget = actor->SelectRandomReachableEnemy();
 				
 				if (this->m_hTarget == nullptr) {
@@ -86,6 +87,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		ETFCond cond   = (ETFCond)-1;
 		float duration = -1.0f;
+		float delay    =  0.0f;
 	};
 	
 	struct SpawnerData
@@ -104,6 +106,38 @@ namespace Mod_Pop_TFBot_Extensions
 	/* this is really dodgy... should probably do this with the ECAttr
 	 * extension system, provided we ever finish that contraption */
 	std::vector<CHandle<CTFBot>> action_override_mobber;
+	
+	
+	struct DelayedAddCond
+	{
+		CHandle<CTFBot> bot;
+		float when;
+		ETFCond cond;
+		float duration;
+	};
+	std::vector<DelayedAddCond> delayed_addconds;
+	
+	
+	void UpdateDelayedAddConds()
+	{
+		for (auto it = delayed_addconds.begin(); it != delayed_addconds.end(); ) {
+			const auto& info = *it;
+			
+			if (info.bot == nullptr || !info.bot->IsAlive()) {
+				it = delayed_addconds.erase(it);
+				continue;
+			}
+			
+			if (gpGlobals->curtime >= info.when) {
+				info.bot->m_Shared->AddCond(info.cond, info.duration);
+				
+				it = delayed_addconds.erase(it);
+				continue;
+			}
+			
+			++it;
+		}
+	}
 	
 	
 	DETOUR_DECL_MEMBER(void, CTFBotSpawner_dtor0)
@@ -133,6 +167,7 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		bool got_cond     = false;
 		bool got_duration = false;
+		bool got_delay    = false;
 		
 		FOR_EACH_SUBKEY(kv, subkey) {
 			const char *name = subkey->GetName();
@@ -151,6 +186,9 @@ namespace Mod_Pop_TFBot_Extensions
 			} else if (V_stricmp(name, "Duration") == 0) {
 				addcond.duration = subkey->GetFloat();
 				got_duration = true;
+			} else if (V_stricmp(name, "Delay") == 0) {
+				addcond.delay = subkey->GetFloat();
+				got_delay = true;
 			} else {
 				Warning("Unknown key \'%s\' in AddCond block.\n", name);
 			}
@@ -236,8 +274,17 @@ namespace Mod_Pop_TFBot_Extensions
 					if (bot != nullptr) {
 		//				DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
 						for (auto addcond : data.addconds) {
-		//					DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
-							bot->m_Shared->AddCond(addcond.cond, addcond.duration);
+							if (addcond.delay == 0.0f) {
+		//						DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
+								bot->m_Shared->AddCond(addcond.cond, addcond.duration);
+							} else {
+								delayed_addconds.push_back({
+									bot,
+									gpGlobals->curtime + addcond.delay,
+									addcond.cond,
+									addcond.duration,
+								});
+							}
 						}
 						
 						if (data.action_mobber) {
@@ -296,7 +343,7 @@ namespace Mod_Pop_TFBot_Extensions
 //	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
 		CMod() : IMod("Pop:TFBot_Extensions")
@@ -323,6 +370,13 @@ namespace Mod_Pop_TFBot_Extensions
 		virtual void OnDisable() override
 		{
 			spawners.clear();
+		}
+		
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
+		
+		virtual void FrameUpdatePostEntityThink() override
+		{
+			UpdateDelayedAddConds();
 		}
 	};
 	CMod s_Mod;

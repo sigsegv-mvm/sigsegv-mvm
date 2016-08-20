@@ -111,7 +111,15 @@ private:
 
 
 class NextBotCombatCharacter : public CBaseCombatCharacter {};
-class CTFBaseBoss : public NextBotCombatCharacter {};
+
+class CTFBaseBoss : public NextBotCombatCharacter
+{
+public:
+	void UpdateCollisionBounds() { vt_UpdateCollisionBounds(this); }
+	
+private:
+	static MemberVFuncThunk<CTFBaseBoss *, void> vt_UpdateCollisionBounds;
+};
 
 class CTFTankBoss : public CTFBaseBoss
 {

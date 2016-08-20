@@ -3,9 +3,6 @@
 #include "stub/tfplayer.h"
 
 
-// TODO: move cvars into class
-
-
 namespace Mod_Visualize_Explosive_Headshot
 {
 	ConVar cvar_duration("sig_visualize_explosive_headshot_duration", "0.5", FCVAR_NOTIFY,

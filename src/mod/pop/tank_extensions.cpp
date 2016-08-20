@@ -96,9 +96,15 @@ namespace Mod_Pop_Tank_Extensions
 				SpawnerData& data = (*it).second;
 				
 				FOR_EACH_VEC((*ents), i) {
-					auto tank = rtti_cast<CTFTankBoss *>((*ents)[i]);
+					CBaseEntity *ent = (*ents)[i];
+					
+					auto tank = rtti_cast<CTFTankBoss *>(ent);
 					if (tank != nullptr) {
 						if (data.scale != 1.00f) {
+							/* need to call this BEFORE changing the scale; otherwise,
+							 * the collision bounding box will be very screwed up */
+							tank->UpdateCollisionBounds();
+							
 							tank->SetModelScale(data.scale);
 						}
 					}

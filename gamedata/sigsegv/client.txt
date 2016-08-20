@@ -64,12 +64,14 @@
 //					lib   "client"
 //				}
 				
-//				"[client] CDebugOverlay::AddSphereOverlay"
-//				{
-//					type ""
-//					sym  ""
-//					lib  "engine"
-//				}
+				"[client] CDebugOverlay::Paint"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN13CDebugOverlay5PaintEv"
+					vtable ".?AVCDebugOverlay@@"
+					idx    "0x80" // this is relatively likely to break whenever vgui::Panel gets updated next...
+					lib    "client"
+				}
 				
 				"[client] CDebugOverlay::DrawAllOverlays"
 				{
@@ -88,22 +90,8 @@
 					seg   ".text"
 					seek  "558bec83ec348d45cc566a016863030000684c173110688c17311068043d491050e86a9bffff8b750883c4188b0683f8050f87b5010000"
 					mask  "ffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffff00000000ffffffffffffffffffffffffff00000000"
-				//	addr  "0x0e3350"
-				//	build "3354789"
-				//	lib   "engine"
 				}
-				"[client] RenderSphere [IMaterial *]"
-				{
-					type  "pattern"
-					sym   "_Z12RenderSphereRK6Vectorfii5ColorP9IMaterial"
-					lib   "engine"
-					seg   ".text"
-					seek  "538bdc83ec0883e4f083c404558b6b04896c24048bec81ec680200005657e81df7ffff8b0d7ccf67108b018b8088010000ffd08bf08975e085f67407"
-					mask  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
-				//	addr  "0x25f1d0"
-				//	build "3354789"
-				//	lib   "engine"
-				}
+				
 				"[client] RenderWireframeSphere"
 				{
 					type  "pattern"
@@ -112,10 +100,125 @@
 					seg   ".text"
 					seek  "558bec81ec18020000535657e8dff6ffff8b5d108b4514438bfb895d100faff8488945f88d0c9dfcffffff8945dc0fafc8894dfc8b0da04ad7108b01ff90880100008bf08975e885f674078b068bceff5008"
 					mask  "ffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffff00ffffffffffff00"
-				//	addr  "0x8006F0"
-				//	build "3354789"
-				//	lib   "client"
 				}
+			//	"[client] RenderSphere"
+			//	{
+			//		type "pattern"
+			//		sym  ""
+			//		lib  "engine"
+			//		seg  ".text"
+			//		seek ""
+			//		mask ""
+			//	}
+				"[client] RenderSphere [material]"
+				{
+					type  "pattern"
+					sym   "_Z12RenderSphereRK6Vectorfii5ColorP9IMaterial"
+					lib   "engine"
+					seg   ".text"
+					seek  "538bdc83ec0883e4f083c404558b6b04896c24048bec81ec680200005657e81df7ffff8b0d7ccf67108b018b8088010000ffd08bf08975e085f67407"
+					mask  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
+				}
+				"[client] RenderWireframeBox"
+				{
+					type "pattern"
+					sym  "_Z18RenderWireframeBoxRK6VectorRK6QAngleS1_S1_5Colorb"
+					lib  "engine"
+					seg  ".text"
+					seek "558bec81ec5802000056e801edffff8b0d04f067108b01ff90880100008bf08975fc85f674078b068bceff5008a138f067108bce807d1c008b160f450534f0671053576a0050ff5224"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+				}
+				"[client] RenderWireframeSweptBox"
+				{
+					type "pattern"
+					sym  "_Z23RenderWireframeSweptBoxRK6VectorS1_RK6QAngleS1_S1_5Colorb"
+					lib  "engine"
+					seg  ".text"
+					seek "558bec81ecc40200008b0d08f06710578b01ff90880100008bf8897df085ff74078b078bcfff5008a138f067108bcf807d20008b170f450534f0671053566a0050ff5224"
+					mask "ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+				}
+				"[client] RenderBox" // low priority
+				{
+					type "pattern"
+					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5Colorbb"
+					lib  "engine"
+					seg  ".text"
+					seek ""
+					mask ""
+				}
+				"[client] RenderBox [material]"
+				{
+					type "pattern"
+					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5ColorP9IMaterialb"
+					lib  "engine"
+					seg  ".text"
+					seek "558bec81ec7002000056e871feffff8b0d04f067108b01ff90880100008bf08975dc85f674078b068bceff50088b068bce53576a00ff751cff5024"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+				}
+			//	"[client] RenderAxes [vec]"
+			//	{
+			//		type "pattern"
+			//		sym  ""
+			//		lib  "engine"
+			//		seg  ".text"
+			//		seek ""
+			//		mask ""
+			//	}
+			//	"[client] RenderAxes [mat]"
+			//	{
+			//		type "pattern"
+			//		sym  ""
+			//		lib  "engine"
+			//		seg  ".text"
+			//		seek ""
+			//		mask ""
+			//	}
+				"[client] RenderLine"
+				{
+					type "pattern"
+					sym  "_Z10RenderLineRK6VectorS1_5Colorb"
+					lib  "engine"
+					seg  ".text"
+					seek "558bec81ecf401000056e8b1f9ffff8b0d04f067108b01ff90880100008bf085f674078b068bceff5008a138f067108bce807d14008b160f450534f0671053576a0050ff5224"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+				}
+				"[client] RenderTriangle" // low priority
+				{
+					type "pattern"
+					sym  "_Z14RenderTriangleRK6VectorS1_S1_5Colorb"
+					lib  "engine"
+					seg  ".text"
+					seek ""
+					mask ""
+				}
+				"[client] RenderTriangle [material]"
+				{
+					type "pattern"
+					sym  "_Z14RenderTriangleRK6VectorS1_S1_5ColorP9IMaterial"
+					lib  "engine"
+					seg  ".text"
+					seek "558bec81ec0402000056e881f1ffff8b0d04f067108b018b8088010000ffd08bf085f674078b068bceff50088b068bce576a00ff7518ff5024"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+				}
+			//	"[client] RenderQuad"
+			//	{
+			//		type "pattern"
+			//		sym  ""
+			//		lib  "engine"
+			//		seg  ".text"
+			//		seek ""
+			//		mask ""
+			//	}
+			//	"[client] DrawScreenSpaceRectangle"
+			//	{
+			//		type "pattern"
+			//		sym  "_Z24DrawScreenSpaceRectangleP9IMaterialiiiiffffiiPviif"
+			//		lib  "engine"
+			//		seg  ".text"
+			//		seek ""
+			//		mask ""
+			//	}
+				
 				
 				"[client] s_pVertexColor"
 				{
@@ -133,7 +236,6 @@
 					build "3354789"
 					lib   "client"
 				}
-
 				
 //				"[client] InitializeStandardMaterials"
 //				{
@@ -179,8 +281,6 @@
 					seg  ".text"
 					seek "558bec56578b7d088bf185ff746f538b5d0c85db7466e85586dcffc7868806000000000000"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff0000000000000000"
-//					seek "558bec56578b7d088bf185ff746f538b5d0c85db7466e85586dcffc78688060000000000008bcf8b078b800c020000ffd033c9895e0884c00f45cf898ea8070000894e048bcec7433c000002ffe82ed3ffff8bcee8c70400008bcee8f00700008bcee8b9f0ffff8bcee842f7ffff8b068bceff50348bcee82459dcff5b5f5e5dc20800"
-//					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff0000000000000000ffffffffffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffff00000000ffffff00000000ffffff00000000ffffff00000000ffffff00000000ffffffffffff00ffffff00000000ffffffffffffff"
 					lib  "client"
 				}
 				
@@ -193,16 +293,7 @@
 					lib     "client"
 				}
 				
-				"[client] CDebugOverlay::Paint"
-				{
-					type   "func knownvtidx"
-					sym    "_ZN13CDebugOverlay5PaintEv"
-					vtable ".?AVCDebugOverlay@@"
-					idx    "0x80" // this is relatively likely to break whenever vgui::Panel gets updated next...
-					lib    "client"
-				}
-				
-				"[client] CMatSurface::DrawColoredText [va_list]"
+				"[client] CMatSystemSurface::DrawColoredText [va_list]"
 				{
 					type "pattern"
 					sym  "TODO"
@@ -220,6 +311,106 @@
 					seek "558bec83ec1c53568bf18b0d20d3cd1057e8da33e9ff84c00f84b6010000"
 					mask "ffffffffffffffffffffffff00000000ffff00000000ffffffffffffffff"
 					lib  "client"
+				}
+				
+				"[client] S_Play"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec81ec5c0100008d85a4feffff568b750868000100005650e8da021e006a2e56e8f9d1250083c41485c0751b6aff68000100008d85a4feffff"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffffffff"
+					lib  "engine"
+				}
+				
+				"[client] CAudioMixerWaveMP3::CAudioMixerWaveMP3"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec56ff75088bf1e802f0ffffc7463084842f108bc6c7068c842f10c74630d8842f10c7863c40000000000000"
+					mask "ffffffffffffffffffff00000000ffffff00000000ffffffff00000000ffffff00000000ffffffffffffffffffff"
+					lib  "engine"
+				}
+				"[client] CAudioMixerWaveMP3::~CAudioMixerWaveMP3"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec568bf18b4e34c7068c842f10c74630d8842f1085c974068b016a01ff108bcee8c9effffff6450801740956e8dda7130083c4048bc65e5dc20400"
+					mask "ffffffffffffffffffffff00000000ffffff00000000ffffffffffffffffffffffffff00000000ffffffffffffffff00000000ffffffffffffffffffff"
+					lib  "engine"
+				}
+				
+				"[client] CWaveDataStreamAsync::CWaveDataStreamAsync"
+				{
+					type   "func ebpprologue unistr"
+					sym    "TODO"
+					unistr "Can't find streaming wav file: sound\\%s\n"
+					lib    "engine"
+				}
+				"[client] CWaveDataStreamAsync::~CWaveDataStreamAsync"
+				{
+					type   "func knownvtidx"
+					sym    "TODO"
+					vtable ".?AVCWaveDataStreamAsync@@"
+					idx    "0x00"
+					lib    "engine"
+				}
+				
+				"[client] CFontTextureCache_GetTextureForChars"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec81ec80000000538bd98b4d0c895dcc568b75085785c9751356"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					lib  "vguimatsurface"
+				}
+				
+			//	"[client] ApplyDropShadowToTexture"
+			//	{
+			//		
+			//	}
+				"[client] ApplyOutlineToTexture"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec8b451483ec1485c00f84fb0000008b550c5733ff897df885d20f8ee90000008b4d1053568b750883c103"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					lib  "vguimatsurface"
+				}
+				"[client] ApplyGaussianBlurToTexture"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec83ec34538b5d14565785db0f84d20200008d04dd1300000083e0f0e8bd650600db45148d041b8bfc897dfc8945dc"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffffffffffffffff"
+					lib  "vguimatsurface"
+				}
+			//	"[client] ApplyScanlineEffectToTexture"
+			//	{
+			//		
+			//	}
+			//	"[client] ApplyRotaryEffectToTexture"
+			//	{
+			//		
+			//	}
+				
+				"[client] CFontManager::SetFontGlyphSet"
+				{
+					type ""
+					
+				}
+				
+				"[client] CWin32Font::Create"
+				{
+					type   "func ebpprologue unistr"
+					sym    "TODO"
+					unistr "win98japanese"
+					lib    "vguimatsurface"
 				}
 			}
 		}

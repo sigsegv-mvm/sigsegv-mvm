@@ -3,8 +3,7 @@
 
 
 #include "stub/misc.h"
-#include "stub/baseanimating.h"
-#include "stub/tf_shareddefs.h"
+#include "stub/tfplayer.h"
 
 
 class CBaseCombatWeapon : public CEconEntity
@@ -32,6 +31,8 @@ private:
 class CTFWeaponBase : public CBaseCombatWeapon
 {
 public:
+	CTFPlayer *GetTFPlayerOwner() const { return ToTFPlayer(this->GetOwner()); }
+	
 	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
 	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
 	
@@ -70,6 +71,9 @@ private:
 };
 
 class CTFFlameThrower : public CTFWeaponBaseGun {};
+
+class CTFWeaponBuilder : public CTFWeaponBase {};
+class CTFWeaponSapper : public CTFWeaponBuilder {};
 
 
 bool WeaponID_IsSniperRifle(int id);

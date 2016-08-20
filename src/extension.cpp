@@ -13,6 +13,7 @@
 #include "re/nextbot.h"
 #include "version.h"
 #include "convar_restore.h"
+#include "stub/igamesystem.h"
 
 
 CExtSigsegv g_Ext;
@@ -21,6 +22,7 @@ SMEXT_LINK(&g_Ext);
 IFileSystem *filesystem                          = nullptr;
 IServerGameClients *serverGameClients            = nullptr;
 ICvar *icvar                                     = nullptr;
+IServer *server                                  = nullptr;
 ISpatialPartition *partition                     = nullptr;
 IEngineTrace *enginetrace                        = nullptr;
 IStaticPropMgrServer *staticpropmgr              = nullptr;
@@ -59,15 +61,7 @@ IClientTools *clienttools = nullptr;
 
 IVProfExport *vprofexport = nullptr;
 
-
-#if 0
-CON_COMMAND_F(sig_unload, "Unload this extension", FCVAR_NONE)
-{
-	if (smexts != nullptr) {
-		smexts->UnloadExtension(myself);
-	}
-}
-#endif
+IDedicatedExports *dedicated = nullptr;
 
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
@@ -99,19 +93,20 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	if (!Link::InitAll()) goto fail;
 	
-//	CDetourManager::Init(g_pSourcePawn);
-	
 	Prop::PreloadAll();
 	
 	g_ModManager.Load();
 	
-#if !defined _WINDOWS
-	IGameSystem::Add(this);
-#endif
-	
-	for (int i = 0; i < 255; ++i) {
-		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
+	if (IGameSystem_IsLinked()) {
+		IGameSystem::Add(this);
+		this->m_bGameSystemAdded = true;
+	} else {
+		Warning("Skipping IGameSystem::Add (not linked)!\n");
 	}
+	
+//	for (int i = 0; i < 255; ++i) {
+//		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
+//	}
 	
 	return true;
 	
@@ -124,9 +119,9 @@ void CExtSigsegv::SDK_OnUnload()
 {
 	ConVar_Restore::Save();
 	
-#if !defined _WINDOWS
-	IGameSystem::Remove(this);
-#endif
+	if (this->m_bGameSystemAdded) {
+		IGameSystem::Remove(this);
+	}
 	
 	IHotplugAction::UnloadAll();
 	
@@ -159,6 +154,8 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetServerFactory, serverGameClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
+	
+	server = engine->GetIServer();
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;
@@ -204,12 +201,17 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 		clienttools = (IClientTools *)ismm->VInterfaceMatch(GetClientFactory(), VCLIENTTOOLS_INTERFACE_VERSION, 0);
 	}
 	
+	if (GetDedicatedFactory() != nullptr) {
+		dedicated = (IDedicatedExports *)ismm->VInterfaceMatch(GetDedicatedFactory(), VENGINE_DEDICATEDEXPORTS_API_VERSION, 0);
+	}
+	
 	GET_V_IFACE_CURRENT(GetEngineFactory, vprofexport, IVProfExport, "VProfExport001");
 	
 	gpGlobals = ismm->GetCGlobals();
 	
 	LibMgr::SetPtr(Library::SERVER,         (void *)ismm->GetServerFactory(false));
 	LibMgr::SetPtr(Library::ENGINE,         (void *)ismm->GetEngineFactory(false));
+	LibMgr::SetPtr(Library::DEDICATED,      (void *)dedicated);
 	LibMgr::SetPtr(Library::TIER0,          (void *)&MemAllocScratch);
 	LibMgr::SetPtr(Library::CLIENT,         (void *)clientdll);
 	LibMgr::SetPtr(Library::VGUIMATSURFACE, (void *)g_pVGuiSurface);

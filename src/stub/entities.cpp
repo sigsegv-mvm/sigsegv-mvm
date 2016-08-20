@@ -175,6 +175,9 @@ IMPL_EXTRACT (int,  CCurrencyPack, m_nAmount, new CExtract_CCurrencyPack_m_nAmou
 GlobalThunk<CUtlVector<ICurrencyPackAutoList *>> ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList("ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList");
 
 
+MemberVFuncThunk<CTFBaseBoss *, void> CTFBaseBoss::vt_UpdateCollisionBounds(TypeName<CTFBaseBoss>(), "CTFBaseBoss::UpdateCollisionBounds");
+
+
 IMPL_EXTRACT(CHandle<CPathTrack>, CTFTankBoss, m_hCurrentNode,    new CExtract_CTFTankBoss_m_hCurrentNode());
 IMPL_EXTRACT(CUtlVector<float>,   CTFTankBoss, m_NodeDists,       new CExtract_CTFTankBoss_m_NodeDists());
 IMPL_EXTRACT(float,               CTFTankBoss, m_flTotalDistance, new CExtract_CTFTankBoss_m_flTotalDistance());

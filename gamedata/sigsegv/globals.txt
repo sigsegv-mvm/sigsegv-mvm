@@ -71,6 +71,18 @@
 					type "sym"
 					sym  "g_pPopulationManager"
 				}
+				
+				"s_pszNextPopfile"
+				{
+					type "sym"
+					sym  "s_pszNextPopfile"
+				}
+				
+				"lagcompensation"
+				{
+					type "sym"
+					sym  "lagcompensation"
+				}
 			}
 		}
 	}

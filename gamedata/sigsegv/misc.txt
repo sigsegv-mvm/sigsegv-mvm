@@ -611,18 +611,16 @@
 					seg   ".text"
 					seek  "558bec518b1514d58b108b0d0cd58b10568bf28d42013bc17e142bd1b908d58b104252e8d89c1c008b1514d58b10a108d58b1042891514d58b102bd64aa318d58b1085d27e1d8d0cb08d04950000000050518d410450e8055b4200a108d58b1083c40c8d04b08b750885c0740289306a0068b0de8f1068c4dd8f106a0056e81170420083c41485c074118d45fc8975fc50b91cd58b10e835981c005e8be55dc3"
 					mask  "ffffffffffff00000000ffff00000000ffffffffffffffffff00ffffff00000000ffffff00000000ffff00000000ff00000000ffffff00000000ffffffff00000000ffffff00ffffffffffffffffffffffffffffffffff00000000ff00000000ffffffffffffffffffffffff00ffffffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
-				//	addr  "0x227670"
-				//	build "3386059"
 				}
 				"IGameSystem::Remove"
 				{
 					type "pattern"
 					sym  "_ZN11IGameSystem6RemoveEPS_"
 					seg  ".text"
-					seek "558bec51568bf18d45fc50b908d58b108975fcc706387a6d10e8a29708006a0068b0de8f1068c4dd8f106a0056e8f271420083c41485c074118d45fc8975fc50b91cd58b10e8769708005e8be55dc3"
-					mask "ffffffffffffffffffffffff00000000ffffffffff00000000ff00000000ffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
-				//	addr  "0x227a70"
-				//	build "3386059"
+					seek "558bec51568d4508b9b8148c1050e81dbb0a008b75086a00689020901068a41f90106a0056e84aed420083c41485c074118d45fc8975fc50b9cc148c10e8eeba0a005e8be55dc3"
+					mask "ffffffffffffffffff00000000ffff00000000ffffffffffff00000000ff00000000ffffffff00000000ffffffffffffffffffffffffffffff00000000ff00000000ffffffffff"
+				//	seek "558bec51568bf18d45fc50b908d58b108975fcc706387a6d10e8a29708006a0068b0de8f1068c4dd8f106a0056e8f271420083c41485c074118d45fc8975fc50b91cd58b10e8769708005e8be55dc3"
+				//	mask "ffffffffffffffffffffffff00000000ffffffffff00000000ff00000000ffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
 				}
 				
 				"CBaseEntity::PhysicsSimulate"
@@ -1333,6 +1331,169 @@
 				{
 					type "sym"
 					sym  "_ZN14CBaseAnimating13SetModelScaleEff"
+				}
+				
+				"CNetChan::SendNetMsg"
+				{
+					type "sym"
+					sym  "_ZN8CNetChan10SendNetMsgER11INetMessagebb"
+					lib  "engine"
+				}
+				
+				"CBaseFlex::AddSceneEvent"
+				{
+					type "sym"
+					sym  "_ZN9CBaseFlex13AddSceneEventEP12CChoreoSceneP12CChoreoEventP11CBaseEntity"
+				}
+				
+				"CBaseEntity::IsBSPModel"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity10IsBSPModelEv"
+				}
+				
+				"FindHullIntersection"
+				{
+					type "sym"
+					sym  "_Z20FindHullIntersectionRK6VectorR10CGameTraceS1_S1_P11CBaseEntity"
+				}
+				
+				"CBaseEntity::ShouldCollide"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity13ShouldCollideEii"
+				}
+				
+				"CGameRules::ShouldCollide"
+				{
+					type "sym"
+					sym  "_ZN10CGameRules13ShouldCollideEii"
+				}
+				
+				"PassServerEntityFilter"
+				{
+					type "sym"
+					sym  "_Z22PassServerEntityFilterPK13IHandleEntityS1_"
+				}
+				
+				"StandardFilterRules"
+				{
+					type "sym"
+					sym  "_Z19StandardFilterRulesP13IHandleEntityi"
+				}
+				
+				"IsSpaceToSpawnHere"
+				{
+					type "sym"
+					sym  "_Z18IsSpaceToSpawnHereRK6Vector"
+				}
+				
+				"TeleportNearVictim"
+				{
+					type "sym"
+					sym  "_Z18TeleportNearVictimP6CTFBotP9CTFPlayeri"
+				}
+				
+				"CPackedStore::OpenFile"
+				{
+					type "sym"
+					sym  "_ZN12CPackedStore8OpenFileEPKc"
+					lib  "dedicated"
+					// it's in dedicated_srv.so on ServerLinux
+					// but in filesystem_stdio.* elsewhere
+				}
+				
+				"CBaseFileSystem::FileExists"
+				{
+					type "sym"
+					sym  "_ZN15CBaseFileSystem10FileExistsEPKcS1_"
+					lib  "dedicated"
+					// it's in dedicated_srv.so on ServerLinux
+					// but in filesystem_stdio.* elsewhere
+				}
+				
+				"CTFGameRules::SetNextMvMPopfile"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules17SetNextMvMPopfileEPKc"
+				}
+				
+				"CTFBaseBoss::UpdateCollisionBounds"
+				{
+					type "sym"
+					sym  "_ZN11CTFBaseBoss21UpdateCollisionBoundsEv"
+				}
+				
+				"CTFGameMovement::CheckStuck"
+				{
+					type "sym"
+					sym  "_ZN15CTFGameMovement10CheckStuckEv"
+				}
+				
+				"CTFMechanicalArm::ShockAttack"
+				{
+					type "sym"
+					sym  "_ZN16CTFMechanicalArm11ShockAttackEv"
+				}
+				
+				"CBasePlayer::SetPlayerName"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer13SetPlayerNameEPKc"
+				}
+				
+				"CBaseObject::SetPlasmaDisabled"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject17SetPlasmaDisabledEf"
+				}
+				
+				"CBasePlayer::GetPlayerMaxSpeed"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer17GetPlayerMaxSpeedEv"
+				}
+				
+				"CBaseObject::HasSapper"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject9HasSapperEv"
+				}
+				
+				"CTFFlameThrower::FireAirBlast"
+				{
+					type "sym"
+					sym  "_ZN15CTFFlameThrower12FireAirBlastEi"
+				}
+				
+				"CTFFlameThrower::DeflectPlayer"
+				{
+					type "sym"
+					sym  "_ZN15CTFFlameThrower13DeflectPlayerEP9CTFPlayerS1_R6VectorS3_S3_"
+				}
+				
+				"SetDebugBits"
+				{
+					type "sym"
+					sym  "_Z12SetDebugBitsP11CBasePlayerPKci"
+				}
+				
+				"GetNextCommandEntity"
+				{
+					type "sym"
+					sym  "_Z20GetNextCommandEntityP11CBasePlayerPKcP11CBaseEntity"
+				}
+				
+				"DrawAllDebugOverlays"
+				{
+					type "sym"
+					sym  "_Z20DrawAllDebugOverlaysv"
+				}
+				
+				"CTFGameRules::FPlayerCanTakeDamage"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules20FPlayerCanTakeDamageEP11CBasePlayerP11CBaseEntityRK15CTakeDamageInfo"
 				}
 			}
 		}

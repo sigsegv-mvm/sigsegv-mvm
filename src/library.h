@@ -7,6 +7,7 @@ enum class Library : int
 	INVALID,
 	SERVER,
 	ENGINE,
+	DEDICATED,
 	TIER0,
 	CLIENT,
 	VGUIMATSURFACE,

@@ -88,26 +88,26 @@ namespace Mod_Pop_PopMgr_Extensions
 	struct PopState
 	{
 		PopState() :
-			m_SpellsEnabled("tf_spells_enabled"),
-			m_GrapplingHook("tf_grapplinghook_enable"),
-			m_RespecEnabled("tf_mvm_respec_enabled"),
-			m_RespecLimit("tf_mvm_respec_limit"),
-			m_BonusRatioHalf("tf_mvm_currency_bonus_ratio_min"),
-			m_BonusRatioFull("tf_mvm_currency_bonus_ratio_max"),
-			m_FixedBuybacks("tf_mvm_buybacks_method"),
+			m_SpellsEnabled  ("tf_spells_enabled"),
+			m_GrapplingHook  ("tf_grapplinghook_enable"),
+			m_RespecEnabled  ("tf_mvm_respec_enabled"),
+			m_RespecLimit    ("tf_mvm_respec_limit"),
+			m_BonusRatioHalf ("tf_mvm_currency_bonus_ratio_min"),
+			m_BonusRatioFull ("tf_mvm_currency_bonus_ratio_max"),
+			m_FixedBuybacks  ("tf_mvm_buybacks_method"),
 			m_BuybacksPerWave("tf_mvm_buybacks_per_wave"),
-			m_DeathPenalty("tf_mvm_death_penalty")
+			m_DeathPenalty   ("tf_mvm_death_penalty")
 		{
 			this->Reset();
 		}
 		
 		void Reset()
 		{
-			this->m_bGiantsDropRareSpells = false;
-			this->m_flSpellDropRateCommon = 1.00f;
-			this->m_flSpellDropRateGiant  = 1.00f;
-			this->m_bNoReanimators        = false;
-			this->m_bNoMvMDeathTune       = false;
+			this->m_bGiantsDropRareSpells      = false;
+			this->m_flSpellDropRateCommon      = 1.00f;
+			this->m_flSpellDropRateGiant       = 1.00f;
+			this->m_bNoReanimators             = false;
+			this->m_bNoMvMDeathTune            = false;
 			
 			this->m_MedievalMode.Reset();
 			this->m_SpellsEnabled.Reset();

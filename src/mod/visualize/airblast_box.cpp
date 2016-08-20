@@ -2,21 +2,20 @@
 #include "util/scope.h"
 
 
-// TODO: move cvars into class
-
-
-namespace Mod_Visualize_Airblast
+namespace Mod_Visualize_Airblast_Box
 {
-	ConVar cvar_duration("sig_visualize_airblast_duration", "0.1", FCVAR_NOTIFY,
+	ConVar cvar_clear("sig_visualize_airblast_box_clear", "1", FCVAR_NOTIFY,
+		"Visualization: set 1 to clear overlays each time");
+	ConVar cvar_duration("sig_visualize_airblast_box_duration", "0.1", FCVAR_NOTIFY,
 		"Visualization: box draw duration");
 	
-	ConVar cvar_color_r("sig_visualize_airblast_color_r", "255", FCVAR_NOTIFY,
+	ConVar cvar_color_r("sig_visualize_airblast_box_color_r", "255", FCVAR_NOTIFY,
 		"Visualization: box color (red)");
-	ConVar cvar_color_g("sig_visualize_airblast_color_g", "255", FCVAR_NOTIFY,
+	ConVar cvar_color_g("sig_visualize_airblast_box_color_g", "255", FCVAR_NOTIFY,
 		"Visualization: box color (green)");
-	ConVar cvar_color_b("sig_visualize_airblast_color_b", "255", FCVAR_NOTIFY,
+	ConVar cvar_color_b("sig_visualize_airblast_box_color_b", "255", FCVAR_NOTIFY,
 		"Visualization: box color (blue)");
-	ConVar cvar_color_a("sig_visualize_airblast_color_a", "255", FCVAR_NOTIFY,
+	ConVar cvar_color_a("sig_visualize_airblast_box_color_a", "255", FCVAR_NOTIFY,
 		"Visualization: box color (alpha)");
 	
 	
@@ -33,6 +32,10 @@ namespace Mod_Visualize_Airblast
 	{
 		SCOPED_INCREMENT(rc_EnumerateElementsInBox);
 		if (rc_CTFWeaponBase_DeflectProjectiles > 0 && rc_EnumerateElementsInBox <= 1) {
+			if (cvar_clear.GetBool()) {
+				NDebugOverlay::Clear();
+			}
+			
 			NDebugOverlay::Box(vec3_origin, mins, maxs,
 				cvar_color_r.GetInt(),
 				cvar_color_g.GetInt(),
@@ -48,7 +51,7 @@ namespace Mod_Visualize_Airblast
 	class CMod : public IMod
 	{
 	public:
-		CMod() : IMod("Visualize:Airblast")
+		CMod() : IMod("Visualize:Airblast_Box")
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_DeflectProjectiles,         "CTFWeaponBase::DeflectProjectiles");
 			MOD_ADD_DETOUR_MEMBER(ISpatialPartition_EnumerateElementsInBox, "ISpatialPartition::EnumerateElementsInBox");
@@ -57,7 +60,7 @@ namespace Mod_Visualize_Airblast
 	CMod s_Mod;
 	
 	
-	ConVar cvar_enable("sig_visualize_airblast", "0", FCVAR_NOTIFY,
+	ConVar cvar_enable("sig_visualize_airblast_box", "0", FCVAR_NOTIFY,
 		"Visualization: draw box used for airblast deflection of projectiles",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);

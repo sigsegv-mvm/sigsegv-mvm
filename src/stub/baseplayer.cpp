@@ -20,15 +20,18 @@ MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            C
 
 IMPL_DATAMAP(char, CBasePlayer, m_szNetname);
 
-IMPL_SENDPROP(int, CBasePlayer, m_nTickBase, CBasePlayer);
+IMPL_SENDPROP(int,   CBasePlayer, m_nTickBase,  CBasePlayer);
+IMPL_SENDPROP(float, CBasePlayer, m_flMaxSpeed, CBasePlayer);
 
-MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors("CBasePlayer::EyeVectors");
-MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID("CBasePlayer::GetSteamID");
+MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors   ("CBasePlayer::EyeVectors");
+MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID   ("CBasePlayer::GetSteamID");
+MemberFuncThunk<CBasePlayer *, void, const char *>                 CBasePlayer::ft_SetPlayerName("CBasePlayer::SetPlayerName");
 
 MemberVFuncThunk<const CBasePlayer *, bool>             CBasePlayer::vt_IsBot               (TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
 MemberVFuncThunk<      CBasePlayer *, void, bool, bool> CBasePlayer::vt_CommitSuicide       (TypeName<CBasePlayer>(), "CBasePlayer::CommitSuicide");
 MemberVFuncThunk<      CBasePlayer *, void>             CBasePlayer::vt_ForceRespawn        (TypeName<CTFPlayer>(),   "CTFPlayer::ForceRespawn");
 MemberVFuncThunk<      CBasePlayer *, Vector>           CBasePlayer::vt_Weapon_ShootPosition(TypeName<CBasePlayer>(), "CBasePlayer::Weapon_ShootPosition");
+MemberVFuncThunk<      CBasePlayer *, float>            CBasePlayer::vt_GetPlayerMaxSpeed   (TypeName<CBasePlayer>(), "CBasePlayer::GetPlayerMaxSpeed");
 
 
 MemberVFuncThunk<CBaseMultiplayerPlayer *, bool, int, const char *, char *, size_t, IRecipientFilter *> CBaseMultiplayerPlayer::vt_SpeakConceptIfAllowed(TypeName<CTFPlayer>(), "CTFPlayer::SpeakConceptIfAllowed");

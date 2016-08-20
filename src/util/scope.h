@@ -18,13 +18,17 @@ public:
 	{
 		++this->m_iCount;
 	}
-	void Decrement()
+	void Decrement(const char *file = nullptr, int line = 0)
 	{
 		if (this->m_iCount > 0) {
 			--this->m_iCount;
 		} else {
 			DevWarning("RefCount::Decrement: m_iCount was %d!\n", this->m_iCount);
+			if (file != nullptr && line != 0) {
+				DevWarning("- from %s line %d\n", file, line);
+			}
 			BACKTRACE();
+			
 			this->m_iCount = 0;
 		}
 	}
@@ -37,11 +41,12 @@ private:
 class ScopedIncrement
 {
 public:
-	ScopedIncrement(RefCount& rc) : m_RefCount(rc) {}
+	ScopedIncrement(RefCount& rc, const char *file, int line) :
+		m_RefCount(rc), m_strFile(file), m_iLine(line) {}
 	~ScopedIncrement()
 	{
 		if (this->m_bIncremented) {
-			--this->m_RefCount;
+			this->m_RefCount.Decrement(this->m_strFile, this->m_iLine);
 			this->m_bIncremented = false;
 		}
 	}
@@ -49,19 +54,22 @@ public:
 	void Increment()
 	{
 		assert(!this->m_bIncremented);
-		++this->m_RefCount;
+		this->m_RefCount.Increment();
 		this->m_bIncremented = true;
 	}
 	
 private:
 	RefCount& m_RefCount;
+	const char *m_strFile;
+	int m_iLine;
+	
 	bool m_bIncremented = false;
 };
 #define SCOPED_INCREMENT(rc) \
-	ScopedIncrement _incr_##rc(rc); \
+	ScopedIncrement _incr_##rc(rc, __FILE__, __LINE__); \
 	_incr_##rc.Increment()
 #define SCOPED_INCREMENT_IF(rc, predicate) \
-	ScopedIncrement _incr_##rc(rc); \
+	ScopedIncrement _incr_##rc(rc, __FILE__, __LINE__); \
 	if (predicate) { \
 		_incr_##rc.Increment(); \
 	}

@@ -1,4 +1,5 @@
 #include "mod.h"
+#include "stub/baseplayer.h"
 
 
 namespace Mod_Util_ListenServerHost

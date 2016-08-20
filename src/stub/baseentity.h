@@ -12,7 +12,7 @@ class CBaseCombatCharacter;
 class CServerNetworkProperty : public IServerNetworkable {};
 
 
-class CBaseEntity
+class CBaseEntity : public IServerEntity
 {
 public:
 	/* inline */
@@ -39,6 +39,11 @@ public:
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
 	IPhysicsObject *VPhysicsGetObject() const   { return this->m_pPhysicsObject; }
 	int GetFlags() const                        { return this->m_fFlags; }
+	int GetCollisionGroup() const               { return this->m_CollisionGroup; }
+	SolidType_t GetSolid() const                { return this->CollisionProp()->GetSolid(); }
+	model_t *GetModel() const                   { return const_cast<model_t *>(modelinfo->GetModel(this->GetModelIndex())); }
+	bool IsTransparent() const                  { return (this->m_nRenderMode != kRenderNormal); }
+	MoveType_t GetMoveType() const              { return (MoveType_t)(unsigned char)this->m_MoveType; }
 	
 	/* thunk */
 	void Remove()                                                                            {        ft_Remove                  (this); }
@@ -48,6 +53,7 @@ public:
 	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles            (this, absAngles); }
 	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound               (this, soundname, soundtime, duration); }
 	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink            (this, szContext); }
+	bool IsBSPModel() const                                                                  { return ft_IsBSPModel              (this); }
 	Vector EyePosition()                                                                     { return vt_EyePosition             (this); }
 	const QAngle& EyeAngles()                                                                { return vt_EyeAngles               (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity          (this, pOwner); }
@@ -57,6 +63,7 @@ public:
 	bool IsCombatItem() const                                                                { return vt_IsCombatItem            (this); }
 	int GetModelIndex() const                                                                { return vt_GetModelIndex           (this); }
 	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer(this); }
+	bool ShouldCollide(int collisionGroup, int contentsMask) const                           { return vt_ShouldCollide           (this, collisionGroup, contentsMask); }
 	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
@@ -66,6 +73,8 @@ public:
 	/* network vars */
 	void NetworkStateChanged();
 	void NetworkStateChanged(void *pVar);
+	
+	DECL_DATAMAP(int, m_debugOverlays);
 	
 	/* TODO: make me private again! */
 	DECL_SENDPROP(int, m_fFlags);
@@ -89,15 +98,19 @@ private:
 	DECL_SENDPROP(int,                  m_iHealth);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOwnerEntity);
+	DECL_SENDPROP(int,                  m_CollisionGroup);
+	DECL_SENDPROP(unsigned char,        m_nRenderMode);
+	DECL_SENDPROP(unsigned char,        m_MoveType);
 	
-	static MemberFuncThunk<CBaseEntity *, void>                               ft_Remove;
-	static MemberFuncThunk<CBaseEntity *, void>                               ft_CalcAbsolutePosition;
-	static MemberFuncThunk<CBaseEntity *, bool, const char *>                 ft_ClassMatches;
-	static MemberFuncThunk<CBaseEntity *, void, const Vector&>                ft_SetAbsOrigin;
-	static MemberFuncThunk<CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
-	static MemberFuncThunk<CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
-	static MemberFuncThunk<CBaseEntity *, float, const char *>                ft_GetNextThink;
-	static MemberFuncThunk<CBaseEntity *, void, const Vector&, Vector *>      ft_EntityToWorldSpace;
+	static MemberFuncThunk<      CBaseEntity *, void>                               ft_Remove;
+	static MemberFuncThunk<      CBaseEntity *, void>                               ft_CalcAbsolutePosition;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                 ft_ClassMatches;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                ft_SetAbsOrigin;
+	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
+	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
+	static MemberFuncThunk<      CBaseEntity *, float, const char *>                ft_GetNextThink;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *>      ft_EntityToWorldSpace;
+	static MemberFuncThunk<const CBaseEntity *, bool>                               ft_IsBSPModel;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                    vt_EyeAngles;
@@ -108,6 +121,7 @@ private:
 	static MemberVFuncThunk<const CBaseEntity *, bool>                             vt_IsCombatItem;
 	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
 	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>           vt_MyCombatCharacterPointer;
+	static MemberVFuncThunk<const CBaseEntity *, bool, int, int>                   vt_ShouldCollide;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

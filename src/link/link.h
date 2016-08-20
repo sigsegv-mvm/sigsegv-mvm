@@ -12,10 +12,22 @@ class ILinkage : public AutoList<ILinkage>
 public:
 	virtual ~ILinkage() {}
 	
-	virtual bool Link() = 0;
+	void InvokeLink()
+	{
+		if (this->m_bLinked) return;
+		
+		this->m_bLinked = this->Link();
+	}
+	
+	bool IsLinked() const { return this->m_bLinked; }
 	
 protected:
 	ILinkage() {}
+	
+	virtual bool Link() = 0;
+	
+private:
+	bool m_bLinked = false;
 };
 
 

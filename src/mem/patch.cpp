@@ -45,7 +45,7 @@ bool IPatch::Check()
 	
 	if (this->Verbose()) {
 		DevMsg("IPatch::Check: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
-		DevMsg("IPatch::Check: func     %08x\n", this->m_pFuncAddr);
+		DevMsg("IPatch::Check: func     %08x\n", (uintptr_t)this->m_pFuncAddr);
 		DevMsg("IPatch::Check: off_min      %04x\n", this->m_iFuncOffMin);
 		DevMsg("IPatch::Check: off_max      %04x\n", this->m_iFuncOffMax);
 		DevMsg("IPatch::Check: addr_min %08x\n", addr_min);

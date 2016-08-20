@@ -63,6 +63,11 @@
 					type "sym"
 					sym  "_ZN16CTFBotMainAction9OnInjuredEP6CTFBotRK15CTakeDamageInfo"
 				}
+				"CTFBotMainAction::InitialContainedAction"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction22InitialContainedActionEP6CTFBot"
+				}
 				
 				"CTFBotScenarioMonitor::Update"
 				{

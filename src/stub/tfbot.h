@@ -205,7 +205,8 @@ public:
 	SIZE_CHECK(ExtendedAttr, 0x4);
 #endif
 	
-	MissionType GetMission() const { return this->m_nMission; }
+	MissionType GetMission() const   { return this->m_nMission; }
+	void SetMission(MissionType val) { this->m_nMission = val; }
 	
 	/* thunk */
 	ILocomotion *GetLocomotionInterface() const                        { return ft_GetLocomotionInterface      (this); }
@@ -229,6 +230,7 @@ public:
 	float GetDesiredAttackRange() const                                { return ft_GetDesiredAttackRange       (this); }
 	void EquipBestWeaponForThreat(const CKnownEntity *threat)          {        ft_EquipBestWeaponForThreat    (this, threat); }
 	CTFPlayer *SelectRandomReachableEnemy()                            { return ft_SelectRandomReachableEnemy  (this); }
+	bool ShouldAutoJump()                                              { return ft_ShouldAutoJump              (this); }
 	
 #if 0
 	/* custom: extended attributes */
@@ -263,6 +265,7 @@ private:
 	static MemberFuncThunk<const CTFBot *, float                             > ft_GetDesiredAttackRange;
 	static MemberFuncThunk<      CTFBot *, void, const CKnownEntity *        > ft_EquipBestWeaponForThreat;
 	static MemberFuncThunk<      CTFBot *, CTFPlayer *                       > ft_SelectRandomReachableEnemy;
+	static MemberFuncThunk<      CTFBot *, bool                              > ft_ShouldAutoJump;
 	
 #if 0
 	static std::map<CHandle<CTFBot>, ExtendedAttr> s_ExtAttrs;

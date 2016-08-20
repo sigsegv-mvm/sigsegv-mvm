@@ -391,7 +391,10 @@ class CAddr_Pattern : public IAddr_Pattern
 {
 public:
 	CAddr_Pattern(const std::string& name, const std::string& sym, const std::string& segment, const std::string& pattern, const std::string& mask) :
-		m_strName(name), m_strSymbol(sym), m_strSegment(segment), m_strPattern(pattern), m_strMask(mask) {}
+		m_strName(name), m_strSymbol(sym), m_strSegment(segment), m_strPattern(pattern), m_strMask(mask)
+	{
+		this->ProcessStrings();
+	}
 	
 	virtual const char *GetName() const override    { return this->m_strName.c_str(); }
 	virtual const char *GetSymbol() const override  { return this->m_strSymbol.c_str(); }
@@ -400,6 +403,8 @@ public:
 	virtual const char *GetMask() const override    { return this->m_strMask.c_str(); }
 	
 private:
+	void ProcessStrings();
+	
 	std::string m_strName;
 	std::string m_strSymbol;
 	std::string m_strSegment;

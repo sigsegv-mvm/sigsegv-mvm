@@ -5,6 +5,7 @@
 #include "util/trace.h"
 #include "util/backtrace.h"
 #include "util/misc.h"
+#include "util/clientmsg.h"
 
 
 //#include "../mvm-reversed/server/tf/bot/behavior/tf_bot_use_item.h"
@@ -24,25 +25,6 @@ namespace Mod_Debug_UseItem_Broken
 	// so our initial delay is set to 100ms or something dumb
 	// and then as soon as we EquipRequiredWeapon, m_flNextPrimaryAttack is updated to 500ms from now
 	// but we've already decided we'll be done after 100ms
-	
-	
-	#define DevMsg(...) ClientMsg(__VA_ARGS__)
-	void ClientMsg(const char *format, ...)
-	{
-		static char buf[4096];
-		
-		va_list va;
-		va_start(va, format);
-		vsnprintf(buf, sizeof(buf), format, va);
-		va_end(va);
-		
-		for (int i = 1; i <= 32; ++i) {
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
-			if (player != nullptr) {
-				g_SMAPI->ClientConPrintf(player->GetNetworkable()->GetEdict(), "%s", buf);
-			}
-		}
-	}
 	
 	
 	const char *WeaponID_ToString(int id)
@@ -216,13 +198,13 @@ namespace Mod_Debug_UseItem_Broken
 	{
 		auto useitem = reinterpret_cast<CTFBotUseItem *>(this);
 		
-		DevMsg(" \n[%8.3f] CTFBotUseItem::OnStart(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
+		ClientMsg(" \n[%8.3f] CTFBotUseItem::OnStart(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
 		
 		SCOPED_INCREMENT(rc_CTFBotUseItem_OnStart);
 		auto result = DETOUR_MEMBER_CALL(CTFBotUseItem_OnStart)(actor, action);
-		DevMsg("%*sItem's m_flNextPrimaryAttack @ %.3f\n", 13, " ", (float)useitem->m_hItem->m_flNextPrimaryAttack);
-		DevMsg("%*sInitial delay timer set to %.3f sec duration; will elapse @ %.3f\n", 13, " ", useitem->m_ctInitialDelay.GetCountdownDuration(), gpGlobals->curtime + useitem->m_ctInitialDelay.GetRemainingTime());
-		DevMsg("%*s%s\n", 13, " ", ActionResult_ToString(result));
+		ClientMsg("%*sItem's m_flNextPrimaryAttack @ %.3f\n", 13, " ", (float)useitem->m_hItem->m_flNextPrimaryAttack);
+		ClientMsg("%*sInitial delay timer set to %.3f sec duration; will elapse @ %.3f\n", 13, " ", useitem->m_ctInitialDelay.GetCountdownDuration(), gpGlobals->curtime + useitem->m_ctInitialDelay.GetRemainingTime());
+		ClientMsg("%*s%s\n", 13, " ", ActionResult_ToString(result));
 		return result;
 	}
 	
@@ -231,27 +213,27 @@ namespace Mod_Debug_UseItem_Broken
 	{
 		auto useitem = reinterpret_cast<CTFBotUseItem *>(this);
 		
-		DevMsg(" \n[%8.3f] CTFBotUseItem::Update(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
+		ClientMsg(" \n[%8.3f] CTFBotUseItem::Update(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
 		
 		if (useitem->m_ctInitialDelay.HasStarted() && useitem->m_ctInitialDelay.IsElapsed()) {
-			DevMsg("%*sInitial delay elapsed; pressing +attack now\n", 13, " ");
+			ClientMsg("%*sInitial delay elapsed; pressing +attack now\n", 13, " ");
 		}
 		
 		SCOPED_INCREMENT(rc_CTFBotUseItem_Update);
 		auto result = DETOUR_MEMBER_CALL(CTFBotUseItem_Update)(actor, dt);
-		DevMsg("%*s%s\n", 13, " ", ActionResult_ToString(result));
+		ClientMsg("%*s%s\n", 13, " ", ActionResult_ToString(result));
 		return result;
 	}
 	
 	RefCount rc_CTFBotUseItem_OnEnd;
 	DETOUR_DECL_MEMBER(void, CTFBotUseItem_OnEnd, CTFBot *actor, Action<CTFBot> *action)
 	{
-		DevMsg(" \n[%8.3f] CTFBotUseItem::OnEnd(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
+		ClientMsg(" \n[%8.3f] CTFBotUseItem::OnEnd(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
 		
 		SCOPED_INCREMENT(rc_CTFBotUseItem_OnEnd);
 		DETOUR_MEMBER_CALL(CTFBotUseItem_OnEnd)(actor, action);
 		
-		DevMsg(" \n================================================================================\n");
+		ClientMsg(" \n================================================================================\n");
 	}
 	
 	
@@ -265,15 +247,15 @@ namespace Mod_Debug_UseItem_Broken
 		
 		DETOUR_MEMBER_CALL(CTFBot_PushRequiredWeapon)(weapon);
 		if (rc_CTFBotUseItem_OnStart > 0) {
-			DevMsg("%*sCTFBot::PushRequiredWeapon: stack:", 13, " ");
+			ClientMsg("%*sCTFBot::PushRequiredWeapon: stack:", 13, " ");
 			FOR_EACH_VEC((*m_RequiredWeapons), i) {
-				DevMsg(" %s%s", (i == m_RequiredWeapons->Count() - 1 ? "*" : ""),
+				ClientMsg(" %s%s", (i == m_RequiredWeapons->Count() - 1 ? "*" : ""),
 					WeaponID_ToString((*m_RequiredWeapons)[i]->GetWeaponID()));
 			}
 			if (m_RequiredWeapons->Count() == 0) {
-				DevMsg(" (empty)\n");
+				ClientMsg(" (empty)\n");
 			} else {
-				DevMsg("\n");
+				ClientMsg("\n");
 			}
 		}
 	}
@@ -288,15 +270,15 @@ namespace Mod_Debug_UseItem_Broken
 		
 		DETOUR_MEMBER_CALL(CTFBot_PopRequiredWeapon)();
 		if (rc_CTFBotUseItem_OnEnd > 0) {
-			DevMsg("%*sCTFBot::PopRequiredWeapon: stack:", 13, " ");
+			ClientMsg("%*sCTFBot::PopRequiredWeapon: stack:", 13, " ");
 			FOR_EACH_VEC((*m_RequiredWeapons), i) {
-				DevMsg(" %s%s", (i == m_RequiredWeapons->Count() - 1 ? "*" : ""),
+				ClientMsg(" %s%s", (i == m_RequiredWeapons->Count() - 1 ? "*" : ""),
 					WeaponID_ToString((*m_RequiredWeapons)[i]->GetWeaponID()));
 			}
 			if (m_RequiredWeapons->Count() == 0) {
-				DevMsg(" (empty)\n");
+				ClientMsg(" (empty)\n");
 			} else {
-				DevMsg("\n");
+				ClientMsg("\n");
 			}
 		}
 	}
@@ -311,7 +293,7 @@ namespace Mod_Debug_UseItem_Broken
 		const char *after  = WeaponID_ToString(bot->GetActiveTFWeapon()->GetWeaponID());
 		
 		if (strcmp(before, after) != 0) {
-			DevMsg(" \n[%8.3f] CTFBot::EquipRequiredWeapon(#%d): %s -> %s\n", gpGlobals->curtime, ENTINDEX(bot), before, after);
+			ClientMsg(" \n[%8.3f] CTFBot::EquipRequiredWeapon(#%d): %s -> %s\n", gpGlobals->curtime, ENTINDEX(bot), before, after);
 		}
 		
 		return result;

@@ -13,7 +13,9 @@ namespace Link
 		DevMsg("Link::InitAll BEGIN\n");
 		
 		for (auto link : AutoList<ILinkage>::List()) {
-			if (!link->Link()) {
+			link->InvokeLink();
+			
+			if (!link->IsLinked()) {
 #if !defined LINK_NONFATAL
 				DevMsg("Link::InitAll FAIL\n");
 				return false;

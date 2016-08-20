@@ -263,6 +263,12 @@
 					sym  "_ZN6CTFBot26SelectRandomReachableEnemyEv"
 				}
 				
+				"CTFBot::ShouldAutoJump"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot14ShouldAutoJumpEv"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

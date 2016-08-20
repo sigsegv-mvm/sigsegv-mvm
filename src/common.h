@@ -11,6 +11,7 @@ class IVEngineServer;
 class IServerGameDLL;
 class IFileSystem;
 class IServerGameClients;
+class IServer;
 class ICvar;
 class ISpatialPartition;
 class IEngineTrace;
@@ -46,6 +47,8 @@ class IClientTools;
 
 class IVProfExport;
 
+class IDedicatedExports;
+
 namespace SourcePawn {
 	class ISourcePawnEngine;
 }
@@ -58,6 +61,7 @@ extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
 extern IFileSystem *filesystem;
 extern IServerGameClients *serverGameClients;
+extern IServer *server;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
@@ -92,6 +96,8 @@ extern IClientTools *clienttools;
 
 extern IVProfExport *vprofexport;
 
+extern IDedicatedExports *dedicated;
+
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
 
@@ -120,6 +126,8 @@ using namespace std::literals;
 #include <list>
 #include <map>
 #include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 
@@ -195,21 +203,21 @@ class IVideoRecorder;
 #define RAD_TELEMETRY_DISABLED
 #include <Color.h>
 #include <string_t.h>
-#include <tier0/annotations.h>
-#include <tier0/basetypes.h>
+#include <annotations.h>
+#include <basetypes.h>
 #include <mathlib/vector.h>
-#include <tier1/utlmemory.h>
-#include <tier1/utlstring.h>
-#include <tier1/utlvector.h>
-#include <tier1/utlrbtree.h>
-#include <tier1/utlmap.h>
-#include <tier1/utlbuffer.h>
+#include <utlmemory.h>
+#include <utlstring.h>
+#include <utlvector.h>
+#include <utlrbtree.h>
+#include <utlmap.h>
+#include <utlbuffer.h>
 #include <shareddefs.h>
 #include <icvar.h>
-#include <tier0/dbg.h>
+#include <dbg.h>
 #include "sdk2013/convar.h"
-#include <tier1/fmtstr.h>
-#include <tier1/KeyValues.h>
+#include <fmtstr.h>
+#include <KeyValues.h>
 #include <ehandle.h>
 #include <datamap.h>
 #include <predictioncopy.h>
@@ -238,7 +246,7 @@ class IVideoRecorder;
 #include <interface.h>
 #include <cdll_int.h>
 #include <iclientnetworkable.h>
-#include <tier1/utldict.h>
+#include <utldict.h>
 #include <mp_shareddefs.h>
 #include <materialsystem/imaterialsystem.h>
 #include <materialsystem/imaterial.h>
@@ -250,17 +258,23 @@ class IVideoRecorder;
 #include <ivmodelrender.h>
 #include <vcollide_parse.h>
 #include <steam/steamclientpublic.h>
-#include <tier1/netadr.h>
+#include <netadr.h>
 #include <toolframework/ienginetool.h>
 #include <toolframework/itoolentity.h>
-#include <tier0/vprof.h>
+#include <vprof.h>
 #include <networkstringtabledefs.h>
-#include <tier0/valve_minmax_off.h>
-#include <tier1/stringpool.h>
+#include <valve_minmax_off.h>
+#include <stringpool.h>
 #include <filesystem.h>
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
 #include <VGuiMatSurface/IMatSystemSurface.h>
+#include <IKeyValuesSystem.h>
+#include <model_types.h>
+#include <idedicatedexports.h>
+#include <icommandline.h>
+#include <iserver.h>
+#include <iclient.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>

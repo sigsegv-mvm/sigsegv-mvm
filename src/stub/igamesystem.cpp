@@ -44,3 +44,9 @@ void IGameSystem::Remove(IGameSystem *pSys)
 
 // NOT IMPLEMENTED
 // const char *IGameSystem::MapName()
+
+
+bool IGameSystem_IsLinked()
+{
+	return (ft_IGameSystem_Add.IsLinked() && ft_IGameSystem_Remove.IsLinked());
+}

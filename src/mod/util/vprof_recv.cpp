@@ -8,18 +8,18 @@
 CL2Cache::CL2Cache() {}
 
 
-void ResetActiveVProfile()
-{
-	// set g_pVProfileForDisplay to &g_VProfCurrentProfile
-}
-void SetActiveVProfile(CVProfile *profile)
-{
-	// set g_pVProfileForDisplay
-}
-CVProfile *GetActiveVProfile()
-{
-	// get g_pVProfileForDisplay
-}
+//void ResetActiveVProfile()
+//{
+//	// set g_pVProfileForDisplay to &g_VProfCurrentProfile
+//}
+//void SetActiveVProfile(CVProfile *profile)
+//{
+//	// set g_pVProfileForDisplay
+//}
+//CVProfile *GetActiveVProfile()
+//{
+//	// get g_pVProfileForDisplay
+//}
 
 
 /* class CVProfNode happens to declare class CVProfRecorder as a friend; since

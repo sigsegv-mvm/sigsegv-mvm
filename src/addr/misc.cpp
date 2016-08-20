@@ -227,8 +227,10 @@ public:
 class CAddr_InterfaceVFunc : public IAddr_InterfaceVFunc
 {
 public:
-	CAddr_InterfaceVFunc(const void **pp_iface, const std::string& n_iface, const std::string& n_func, int vtidx) :
-		m_ppIFace(pp_iface), m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdx(vtidx)
+	template<typename T>
+	explicit CAddr_InterfaceVFunc(T **pp_iface, const std::string& n_iface, const std::string& n_func, int vtidx) :
+		m_ppIFace(reinterpret_cast<const void **>(const_cast<const T **>(pp_iface))),
+		m_strIFaceName(n_iface), m_strFuncName(n_func), m_iVTIdx(vtidx)
 	{
 		this->m_strName = this->m_strIFaceName + "::" + this->m_strFuncName;
 	}
@@ -246,11 +248,21 @@ private:
 };
 
 
+class CAddr_IVEngineServer : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IVEngineServer(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc(&engine, "IVEngineServer", n_func, vtidx) {}
+};
+static CAddr_IVEngineServer addr_IVEngineServer_IsDedicatedServer       ("IsDedicatedServer",        GetVIdxOfMemberFunc(&IVEngineServer::IsDedicatedServer));
+static CAddr_IVEngineServer addr_IVEngineServer_SetFakeClientConVarValue("SetFakeClientConVarValue", GetVIdxOfMemberFunc(&IVEngineServer::SetFakeClientConVarValue));
+
+
 class CAddr_ISpatialPartition : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_ISpatialPartition(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&partition, "ISpatialPartition", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&partition, "ISpatialPartition", n_func, vtidx) {}
 };
 static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInBox   ("EnumerateElementsInBox",    GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInBox));
 static CAddr_ISpatialPartition addr_ISpatialPartition_EnumerateElementsInSphere("EnumerateElementsInSphere", GetVIdxOfMemberFunc(&ISpatialPartition::EnumerateElementsInSphere));
@@ -260,7 +272,7 @@ class CAddr_IEngineTrace : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IEngineTrace(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&enginetrace, "IEngineTrace", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&enginetrace, "IEngineTrace", n_func, vtidx) {}
 };
 static CAddr_IEngineTrace addr_IEngineTrace_TraceRay             ("TraceRay",              GetVIdxOfMemberFunc                                                             (&IEngineTrace::TraceRay));
 static CAddr_IEngineTrace addr_IEngineTrace_EnumerateEntities_ray("EnumerateEntities_ray", GetVIdxOfMemberFunc<IEngineTrace, void, const Ray_t&, bool, IEntityEnumerator *>(&IEngineTrace::EnumerateEntities));
@@ -270,7 +282,7 @@ class CAddr_IVDebugOverlay : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IVDebugOverlay(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&debugoverlay, "IVDebugOverlay", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&debugoverlay, "IVDebugOverlay", n_func, vtidx) {}
 };
 //static CAddr_IVDebugOverlay addr_IVDebugOverlay_AddEntityTextOverlay("AddEntityTextOverlay", GetVIdxOfMemberFunc(&IVDebugOverlay::AddEntityTextOverlay));
 
@@ -282,9 +294,23 @@ class CAddr_IServerGameDLL : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IServerGameDLL(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&gamedll, "IServerGameDLL", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&gamedll, "IServerGameDLL", n_func, vtidx) {}
 };
 static CAddr_IServerGameDLL addr_IServerGameDLL_GameFrame("GameFrame", GetVIdxOfMemberFunc(&IServerGameDLL::GameFrame));
+
+
+class CAddr_ISurface : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_ISurface(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc(&g_pVGuiSurface, "ISurface", n_func, vtidx) {}
+};
+#if defined _WINDOWS
+#pragma message("CAddr_ISurface is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")
+static CAddr_ISurface addr_ISurface_SetFontGlyphSet("SetFontGlyphSet", 0x43);
+#else
+static CAddr_ISurface addr_ISurface_SetFontGlyphSet("SetFontGlyphSet", GetVIdxOfMemberFunc(&vgui::ISurface::SetFontGlyphSet));
+#endif
 
 
 static CAddr_Func_KnownVTIdx addr_CTFBotUseItem_D2("CTFBotUseItem::~CTFBotUseItem [D2]", "<nosym>", ".?AVCTFBotUseItem@@", 0x00);
@@ -759,7 +785,7 @@ class CAddr_IMemAlloc : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IMemAlloc(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&g_pMemAlloc, "IMemAlloc", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&g_pMemAlloc, "IMemAlloc", n_func, vtidx) {}
 };
 #if defined _WINDOWS
 #pragma message("CAddr_IMemAlloc is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")
@@ -778,7 +804,7 @@ class CAddr_IMatSystemSurface : public CAddr_InterfaceVFunc
 {
 public:
 	CAddr_IMatSystemSurface(const std::string& n_func, int vtidx) :
-		CAddr_InterfaceVFunc((const void **)&g_pMatSystemSurface, "IMatSystemSurface", n_func, vtidx) {}
+		CAddr_InterfaceVFunc(&g_pMatSystemSurface, "IMatSystemSurface", n_func, vtidx) {}
 };
 #if defined _WINDOWS
 #pragma message("CAddr_IMatSystemSurface is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")

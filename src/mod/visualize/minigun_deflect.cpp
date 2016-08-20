@@ -2,9 +2,6 @@
 #include "util/scope.h"
 
 
-// TODO: move cvars into class
-
-
 #ifdef EXPERIMENTAL
 
 namespace Mod_Visualize_Minigun_Deflect

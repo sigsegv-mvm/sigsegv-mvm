@@ -131,13 +131,14 @@
       <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
       <CallingConvention>
       </CallingConvention>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>false</OptimizeReferences>
+      <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -145,6 +146,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -204,6 +206,7 @@
     <ClCompile Include="..\src\mod\cond\reprogrammed.cpp" />
     <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
     <ClCompile Include="..\src\mod\debug\client_player_track.cpp" />
+    <ClCompile Include="..\src\mod\debug\console_scramble.cpp" />
     <ClCompile Include="..\src\mod\debug\draw_cphyscollide.cpp" />
     <ClCompile Include="..\src\mod\debug\known_entities.cpp" />
     <ClCompile Include="..\src\mod\debug\list_competitive_convars.cpp" />
@@ -213,6 +216,7 @@
     <ClCompile Include="..\src\mod\debug\penetration.cpp" />
     <ClCompile Include="..\src\mod\debug\popmgr_multiparse.cpp" />
     <ClCompile Include="..\src\mod\debug\revive_fast.cpp" />
+    <ClCompile Include="..\src\mod\debug\sound_leak.cpp" />
     <ClCompile Include="..\src\mod\debug\suicide_bomber.cpp" />
     <ClCompile Include="..\src\mod\debug\useitem_broken.cpp" />
     <ClCompile Include="..\src\mod\debug\usermsg_overflow.cpp" />
@@ -225,6 +229,7 @@
     <ClCompile Include="..\src\mod\pop\kv_conditional.cpp" />
     <ClCompile Include="..\src\mod\pop\popmgr_extensions.cpp" />
     <ClCompile Include="..\src\mod\prof\attr_munge.cpp" />
+    <ClCompile Include="..\src\mod\prof\debug_overlay.cpp" />
     <ClCompile Include="..\src\mod\prof\flame_breakable_collision.cpp" />
     <ClCompile Include="..\src\mod\robot\no_canteens.cpp" />
     <ClCompile Include="..\src\mod\robot\standable_heads.cpp" />
@@ -234,6 +239,8 @@
     <ClCompile Include="..\src\mod\util\console_recv.cpp" />
     <ClCompile Include="..\src\mod\util\console_send.cpp" />
     <ClCompile Include="..\src\mod\util\debugoverlay_font.cpp" />
+    <ClCompile Include="..\src\mod\util\debugoverlay_font_v2.cpp" />
+    <ClCompile Include="..\src\mod\util\debugoverlay_font_v3.cpp" />
     <ClCompile Include="..\src\mod\util\listenserverhost.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_enhancements.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />

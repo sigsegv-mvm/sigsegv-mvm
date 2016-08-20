@@ -201,7 +201,6 @@ namespace Mod_Prof_Attr_Munge
 	{
 		auto prof = reinterpret_cast<CVProfile2 *>(this);
 		
-		
 		const char *name = prof->GetBudgetGroupName(budgetGroupID);
 		
 		if (s_GroupColors.count(name) != 0) {

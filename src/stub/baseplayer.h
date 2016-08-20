@@ -49,28 +49,35 @@ private:
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
-	const char *GetPlayerName() { return m_szNetname.GetPtr(); }
+	const char *GetPlayerName() { return this->m_szNetname.GetPtr(); }
+	float MaxSpeed() const      { return this->m_flMaxSpeed; }
 	
-	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors(this, pForward, pRight, pUp); }
-	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID(this, pID); }
+	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors   (this, pForward, pRight, pUp); }
+	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID   (this, pID); }
+	void SetPlayerName(const char *name)                                               {        ft_SetPlayerName(this, name); }
 	
 	bool IsBot() const                                             { return vt_IsBot               (this); }
 	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide       (this, bExplode, bForce); }
 	void ForceRespawn()                                            {        vt_ForceRespawn        (this); }
 	Vector Weapon_ShootPosition()                                  { return vt_Weapon_ShootPosition(this); }
+	float GetPlayerMaxSpeed()                                      { return vt_GetPlayerMaxSpeed   (this); }
 	
 	DECL_SENDPROP(int, m_nTickBase);
 	
 private:
+	DECL_SENDPROP(float, m_flMaxSpeed);
+	
 	DECL_DATAMAP(char, m_szNetname);
 	
 	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;
+	static MemberFuncThunk<CBasePlayer *, void, const char *>                 ft_SetPlayerName;
 	
 	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
 	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;
 	static MemberVFuncThunk<      CBasePlayer *, void>             vt_ForceRespawn;
 	static MemberVFuncThunk<      CBasePlayer *, Vector>           vt_Weapon_ShootPosition;
+	static MemberVFuncThunk<      CBasePlayer *, float>            vt_GetPlayerMaxSpeed;
 };
 
 class CBaseMultiplayerPlayer : public CBasePlayer

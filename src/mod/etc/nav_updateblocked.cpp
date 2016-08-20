@@ -19,6 +19,7 @@ namespace Mod_Etc_Nav_UpdateBlocked
 			this->vt_CTFNavArea = RTTI::GetVTable<CTFNavArea>();
 			if (this->vt_CTFNavArea == nullptr) return false;
 			
+		#if 0
 			DevMsg("vtable for CNavArea:\n");
 			for (int i = 0; i < 0x20; ++i) {
 				DevMsg("+%02x: 0x%08x\n", i * 4, (uintptr_t)vt_CNavArea[i]);
@@ -33,6 +34,7 @@ namespace Mod_Etc_Nav_UpdateBlocked
 			
 			DevMsg("CNavArea::UpdateBlocked:   0x%08x\n", (uintptr_t)ptr_CNavArea_UpdateBlocked);
 			DevMsg("CTFNavArea::UpdateBlocked: 0x%08x\n", (uintptr_t)ptr_CTFNavArea_UpdateBlocked);
+		#endif
 			
 			return true;
 		}

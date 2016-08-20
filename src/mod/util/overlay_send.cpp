@@ -1081,6 +1081,23 @@ namespace Mod_Util_Overlay_Send
 	}
 	
 	
+	RefCount rc_DrawAllDebugOverlays;
+	DETOUR_DECL_STATIC(void, DrawAllDebugOverlays)
+	{
+		SCOPED_INCREMENT(rc_DrawAllDebugOverlays);
+		DETOUR_STATIC_CALL(DrawAllDebugOverlays)();
+	}
+	
+	DETOUR_DECL_MEMBER(bool, IVEngineServer_IsDedicatedServer)
+	{
+		if (rc_DrawAllDebugOverlays > 0) {
+			return false;
+		}
+		
+		return DETOUR_MEMBER_CALL(IVEngineServer_IsDedicatedServer)();
+	}
+	
+	
 	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
@@ -1148,6 +1165,9 @@ namespace Mod_Util_Overlay_Send
 			MOD_ADD_DETOUR_MEMBER(NextBotPlayer_CTFPlayer_PhysicsSimulate, "NextBotPlayer<CTFPlayer>::PhysicsSimulate");
 			MOD_ADD_DETOUR_MEMBER(NextBotPlayer_CTFPlayer_Update,          "NextBotPlayer<CTFPlayer>::Update");
 			MOD_ADD_DETOUR_STATIC(ConColorMsg,                             "ConColorMsg");
+			
+			MOD_ADD_DETOUR_STATIC(DrawAllDebugOverlays,             "DrawAllDebugOverlays");
+			MOD_ADD_DETOUR_MEMBER(IVEngineServer_IsDedicatedServer, "IVEngineServer::IsDedicatedServer");
 		}
 		
 #if 0

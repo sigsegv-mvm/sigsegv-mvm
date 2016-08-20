@@ -2,10 +2,6 @@
 #include "util/scope.h"
 
 
-// TODO: move to common.h
-#include <IKeyValuesSystem.h>
-
-
 namespace Mod_Util_DebugOverlay_Font
 {
 	RefCount rc_CDebugOverlay_Paint;
@@ -64,7 +60,7 @@ namespace Mod_Util_DebugOverlay_Font
 		CMod() : IMod("Util:DebugOverlay_Font")
 		{
 			MOD_ADD_DETOUR_MEMBER(CDebugOverlay_Paint,               "[client] CDebugOverlay::Paint");
-			MOD_ADD_DETOUR_MEMBER(CMatSystemSurface_DrawColoredText, "[client] CMatSurface::DrawColoredText [va_list]");
+			MOD_ADD_DETOUR_MEMBER(CMatSystemSurface_DrawColoredText, "[client] CMatSystemSurface::DrawColoredText [va_list]");
 		}
 		
 		virtual void OnEnable() override
@@ -86,7 +82,7 @@ namespace Mod_Util_DebugOverlay_Font
 				vgui::HScheme handle;
 				while ((handle = g_pVGuiSchemeManager->GetScheme("DebugOverlayFonts")) != 1) {
 					vgui::IScheme *scheme = g_pVGuiSchemeManager->GetIScheme(handle);
-					if (scheme == nullptr);
+					if (scheme == nullptr) continue;
 					
 					auto fileName = reinterpret_cast<char *>((uintptr_t)scheme + 0x4);
 					auto tag = reinterpret_cast<char *>((uintptr_t)scheme + 0x104);

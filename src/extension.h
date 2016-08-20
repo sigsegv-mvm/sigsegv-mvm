@@ -36,6 +36,8 @@ private:
 	virtual void FrameUpdatePostEntityThink() override;
 	
 	void LoadSoundOverrides();
+	
+	bool m_bGameSystemAdded = false;
 };
 extern CExtSigsegv g_Ext;
 

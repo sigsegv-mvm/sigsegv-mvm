@@ -88,7 +88,15 @@ public:
 
 class CSentryGunSpawner : public IPopulationSpawner {};
 class CTankSpawner : public IPopulationSpawner {};
-class CTFBotSpawner : public IPopulationSpawner {};
+
+class CTFBotSpawner : public IPopulationSpawner
+{
+public:
+	int m_iClass;
+	string_t m_strClassIcon;
+	int m_iHealth;
+	float m_flScale;
+};
 
 class CSquadSpawner : public IPopulationSpawner
 {

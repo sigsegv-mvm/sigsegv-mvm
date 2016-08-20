@@ -245,6 +245,56 @@
 					sym  "_ZNK9CTFPlayer15GetObjectOfTypeEii"
 				}
 				
+				"CTFPlayer::GetDesiredHandScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer19GetDesiredHandScaleEv"
+				}
+				"CTFPlayer::GetDesiredHeadScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer19GetDesiredHeadScaleEv"
+				}
+				"CTFPlayer::GetDesiredTorsoScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer20GetDesiredTorsoScaleEv"
+				}
+			
+				"CTFPlayer::GetHandScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17GetHandScaleSpeedEv"
+				}
+				"CTFPlayer::GetHeadScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17GetHeadScaleSpeedEv"
+				}
+				"CTFPlayer::GetTorsoScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer18GetTorsoScaleSpeedEv"
+				}
+				
+				"CTFPlayer::PlayTauntRemapInputScene"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer24PlayTauntRemapInputSceneEv"
+				}
+				
+				"CTFPlayer::FindPartnerTauntInitiator"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25FindPartnerTauntInitiatorEv"
+				}
+				
+				"CTFPlayer::WantsLagCompensationOnEntity"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer28WantsLagCompensationOnEntityEPK11CBasePlayerPK8CUserCmdPK7CBitVecILi2048EE"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

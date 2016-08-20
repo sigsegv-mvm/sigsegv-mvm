@@ -101,8 +101,8 @@ template<typename T>
 class CProp_SendProp : public IPropTyped<T>
 {
 public:
-	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *)) :
-		IPropTyped<T>(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func) {}
+	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
+		IPropTyped<T>(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func), m_pszRemoteName(remote_name) {}
 	
 	virtual const char *GetKind() const override { return "SENDPROP"; }
 	
@@ -115,7 +115,7 @@ private:
 	virtual bool CalcOffset(int& off) const override
 	{
 		sm_sendprop_info_t info;
-		if (!gamehelpers->FindSendPropInfo(this->m_pszServerClass, this->GetMemberName(), &info)) {
+		if (!gamehelpers->FindSendPropInfo(this->m_pszServerClass, this->GetSendPropMemberName(), &info)) {
 			DevMsg("CProp_SendProp: %s::%s FAIL: in FindSendPropInfo\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
@@ -124,8 +124,18 @@ private:
 		return true;
 	}
 	
+	const char *GetSendPropMemberName() const
+	{
+		if (this->m_pszRemoteName != nullptr) {
+			return this->m_pszRemoteName;
+		} else {
+			return this->GetMemberName();
+		}
+	}
+	
 	const char *m_pszServerClass;
 	void (*m_pStateChangedFunc)(void *, void *);
+	const char *m_pszRemoteName;
 };
 
 
@@ -325,45 +335,42 @@ public:
 };
 
 
-#define DECL_SENDPROP(T, P) \
-	typedef CProp_SendProp<T> _type_prop_##P; \
-	static _type_prop_##P s_prop_##P; \
-	const static size_t _adj_##P; \
-	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, true> _type_accessor_##P; \
-	_type_accessor_##P P; \
-	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
+#define DECL_SENDPROP(TYPE, PROPNAME) \
+	typedef CProp_SendProp<TYPE> _type_prop_##PROPNAME; \
+	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
+	const static size_t _adj_##PROPNAME; \
+	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, true> _type_accessor_##PROPNAME; \
+	_type_accessor_##PROPNAME PROPNAME; \
+	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
 
-#define DECL_DATAMAP(T, P) \
-	typedef CProp_DataMap<T> _type_prop_##P; \
-	static _type_prop_##P s_prop_##P; \
-	const static size_t _adj_##P; \
-	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, false> _type_accessor_##P; \
-	_type_accessor_##P P; \
-	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
+#define DECL_DATAMAP(TYPE, PROPNAME) \
+	typedef CProp_DataMap<TYPE> _type_prop_##PROPNAME; \
+	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
+	const static size_t _adj_##PROPNAME; \
+	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, false> _type_accessor_##PROPNAME; \
+	_type_accessor_##PROPNAME PROPNAME; \
+	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
 
-#define DECL_EXTRACT(T, P) \
-	typedef CProp_Extract<T> _type_prop_##P; \
-	static _type_prop_##P s_prop_##P; \
-	const static size_t _adj_##P; \
-	typedef CPropAccessor_Write<T, _type_prop_##P, &s_prop_##P, &_adj_##P, false> _type_accessor_##P; \
-	_type_accessor_##P P; \
-	static_assert(std::is_empty<_type_accessor_##P>::value, "Prop accessor isn't an empty type")
+#define DECL_EXTRACT(TYPE, PROPNAME) \
+	typedef CProp_Extract<TYPE> _type_prop_##PROPNAME; \
+	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
+	const static size_t _adj_##PROPNAME; \
+	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, false> _type_accessor_##PROPNAME; \
+	_type_accessor_##PROPNAME PROPNAME; \
+	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
 
 
-#define IMPL_SENDPROP(T, C, P, SC) \
-	void NetworkStateChanged_##C##_##P(void *obj, void *var) \
-	{ \
-		auto owner = reinterpret_cast<C *>(obj); \
-		owner->NetworkStateChanged(var); \
-	} \
-	const size_t C::_adj_##P = offsetof(C, P); \
-	CProp_SendProp<T> C::s_prop_##P(#C, #P, #SC, &NetworkStateChanged_##C##_##P)
-#define IMPL_DATAMAP(T, C, P) \
-	const size_t C::_adj_##P = offsetof(C, P); \
-	CProp_DataMap<T> C::s_prop_##P(#C, #P)
-#define IMPL_EXTRACT(T, C, P, X) \
-	const size_t C::_adj_##P = offsetof(C, P); \
-	CProp_Extract<T> C::s_prop_##P(#C, #P, X)
+// for IMPL_SENDPROP, add an additional argument for the "remote name" (e.g. in CBaseEntity, m_MoveType's remote name is "movetype")
+#define IMPL_SENDPROP(TYPE, CLASSNAME, PROPNAME, SVCLASS, ...) \
+	void NetworkStateChanged_##CLASSNAME##_##PROPNAME(void *obj, void *var) { reinterpret_cast<CLASSNAME *>(obj)->NetworkStateChanged(var); } \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_SendProp<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, #SVCLASS, &NetworkStateChanged_##CLASSNAME##_##PROPNAME, ##__VA_ARGS__)
+#define IMPL_DATAMAP(TYPE, CLASSNAME, PROPNAME) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_DataMap<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME)
+#define IMPL_EXTRACT(TYPE, CLASSNAME, PROPNAME, EXTRACTOR) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Extract<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, EXTRACTOR)
 
 
 #endif

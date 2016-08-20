@@ -133,7 +133,7 @@ void RenderWireframeSphere(const Vector& vCenter, float flRadius, int nTheta, in
 	ft_RenderWireframeSphere(vCenter, flRadius, nTheta, nPhi, c, bZBuffer);
 }
 
-static StaticFuncThunk<void, const Vector&, float, int, int, Color, IMaterial *> ft_RenderSphere("[client] RenderSphere [IMaterial *]");
+static StaticFuncThunk<void, const Vector&, float, int, int, Color, IMaterial *> ft_RenderSphere("[client] RenderSphere [material]");
 void RenderSphere(const Vector& vCenter, float flRadius, int nTheta, int nPhi, Color c, IMaterial *pMaterial)
 {
 	ft_RenderSphere(vCenter, flRadius, nTheta, nPhi, c, pMaterial);

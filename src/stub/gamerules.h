@@ -72,10 +72,12 @@ public:
 	void NetworkStateChanged(void *pVar) { CGameRulesProxy::NotifyNetworkStateChanged(); }
 	void NetworkStateChanged()           { CGameRulesProxy::NotifyNetworkStateChanged(); }
 	
-	const CViewVectors *GetViewVectors() const { return vt_GetViewVectors(this); }
+	const CViewVectors *GetViewVectors() const                   { return vt_GetViewVectors(this); }
+	bool ShouldCollide(int collisionGroup0, int collisionGroup1) { return vt_ShouldCollide(this, collisionGroup0, collisionGroup1); }
 	
 private:
 	static MemberVFuncThunk<const CGameRules *, const CViewVectors *> vt_GetViewVectors;
+	static MemberVFuncThunk<      CGameRules *, bool, int, int>       vt_ShouldCollide;
 };
 
 class CMultiplayRules : public CGameRules

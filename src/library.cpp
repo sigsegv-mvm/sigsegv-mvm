@@ -7,11 +7,12 @@ std::map<Library, void *> LibMgr::s_LibHandles;
 
 
 static std::map<Library, const char *> libnames{
-	{ Library::INVALID,        "invalid" },
-	{ Library::SERVER,         "server" },
-	{ Library::ENGINE,         "engine" },
-	{ Library::TIER0,          "tier0" },
-	{ Library::CLIENT,         "client" },
+	{ Library::INVALID,        "invalid"        },
+	{ Library::SERVER,         "server"         },
+	{ Library::ENGINE,         "engine"         },
+	{ Library::DEDICATED,      "dedicated"      },
+	{ Library::TIER0,          "tier0"          },
+	{ Library::CLIENT,         "client"         },
 	{ Library::VGUIMATSURFACE, "vguimatsurface" },
 };
 
@@ -25,6 +26,9 @@ void LibMgr::Load()
 		void *handle = OpenLibHandle(lib);
 		if (handle != nullptr) {
 			s_LibHandles[lib] = handle;
+			
+			/* pre-populate the library info structs */
+			(void)GetInfo(lib);
 		}
 	}
 }
@@ -90,9 +94,9 @@ void LibMgr::FindInfo(Library lib)
 	
 	s_LibInfos[lib] = info;
 	
-	DevMsg("Library \"%s\": [%08x ~ %08x]\n", libnames.at(lib), info.baseaddr, info.baseaddr + info.len);
+	DevMsg("Library %-34s [ %08x %08x ]\n", libnames.at(lib), info.baseaddr, info.baseaddr + info.len);
 	for (const auto& pair : info.segs) {
-		DevMsg("  Segment \"%s\": [%08x ~ %08x]\n",
+		DevMsg("  %-40s [ %08x %08x ]\n",
 			pair.first.c_str(),
 			info.baseaddr + pair.second.off,
 			info.baseaddr + pair.second.off + pair.second.len);

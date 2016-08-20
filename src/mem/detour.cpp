@@ -414,7 +414,7 @@ void CFuncCallback::TracePost()
 
 void CFuncTrace::TracePre()
 {
-	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "{");
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "[%7d] %*s%s ", gpGlobals->tickcount, 2 * TraceLevel::Get(), "", "{");
 	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
 	TraceLevel::Increment();
 }
@@ -422,7 +422,7 @@ void CFuncTrace::TracePre()
 void CFuncTrace::TracePost()
 {
 	TraceLevel::Decrement();
-	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "%*s%s ", 2 * TraceLevel::Get(), "", "}");
+	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "[%7d] %*s%s ", gpGlobals->tickcount, 2 * TraceLevel::Get(), "", "}");
 	ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%s\n", this->GetName());
 }
 

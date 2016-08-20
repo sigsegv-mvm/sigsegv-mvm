@@ -44,6 +44,7 @@ DEF_GET_FACTORY(GetSoundEmitterSystemFactory, "soundemittersystem");
 DEF_GET_FACTORY(GetMaterialSystemFactory,     "materialsystem");
 DEF_GET_FACTORY(GetVGUIFactory,               "vgui2");
 DEF_GET_FACTORY(GetVGUIMatSurfaceFactory,     "vguimatsurface");
+DEF_GET_FACTORY(GetDedicatedFactory,          "dedicated");
 
 
 /* all of the stuff below is in tier1, but we can't use the versions in tier1

@@ -5,6 +5,7 @@ GlobalThunk<CGameRulesProxy *> CGameRulesProxy::s_pGameRulesProxy("CGameRulesPro
 
 
 MemberVFuncThunk<const CGameRules *, const CViewVectors *> CGameRules::vt_GetViewVectors(TypeName<CGameRules>(), "CGameRules::GetViewVectors");
+MemberVFuncThunk<      CGameRules *, bool, int, int>       CGameRules::vt_ShouldCollide (TypeName<CGameRules>(), "CGameRules::ShouldCollide");
 
 
 MemberVFuncThunk<CMultiplayRules *, VoiceCommandMenuItem_t *, CBaseMultiplayerPlayer *, int, int> CMultiplayRules::vt_VoiceCommand(TypeName<CMultiplayRules>(), "CMultiplayRules::VoiceCommand");

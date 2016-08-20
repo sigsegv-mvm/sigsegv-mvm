@@ -2,9 +2,6 @@
 #include "stub/tfplayer.h"
 
 
-// TODO: move cvars into class
-
-
 namespace Mod_Robot_Ticklish
 {
 	ConVar cvar_giants("sig_robot_ticklish_giants", "0", FCVAR_NOTIFY,

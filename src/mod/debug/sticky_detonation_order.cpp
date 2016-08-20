@@ -1,33 +1,30 @@
 #include "mod.h"
 #include "stub/baseplayer.h"
+#include "util/clientmsg.h"
 
 
 namespace Mod_Debug_Sticky_Detonation_Order
 {
 	int indent = 0;
 	
-	
-	void ClientMsg(const char *format, ...)
+	template<typename... ARGS>
+	void ClientMsgIndent(const char *fmt, ARGS... args)
 	{
-		static char buf[4096];
+		size_t fmt2_len = strlen(fmt) + (2 * indent) + 1;
+		char *fmt2 = new char[fmt2_len];
 		
-		va_list va;
-		va_start(va, format);
-		vsnprintf(buf, sizeof(buf), format, va);
-		va_end(va);
+		memset(fmt2, ' ', (2 * indent));
+		V_strncpy(fmt2 + (2 * indent), fmt, fmt2_len);
 		
-		for (int i = 1; i <= 32; ++i) {
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
-			if (player != nullptr) {
-				g_SMAPI->ClientConPrintf(player->GetNetworkable()->GetEdict(), "%*s%s", indent * 2, " ", buf);
-			}
-		}
+		ClientMsg(fmt2, std::forward<ARGS>(args)...);
+		
+		delete fmt2;
 	}
 	
 	
 	DETOUR_DECL_MEMBER(int, CBaseEntity_TakeDamage, const CTakeDamageInfo& inputInfo)
 	{
-		ClientMsg("CBaseEntity::TakeDamage\n");
+		ClientMsgIndent("CBaseEntity::TakeDamage\n");
 		
 		++indent;
 		auto result = DETOUR_MEMBER_CALL(CBaseEntity_TakeDamage)(inputInfo);
@@ -39,26 +36,26 @@ namespace Mod_Debug_Sticky_Detonation_Order
 	
 	DETOUR_DECL_MEMBER(void, CTFWeaponBaseGrenadeProj_Explode, trace_t *pTrace, int bitsDamageType)
 	{
-		ClientMsg("BEGIN CTFWeaponBaseGrenadeProj::Explode\n");
+		ClientMsgIndent("BEGIN CTFWeaponBaseGrenadeProj::Explode\n");
 		
 		++indent;
 		DETOUR_MEMBER_CALL(CTFWeaponBaseGrenadeProj_Explode)(pTrace, bitsDamageType);
 		--indent;
 		
-		ClientMsg("END   CTFWeaponBaseGrenadeProj::Explode\n");
+		ClientMsgIndent("END   CTFWeaponBaseGrenadeProj::Explode\n");
 	}
 	
 	
 	DETOUR_DECL_MEMBER(bool, CTFPipebombLauncher_DetonateRemotePipebombs, bool bFizzle)
 	{
-		ClientMsg("BEGIN CTFPipebombLauncher::DetonateRemotePipebombs [bFizzle: %s]\n",
+		ClientMsgIndent("BEGIN CTFPipebombLauncher::DetonateRemotePipebombs [bFizzle: %s]\n",
 			(bFizzle ? "true" : "false"));
 		
 		++indent;
 		auto result = DETOUR_MEMBER_CALL(CTFPipebombLauncher_DetonateRemotePipebombs)(bFizzle);
 		--indent;
 		
-		ClientMsg("END   CTFPipebombLauncher::DetonateRemotePipebombs [%s]\n",
+		ClientMsgIndent("END   CTFPipebombLauncher::DetonateRemotePipebombs [%s]\n",
 			(result ? "true" : "false"));
 		
 		return result;
