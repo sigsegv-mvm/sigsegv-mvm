@@ -5,6 +5,7 @@
 #include "stub/projectiles.h"
 #include "util/scope.h"
 #include "util/backtrace.h"
+#include "util/iterate.h"
 
 
 #define TRACE_ENABLE 0
@@ -654,10 +655,7 @@ namespace Mod_Debug_Flamethrower_Mojo
 			}
 		}
 		
-		for (int i = gpGlobals->maxClients + 1; i < 2048; ++i) {
-			auto bolt = rtti_cast<CTFProjectile_HealingBolt *>(UTIL_EntityByIndex(i));
-			if (bolt == nullptr) continue;
-			
+		ForEachEntityByRTTI<CTFProjectile_HealingBolt>([](CTFProjectile_HealingBolt *bolt){
 			NDebugOverlay::EntityBounds(bolt, 0xff, 0xff, 0xff, 0x10, gpGlobals->interval_per_tick);
 			
 			/* de-bloat the box slightly so it won't interfere with the CollideWithTeammatesThink box */
@@ -665,7 +663,7 @@ namespace Mod_Debug_Flamethrower_Mojo
 			Vector vecMaxs = bolt->CollisionProp()->OBBMaxs() - Vector(0.01f, 0.01f, 0.01f);
 			
 			NDebugOverlay::Box(bolt->WorldSpaceCenter(), vecMins, vecMaxs, 0x40, 0x40, 0x40, 0x00, 1.00f);
-		}
+		});
 	}
 	
 	void PostThink_PyroOverlay()

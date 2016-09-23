@@ -1,6 +1,7 @@
 #include "mod.h"
 #include "stub/tfweaponbase.h"
 #include "stub/objects.h"
+#include "util/iterate.h"
 
 
 namespace Mod_Visualize_Sapper_Range
@@ -45,11 +46,9 @@ namespace Mod_Visualize_Sapper_Range
 			static long frame = 0;
 			if (++frame % 2 != 0) return;
 			
-			float duration = 0.030f;
 			
-			for (int i = 1; i < MAX_EDICTS; ++i) {
-				CBaseEntity *ent = UTIL_EntityByIndex(i);
-				if (ent == nullptr) continue;
+			ForEachEntity([](CBaseEntity *ent){
+				float duration = 0.030f;
 				
 				auto sapper = rtti_cast<CTFWeaponBuilder *>(ent);
 				if (sapper != nullptr) {
@@ -60,7 +59,7 @@ namespace Mod_Visualize_Sapper_Range
 				if (obj != nullptr) {
 					DrawBuildPoints(obj, duration);
 				}
-			}
+			});
 		}
 	};
 	CMod s_Mod;

@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "stub/projectiles.h"
+#include "util/iterate.h"
 
 
 namespace Mod_Debug_Projectile_Motion
@@ -26,16 +27,13 @@ namespace Mod_Debug_Projectile_Motion
 	
 	void DragCoefficientOverlay()
 	{
-		for (int i = 0; i < 2048; ++i) {
-			CBaseEntity *ent = UTIL_EntityByIndex(i);
-			if (ent == nullptr) continue;
-			
+		ForEachEntity([](CBaseEntity *ent){
 			IPhysicsObject *physobj = ent->VPhysicsGetObject();
-			if (physobj == nullptr) continue;
+			if (physobj == nullptr) return;
 			
 			const char *classname = ent->GetClassname();
-			if (strncmp(classname, "prop_", 5) == 0) continue;
-			if (strncmp(classname, "func_", 5) == 0) continue;
+			if (strncmp(classname, "prop_", 5) == 0) return;
+			if (strncmp(classname, "func_", 5) == 0) return;
 			
 		//	DevMsg("DragCoefficientOverlay: class \"%s\"\n",
 		//		ent->GetClassname());
@@ -61,27 +59,27 @@ namespace Mod_Debug_Projectile_Motion
 			char buf[128];
 			
 //			snprintf(buf, sizeof(buf), "    DRAG COEF: %5.3f", m_flDragCoefficient);
-//			NDebugOverlay::EntityText(i, 0, buf, duration, 0xff, 0xff, 0xff, 0xff);
+//			NDebugOverlay::EntityText(ENTINDEX(ent), 0, buf, duration, 0xff, 0xff, 0xff, 0xff);
 			
 //			snprintf(buf, sizeof(buf), "ANG DRAG COEF: %5.3f", m_flAngularDragCoefficient);
-//			NDebugOverlay::EntityText(i, 1, buf, duration, 0xff, 0xff, 0xff, 0xff);
+//			NDebugOverlay::EntityText(ENTINDEX(ent), 1, buf, duration, 0xff, 0xff, 0xff, 0xff);
 			
 			// A_drag = -(0.5 * C_drag * area * rho * v_obj^2) / M_obj
 			
 			
 			snprintf(buf, sizeof(buf), "   LINEAR VEL: %5.3f", vel.Length());
-			NDebugOverlay::EntityText(i, 2, buf, duration, 0xff, 0xff, 0xff, 0xff);
+			NDebugOverlay::EntityText(ENTINDEX(ent), 2, buf, duration, 0xff, 0xff, 0xff, 0xff);
 			
 			snprintf(buf, sizeof(buf), "  ANGULAR VEL: %5.3f", avel.Length());
-			NDebugOverlay::EntityText(i, 3, buf, duration, 0xff, 0xff, 0xff, 0xff);
+			NDebugOverlay::EntityText(ENTINDEX(ent), 3, buf, duration, 0xff, 0xff, 0xff, 0xff);
 			
 			
 			snprintf(buf, sizeof(buf), "  LINEAR DRAG: %f", drag_linear);
-			NDebugOverlay::EntityText(i, 4, buf, duration, 0xff, 0xff, 0xff, 0xff);
+			NDebugOverlay::EntityText(ENTINDEX(ent), 4, buf, duration, 0xff, 0xff, 0xff, 0xff);
 			
 			snprintf(buf, sizeof(buf), " ANGULAR DRAG: %f", drag_angular);
-			NDebugOverlay::EntityText(i, 5, buf, duration, 0xff, 0xff, 0xff, 0xff);
-		}
+			NDebugOverlay::EntityText(ENTINDEX(ent), 5, buf, duration, 0xff, 0xff, 0xff, 0xff);
+		});
 	}
 	
 	

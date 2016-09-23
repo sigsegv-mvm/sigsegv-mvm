@@ -2,6 +2,9 @@
 #define _INCLUDE_SIGSEGV_UTIL_ITERATE_H_
 
 
+#include "stub/baseentity.h"
+
+
 /* magic template wizardry to make function pointers or C++ lambda closures
  * work as functor parameters, whether they have void or bool return type */
 template<typename RET>
@@ -24,20 +27,26 @@ inline bool IterateInternals<bool>::CallFunc(const FUNCTOR& func, ARGS... args)
 #define CALL_FUNCTOR(...) IterateInternals<typename std::result_of<FUNCTOR(__VA_ARGS__)>::type>::CallFunc
 
 
-#ifdef _INCLUDE_SIGSEGV_STUB_BASEENTITY_H_
 template<typename FUNCTOR>
 inline void ForEachEntity(const FUNCTOR& func)
 {
 	using T = CBaseEntity;
 	
-	for (int i = 1; i < MAX_EDICTS; ++i) {
-		T *ent = UTIL_EntityByIndex(i);
-		if (ent == nullptr) continue;
-		
+	for (CBaseEntity *ent = servertools->FirstEntity(); ent != nullptr; ent = servertools->NextEntity(ent)) {
 		if (!CALL_FUNCTOR(T *)(func, ent)) break;
 	}
 }
-#endif
+
+template<typename T, typename FUNCTOR>
+inline void ForEachEntityByRTTI(const FUNCTOR& func)
+{
+	for (CBaseEntity *ent = servertools->FirstEntity(); ent != nullptr; ent = servertools->NextEntity(ent)) {
+		T *sub = rtti_cast<T *>(ent);
+		if (sub == nullptr) continue;
+		
+		if (!CALL_FUNCTOR(T *)(func, sub)) break;
+	}
+}
 
 
 #ifdef _INCLUDE_SIGSEGV_STUB_BASEPLAYER_H_

@@ -4,6 +4,7 @@
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
 #include "stub/entities.h"
+#include "util/iterate.h"
 
 #include "mod/ai/mvm_defender_bots/helpers.h"
 #include "mod/ai/mvm_defender_bots/trackers.h"
@@ -184,13 +185,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		if (ctNodes.IsElapsed()) {
 			ctNodes.Start(0.5f);
 			
-			for (int i = 0; i < 2048; ++i) {
-				CBaseEntity *ent = UTIL_EntityByIndex(i);
-				if (ent == nullptr) continue;
-				
-				auto node = rtti_cast<CPathTrack *>(ent);
-				if (node == nullptr) continue;
-				
+			ForEachEntityByRTTI<CPathTrack>([](CPathTrack *node){
 				NDebugOverlay::Box(node->GetAbsOrigin(), Vector(-10.0f, -10.0f, -10.0f), Vector(10.0f, 10.0f, 10.0f),
 					0xff, 0xff, 0xff, 0x80, 0.5f);
 				NDebugOverlay::EntityTextAtPosition(node->GetAbsOrigin(), 0, CFmtStrN<16>("#%d", i), 0.5f, 0xff, 0xff, 0xff, 0xff);
@@ -199,7 +194,7 @@ namespace Mod_AI_MvM_Defender_Bots
 				if (next != nullptr) {
 					NDebugOverlay::HorzArrow(node->GetAbsOrigin(), next->GetAbsOrigin(), 3.0f, 0xff, 0xff, 0xff, 0xff, true, 0.5f);
 				}
-			}
+			});
 		}
 		
 		auto tank = reinterpret_cast<CTFTankBoss *>(this);

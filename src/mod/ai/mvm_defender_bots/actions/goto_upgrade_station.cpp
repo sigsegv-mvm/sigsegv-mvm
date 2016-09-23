@@ -1,6 +1,7 @@
 #include "mod/ai/mvm_defender_bots/actions/goto_upgrade_station.h"
 #include "mod/ai/mvm_defender_bots/actions/purchase_upgrades.h"
 #include "stub/gamerules.h"
+#include "util/iterate.h"
 
 
 namespace Mod_AI_MvM_Defender_Bots
@@ -226,19 +227,9 @@ namespace Mod_AI_MvM_Defender_Bots
 		CTFBotPathCost cost_func(this->GetActor(), FASTEST_ROUTE);
 		CNavArea *start_area = this->GetActor()->GetLastKnownArea();
 		
-		// TODO: do this in a less horrific manner
-		// TODO: use servertools->FindEntityByClassname
 		std::vector<UpgradeStationInfo> stations;
-		for (int i = 0; i < 2048; ++i) {
-			CBaseEntity *ent = UTIL_EntityByIndex(i);
-			if (ent == nullptr) continue;
-			
-			if (strcmp(ent->GetClassname(), "func_upgradestation") != 0) continue;
-			
-			auto station = rtti_cast<CUpgrades *>(ent);
-			if (station == nullptr) continue;
-			
-			if (station->m_bDisabled) continue;
+		ForEachEntityByRTTI<CUpgrades>([&](CUpgrades *station){
+			if (station->m_bDisabled) return;
 			
 //			DevMsg("Found func_upgradestation: #%d @ [ %.0f %.0f %.0f ]\n",
 //				ENTINDEX(station),
@@ -247,7 +238,7 @@ namespace Mod_AI_MvM_Defender_Bots
 //				station->WorldSpaceCenter().z);
 			
 			stations.emplace_back(station, this->GetActor(), start_area, cost_func);
-		}
+		});
 		
 		if (stations.empty()) {
 			DevMsg("FindClosestUpgradeStation: 0 stations\n");

@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "stub/baseanimating.h"
+#include "util/iterate.h"
 
 
 namespace Mod_Visualize_Hitboxes
@@ -43,15 +44,9 @@ namespace Mod_Visualize_Hitboxes
 			static long frame = 0;
 			if (++frame % cvar_interval.GetInt() != 0) return;
 			
-			for (int i = 1; i < MAX_EDICTS; ++i) {
-				CBaseEntity *ent = UTIL_EntityByIndex(i);
-				if (ent == nullptr) continue;
-				
-				auto anim = rtti_cast<CBaseAnimating *>(ent);
-				if (anim == nullptr) continue;
-				
+			ForEachEntityByRTTI<CBaseAnimating>([](CBaseAnimating *anim){
 				DrawHitboxes(anim);
-			}
+			});
 		}
 	};
 	CMod s_Mod;

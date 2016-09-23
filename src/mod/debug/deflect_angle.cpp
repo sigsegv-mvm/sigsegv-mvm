@@ -3,6 +3,7 @@
 #include "stub/tfplayer.h"
 #include "stub/tf_shareddefs.h"
 #include "stub/entities.h"
+#include "util/iterate.h"
 
 
 namespace Mod_Debug_Deflect_Angle
@@ -227,14 +228,11 @@ namespace Mod_Debug_Deflect_Angle
 	
 	CON_COMMAND(sig_debug_deflect_angle_draw_bboxes, "")
 	{
-		for (int i = 1; i < 2048; ++i) {
-			CBaseEntity *ent = UTIL_EntityByIndex(i);
-			if (ent == nullptr) continue;
-			
-			if (!ent->IsPlayer() && !ent->IsBaseObject() && !ent->IsCombatItem()) continue;
+		ForEachEntity([](CBaseEntity *ent){
+			if (!ent->IsPlayer() && !ent->IsBaseObject() && !ent->IsCombatItem()) return;
 			
 			/* exclude the "local player" */
-			if (ENTINDEX(ent) == 1) continue;
+			if (ENTINDEX(ent) == 1) return;
 			
 			int r = 0xff;
 			int g = 0xff;
@@ -250,6 +248,6 @@ namespace Mod_Debug_Deflect_Angle
 			}
 			
 			DrawEntityBounds(ent, 3600.0f, r, g, b, 0x00);
-		}
+		});
 	}
 }
