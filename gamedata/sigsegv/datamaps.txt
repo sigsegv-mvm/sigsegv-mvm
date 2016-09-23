@@ -49,6 +49,12 @@
 					sym   "_ZN12CBaseTrigger9m_DataMapE"
 					class "CBaseTrigger"
 				}
+				"CFuncNavCost::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN12CFuncNavCost9m_DataMapE"
+					class "CFuncNavCost"
+				}
 			}
 		}
 	}

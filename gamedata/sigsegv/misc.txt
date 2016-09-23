@@ -1495,6 +1495,12 @@
 					type "sym"
 					sym  "_ZN12CTFGameRules20FPlayerCanTakeDamageEP11CBasePlayerP11CBaseEntityRK15CTakeDamageInfo"
 				}
+				
+				"CBaseEntity::DrawDebugGeometryOverlays"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity25DrawDebugGeometryOverlaysEv"
+				}
 			}
 		}
 	}

@@ -269,6 +269,12 @@
 					sym  "_ZN6CTFBot14ShouldAutoJumpEv"
 				}
 				
+				"CTFBot::ClearTags"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot9ClearTagsEv"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"
