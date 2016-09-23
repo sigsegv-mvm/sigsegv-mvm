@@ -25,26 +25,26 @@ CreateInterfaceFn GetFactory_NoExt(const char *name)
 }
 
 
-#define DEF_GET_FACTORY(funcname, libname) \
-	CreateInterfaceFn funcname() \
+#define DEF_GET_FACTORY(name, libname) \
+	CreateInterfaceFn Get ## name ## Factory() \
 	{ \
 		static bool init = false; \
 		static CreateInterfaceFn factory = nullptr; \
 		if (!init) { \
 			factory = GetFactory_NoExt(libname); \
-			if (factory == nullptr) DevWarning(#funcname ": factory is nullptr\n"); \
+			if (factory == nullptr) DevWarning("Factory is nullptr: " #name "\n"); \
 			init = true; \
 		} \
 		return factory; \
 	}
 
 
-DEF_GET_FACTORY(GetClientFactory,             "client");
-DEF_GET_FACTORY(GetSoundEmitterSystemFactory, "soundemittersystem");
-DEF_GET_FACTORY(GetMaterialSystemFactory,     "materialsystem");
-DEF_GET_FACTORY(GetVGUIFactory,               "vgui2");
-DEF_GET_FACTORY(GetVGUIMatSurfaceFactory,     "vguimatsurface");
-DEF_GET_FACTORY(GetDedicatedFactory,          "dedicated");
+DEF_GET_FACTORY(Client,             "client");
+DEF_GET_FACTORY(SoundEmitterSystem, "soundemittersystem");
+DEF_GET_FACTORY(MaterialSystem,     "materialsystem");
+DEF_GET_FACTORY(VGUI,               "vgui2");
+DEF_GET_FACTORY(VGUIMatSurface,     "vguimatsurface");
+DEF_GET_FACTORY(Dedicated,          "dedicated");
 
 
 /* all of the stuff below is in tier1, but we can't use the versions in tier1
@@ -67,7 +67,7 @@ void *GetModuleHandle(const char *name)
 
     if( (handle=dlopen(name, RTLD_NOW))==NULL)
     {
-    	DevWarning("DLOPEN Error: %s\n", dlerror());
+    //	DevWarning("DLOPEN Error: %s\n", dlerror());
         // couldn't open this file
         return NULL;
     }
