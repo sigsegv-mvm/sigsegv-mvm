@@ -26,6 +26,7 @@ public:
 	
 	virtual const char *GetObjectName() const = 0;
 	virtual const char *GetMemberName() const = 0;
+	virtual size_t GetSize() const = 0;
 	virtual const char *GetKind() const = 0;
 	
 	void Preload() { this->DoCalcOffset(); }
@@ -86,6 +87,7 @@ class IPropTyped : public IProp
 public:
 	virtual const char *GetObjectName() const override { return this->m_pszObjName; }
 	virtual const char *GetMemberName() const override { return this->m_pszMemName; }
+	virtual size_t GetSize() const override            { return sizeof(T); }
 	
 protected:
 	IPropTyped(const char *obj, const char *mem) :
@@ -116,7 +118,7 @@ private:
 	{
 		sm_sendprop_info_t info;
 		if (!gamehelpers->FindSendPropInfo(this->m_pszServerClass, this->GetSendPropMemberName(), &info)) {
-			DevMsg("CProp_SendProp: %s::%s FAIL: in FindSendPropInfo\n", this->GetObjectName(), this->GetMemberName());
+			Warning("CProp_SendProp: %s::%s FAIL: in FindSendPropInfo\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
 		
@@ -158,13 +160,13 @@ private:
 		
 		datamap_t *map = (datamap_t *)AddrManager::GetAddr(str_DataMap);
 		if (map == nullptr) {
-			DevMsg("CProp_DataMap: %s::%s FAIL: no addr for %s\n", this->GetObjectName(), this->GetMemberName(), str_DataMap);
+			Warning("CProp_DataMap: %s::%s FAIL: no addr for %s\n", this->GetObjectName(), this->GetMemberName(), str_DataMap);
 			return false;
 		}
 		
 		sm_datatable_info_t info;
 		if (!gamehelpers->FindDataMapInfo(map, this->GetMemberName(), &info)) {
-			DevMsg("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
+			Warning("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
 		
@@ -195,12 +197,12 @@ private:
 	virtual bool CalcOffset(int& off) const override
 	{
 		if (!this->m_Extractor->Init()) {
-			DevMsg("CProp_Extract: %s::%s FAIL: in extractor Init\n", this->GetObjectName(), this->GetMemberName());
+			Warning("CProp_Extract: %s::%s FAIL: in extractor Init\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
 		
 		if (!this->m_Extractor->Check()) {
-			DevMsg("CProp_Extract: %s::%s FAIL: in extractor Check\n", this->GetObjectName(), this->GetMemberName());
+			Warning("CProp_Extract: %s::%s FAIL: in extractor Check\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
 		
@@ -209,6 +211,51 @@ private:
 	}
 	
 	IExtract<T *> *m_Extractor;
+};
+
+
+template<typename T>
+class CProp_Relative : public IPropTyped<T>
+{
+public:
+	enum RelativeMethod
+	{
+		REL_MANUAL,
+		REL_AFTER,
+		REL_BEFORE,
+	};
+	
+	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int diff = 0) :
+		IPropTyped<T>(obj, mem), m_RelProp(prop)
+	{
+		switch (method) {
+		default:
+		case REL_MANUAL: this->m_iDiff =  diff;                   break;
+		case REL_AFTER:  this->m_iDiff =  diff + prop->GetSize(); break;
+		case REL_BEFORE: this->m_iDiff = -diff - this->GetSize(); break;
+		}
+	}
+	
+	virtual const char *GetKind() const override { return "RELATIVE"; }
+	
+	void StateChanged(void *obj, void *var) {}
+	
+private:
+	virtual bool CalcOffset(int& off) const override
+	{
+		int base_off = 0;
+		
+		if (!this->m_RelProp->GetOffset(base_off)) {
+			Warning("CProp_Relative: %s::%s FAIL: in base prop GetOffset\n", this->GetObjectName(), this->GetMemberName());
+			return false;
+		}
+		
+		off = base_off + this->m_iDiff;
+		return true;
+	}
+	
+	IProp *m_RelProp;
+	int m_iDiff;
 };
 
 
@@ -264,8 +311,9 @@ class CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST> : public CPropAccessor
 public:
 	CPropAccessor_Read() = delete;
 	
-	operator U*() const { return this->GetRef(); }
-	U* operator=(U* val) = delete;
+	operator const U*() const { return this->GetRef(); }
+	operator       U*() const { return this->GetRef(); } /* yes, we're defining this in the Read accessor */
+	const U* operator=(const U* val) = delete;
 };
 /* specialization for CUtlVector<U> */
 template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST>
@@ -276,12 +324,10 @@ public:
 	
 	CPropAccessor_Read() = delete;
 	
-	operator const T&() const = delete;
+	operator const T&() const   { return this->GetRef(); };
 	const T* operator->() const { return this->GetPtr(); } /* dubious */
 	const T& operator=(const T& val) = delete;
-	
 	const U& operator[](int i) const { return this->GetRef()[i]; }
-	U& operator[](int i)             { return this->GetRef()[i]; }
 };
 
 
@@ -291,6 +337,7 @@ class CPropAccessor_Write : public CPropAccessor_Read<T, IPROP, PROP, ADJUST>
 public:
 	CPropAccessor_Write() = delete;
 	
+	operator T&() { return this->GetRef(); }
 	const T& operator=(const T& val)
 	{
 		T *ptr = this->GetPtr();
@@ -316,6 +363,7 @@ class CPropAccessor_Write<CHandle<U>, IPROP, PROP, ADJUST, NET> : public CPropAc
 public:
 	CPropAccessor_Write() = delete;
 	
+	/* operator U& already defined in CPropAccessor_Read for CHandle<U> */
 	U* operator=(U* val)
 	{
 		U *ptr = this->GetPtr();
@@ -333,31 +381,34 @@ public:
 		return val;
 	}
 };
+/* specialization for CUtlVector<U> */
+template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET>
+class CPropAccessor_Write<CUtlVector<U>, IPROP, PROP, ADJUST, NET> : public CPropAccessor_Read<CUtlVector<U>, IPROP, PROP, ADJUST>
+{
+public:
+	using T = CUtlVector<U>;
+	
+	CPropAccessor_Write() = delete;
+	
+	operator T&()   { return this->GetRef(); };
+	T* operator->() { return this->GetPtr(); } /* dubious */
+	const T& operator=(const T& val) = delete; /* assignment operator... not gonna touch that */
+	U& operator[](int i) { return this->GetRef()[i]; }
+};
 
 
-#define DECL_SENDPROP(TYPE, PROPNAME) \
-	typedef CProp_SendProp<TYPE> _type_prop_##PROPNAME; \
+#define DECL_PROP(TYPE, PROPNAME, VARIANT, NET) \
+	typedef CProp_##VARIANT<TYPE> _type_prop_##PROPNAME; \
 	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
 	const static size_t _adj_##PROPNAME; \
-	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, true> _type_accessor_##PROPNAME; \
+	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET> _type_accessor_##PROPNAME; \
 	_type_accessor_##PROPNAME PROPNAME; \
 	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
 
-#define DECL_DATAMAP(TYPE, PROPNAME) \
-	typedef CProp_DataMap<TYPE> _type_prop_##PROPNAME; \
-	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
-	const static size_t _adj_##PROPNAME; \
-	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, false> _type_accessor_##PROPNAME; \
-	_type_accessor_##PROPNAME PROPNAME; \
-	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
-
-#define DECL_EXTRACT(TYPE, PROPNAME) \
-	typedef CProp_Extract<TYPE> _type_prop_##PROPNAME; \
-	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
-	const static size_t _adj_##PROPNAME; \
-	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, false> _type_accessor_##PROPNAME; \
-	_type_accessor_##PROPNAME PROPNAME; \
-	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
+#define DECL_SENDPROP(TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, SendProp, true)
+#define DECL_DATAMAP( TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, DataMap,  false)
+#define DECL_EXTRACT( TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Extract,  false)
+#define DECL_RELATIVE(TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Relative, false)
 
 
 // for IMPL_SENDPROP, add an additional argument for the "remote name" (e.g. in CBaseEntity, m_MoveType's remote name is "movetype")
@@ -371,6 +422,15 @@ public:
 #define IMPL_EXTRACT(TYPE, CLASSNAME, PROPNAME, EXTRACTOR) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
 	CProp_Extract<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, EXTRACTOR)
+#define IMPL_RELATIVE(TYPE, CLASSNAME, PROPNAME, RELPROP, DIFF) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_MANUAL, DIFF)
+#define IMPL_REL_AFTER(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, ##__VA_ARGS__)
+#define IMPL_REL_BEFORE(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, ##__VA_ARGS__)
 
 
 #endif
