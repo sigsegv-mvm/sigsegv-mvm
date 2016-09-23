@@ -37,16 +37,17 @@ MemberFuncThunk<      CBaseEntity *, float, const char *               > CBaseEn
 MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *     > CBaseEntity::ft_EntityToWorldSpace  ("CBaseEntity::EntityToWorldSpace");
 MemberFuncThunk<const CBaseEntity *, bool                              > CBaseEntity::ft_IsBSPModel          ("CBaseEntity::IsBSPModel");
 
-MemberVFuncThunk<      CBaseEntity *, Vector                          > CBaseEntity::vt_EyePosition             (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
-MemberVFuncThunk<      CBaseEntity *, const QAngle&                   > CBaseEntity::vt_EyeAngles               (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
-MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *             > CBaseEntity::vt_SetOwnerEntity          (TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
-MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEntity::vt_Spawn                   (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
-MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> CBaseEntity::vt_GetVelocity             (TypeName<CBaseEntity>(), "CBaseEntity::GetVelocity");
-MemberVFuncThunk<const CBaseEntity *, const Vector&                   > CBaseEntity::vt_WorldSpaceCenter        (TypeName<CBaseEntity>(), "CBaseEntity::WorldSpaceCenter");
-MemberVFuncThunk<const CBaseEntity *, bool                            > CBaseEntity::vt_IsCombatItem            (TypeName<CBaseEntity>(), "CBaseEntity::IsCombatItem");
-MemberVFuncThunk<const CBaseEntity *, int                             > CBaseEntity::vt_GetModelIndex           (TypeName<CBaseEntity>(), "CBaseEntity::GetModelIndex");
-MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *          > CBaseEntity::vt_MyCombatCharacterPointer(TypeName<CBaseEntity>(), "CBaseEntity::MyCombatCharacterPointer");
-MemberVFuncThunk<const CBaseEntity *, bool, int, int                  > CBaseEntity::vt_ShouldCollide           (TypeName<CBaseEntity>(), "CBaseEntity::ShouldCollide");
+MemberVFuncThunk<      CBaseEntity *, Vector                          > CBaseEntity::vt_EyePosition              (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
+MemberVFuncThunk<      CBaseEntity *, const QAngle&                   > CBaseEntity::vt_EyeAngles                (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
+MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *             > CBaseEntity::vt_SetOwnerEntity           (TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
+MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEntity::vt_Spawn                    (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
+MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> CBaseEntity::vt_GetVelocity              (TypeName<CBaseEntity>(), "CBaseEntity::GetVelocity");
+MemberVFuncThunk<const CBaseEntity *, const Vector&                   > CBaseEntity::vt_WorldSpaceCenter         (TypeName<CBaseEntity>(), "CBaseEntity::WorldSpaceCenter");
+MemberVFuncThunk<const CBaseEntity *, bool                            > CBaseEntity::vt_IsCombatItem             (TypeName<CBaseEntity>(), "CBaseEntity::IsCombatItem");
+MemberVFuncThunk<const CBaseEntity *, int                             > CBaseEntity::vt_GetModelIndex            (TypeName<CBaseEntity>(), "CBaseEntity::GetModelIndex");
+MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *          > CBaseEntity::vt_MyCombatCharacterPointer (TypeName<CBaseEntity>(), "CBaseEntity::MyCombatCharacterPointer");
+MemberVFuncThunk<const CBaseEntity *, bool, int, int                  > CBaseEntity::vt_ShouldCollide            (TypeName<CBaseEntity>(), "CBaseEntity::ShouldCollide");
+MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEntity::vt_DrawDebugGeometryOverlays(TypeName<CBaseEntity>(), "CBaseEntity::DrawDebugGeometryOverlays");
 
 
 bool CBaseEntity::IsPlayer() const

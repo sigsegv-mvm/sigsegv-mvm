@@ -204,6 +204,7 @@ sourceFiles = [
   'src/mod/util/debugoverlay_font_v2.cpp',
   'src/mod/util/debugoverlay_font_v3.cpp',
   'src/mod/util/override_vertex_limit.cpp',
+  'src/mod/util/entity_overlays.cpp',
   'src/mod/visualize/airblast_box.cpp',
   'src/mod/visualize/airblast_cone.cpp',
   'src/mod/visualize/blast_radius.cpp',

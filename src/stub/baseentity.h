@@ -46,24 +46,25 @@ public:
 	MoveType_t GetMoveType() const              { return (MoveType_t)(unsigned char)this->m_MoveType; }
 	
 	/* thunk */
-	void Remove()                                                                            {        ft_Remove                  (this); }
-	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition    (this); }
-	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches            (this, pszClassOrWildcard); }
-	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin            (this, absOrigin); }
-	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles            (this, absAngles); }
-	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound               (this, soundname, soundtime, duration); }
-	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink            (this, szContext); }
-	bool IsBSPModel() const                                                                  { return ft_IsBSPModel              (this); }
-	Vector EyePosition()                                                                     { return vt_EyePosition             (this); }
-	const QAngle& EyeAngles()                                                                { return vt_EyeAngles               (this); }
-	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity          (this, pOwner); }
-	void Spawn()                                                                             {        vt_Spawn                   (this); }
-	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity             (this, vVelocity, vAngVelocity); }
-	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter        (this); }
-	bool IsCombatItem() const                                                                { return vt_IsCombatItem            (this); }
-	int GetModelIndex() const                                                                { return vt_GetModelIndex           (this); }
-	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer(this); }
-	bool ShouldCollide(int collisionGroup, int contentsMask) const                           { return vt_ShouldCollide           (this, collisionGroup, contentsMask); }
+	void Remove()                                                                            {        ft_Remove                   (this); }
+	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition     (this); }
+	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches             (this, pszClassOrWildcard); }
+	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin             (this, absOrigin); }
+	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles             (this, absAngles); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound                (this, soundname, soundtime, duration); }
+	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink             (this, szContext); }
+	bool IsBSPModel() const                                                                  { return ft_IsBSPModel               (this); }
+	Vector EyePosition()                                                                     { return vt_EyePosition              (this); }
+	const QAngle& EyeAngles()                                                                { return vt_EyeAngles                (this); }
+	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity           (this, pOwner); }
+	void Spawn()                                                                             {        vt_Spawn                    (this); }
+	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
+	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter         (this); }
+	bool IsCombatItem() const                                                                { return vt_IsCombatItem             (this); }
+	int GetModelIndex() const                                                                { return vt_GetModelIndex            (this); }
+	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer (this); }
+	bool ShouldCollide(int collisionGroup, int contentsMask) const                           { return vt_ShouldCollide            (this, collisionGroup, contentsMask); }
+	void DrawDebugGeometryOverlays()                                                         {        vt_DrawDebugGeometryOverlays(this); }
 	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
@@ -122,6 +123,7 @@ private:
 	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
 	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>           vt_MyCombatCharacterPointer;
 	static MemberVFuncThunk<const CBaseEntity *, bool, int, int>                   vt_ShouldCollide;
+	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_DrawDebugGeometryOverlays;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
