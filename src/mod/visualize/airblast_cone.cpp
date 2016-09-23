@@ -22,10 +22,20 @@ namespace Mod_Visualize_Airblast_Cone
 		"Visualization: cone color (alpha)");
 	
 	
+	ConVar cvar_circle("sig_visualize_airblast_cone_circle", "1", FCVAR_NOTIFY,
+		"Visualization: use DrawCone_Circles");
 	ConVar cvar_circle_delta("sig_visualize_airblast_cone_circle_delta", "15.0", FCVAR_NOTIFY,
 		"Visualization: distance between circles for DrawCone_Circles");
 	void DrawCone_Circles(const Vector& origin, const QAngle& angle, float dot, float depth)
 	{
+		if (!cvar_circle.GetBool()) return;
+		
+		int r = cvar_color_r.GetInt();
+		int g = cvar_color_g.GetInt();
+		int b = cvar_color_b.GetInt();
+		int a = cvar_color_a.GetInt();
+		float duration = cvar_duration.GetFloat();
+		
 		float delta = cvar_circle_delta.GetFloat();
 		
 		Vector fwd;
@@ -35,19 +45,18 @@ namespace Mod_Visualize_Airblast_Cone
 			Vector center = origin + (fwd * dist);
 			float radius = dist * tan(acos(dot));
 			
-			NDebugOverlay::Circle(center, angle, radius,
-				cvar_color_r.GetInt(),
-				cvar_color_g.GetInt(),
-				cvar_color_b.GetInt(),
-				cvar_color_a.GetInt(),
-				false, cvar_duration.GetFloat());
+			NDebugOverlay::Circle(center, angle, radius, r, g, b, a, false, duration);
 		}
 	}
 	
+	ConVar cvar_line("sig_visualize_airblast_cone_line", "0", FCVAR_NOTIFY,
+		"Visualization: use DrawCone_Lines");
 	ConVar cvar_line_count("sig_visualize_airblast_cone_line_count", "60", FCVAR_NOTIFY,
 		"Visualization: number of lines for DrawCone_Lines");
 	void DrawCone_Lines(const Vector& origin, const QAngle& angle, float dot, float depth)
 	{
+		if (!cvar_line.GetBool()) return;
+		
 		Vector fwd, rt, up;
 		AngleVectors(angle, &fwd, &rt, &up);
 		
@@ -59,10 +68,14 @@ namespace Mod_Visualize_Airblast_Cone
 		}
 	}
 	
+	ConVar cvar_3d("sig_visualize_airblast_cone_3d", "0", FCVAR_NOTIFY,
+		"Visualization: use DrawCone_3D");
 	ConVar cvar_3d_polys("sig_visualize_airblast_cone_3d_polys", "60", FCVAR_NOTIFY,
 		"Visualization: number of triangle polygons for DrawCone_3D");
 	void DrawCone_3D(const Vector& origin, const QAngle& angle, float dot, float depth)
 	{
+		if (!cvar_3d.GetBool()) return;
+		
 		int r = cvar_color_r.GetInt();
 		int g = cvar_color_g.GetInt();
 		int b = cvar_color_b.GetInt();
@@ -133,16 +146,15 @@ namespace Mod_Visualize_Airblast_Cone
 			deflected[player] = false;
 		}
 		
-	//	SCOPED_INCREMENT(rc_CTFFlameThrower_FireAirBlast);
 		DETOUR_MEMBER_CALL(CTFFlameThrower_FireAirBlast)(i1);
 		
 		if (cvar_clear.GetBool()) {
 			NDebugOverlay::Clear();
 		}
 		
-	//	DrawCone_Circles(pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
-	//	DrawCone_Lines(pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
-		DrawCone_3D(pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
+		DrawCone_Circles(pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
+		DrawCone_Lines  (pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
+		DrawCone_3D     (pyro->WorldSpaceCenter(), pyro->EyeAngles(), 0.8f, cvar_depth.GetFloat());
 		
 		for (const auto& pair : deflected) {
 			CTFPlayer *victim  = pair.first;
