@@ -363,8 +363,8 @@
 					type "pattern"
 					sym  "TODO"
 					seg  ".text"
-					seek "558bec81ec80000000538bd98b4d0c895dcc568b75085785c9751356"
-					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					seek "558bec81ec84000000538bd98b4d0c895df856578b7d0885c9751357b910cb1310e81aa3000033c984c00f95c141"
+					mask "ffffffffff00ffffffffffffffffffffff00ffffffffffffffffffffff00000000ff00000000ffffffffffffffff"
 					lib  "vguimatsurface"
 				}
 				
