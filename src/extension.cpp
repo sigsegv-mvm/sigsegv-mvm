@@ -63,6 +63,8 @@ IVProfExport *vprofexport = nullptr;
 
 IDedicatedExports *dedicated = nullptr;
 
+IMDLCache *mdlcache = nullptr;
+
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
@@ -203,6 +205,10 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	if (GetDedicatedFactory() != nullptr) {
 		dedicated = (IDedicatedExports *)ismm->VInterfaceMatch(GetDedicatedFactory(), VENGINE_DEDICATEDEXPORTS_API_VERSION, 0);
+	}
+	
+	if (GetDataCacheFactory() != nullptr) {
+		mdlcache = (IMDLCache *)ismm->VInterfaceMatch(GetDataCacheFactory(), MDLCACHE_INTERFACE_VERSION, 0);
 	}
 	
 	GET_V_IFACE_CURRENT(GetEngineFactory, vprofexport, IVProfExport, "VProfExport001");

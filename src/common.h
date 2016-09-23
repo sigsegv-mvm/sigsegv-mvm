@@ -49,6 +49,8 @@ class IVProfExport;
 
 class IDedicatedExports;
 
+class IMDLCache;
+
 namespace SourcePawn {
 	class ISourcePawnEngine;
 }
@@ -97,6 +99,8 @@ extern IClientTools *clienttools;
 extern IVProfExport *vprofexport;
 
 extern IDedicatedExports *dedicated;
+
+extern IMDLCache *mdlcache;
 
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
@@ -275,6 +279,7 @@ class IVideoRecorder;
 #include <icommandline.h>
 #include <iserver.h>
 #include <iclient.h>
+#include <datacache/imdlcache.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
