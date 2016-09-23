@@ -94,14 +94,19 @@ extern "C" PVOID __CLRCALL_OR_CDECL __RTDynamicCast (
 
 /* calling conventions */
 
-/* GCC only: EAX/EDX/ECX register calling convention */
+/* common naming for fastcall */
+#if !defined __fastcall
+#define __fastcall __attribute__((fastcall))
+#endif
+
+/* use EAX/EDX/ECX register calling convention in GCC build ONLY */
 #if defined __GNUC__
 #define __gcc_regcall __attribute__((regparm(3)))
 #else
 #define __gcc_regcall
 #endif
 
-/* MSVC only: thiscall calling convention */
+/* use thiscall calling convention in MSVC build ONLY */
 #if defined _MSC_VER
 #define __msvc_thiscall __thiscall
 #else
