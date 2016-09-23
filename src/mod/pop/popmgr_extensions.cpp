@@ -103,11 +103,11 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		void Reset()
 		{
-			this->m_bGiantsDropRareSpells      = false;
-			this->m_flSpellDropRateCommon      = 1.00f;
-			this->m_flSpellDropRateGiant       = 1.00f;
-			this->m_bNoReanimators             = false;
-			this->m_bNoMvMDeathTune            = false;
+			this->m_bGiantsDropRareSpells = false;
+			this->m_flSpellDropRateCommon = 1.00f;
+			this->m_flSpellDropRateGiant  = 1.00f;
+			this->m_bNoReanimators        = false;
+			this->m_bNoMvMDeathTune       = false;
 			
 			this->m_MedievalMode.Reset();
 			this->m_SpellsEnabled.Reset();

@@ -2,8 +2,8 @@
 #include "mod/util/overlay_shared.h"
 #include "stub/usermessages_cl.h"
 #include "util/float16.h"
-#include "stub/cdebugoverlay.h"
 #include "util/socket_old.h"
+#include "stub/cdebugoverlay.h"
 
 
 namespace Mod_Util_Overlay_Recv
