@@ -148,33 +148,6 @@ void IDetour_SymNormal::DoUnload()
 }
 
 
-/* iterator for non-null-terminated symbol name strings, to avoid having to make
- * std::string copies a bunch of times for regex matching */
-class CharPtrIterator : public std::iterator<std::bidirectional_iterator_tag, char>
-{
-public:
-	CharPtrIterator() :
-		m_pChar(nullptr) {}
-	CharPtrIterator(char *ptr) :
-		m_pChar(ptr) {}
-	CharPtrIterator(const CharPtrIterator& that) = default;
-	
-	CharPtrIterator& operator++()   { ++this->m_pChar; return *this; }
-	CharPtrIterator operator++(int) { CharPtrIterator tmp(*this); ++this->m_pChar; return tmp; }
-	
-	CharPtrIterator& operator--()   { --this->m_pChar; return *this; }
-	CharPtrIterator operator--(int) { CharPtrIterator tmp(*this); --this->m_pChar; return tmp; }
-	
-	bool operator==(const CharPtrIterator& that) const { return this->m_pChar == that.m_pChar; }
-	bool operator!=(const CharPtrIterator& that) const { return this->m_pChar != that.m_pChar; }
-	
-	char& operator*() const { return *this->m_pChar; }
-	
-private:
-	char *m_pChar;
-};
-
-
 const char *IDetour_SymRegex::GetName() const
 {
 	if (this->IsLoaded()) {
@@ -201,11 +174,9 @@ bool IDetour_SymRegex::DoLoad()
 	std::regex filter(this->m_strPattern);
 	std::vector<Symbol *> syms;
 	LibMgr::ForEachSym(this->m_Library, [&](Symbol *sym){
-		char *buf  = sym->buffer();
-		size_t len = sym->length;
-		
-		CharPtrIterator begin(buf), end(buf + len);
-		if (std::regex_search(begin, end, filter, std::regex_constants::match_any)) {
+		const char *it_begin = sym->buffer();
+		const char *it_end   = it_begin + sym->length;
+		if (std::regex_search(it_begin, it_end, filter, std::regex_constants::match_any)) {
 			if (sym->address >= text_begin && sym->address < text_end) {
 				syms.push_back(sym);
 			}
