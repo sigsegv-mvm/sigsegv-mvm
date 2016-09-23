@@ -312,6 +312,16 @@ namespace Mod_Util_DebugOverlay_Font_v2
 	}
 	
 	
+	ConVar cvar_bg_color_r("sig_util_debugoverlay_font_v2_bg_color_r", "0x00", FCVAR_NOTIFY,
+		"Utility: BG font color: red");
+	ConVar cvar_bg_color_g("sig_util_debugoverlay_font_v2_bg_color_g", "0x00", FCVAR_NOTIFY,
+		"Utility: BG font color: green");
+	ConVar cvar_bg_color_b("sig_util_debugoverlay_font_v2_bg_color_b", "0x00", FCVAR_NOTIFY,
+		"Utility: BG font color: blue");
+	ConVar cvar_bg_color_a("sig_util_debugoverlay_font_v2_bg_color_a", "0xff", FCVAR_NOTIFY,
+		"Utility: BG font color: alpha");
+	
+	
 	RefCount rc_CDebugOverlay_Paint;
 	DETOUR_DECL_MEMBER(void, CDebugOverlay_Paint)
 	{
@@ -324,10 +334,15 @@ namespace Mod_Util_DebugOverlay_Font_v2
 		if (rc_CDebugOverlay_Paint > 0) {
 			UpdateDebugOverlayFonts();
 			
-			int rFG = DETOUR_MEMBER_CALL(CMatSystemSurface_DrawColoredText)(hFontBG, x, y, 0x00, 0x00, 0x00, 0xff, fmt, argptr);
-			int rBG = DETOUR_MEMBER_CALL(CMatSystemSurface_DrawColoredText)(hFontFG, x, y,    r,     g,   b,    a, fmt, argptr);
+			int bg_r = Clamp((int)std::strtol(cvar_bg_color_r.GetString(), nullptr, 0), 0x00, 0xff);
+			int bg_g = Clamp((int)std::strtol(cvar_bg_color_g.GetString(), nullptr, 0), 0x00, 0xff);
+			int bg_b = Clamp((int)std::strtol(cvar_bg_color_b.GetString(), nullptr, 0), 0x00, 0xff);
+			int bg_a = Clamp((int)std::strtol(cvar_bg_color_a.GetString(), nullptr, 0), 0x00, 0xff);
 			
-			return std::max(rFG, rBG);
+			int rBG = DETOUR_MEMBER_CALL(CMatSystemSurface_DrawColoredText)(hFontBG, x, y, bg_r, bg_g, bg_b, bg_a, fmt, argptr);
+			int rFG = DETOUR_MEMBER_CALL(CMatSystemSurface_DrawColoredText)(hFontFG, x, y,    r,     g,   b,    a, fmt, argptr);
+			
+			return std::max(rBG, rFG);
 		}
 		
 		return DETOUR_MEMBER_CALL(CMatSystemSurface_DrawColoredText)(font, x, y, r, g, b, a, fmt, argptr);
