@@ -31,7 +31,7 @@ namespace Mod_Util_DebugOverlay_Font_v2
 		"Utility: FG font weight", &SetFGFontDirty);
 	ConVar cvar_fg_scanlines("sig_util_debugoverlay_font_v2_fg_scanlines", "0", FCVAR_NOTIFY,
 		"Utility: FG font scanlines", &SetFGFontDirty);
-	ConVar cvar_fg_blur("sig_util_debugoverlay_font_v2_fg_blur", "0", FCVAR_NOTIFY,
+	ConVar cvar_fg_blur("sig_util_debugoverlay_font_v2_fg_blur", "5", FCVAR_NOTIFY,
 		"Utility: FG font blur", &SetFGFontDirty);
 	ConVar cvar_fg_italic("sig_util_debugoverlay_font_v2_fg_italic", "0", FCVAR_NOTIFY,
 		"Utility: FG font italic", &SetFGFontDirty);
@@ -39,7 +39,7 @@ namespace Mod_Util_DebugOverlay_Font_v2
 		"Utility: FG font underline", &SetFGFontDirty);
 	ConVar cvar_fg_strikeout("sig_util_debugoverlay_font_v2_fg_strikeout", "0", FCVAR_NOTIFY,
 		"Utility: FG font strikeout", &SetFGFontDirty);
-	ConVar cvar_fg_antialias("sig_util_debugoverlay_font_v2_fg_antialias", "0", FCVAR_NOTIFY,
+	ConVar cvar_fg_antialias("sig_util_debugoverlay_font_v2_fg_antialias", "1", FCVAR_NOTIFY,
 		"Utility: FG font antialias", &SetFGFontDirty);
 	ConVar cvar_fg_dropshadow("sig_util_debugoverlay_font_v2_fg_dropshadow", "0", FCVAR_NOTIFY,
 		"Utility: FG font dropshadow", &SetFGFontDirty);
@@ -57,7 +57,7 @@ namespace Mod_Util_DebugOverlay_Font_v2
 		"Utility: BG font weight", &SetBGFontDirty);
 	ConVar cvar_bg_scanlines("sig_util_debugoverlay_font_v2_bg_scanlines", "0", FCVAR_NOTIFY,
 		"Utility: BG font scanlines", &SetBGFontDirty);
-	ConVar cvar_bg_blur("sig_util_debugoverlay_font_v2_bg_blur", "0", FCVAR_NOTIFY,
+	ConVar cvar_bg_blur("sig_util_debugoverlay_font_v2_bg_blur", "5", FCVAR_NOTIFY,
 		"Utility: BG font blur", &SetBGFontDirty);
 	ConVar cvar_bg_italic("sig_util_debugoverlay_font_v2_bg_italic", "0", FCVAR_NOTIFY,
 		"Utility: BG font italic", &SetBGFontDirty);
@@ -65,7 +65,7 @@ namespace Mod_Util_DebugOverlay_Font_v2
 		"Utility: BG font underline", &SetBGFontDirty);
 	ConVar cvar_bg_strikeout("sig_util_debugoverlay_font_v2_bg_strikeout", "0", FCVAR_NOTIFY,
 		"Utility: BG font strikeout", &SetBGFontDirty);
-	ConVar cvar_bg_antialias("sig_util_debugoverlay_font_v2_bg_antialias", "0", FCVAR_NOTIFY,
+	ConVar cvar_bg_antialias("sig_util_debugoverlay_font_v2_bg_antialias", "1", FCVAR_NOTIFY,
 		"Utility: BG font antialias", &SetBGFontDirty);
 	ConVar cvar_bg_dropshadow("sig_util_debugoverlay_font_v2_bg_dropshadow", "0", FCVAR_NOTIFY,
 		"Utility: BG font dropshadow", &SetBGFontDirty);
@@ -159,11 +159,11 @@ namespace Mod_Util_DebugOverlay_Font_v2
 //	ConVar cvar_darken_bg("sig_util_debugoverlay_font_v2_darken_bg", "1.0", FCVAR_NOTIFY,
 //		"Utility: multiply background blur alpha by this factor", &SetBGFontDirty);
 	
-	ConVar cvar_expand_bg("sig_util_debugoverlay_font_v2_expand_bg", "0", FCVAR_NOTIFY,
+	ConVar cvar_expand_bg("sig_util_debugoverlay_font_v2_expand_bg", "2", FCVAR_NOTIFY,
 		"Utility: expand background glyph size by this many pixels", &SetBGFontDirty);
-	ConVar cvar_expand_box("sig_util_debugoverlay_font_v2_expand_box", "0", FCVAR_NOTIFY,
+	ConVar cvar_expand_box("sig_util_debugoverlay_font_v2_expand_box", "1", FCVAR_NOTIFY,
 		"Utility: use box expansion instead of circle expansion", &SetBGFontDirty);
-	ConVar cvar_expand_factor("sig_util_debugoverlay_font_v2_expand_factor", "1", FCVAR_NOTIFY,
+	ConVar cvar_expand_factor("sig_util_debugoverlay_font_v2_expand_factor", "2", FCVAR_NOTIFY,
 		"Utility: supersampling factor for expansion", &SetBGFontDirty);
 	
 	
