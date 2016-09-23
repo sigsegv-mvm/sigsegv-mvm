@@ -69,6 +69,46 @@ struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType *>
 #endif
 
 
+#if defined _LINUX
+
+static constexpr uint8_t s_Buf_CTFBot_m_Tags[] = {
+	0x55,                               // +0000  push ebp
+	0x89, 0xe5,                         // +0001  mov ebp,esp
+	0x53,                               // +0003  push ebx
+	0x8b, 0x5d, 0x08,                   // +0004  mov ebx,[ebp+this]
+	0x8b, 0x83, 0xd8, 0x2b, 0x00, 0x00, // +0007  mov eax,[ebx+0xVVVVVVVV]
+};
+
+struct CExtract_CTFBot_m_Tags : public IExtract<CUtlVector<CFmtStr> *>
+{
+	using T = CUtlVector<CFmtStr> *;
+	
+	CExtract_CTFBot_m_Tags() : IExtract<T>(sizeof(s_Buf_CTFBot_m_Tags)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CTFBot_m_Tags);
+		
+		mask.SetRange(0x07 + 2, 4, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFBot::ClearTags"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0007 + 2; }
+	
+	virtual T AdjustValue(T val) const { return reinterpret_cast<T>((uintptr_t)val - 0xc); }
+};
+
+#elif defined _WINDOWS
+
+// TODO
+
+#endif
+
+
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressFireButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressFireButton");
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseFireButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseFireButton");
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressAltFireButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressAltFireButton");
@@ -104,6 +144,7 @@ MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::
 
 
 IMPL_EXTRACT(CTFBot::MissionType, CTFBot, m_nMission, new CExtract_CTFBot_m_nMission());
+IMPL_EXTRACT(CUtlVector<CFmtStr>, CTFBot, m_Tags,     new CExtract_CTFBot_m_Tags());
 
 MemberFuncThunk<const CTFBot *, ILocomotion *                            > CTFBot::ft_GetLocomotionInterface      ("CTFBot::GetLocomotionInterface");
 MemberFuncThunk<const CTFBot *, IBody *                                  > CTFBot::ft_GetBodyInterface            ("CTFBot::GetBodyInterface");

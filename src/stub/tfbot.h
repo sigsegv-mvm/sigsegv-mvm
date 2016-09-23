@@ -241,8 +241,10 @@ public:
 	}
 #endif
 	
+	DECL_EXTRACT(CUtlVector<CFmtStr>, m_Tags);
+	
 private:
-	DECL_EXTRACT(MissionType, m_nMission);
+	DECL_EXTRACT(MissionType,         m_nMission);
 	
 	static MemberFuncThunk<const CTFBot *, ILocomotion *                     > ft_GetLocomotionInterface;
 	static MemberFuncThunk<const CTFBot *, IBody *                           > ft_GetBodyInterface;

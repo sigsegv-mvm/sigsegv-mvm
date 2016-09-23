@@ -184,9 +184,6 @@ IMPL_EXTRACT(float,               CTFTankBoss, m_flTotalDistance, new CExtract_C
 IMPL_EXTRACT(int,                 CTFTankBoss, m_iCurrentNode,    new CExtract_CTFTankBoss_m_iCurrentNode());
 
 
-MemberFuncThunk<const CFuncNavCost *, bool, const char *> CFuncNavCost::ft_HasTag("CFuncNavCost::HasTag");
-
-
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");
 
 

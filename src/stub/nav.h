@@ -172,6 +172,26 @@ struct Extent
 };
 
 
+class CFuncNavCost : public CBaseEntity
+{
+public:
+	bool HasTag(const char *groupname) const { return ft_HasTag(this, groupname); }
+	
+//	CUtlVector<CFmtStr>& GetTagsVector() { return *reinterpret_cast<CUtlVector<CFmtStr> *>((uintptr_t)this->m_iszTags.GetPtr() + sizeof(string_t)); }
+	
+	DECL_DATAMAP(int,                  m_team);
+	DECL_DATAMAP(bool,                 m_isDisabled);
+	DECL_DATAMAP(string_t,             m_iszTags);
+	DECL_RELATIVE(CUtlVector<CFmtStr>, m_tags);
+	
+private:
+	static MemberFuncThunk<const CFuncNavCost *, bool, const char *> ft_HasTag;
+};
+
+class CFuncNavAvoid : public CFuncNavCost {};
+class CFuncNavPrefer : public CFuncNavCost {};
+
+
 class CNavArea
 {
 public:

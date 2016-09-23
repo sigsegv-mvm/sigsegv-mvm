@@ -171,19 +171,6 @@ private:
 };
 
 
-class CFuncNavCost : public CBaseEntity
-{
-public:
-	bool HasTag(const char *groupname) const { return ft_HasTag(this, groupname); }
-	
-private:
-	static MemberFuncThunk<const CFuncNavCost *, bool, const char *> ft_HasTag;
-};
-
-class CFuncNavAvoid : public CFuncNavCost {};
-class CFuncNavPrefer : public CFuncNavCost {};
-
-
 class CCaptureZone : public CBaseTrigger {};
 
 

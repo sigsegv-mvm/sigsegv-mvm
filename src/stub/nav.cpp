@@ -1,6 +1,14 @@
 #include "stub/nav.h"
 
 
+IMPL_DATAMAP(int,                   CFuncNavCost, m_team);
+IMPL_DATAMAP(bool,                  CFuncNavCost, m_isDisabled);
+IMPL_DATAMAP(string_t,              CFuncNavCost, m_iszTags);
+IMPL_REL_AFTER(CUtlVector<CFmtStr>, CFuncNavCost, m_tags, m_iszTags);
+
+MemberFuncThunk<const CFuncNavCost *, bool, const char *> CFuncNavCost::ft_HasTag("CFuncNavCost::HasTag");
+
+
 #if defined _LINUX
 
 static constexpr uint8_t s_Buf_CNavArea_m_funcNavCostVector[] = {

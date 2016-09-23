@@ -152,6 +152,7 @@ sourceFiles = [
   'src/mod/debug/shortcircuit_rubberband.cpp',
   'src/mod/debug/tele_sapper.cpp',
   'src/mod/debug/getplayermaxspeed.cpp',
+  'src/mod/debug/func_nav_cost_tags.cpp',
 #  'src/mod/debug/override_step_sound.cpp',
   'src/mod/demo/stringtable_limit.cpp',
   'src/mod/etc/limp_projectiles.cpp',
