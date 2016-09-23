@@ -8,6 +8,7 @@ CreateInterfaceFn GetMaterialSystemFactory();
 CreateInterfaceFn GetVGUIFactory();
 CreateInterfaceFn GetVGUIMatSurfaceFactory();
 CreateInterfaceFn GetDedicatedFactory();
+CreateInterfaceFn GetDataCacheFactory();
 
 
 #endif

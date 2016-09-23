@@ -45,6 +45,7 @@ DEF_GET_FACTORY(MaterialSystem,     "materialsystem");
 DEF_GET_FACTORY(VGUI,               "vgui2");
 DEF_GET_FACTORY(VGUIMatSurface,     "vguimatsurface");
 DEF_GET_FACTORY(Dedicated,          "dedicated");
+DEF_GET_FACTORY(DataCache,          "datacache");
 
 
 /* all of the stuff below is in tier1, but we can't use the versions in tier1
