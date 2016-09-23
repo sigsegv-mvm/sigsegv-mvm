@@ -24,7 +24,7 @@ namespace Mod_Bot_Medieval_NonMelee
 			int off_CTFGameRules_m_bPlayingMedieval;
 			if (!Prop::FindOffset(off_CTFGameRules_m_bPlayingMedieval, "CTFGameRules", "m_bPlayingMedieval")) return false;
 			
-			buf.SetDword(0x00 + 1, (uint32_t)GameRules());
+			buf.SetDword(0x00 + 1, (uint32_t)&g_pGameRules.GetRef());
 			buf.SetDword(0x05 + 2, (uint32_t)off_CTFGameRules_m_bPlayingMedieval);
 			
 			mask.SetRange(0x0c + 1, 1, 0x00);
