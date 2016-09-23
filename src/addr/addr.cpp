@@ -1,4 +1,5 @@
 #include "addr/addr.h"
+#include "util/misc.h"
 
 
 void IAddr::Init()
@@ -101,19 +102,21 @@ static ConCommand ccmd_list_addrs("sig_list_addrs", &AddrManager::CC_ListAddrs,
 	"List addresses and show their status", FCVAR_NONE);
 void AddrManager::CC_ListAddrs(const CCommand& cmd)
 {
-	for (const auto& pair : s_Addrs) {
-		const IAddr *addr = pair.second;
-		
-		switch (addr->GetState()) {
-		case IAddr::State::INITIAL:
-			Msg("%-8s %s\n", "INITIAL", addr->GetName());
-			break;
-		case IAddr::State::OK:
-			Msg("%08x %s\n", (uintptr_t)addr->GetAddr(), addr->GetName());
-			break;
-		case IAddr::State::FAIL:
-			Msg("%-8s %s\n", "FAIL", addr->GetName());
-			break;
+	MAT_SINGLE_THREAD_BLOCK {
+		for (const auto& pair : s_Addrs) {
+			const IAddr *addr = pair.second;
+			
+			switch (addr->GetState()) {
+			case IAddr::State::INITIAL:
+				Msg("%-8s %s\n", "INITIAL", addr->GetName());
+				break;
+			case IAddr::State::OK:
+				Msg("%08x %s\n", (uintptr_t)addr->GetAddr(), addr->GetName());
+				break;
+			case IAddr::State::FAIL:
+				Msg("%-8s %s\n", "FAIL", addr->GetName());
+				break;
+			}
 		}
 	}
 }

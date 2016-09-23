@@ -1,4 +1,5 @@
 #include "prop.h"
+#include "util/misc.h"
 
 
 void CC_ListProps(const CCommand& cmd)
@@ -10,26 +11,28 @@ void CC_ListProps(const CCommand& cmd)
 //		len_mem = Max(len_mem, strlen(prop->GetMemberName()));
 	}
 	
-	Msg("%-8s  %7s  %-*s  %s\n", "KIND", "VALUE", len_obj, "CLASS", "MEMBER");
-	for (auto prop : AutoList<IProp>::List()) {
-		const char *n_obj = prop->GetObjectName();
-		const char *n_mem = prop->GetMemberName();
-		const char *kind  = prop->GetKind();
-		
-		switch (prop->GetState()) {
-		case IProp::State::INITIAL:
-			Msg("%-8s  %7s  %-*s  %s\n", kind, "INIT", len_obj, n_obj, n_mem);
-			break;
-		case IProp::State::OK:
-		{
-			int off = -1;
-			prop->GetOffset(off);
-			Msg("%-8s  +0x%04x  %-*s  %s\n", kind, off, len_obj, n_obj, n_mem);
-			break;
-		}
-		case IProp::State::FAIL:
-			Msg("%-8s  %7s  %-*s  %s\n", kind, "FAIL", len_obj, n_obj, n_mem);
-			break;
+	MAT_SINGLE_THREAD_BLOCK {
+		Msg("%-8s  %7s  %-*s  %s\n", "KIND", "VALUE", len_obj, "CLASS", "MEMBER");
+		for (auto prop : AutoList<IProp>::List()) {
+			const char *n_obj = prop->GetObjectName();
+			const char *n_mem = prop->GetMemberName();
+			const char *kind  = prop->GetKind();
+			
+			switch (prop->GetState()) {
+			case IProp::State::INITIAL:
+				Msg("%-8s  %7s  %-*s  %s\n", kind, "INIT", len_obj, n_obj, n_mem);
+				break;
+			case IProp::State::OK:
+			{
+				int off = -1;
+				prop->GetOffset(off);
+				Msg("%-8s  +0x%04x  %-*s  %s\n", kind, off, len_obj, n_obj, n_mem);
+				break;
+			}
+			case IProp::State::FAIL:
+				Msg("%-8s  %7s  %-*s  %s\n", kind, "FAIL", len_obj, n_obj, n_mem);
+				break;
+			}
 		}
 	}
 }

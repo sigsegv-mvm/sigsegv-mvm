@@ -1,4 +1,5 @@
 #include "mod.h"
+#include "util/misc.h"
 
 
 bool IHasPatches::LoadPatches()
@@ -363,22 +364,24 @@ void CModManager::CC_ListMods(const CCommand& cmd)
 		l_d_active = Max(l_d_active, info.d_active.length());
 	}
 	
-	ConColorMsg(c_header, "%-*s%-*s%-*s%-*s%-*s%-*s%-*s\n",
-		2 + l_cat,      h_cat,
-		2 + l_name,     h_name,
-		2 + l_status,   h_status,
-		2 + l_patches,  h_patches,
-		2 + l_d_total,  h_d_total,
-		2 + l_d_failed, h_d_failed,
-		2 + l_d_active, h_d_active);
-	
-	for (const auto& info : mods) {
-		ConColorMsg(c_normal,        "%-*s",   2 + l_cat,      info.cat.c_str());
-		ConColorMsg(c_normal,        "%-*s",   2 + l_name,     info.name.c_str());
-		ConColorMsg(info.c_status,   "%-*s",   2 + l_status,   info.status.c_str());
-		ConColorMsg(info.c_patches,  "%-*s",   2 + l_patches,  info.patches.c_str());
-		ConColorMsg(info.c_d_total,  "%-*s",   2 + l_d_total,  info.d_total.c_str());
-		ConColorMsg(info.c_d_failed, "%-*s",   2 + l_d_failed, info.d_failed.c_str());
-		ConColorMsg(info.c_d_active, "%-*s\n", 2 + l_d_active, info.d_active.c_str());
+	MAT_SINGLE_THREAD_BLOCK {
+		ConColorMsg(c_header, "%-*s%-*s%-*s%-*s%-*s%-*s%-*s\n",
+			2 + l_cat,      h_cat,
+			2 + l_name,     h_name,
+			2 + l_status,   h_status,
+			2 + l_patches,  h_patches,
+			2 + l_d_total,  h_d_total,
+			2 + l_d_failed, h_d_failed,
+			2 + l_d_active, h_d_active);
+		
+		for (const auto& info : mods) {
+			ConColorMsg(c_normal,        "%-*s",   2 + l_cat,      info.cat.c_str());
+			ConColorMsg(c_normal,        "%-*s",   2 + l_name,     info.name.c_str());
+			ConColorMsg(info.c_status,   "%-*s",   2 + l_status,   info.status.c_str());
+			ConColorMsg(info.c_patches,  "%-*s",   2 + l_patches,  info.patches.c_str());
+			ConColorMsg(info.c_d_total,  "%-*s",   2 + l_d_total,  info.d_total.c_str());
+			ConColorMsg(info.c_d_failed, "%-*s",   2 + l_d_failed, info.d_failed.c_str());
+			ConColorMsg(info.c_d_active, "%-*s\n", 2 + l_d_active, info.d_active.c_str());
+		}
 	}
 }
