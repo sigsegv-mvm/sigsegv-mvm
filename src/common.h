@@ -205,6 +205,8 @@ class IVideoRecorder;
 
 /* Source SDK */
 #define RAD_TELEMETRY_DISABLED
+#undef   NO_STRING_T
+#undef WEAK_STRING_T
 #include <Color.h>
 #include <string_t.h>
 #include <annotations.h>
