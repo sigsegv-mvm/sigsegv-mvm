@@ -31,6 +31,7 @@ public:
 	
 	void Preload() { this->DoCalcOffset(); }
 	
+	int GetOffsetAssert();
 	bool GetOffset(int& off);
 	
 	State GetState() const { return this->m_State; }
@@ -46,6 +47,13 @@ private:
 	State m_State = State::INITIAL;
 	int m_Offset = -1;
 };
+
+inline int IProp::GetOffsetAssert()
+{
+	int off = -1;
+	assert(this->GetOffset(off));
+	return off;
+}
 
 inline bool IProp::GetOffset(int& off)
 {
@@ -259,156 +267,210 @@ private:
 };
 
 
-// template: OKAY
-// ctor:     NOPE
-// dtor:     NOPE
-// virtual:  NOPE
-// members:  NOPE
-template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST>
-class CPropAccessor_Base
-{
-public:
-	CPropAccessor_Base() = delete;
-	
-	void *GetBasePtr() const
-	{
-		return (void *)((uintptr_t)this - *ADJUST);
-	}
-	
-	int GetOffset() const
-	{
-		int off = -1;
-		assert(PROP->GetOffset(off));
-		return off;
-	}
-	
-	T *GetPtr() const
-	{
-//		DevMsg("CPropAccessor_Base::GetPtr: base %08x off %08x size %08x dword %08x\n", base, off, sizeof(T), *(uint32_t *)(base + off));
-		return reinterpret_cast<T *>((uintptr_t)this->GetBasePtr() + this->GetOffset());
-	}
-	T& GetRef() const
-	{
-		return *this->GetPtr();
-	}
-};
+#define T_PARAMS typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET, bool RW
+#define T_ARGS            IPROP,        PROP,               ADJUST,      NET,      RW
 
 
-template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST>
-class CPropAccessor_Read : public CPropAccessor_Base<T, IPROP, PROP, ADJUST>
+template<typename T, T_PARAMS> class CPropAccessorBase
 {
+private:
+	/* determine whether we should be returning writable refs/ptrs */
+//	static constexpr bool ReadOnly() { return (NET && !RW); }
+	
+	/* reference typedefs */
+	using RefRO_t = const T&;
+	using RefRW_t =       T&;
+//	using Ref_t   = typename std::conditional<ReadOnly(), RefRO_t, RefRW_t>::type;
+	using Ref_t   = typename std::conditional<(NET && !RW), RefRO_t, RefRW_t>::type;
+	
+	/* pointer typedefs */
+	using PtrRO_t = const T*;
+	using PtrRW_t =       T*;
+//	using Ptr_t   = typename std::conditional<ReadOnly(), PtrRO_t, PtrRW_t>::type;
+	using Ptr_t   = typename std::conditional<(NET && !RW), PtrRO_t, PtrRW_t>::type;
+	
 public:
-	CPropAccessor_Read() = delete;
+	CPropAccessorBase()                                    = delete;
+	CPropAccessorBase(CPropAccessorBase&  copy)            = delete;
+	CPropAccessorBase(CPropAccessorBase&& move)            = delete;
+	CPropAccessorBase& operator=(CPropAccessorBase&& move) = delete;
 	
-	operator const T&() const   { return this->GetRef(); }
-	const T* operator->() const { return this->GetPtr(); } /* dubious */
-	const T& operator=(const T& val) = delete;
-};
-/* specialization for CHandle<U> */
-template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST>
-class CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST> : public CPropAccessor_Base<CHandle<U>, IPROP, PROP, ADJUST>
-{
-public:
-	CPropAccessor_Read() = delete;
+	/* conversion operators */
+	operator Ref_t() const { return this->Get(); }
 	
-	operator const U*() const { return this->GetRef(); }
-	operator       U*() const { return this->GetRef(); } /* yes, we're defining this in the Read accessor */
-	const U* operator=(const U* val) = delete;
-};
-/* specialization for CUtlVector<U> */
-template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST>
-class CPropAccessor_Read<CUtlVector<U>, IPROP, PROP, ADJUST> : public CPropAccessor_Base<CUtlVector<U>, IPROP, PROP, ADJUST>
-{
-public:
-	using T = CUtlVector<U>;
+//	template<typename A, bool RW2 = (!NET || RW)> operator typename std::enable_if<( RW2 && std::is_convertible<T, A>::value),       A&>::type() const { return static_cast<      A&>(this->GetRW()); }
+//	template<typename A, bool RW2 = (!NET || RW)> operator typename std::enable_if<(!RW2 && std::is_convertible<T, A>::value), const A&>::type() const { return static_cast<const A&>(this->GetRO()); }
 	
-	CPropAccessor_Read() = delete;
+	/* assignment */
+	template<typename A> const T& operator=(const CPropAccessorBase<A, T_ARGS>& val) { return this->Set(static_cast<const T>(val.GetRO())); }
+	template<typename A> const T& operator=(const A& val)                            { return this->Set(static_cast<const T>(val));         }
 	
-	operator const T&() const   { return this->GetRef(); };
-	const T* operator->() const { return this->GetPtr(); } /* dubious */
-	const T& operator=(const T& val) = delete;
-	const U& operator[](int i) const { return this->GetRef()[i]; }
-};
-
-
-template<typename T, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET = false>
-class CPropAccessor_Write : public CPropAccessor_Read<T, IPROP, PROP, ADJUST>
-{
-public:
-	CPropAccessor_Write() = delete;
+	/* assignment with modify */
+	template<typename A> const T& operator+= (const A& val) { return this->Set(this->GetRO() +  static_cast<const T>(val)); }
+	template<typename A> const T& operator-= (const A& val) { return this->Set(this->GetRO() -  static_cast<const T>(val)); }
+	template<typename A> const T& operator*= (const A& val) { return this->Set(this->GetRO() *  static_cast<const T>(val)); }
+	template<typename A> const T& operator/= (const A& val) { return this->Set(this->GetRO() /  static_cast<const T>(val)); }
+	template<typename A> const T& operator%= (const A& val) { return this->Set(this->GetRO() %  static_cast<const T>(val)); }
+	template<typename A> const T& operator&= (const A& val) { return this->Set(this->GetRO() &  static_cast<const T>(val)); }
+	template<typename A> const T& operator|= (const A& val) { return this->Set(this->GetRO() |  static_cast<const T>(val)); }
+	template<typename A> const T& operator^= (const A& val) { return this->Set(this->GetRO() ^  static_cast<const T>(val)); }
+	template<typename A> const T& operator<<=(const A& val) { return this->Set(this->GetRO() << static_cast<const T>(val)); }
+	template<typename A> const T& operator>>=(const A& val) { return this->Set(this->GetRO() >> static_cast<const T>(val)); }
 	
-	operator T&() { return this->GetRef(); }
-	const T& operator=(const T& val)
+	/* comparison */
+	template<typename A> auto operator==(const A& val) const { return (this->GetRO() == val); }
+	template<typename A> auto operator!=(const A& val) const { return (this->GetRO() != val); }
+	template<typename A> auto operator< (const A& val) const { return (this->GetRO() <  val); }
+	template<typename A> auto operator> (const A& val) const { return (this->GetRO() >  val); }
+	template<typename A> auto operator<=(const A& val) const { return (this->GetRO() <= val); }
+	template<typename A> auto operator>=(const A& val) const { return (this->GetRO() >= val); }
+	
+	/* unary arithmetic/logic */
+	auto operator+() const { return +this->GetRO(); }
+	auto operator-() const { return -this->GetRO(); }
+	auto operator~() const { return ~this->GetRO(); }
+	
+	/* binary arithmetic/logic */
+	template<typename A> friend auto operator+ (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() +  val        ); }
+	template<typename A> friend auto operator+ (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         +  acc.GetRO()); }
+	template<typename A> friend auto operator- (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() -  val        ); }
+	template<typename A> friend auto operator- (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         -  acc.GetRO()); }
+	template<typename A> friend auto operator* (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() *  val        ); }
+	template<typename A> friend auto operator* (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         *  acc.GetRO()); }
+	template<typename A> friend auto operator/ (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() /  val        ); }
+	template<typename A> friend auto operator/ (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         /  acc.GetRO()); }
+	template<typename A> friend auto operator% (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() %  val        ); }
+	template<typename A> friend auto operator% (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         %  acc.GetRO()); }
+	template<typename A> friend auto operator& (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() &  val        ); }
+	template<typename A> friend auto operator& (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         &  acc.GetRO()); }
+	template<typename A> friend auto operator| (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() |  val        ); }
+	template<typename A> friend auto operator| (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         |  acc.GetRO()); }
+	template<typename A> friend auto operator^ (const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() ^  val        ); }
+	template<typename A> friend auto operator^ (const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         ^  acc.GetRO()); }
+	template<typename A> friend auto operator<<(const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() << val        ); }
+	template<typename A> friend auto operator<<(const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         << acc.GetRO()); }
+	template<typename A> friend auto operator>>(const CPropAccessorBase<T, T_ARGS>& acc, const A& val) { return (acc.GetRO() >> val        ); }
+	template<typename A> friend auto operator>>(const A& val, const CPropAccessorBase<T, T_ARGS>& acc) { return (val         >> acc.GetRO()); }
+	
+	/* operator& */
+	Ptr_t operator&() const { return this->GetPtr(); }
+	
+	/* operator-> */
+	Ptr_t operator->() const { return this->GetPtr(); }
+	
+	/* pre-increment */
+	const T& operator++() { return this->Set(this->GetRO() + 1); }
+	const T& operator--() { return this->Set(this->GetRO() - 1); }
+	
+	/* post-increment */
+	template<typename T2 = T> typename std::enable_if<!std::is_abstract<T2>::value, T2>::type operator++(int) { T copy = this->GetRO(); this->Set(this->GetRO() + 1); return copy; }
+	template<typename T2 = T> typename std::enable_if<!std::is_abstract<T2>::value, T2>::type operator--(int) { T copy = this->GetRO(); this->Set(this->GetRO() - 1); return copy; }
+	
+	/* indexing */
+	#ifdef __GNUC__
+	#warning TODO: ensure that operator[] returns reference types and that their constness is correct
+	#endif
+	template<typename A> auto operator[](const A& idx) const { return this->Get()[idx]; }
+	
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<( RW2 && std::is_array<T2>::value),       T&/* remove extent */>::type operator[](/* TODO */) const/*?*/ { /* TODO */ }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<(!RW2 && std::is_array<T2>::value), const T&/* remove extent */>::type operator[](/* TODO */) const/*?*/ { /* TODO */ }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<( RW2 && std::is_array<T2>::value),       decltype(std::declval<T>()[0])&>::type operator[](ptrdiff_t idx) const { return this->Get_RW()[idx]; }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<(!RW2 && std::is_array<T2>::value), const decltype(std::declval<T>()[0])&>::type operator[](ptrdiff_t idx) const { return this->Get_RO()[idx]; }
+	// only const for now
+//	template<typename T2 = T> typename std::enable_if<std::is_function<std::declval<T>()[0]>::value, >::type 
+	// maybe abuse begin() / end() iterator stuff?
+	
+	/* begin() and end() passthru */
+	#ifdef __GNUC__
+	#warning TODO: ensure that begin() and end() return the right things based on constness
+	#endif
+	auto begin() { return this->Get().begin(); }
+	auto end()   { return this->Get().end();   }
+	
+	/* not implemented yet */
+	template<typename... ARGS> auto operator() (ARGS...) = delete; // TODO
+	template<typename... ARGS> auto operator*  (ARGS...) = delete; // TODO
+	template<typename... ARGS> auto operator->*(ARGS...) = delete; // TODO
+	
+protected:
+	RefRO_t Set(RefRO_t val)
 	{
-		T *ptr = this->GetPtr();
-		
 		if (NET) {
-			if (memcmp(ptr, &val, sizeof(T)) != 0) {
-				void *obj = this->GetBasePtr();
-				void *var = (void *)((uintptr_t)obj + this->GetOffset());
-				
-				PROP->StateChanged(obj, var);
+			if (memcmp(this->GetPtrRO(), &val, sizeof(T)) != 0) {
+				PROP->StateChanged(reinterpret_cast<void *>(this->GetObjBase()), this->GetPtrRW());
+				return (this->GetRW() = val);
+			} else {
+				return this->GetRO();
 			}
+		} else {
+			return (this->GetRW() = val);
 		}
-		
-		*ptr = val;
-		return val;
 	}
-	T* operator->() { return this->GetPtr(); } /* dubious */
-};
-/* specialization for CHandle<U> */
-template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET>
-class CPropAccessor_Write<CHandle<U>, IPROP, PROP, ADJUST, NET> : public CPropAccessor_Read<CHandle<U>, IPROP, PROP, ADJUST>
-{
-public:
-	CPropAccessor_Write() = delete;
 	
-	/* operator U& already defined in CPropAccessor_Read for CHandle<U> */
-	U* operator=(U* val)
+	
+	/* reference getters */
+	RefRO_t GetRO() const { return *this->GetPtrRO(); }
+	RefRW_t GetRW() const { return *this->GetPtrRW(); }
+	Ref_t   Get  () const { return *this->GetPtr  (); }
+	
+	/* pointer getters */
+	PtrRO_t GetPtrRO() const { return reinterpret_cast<PtrRO_t>(this->GetCachedVarAddr()); }
+	PtrRW_t GetPtrRW() const { return reinterpret_cast<PtrRW_t>(this->GetCachedVarAddr()); }
+	Ptr_t   GetPtr  () const { return reinterpret_cast<Ptr_t  >(this->GetCachedVarAddr()); }
+	
+	
+	const uintptr_t CalculateVarAddr() const { return (this->GetObjBase() + this->GetVarOff()); }
+	uintptr_t GetCachedVarAddr() const
 	{
-		U *ptr = this->GetPtr();
-		
-		if (NET) {
-			if (memcmp(ptr, &val, sizeof(U)) != 0) {
-				void *obj = this->GetBasePtr();
-				void *var = (void *)((uintptr_t)obj + this->GetOffset());
-				
-				PROP->StateChanged(obj, var);
-			}
-		}
-		
-		*ptr = val;
-		return val;
+		static uintptr_t s_CachedAddr = this->CalculateVarAddr();
+		return s_CachedAddr;
 	}
+	
+	uintptr_t GetObjBase() const { return (reinterpret_cast<uintptr_t>(this) - *ADJUST); }
+	ptrdiff_t GetVarOff() const  { return PROP->GetOffsetAssert(); }
 };
-/* specialization for CUtlVector<U> */
-template<typename U, typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET>
-class CPropAccessor_Write<CUtlVector<U>, IPROP, PROP, ADJUST, NET> : public CPropAccessor_Read<CUtlVector<U>, IPROP, PROP, ADJUST>
+
+template<typename U, T_PARAMS> struct CPropAccessorHandle : public CPropAccessorBase<CHandle<U>, T_ARGS>
 {
-public:
-	using T = CUtlVector<U>;
+	using CPropAccessorBase<CHandle<U>, T_ARGS>::operator=;
 	
-	CPropAccessor_Write() = delete;
-	
-	operator T&()   { return this->GetRef(); };
-	T* operator->() { return this->GetPtr(); } /* dubious */
-	const T& operator=(const T& val) = delete; /* assignment operator... not gonna touch that */
-	U& operator[](int i) { return this->GetRef()[i]; }
+	operator U*() const   { return this->GetRO().Get(); }
+	U* operator->() const { return this->GetRO().Get(); }
 };
 
 
-#define DECL_PROP(TYPE, PROPNAME, VARIANT, NET) \
+template<typename T, T_PARAMS> struct CPropAccessor : public CPropAccessorBase<T, T_ARGS>
+{
+	using CPropAccessorBase<T, T_ARGS>::operator=;
+};
+template<typename U, T_PARAMS> struct CPropAccessor<CHandle<U>, T_ARGS> : public CPropAccessorHandle<U, T_ARGS>
+{
+	using CPropAccessorHandle<U, T_ARGS>::operator=;
+};
+
+
+/* some sanity checks to ensure zero-size, no ctors, no vtable, etc */
+#define CHECK_ACCESSOR(ACCESSOR) \
+	static_assert( std::is_empty                <ACCESSOR>::value, "NOT GOOD: Prop accessor isn't an empty type"     ); \
+	static_assert(!std::is_polymorphic          <ACCESSOR>::value, "NOT GOOD: Prop accessor has virtual functions"   ); \
+	static_assert(!std::is_default_constructible<ACCESSOR>::value, "NOT GOOD: Prop accessor is default-constructible"); \
+	static_assert(!std::is_copy_constructible   <ACCESSOR>::value, "NOT GOOD: Prop accessor is copy-constructible"   ); \
+	static_assert(!std::is_move_constructible   <ACCESSOR>::value, "NOT GOOD: Prop accessor is move-constructible"   )
+
+
+#define DECL_PROP(TYPE, PROPNAME, VARIANT, NET, RW) \
 	typedef CProp_##VARIANT<TYPE> _type_prop_##PROPNAME; \
 	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
 	const static size_t _adj_##PROPNAME; \
-	typedef CPropAccessor_Write<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET> _type_accessor_##PROPNAME; \
+	typedef CPropAccessor<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW> _type_accessor_##PROPNAME; \
 	_type_accessor_##PROPNAME PROPNAME; \
-	static_assert(std::is_empty<_type_accessor_##PROPNAME>::value, "Prop accessor isn't an empty type")
+	CHECK_ACCESSOR(_type_accessor_##PROPNAME)
 
-#define DECL_SENDPROP(TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, SendProp, true)
-#define DECL_DATAMAP( TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, DataMap,  false)
-#define DECL_EXTRACT( TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Extract,  false)
-#define DECL_RELATIVE(TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Relative, false)
+#define DECL_SENDPROP(   TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, SendProp, true,  false)
+#define DECL_SENDPROP_RW(TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, SendProp, true,  true )
+#define DECL_DATAMAP(    TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, DataMap,  false, false)
+#define DECL_EXTRACT(    TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Extract,  false, false)
+#define DECL_RELATIVE(   TYPE, PROPNAME) DECL_PROP(TYPE, PROPNAME, Relative, false, false)
 
 
 // for IMPL_SENDPROP, add an additional argument for the "remote name" (e.g. in CBaseEntity, m_MoveType's remote name is "movetype")

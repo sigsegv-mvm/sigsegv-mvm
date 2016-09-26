@@ -10,7 +10,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		if (masters.IsEmpty()) return;
 		
 		CTeamControlPointMaster *master = masters[0];
-		auto& points = master->m_ControlPoints.GetRef();
+		CUtlMap<int, CTeamControlPoint *>& points = master->m_ControlPoints;
 		
 		FOR_EACH_MAP_FAST(points, i) {
 			auto point = points[i];

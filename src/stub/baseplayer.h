@@ -49,8 +49,8 @@ private:
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
-	const char *GetPlayerName() { return this->m_szNetname.GetPtr(); }
-	float MaxSpeed() const      { return this->m_flMaxSpeed; }
+	const char *GetPlayerName() { return this->m_szNetname; }
+	float MaxSpeed() const      { return this->m_flMaxspeed; }
 	
 	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors   (this, pForward, pRight, pUp); }
 	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID   (this, pID); }
@@ -67,7 +67,7 @@ public:
 private:
 	DECL_SENDPROP(float, m_flMaxSpeed);
 	
-	DECL_DATAMAP(char, m_szNetname);
+	DECL_DATAMAP(char[32], m_szNetname);
 	
 	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;

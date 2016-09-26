@@ -207,8 +207,8 @@ private:
 class CTFPlayer : public CBaseMultiplayerPlayer
 {
 public:
-	CTFPlayerClass *GetPlayerClass()             { return m_PlayerClass.GetPtr(); }
-	const CTFPlayerClass *GetPlayerClass() const { return m_PlayerClass.GetPtr(); }
+	CTFPlayerClass *GetPlayerClass()             { return &m_PlayerClass; }
+	const CTFPlayerClass *GetPlayerClass() const { return &m_PlayerClass; }
 	
 	bool IsPlayerClass(int iClass) const;
 	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
@@ -229,12 +229,12 @@ public:
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
 	
-	DECL_SENDPROP(CTFPlayerShared, m_Shared);
+	DECL_SENDPROP_RW(CTFPlayerShared, m_Shared);
 	
 private:
-	DECL_SENDPROP(CTFPlayerClass, m_PlayerClass);
-	DECL_SENDPROP(bool,           m_bIsMiniBoss);
-	DECL_SENDPROP(int,            m_nCurrency);
+	DECL_SENDPROP_RW(CTFPlayerClass, m_PlayerClass);
+	DECL_SENDPROP   (bool,           m_bIsMiniBoss);
+	DECL_SENDPROP   (int,            m_nCurrency);
 	
 	static MemberFuncThunk<      CTFPlayer *, void, int, bool         > ft_ForceChangeTeam;
 	static MemberFuncThunk<      CTFPlayer *, void, int, int          > ft_StartBuildingObjectOfType;

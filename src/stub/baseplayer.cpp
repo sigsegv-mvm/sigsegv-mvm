@@ -18,7 +18,7 @@ MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     C
 MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            CBaseCombatCharacter::vt_GiveAmmo          (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GiveAmmo");
 
 
-IMPL_DATAMAP(char, CBasePlayer, m_szNetname);
+IMPL_DATAMAP(char[32], CBasePlayer, m_szNetname);
 
 IMPL_SENDPROP(int,   CBasePlayer, m_nTickBase,  CBasePlayer);
 IMPL_SENDPROP(float, CBasePlayer, m_flMaxSpeed, CBasePlayer);

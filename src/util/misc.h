@@ -14,7 +14,7 @@ constexpr size_t countof()
 {
 	using U = typename std::remove_reference<T>::type;
 	
-	static_assert(std::is_array<U>::value, "countof() requires an array argument");
+	static_assert(std::is_array<U>::value,   "countof() requires an array argument");
 	static_assert(std::extent<U>::value > 0, "zero- or unknown-size array");
 	
 	return std::extent<U>::value;

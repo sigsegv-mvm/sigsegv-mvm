@@ -24,13 +24,13 @@ public:
 	const matrix3x4_t& EntityToWorldTransform() const;
 	
 	/* getter/setter */
-	IServerNetworkable *GetNetworkable() const  { return this->m_Network.GetPtr(); }
-	CServerNetworkProperty *NetworkProp() const { return this->m_Network.GetPtr(); }
+	IServerNetworkable *GetNetworkable() const  { return &this->m_Network; }
+	CServerNetworkProperty *NetworkProp() const { return &this->m_Network; }
 	const char *GetClassname() const            { return STRING((string_t)this->m_iClassname); }
 	string_t GetEntityName() const              { return this->m_iName; }
 	void SetName(string_t newName)              { this->m_iName = newName; }
-	ICollideable *GetCollideable() const        { return this->m_Collision.GetPtr(); }
-	CCollisionProperty *CollisionProp() const   { return this->m_Collision.GetPtr(); }
+	ICollideable *GetCollideable() const        { return &this->m_Collision; }
+	CCollisionProperty *CollisionProp() const   { return &this->m_Collision; }
 	int GetTeamNumber() const                   { return this->m_iTeamNum; }
 	int GetMaxHealth() const                    { return this->m_iMaxHealth; }
 	int GetHealth() const                       { return this->m_iHealth; }
@@ -93,15 +93,15 @@ private:
 	DECL_DATAMAP(IPhysicsObject *,       m_pPhysicsObject);
 	DECL_DATAMAP(matrix3x4_t,            m_rgflCoordinateFrame);
 	
-	DECL_SENDPROP(CCollisionProperty,   m_Collision);
-	DECL_SENDPROP(int,                  m_iTeamNum);
-	DECL_SENDPROP(int,                  m_iMaxHealth);
-	DECL_SENDPROP(int,                  m_iHealth);
-	DECL_SENDPROP(CHandle<CBaseEntity>, m_hGroundEntity);
-	DECL_SENDPROP(CHandle<CBaseEntity>, m_hOwnerEntity);
-	DECL_SENDPROP(int,                  m_CollisionGroup);
-	DECL_SENDPROP(unsigned char,        m_nRenderMode);
-	DECL_SENDPROP(unsigned char,        m_MoveType);
+	DECL_SENDPROP_RW(CCollisionProperty,   m_Collision);
+	DECL_SENDPROP   (int,                  m_iTeamNum);
+	DECL_SENDPROP   (int,                  m_iMaxHealth);
+	DECL_SENDPROP   (int,                  m_iHealth);
+	DECL_SENDPROP   (CHandle<CBaseEntity>, m_hGroundEntity);
+	DECL_SENDPROP   (CHandle<CBaseEntity>, m_hOwnerEntity);
+	DECL_SENDPROP   (int,                  m_CollisionGroup);
+	DECL_SENDPROP   (unsigned char,        m_nRenderMode);
+	DECL_SENDPROP   (unsigned char,        m_MoveType);
 	
 	static MemberFuncThunk<      CBaseEntity *, void>                               ft_Remove;
 	static MemberFuncThunk<      CBaseEntity *, void>                               ft_CalcAbsolutePosition;

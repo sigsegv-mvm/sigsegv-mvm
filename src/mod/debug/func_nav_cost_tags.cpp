@@ -20,7 +20,7 @@ namespace Mod_Debug_Func_Nav_Cost_Tags
 		
 		char strTags[0x1000];
 		V_strcpy_safe(strTags, "  this->m_tags:      ");
-		for (const auto& tag : func->m_tags.GetRef()) {
+		for (const auto& tag : func->m_tags) {
 			V_strcat_safe(strTags, " \"");
 			V_strcat_safe(strTags, tag.Get());
 			V_strcat_safe(strTags, "\"");
