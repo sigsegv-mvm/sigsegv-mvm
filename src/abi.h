@@ -95,13 +95,13 @@ extern "C" PVOID __CLRCALL_OR_CDECL __RTDynamicCast (
 /* calling conventions */
 
 /* common naming for fastcall */
-#if !defined __fastcall
-#define __fastcall __attribute__((fastcall))
+#if !defined __fastcall && defined __GNUC__
+#define __fastcall [[gnu::fastcall]]
 #endif
 
 /* use EAX/EDX/ECX register calling convention in GCC build ONLY */
 #if defined __GNUC__
-#define __gcc_regcall __attribute__((regparm(3)))
+#define __gcc_regcall [[gnu::regparm(3)]]
 #else
 #define __gcc_regcall
 #endif
