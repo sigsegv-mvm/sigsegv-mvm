@@ -144,7 +144,9 @@ MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::
 
 
 IMPL_EXTRACT(CTFBot::MissionType, CTFBot, m_nMission, new CExtract_CTFBot_m_nMission());
+#if !defined _WINDOWS
 IMPL_EXTRACT(CUtlVector<CFmtStr>, CTFBot, m_Tags,     new CExtract_CTFBot_m_Tags());
+#endif
 
 MemberFuncThunk<const CTFBot *, ILocomotion *                            > CTFBot::ft_GetLocomotionInterface      ("CTFBot::GetLocomotionInterface");
 MemberFuncThunk<const CTFBot *, IBody *                                  > CTFBot::ft_GetBodyInterface            ("CTFBot::GetBodyInterface");

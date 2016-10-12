@@ -13,9 +13,11 @@ typedef _TypeDescriptor rtti_t;
 
 
 #if defined __GNUC__
-template<class T> inline const char *TypeName() { return typeid(T).name(); }
+template<class T> inline const char *TypeName()           { return typeid( T).name(); }
+template<class T> inline const char *TypeName(const T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
 #elif defined _MSC_VER
-template<class T> inline const char *TypeName() { return typeid(T).raw_name(); }
+template<class T> inline const char *TypeName()           { return typeid( T).raw_name(); }
+template<class T> inline const char *TypeName(const T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
 #endif
 
 
@@ -61,6 +63,56 @@ inline TO rtti_cast(const FROM ptr)
 	
 	return reinterpret_cast<TO>(result);
 }
+
+
+#if 0
+template<class TO, class FROM>
+inline TO __fastcall jit_cast(const FROM ptr);
+
+template<class TO, class FROM>
+inline TO __fastcall jit_cast(const FROM ptr)
+{
+	
+#if defined __GNUC__
+	__asm__ volatile ("nop; nop; nop; nop; nop" : : : "memory");
+	
+	// INITIAL: nop pad
+	// LATER:   compare with nullptr and conditionally do the add/subtract adjustment
+#elif defined _MSC_VER
+	__asm
+	{
+		nop
+		nop
+		nop
+		nop
+		nop
+	}
+	
+	// INITIAL: nop pad
+	// LATER:   compare with nullptr and conditionally do the add/subtract adjustment
+#else
+#error
+#endif
+	
+	return (TO)((uintptr_t)ptr + 0x20);
+	
+	// TODO: use "long nop" instead of multiple short ones
+	
+	// for the actual execution here, either just return (for offset == 0)
+	// or do one signed 32-bit addition and return
+	
+	// if execution reaches here, then we need to JIT the front of the function
+	// and then probably jmp or call back to the start of it
+}
+
+// TODO: to avoid repeatedly flushing the cache each time we JIT a new jit_cast instance,
+// we might consider pre-JIT'ing every possible cast combination ahead of time
+// (perhaps even just the ones that are actually used by the code, if possible)
+
+// TODO: we need to be absolutely sure that we clean up any JIT pages we allocate (if even applicable)
+
+// TODO: if modifying our own executable pages, make sure to un-write-protect, then JIT, then re-write-protect
+#endif
 
 
 #endif

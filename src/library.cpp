@@ -42,11 +42,6 @@ void LibMgr::Unload()
 }
 
 
-void LibMgr::SetPtr(Library lib, void *ptr)
-{
-	s_LibPtrs[lib] = ptr;
-}
-
 void *LibMgr::GetPtr(Library lib)
 {
 	return s_LibPtrs.at(lib);
@@ -237,4 +232,15 @@ const char *LibMgr::ToString(Library lib)
 	}
 	
 	return libnames.at(Library::INVALID);
+}
+
+size_t LibMgr::MaxStringLen()
+{
+	size_t max = 0;
+	
+	for (const auto& pair : libnames) {
+		max = Max(max, strlen(pair.second));
+	}
+	
+	return max;
 }

@@ -47,7 +47,12 @@ public:
 	static void Load();
 	static void Unload();
 	
-	static void SetPtr(Library lib, void *ptr);
+	template<typename T>
+	static void SetPtr(Library lib, T *ptr)
+	{
+		s_LibPtrs[lib] = reinterpret_cast<void *>(ptr);
+	}
+	
 	static void *GetPtr(Library lib);
 	
 	static const LibInfo& GetInfo(Library lib);
@@ -60,6 +65,7 @@ public:
 	
 	static Library FromString(const char *str);
 	static const char *ToString(Library lib);
+	static size_t MaxStringLen();
 	
 private:
 	LibMgr() {}

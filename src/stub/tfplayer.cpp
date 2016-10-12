@@ -34,6 +34,7 @@ MemberFuncThunk<const CTFPlayer *, float                   > CTFPlayer::ft_TeamF
 MemberFuncThunk<      CTFPlayer *, void                    > CTFPlayer::ft_UpdateModel                   ("CTFPlayer::UpdateModel");
 MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int    > CTFPlayer::ft_Weapon_OwnsThisID             ("CTFPlayer::Weapon_OwnsThisID");
 MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int > CTFPlayer::ft_GetObjectOfType               ("CTFPlayer::GetObjectOfType");
+MemberFuncThunk<      CTFPlayer *, int, int, int           > CTFPlayer::ft_GetMaxAmmo                    ("CTFPlayer::GetMaxAmmo");
 
 
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");
@@ -56,21 +57,6 @@ bool CTFPlayer::IsPlayerClass(int iClass) const
 CTFWeaponBase *CTFPlayer::GetActiveTFWeapon() const
 {
 	return rtti_cast<CTFWeaponBase *>(this->GetActiveWeapon());
-}
-
-
-CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
-{
-	CBasePlayer *pPlayer = nullptr;
-	
-	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients) {
-		edict_t *pPlayerEdict = INDEXENT(playerIndex);
-		if (pPlayerEdict != nullptr && !pPlayerEdict->IsFree()) {
-			pPlayer = reinterpret_cast<CBasePlayer *>(GetContainingEntity(pPlayerEdict));
-		}
-	}
-	
-	return pPlayer;
 }
 
 

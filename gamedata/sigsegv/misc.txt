@@ -1496,10 +1496,52 @@
 					sym  "_ZN12CTFGameRules20FPlayerCanTakeDamageEP11CBasePlayerP11CBaseEntityRK15CTakeDamageInfo"
 				}
 				
+				"CTFGameRules::GetCurrentMatchGroup"
+				{
+					type "sym"
+					sym  "_ZNK12CTFGameRules20GetCurrentMatchGroupEv"
+				}
+				
+				"CBaseCombatCharacter::GetAmmoCount"
+				{
+					type "sym"
+					sym  "_ZNK20CBaseCombatCharacter12GetAmmoCountEi"
+				}
+				
+				"CBaseCombatWeapon::GetMaxClip1"
+				{
+					type "sym"
+					sym  "_ZNK17CBaseCombatWeapon11GetMaxClip1Ev"
+				}
+				
+				"CBaseCombatWeapon::GetMaxClip2"
+				{
+					type "sym"
+					sym  "_ZNK17CBaseCombatWeapon11GetMaxClip2Ev"
+				}
+				
 				"CBaseEntity::DrawDebugGeometryOverlays"
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity25DrawDebugGeometryOverlaysEv"
+				}
+				
+				"CBaseCombatCharacter::OnTakeDamage"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter12OnTakeDamageERK15CTakeDamageInfo"
+				}
+				
+				"CTFSniperRifleDecap::GetCount"
+				{
+					type "sym"
+					sym  "_ZN19CTFSniperRifleDecap8GetCountEv"
+				}
+				
+				"CTFSniperRifleDecap::SniperRifleChargeRateMod"
+				{
+					type "sym"
+					sym  "_ZN19CTFSniperRifleDecap24SniperRifleChargeRateModEv"
 				}
 			}
 		}

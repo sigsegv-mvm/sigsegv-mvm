@@ -12,7 +12,7 @@ namespace Mod_Etc_Override_Move_Speed
 {
 	bool IsClient()
 	{
-		return (GetClientFactory() != nullptr);
+		return (ClientFactory() != nullptr);
 	}
 	
 	

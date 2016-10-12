@@ -89,12 +89,6 @@
 					sym  "_ZN9CTFPlayer12ForceRespawnEv"
 				}
 				
-				"CTFPlayer::SpeakConceptIfAllowed"
-				{
-					type "sym"
-					sym  "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
-				}
-				
 				"CTFPlayer::StartBuildingObjectOfType"
 				{
 					type "sym"
@@ -295,6 +289,18 @@
 					sym  "_ZNK9CTFPlayer28WantsLagCompensationOnEntityEPK11CBasePlayerPK8CUserCmdPK7CBitVecILi2048EE"
 				}
 				
+				"CTFPlayer::GetMaxAmmo"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10GetMaxAmmoEii"
+				}
+				
+				"CTFPlayer::CreateRagdollEntity [args]"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19CreateRagdollEntityEbbbbbbbbib"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -329,6 +335,16 @@
 				{
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared14IsInvulnerableEv"
+				}
+				"CTFPlayerShared::ModifyRage"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10ModifyRageEf"
+				}
+				"CTFPlayerShared::SetRageMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared12SetRageMeterEf"
 				}
 				
 				"CTFPlayerClassShared::SetCustomModel"

@@ -26,7 +26,7 @@ CreateInterfaceFn GetFactory_NoExt(const char *name)
 
 
 #define DEF_GET_FACTORY(name, libname) \
-	CreateInterfaceFn Get ## name ## Factory() \
+	CreateInterfaceFn name ## Factory() \
 	{ \
 		static bool init = false; \
 		static CreateInterfaceFn factory = nullptr; \

@@ -28,6 +28,8 @@ public:
 	bool Weapon_Switch(CBaseCombatWeapon *pWeapon, int viewmodelindex = 0) { return vt_Weapon_Switch     (this, pWeapon, viewmodelindex); }
 	CNavArea *GetLastKnownArea() const                                     { return vt_GetLastKnownArea  (this); }
 	int GiveAmmo(int iCount, int iAmmoIndex, bool bSuppressSound = false)  { return vt_GiveAmmo          (this, iCount, iAmmoIndex, bSuppressSound); }
+	int GetAmmoCount(int iAmmoIndex) const                                 { return vt_GetAmmoCount      (this, iAmmoIndex); }
+	bool ShouldGib(const CTakeDamageInfo& info)                            { return vt_ShouldGib         (this, info); }
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
@@ -44,13 +46,40 @@ private:
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> vt_Weapon_Switch;
 	static MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     vt_GetLastKnownArea;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            vt_GiveAmmo;
+	static MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       vt_GetAmmoCount;
+	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   vt_ShouldGib;
 };
+
+
+class CPlayerLocalData
+{
+public:
+	DECL_SENDPROP(bool, m_bDucked);
+	DECL_SENDPROP(bool, m_bDucking);
+	DECL_SENDPROP(bool, m_bInDuckJump);
+	DECL_SENDPROP(float, m_flDucktime);
+	DECL_SENDPROP(float, m_flDuckJumpTime);
+};
+
 
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
 	const char *GetPlayerName() { return this->m_szNetname; }
 	float MaxSpeed() const      { return this->m_flMaxspeed; }
+	int GetUserID()             { return engine->GetPlayerUserId(this->edict()); }
+	
+	/* easy-but-slow calls via IPlayerInfo */
+	const char *GetNetworkIDString() const { return this->GetPlayerInfo()->GetNetworkIDString(); }
+	bool IsConnected() const               { return this->GetPlayerInfo()->IsConnected(); }
+	bool IsHLTV() const                    { return this->GetPlayerInfo()->IsHLTV(); }
+	bool IsReplay() const                  { return this->GetPlayerInfo()->IsReplay(); }
+	bool IsFakeClient() const              { return this->GetPlayerInfo()->IsFakeClient(); }
+	bool IsDead() const                    { return this->GetPlayerInfo()->IsDead(); }
+	bool IsObserver() const                { return this->GetPlayerInfo()->IsObserver(); }
+	const Vector GetPlayerMins() const     { return this->GetPlayerInfo()->GetPlayerMins(); }
+	const Vector GetPlayerMaxs() const     { return this->GetPlayerInfo()->GetPlayerMaxs(); }
+	const char *GetWeaponName() const      { return this->GetPlayerInfo()->GetWeaponName(); }
 	
 	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors   (this, pForward, pRight, pUp); }
 	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID   (this, pID); }
@@ -62,12 +91,19 @@ public:
 	Vector Weapon_ShootPosition()                                  { return vt_Weapon_ShootPosition(this); }
 	float GetPlayerMaxSpeed()                                      { return vt_GetPlayerMaxSpeed   (this); }
 	
+	
+	DECL_SENDPROP(CPlayerLocalData, m_Local);
 	DECL_SENDPROP(int, m_nTickBase);
 	
 private:
-	DECL_SENDPROP(float, m_flMaxSpeed);
+	IPlayerInfo *GetPlayerInfo() const { return playerinfomanager->GetPlayerInfo(this->edict()); }
 	
-	DECL_DATAMAP(char[32], m_szNetname);
+	DECL_SENDPROP(float, m_flMaxspeed);
+	
+	DECL_DATAMAP(char[32],     m_szNetname);
+	DECL_DATAMAP(bool,         m_bDuckToggled);
+	DECL_DATAMAP(unsigned int, m_afPhysicsFlags);
+	DECL_DATAMAP(int,          m_vphysicsCollisionState);
 	
 	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;
@@ -114,6 +150,21 @@ inline CBaseMultiplayerPlayer *ToBaseMultiplayerPlayer(CBaseEntity *pEntity)
 	if (!pEntity->IsPlayer()) return nullptr;
 	
 	return rtti_cast<CBaseMultiplayerPlayer *>(pEntity);
+}
+
+
+inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
+{
+	CBasePlayer *pPlayer = nullptr;
+	
+	if (playerIndex > 0 && playerIndex <= gpGlobals->maxClients) {
+		edict_t *pPlayerEdict = INDEXENT(playerIndex);
+		if (pPlayerEdict != nullptr && !pPlayerEdict->IsFree()) {
+			pPlayer = reinterpret_cast<CBasePlayer *>(GetContainingEntity(pPlayerEdict));
+		}
+	}
+	
+	return pPlayer;
 }
 
 

@@ -49,6 +49,9 @@ namespace NDebugOverlay
 	
 	void Clear();
 	void LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration);
+	void ScreenRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration);
+	void ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& cFrom, const Color& cTo, float flDuration);
+	void ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& color, float flDuration);
 };
 
 #endif // DEBUGOVERLAY_SHARED_H

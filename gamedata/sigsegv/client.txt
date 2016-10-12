@@ -399,11 +399,11 @@
 			//		
 			//	}
 				
-				"[client] CFontManager::SetFontGlyphSet"
-				{
-					type ""
-					
-				}
+			//	"[client] CFontManager::SetFontGlyphSet"
+			//	{
+			//		type ""
+			//		
+			//	}
 				
 				"[client] CWin32Font::Create"
 				{
@@ -411,6 +411,57 @@
 					sym    "TODO"
 					unistr "win98japanese"
 					lib    "vguimatsurface"
+				}
+				
+				"[client] C_TFFlameThrower::FullCritChargedEffectName"
+				{
+					type   "func knownvtidx"
+					sym    "TODO"
+					vtable ".?AVC_TFFlameThrower@@"
+					idx    "0x1d7" // very likely to break in the future (accurate as of 20160920a)
+					lib    "client"
+				}
+				
+				"[client] CDamageAccountPanel::FireGameEvent"
+				{
+					type   "func ebpprologue unistr"
+					sym    "TODO"
+					seg    ".text"
+					unistr "attacker_player"
+					// also: "patient"
+					lib    "client"
+				}
+				
+				
+				"[client] CDamageAccountPanel::DisplayDamageFeedback"
+				{
+					type   "func ebpprologue unistr"
+					sym    "TODO"
+					seg    ".text"
+					unistr "DamagedPlayer"
+					lib    "client"
+				}
+				
+				
+				"[client] vgui::AnimationController::StartAnimationSequence"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec56ff750c8bf1ff75088b06ff9098000000508bcee814ffffff5e5dc20800cc"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					lib  "client"
+				}
+				
+				
+				"[client] vgui::AnimationController::StartAnimationSequence [Panel]"
+				{
+					type "pattern"
+					sym  "TODO"
+					seg  ".text"
+					seek "558bec51568bf15780be5b010000007405e87aedffffff750c8d450eb9bccedc1050e8f982fdff0fb738b8ffff0000"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffff"
+					lib  "client"
 				}
 			}
 		}

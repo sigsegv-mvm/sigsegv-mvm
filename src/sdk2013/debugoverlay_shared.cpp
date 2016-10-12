@@ -723,3 +723,18 @@ void NDebugOverlay::LineAlpha(const Vector& origin, const Vector& target, int r,
 		debugoverlay->AddLineOverlayAlpha(origin, target, r, g, b, a, noDepthTest, flDuration);
 	}
 }
+
+void NDebugOverlay::ScreenRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration)
+{
+	/* only implemented in overlay recv mod */
+}
+
+void NDebugOverlay::ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& cFrom, const Color& cTo, float flDuration)
+{
+	/* only implemented in overlay recv mod */
+}
+
+void NDebugOverlay::ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& color, float flDuration)
+{
+	/* only implemented in overlay recv mod */
+}

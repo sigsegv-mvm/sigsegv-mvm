@@ -251,7 +251,7 @@ private:
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   ft_GetNavArea_ent;
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, bool, float, bool, bool, int> ft_GetNearestNavArea_vec;
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   ft_GetNearestNavArea_ent;
-	static MemberFuncThunk<CNavMesh *, void, const Extent&, CUtlVector<CTFNavArea *> *>               ft_CollectAreasOverlappingExtent_CTFNavArea;
+	static MemberFuncThunk<      CNavMesh *, void, const Extent&, CUtlVector<CTFNavArea *> *>         ft_CollectAreasOverlappingExtent_CTFNavArea;
 };
 
 class CTFNavMesh : public CNavMesh

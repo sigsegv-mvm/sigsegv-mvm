@@ -109,19 +109,19 @@ private:
 };
 
 
-IMaterial *GetWireframe()
+IMaterial *GetMatWireframe()
 {
 	return StandardMaterials::Get().Wireframe();
 }
-IMaterial *GetWireframeIgnoreZ()
+IMaterial *GetMatWireframeIgnoreZ()
 {
 	return StandardMaterials::Get().WireframeIgnoreZ();
 }
-IMaterial *GetVertexColor()
+IMaterial *GetMatVertexColor()
 {
 	return StandardMaterials::Get().VertexColor();
 }
-IMaterial *GetVertexColorIgnoreZ()
+IMaterial *GetMatVertexColorIgnoreZ()
 {
 	return StandardMaterials::Get().VertexColorIgnoreZ();
 }
@@ -133,6 +133,7 @@ void RenderWireframeSphere(const Vector& vCenter, float flRadius, int nTheta, in
 	ft_RenderWireframeSphere(vCenter, flRadius, nTheta, nPhi, c, bZBuffer);
 }
 
+
 static StaticFuncThunk<void, const Vector&, float, int, int, Color, IMaterial *> ft_RenderSphere("[client] RenderSphere [material]");
 void RenderSphere(const Vector& vCenter, float flRadius, int nTheta, int nPhi, Color c, IMaterial *pMaterial)
 {
@@ -141,8 +142,18 @@ void RenderSphere(const Vector& vCenter, float flRadius, int nTheta, int nPhi, C
 
 void RenderSphere(const Vector& vCenter, float flRadius, int nTheta, int nPhi, Color c, bool bZBuffer)
 {
-	IMaterial *mat = (bZBuffer ? GetVertexColor() : GetVertexColorIgnoreZ());
+	IMaterial *mat = (bZBuffer ? GetMatVertexColor() : GetMatVertexColorIgnoreZ());
 	if (mat == nullptr) return;
 	
 	RenderSphere(vCenter, flRadius, nTheta, nPhi, c, mat);
 }
+
+
+#if 0
+void DrawScreenSpaceRectangle(IMaterial *pMaterial, int nDestX, int nDestY, int nWidth, int nHeight,
+	float flSrcTexture0, float flSrcTextureY0, float flSrcTextureX1, float flSrcTextureY1,
+	int nSrcTextureWidth, int nSrcTextureHeight, void *pClientRenderable, int nXDice, int nYDice)
+{
+	#error TODO
+}
+#endif

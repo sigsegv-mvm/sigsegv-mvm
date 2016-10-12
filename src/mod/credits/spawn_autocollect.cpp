@@ -20,7 +20,7 @@ namespace Mod_Credits_Spawn_AutoCollect
 			TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
 			
 			if ((attr & BLUE_SPAWN_ROOM) != 0) {
-	//			DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
+				DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
 				return nullptr;
 			}
 		}

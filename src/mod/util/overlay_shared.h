@@ -33,6 +33,9 @@ enum OverlayType : uint8_t
 	/* my own additions to NDebugOverlay */
 	OV_CLEAR,
 	OV_LINE_ALPHA,
+	OV_SCREEN_RECT,
+	OV_SCREEN_LINE_2COLOR,
+	OV_SCREEN_LINE_1COLOR,
 	
 	/* for bandwidth testing */
 	OV_BANDWIDTH_TEST,

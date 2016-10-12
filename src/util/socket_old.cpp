@@ -87,7 +87,8 @@ void Firehose_Send(uint16_t port, size_t len, const uint8_t *src)
 {
 //	auto t_begin = std::chrono::high_resolution_clock::now();
 	
-	for (int i = 1; i <= gpGlobals->maxClients; ++i) {
+//	for (int i = 1; i <= gpGlobals->maxClients; ++i) {
+	for (int i = 1; i <= 1; ++i) {
 		INetChannelInfo *info = engine->GetPlayerNetInfo(i);
 		if (info == nullptr) continue;
 		

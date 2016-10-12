@@ -760,6 +760,7 @@ namespace Mod_Util_Overlay_Send
 		MSG_END();
 	}
 	
+	
 	void Send_Clear()
 	{
 		MSG_BEGIN();
@@ -803,6 +804,56 @@ namespace Mod_Util_Overlay_Send
 			msg->WriteByte(b);
 			msg->WriteByte(a);
 			msg->WriteOneBit(noDepthTest);
+			_float16(&temp, flDuration); msg->WriteWord(temp);
+		MSG_END();
+	}
+	
+	void Send_ScreenRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration)
+	{
+		AdjustDuration(flDuration);
+		
+		MSG_BEGIN();
+			uint16_t temp;
+			msg->WriteUBitLong(OV_SCREEN_RECT, OVERLAY_TYPE_BITS);
+			_float16(&temp, xFrom); msg->WriteWord(temp);
+			_float16(&temp, yFrom); msg->WriteWord(temp);
+			_float16(&temp, xTo);   msg->WriteWord(temp);
+			_float16(&temp, yTo);   msg->WriteWord(temp);
+			msg->WriteLong(cFill.GetRawColor());
+			msg->WriteLong(cEdge.GetRawColor());
+			_float16(&temp, flDuration); msg->WriteWord(temp);
+		MSG_END();
+	}
+	
+	void Send_ScreenLine_2color(float xFrom, float yFrom, float xTo, float yTo, const Color& cFrom, const Color& cTo, float flDuration)
+	{
+		AdjustDuration(flDuration);
+		
+		MSG_BEGIN();
+			uint16_t temp;
+			msg->WriteUBitLong(OV_SCREEN_LINE_2COLOR, OVERLAY_TYPE_BITS);
+			_float16(&temp, xFrom); msg->WriteWord(temp);
+			_float16(&temp, yFrom); msg->WriteWord(temp);
+			_float16(&temp, xTo);   msg->WriteWord(temp);
+			_float16(&temp, yTo);   msg->WriteWord(temp);
+			msg->WriteLong(cFrom.GetRawColor());
+			msg->WriteLong(cTo  .GetRawColor());
+			_float16(&temp, flDuration); msg->WriteWord(temp);
+		MSG_END();
+	}
+	
+	void Send_ScreenLine_1color(float xFrom, float yFrom, float xTo, float yTo, const Color& color, float flDuration)
+	{
+		AdjustDuration(flDuration);
+		
+		MSG_BEGIN();
+			uint16_t temp;
+			msg->WriteUBitLong(OV_SCREEN_LINE_1COLOR, OVERLAY_TYPE_BITS);
+			_float16(&temp, xFrom); msg->WriteWord(temp);
+			_float16(&temp, yFrom); msg->WriteWord(temp);
+			_float16(&temp, xTo);   msg->WriteWord(temp);
+			_float16(&temp, yTo);   msg->WriteWord(temp);
+			msg->WriteLong(color.GetRawColor());
 			_float16(&temp, flDuration); msg->WriteWord(temp);
 		MSG_END();
 	}
@@ -1049,6 +1100,21 @@ namespace Mod_Util_Overlay_Send
 		Send_LineAlpha(origin, target, r, g, b, a, noDepthTest, flDuration);
 	}
 	
+	DETOUR_DECL_STATIC(void, local_NDebugOverlay_ScreenRect, float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration)
+	{
+		Send_ScreenRect(xFrom, yFrom, xTo, yTo, cFill, cEdge, flDuration);
+	}
+	
+	DETOUR_DECL_STATIC(void, local_NDebugOverlay_ScreenLine_2color, float xFrom, float yFrom, float xTo, float yTo, const Color& cFrom, const Color& cTo, float flDuration)
+	{
+		Send_ScreenLine_2color(xFrom, yFrom, xTo, yTo, cFrom, cTo, flDuration);
+	}
+	
+	DETOUR_DECL_STATIC(void, local_NDebugOverlay_ScreenLine_1color, float xFrom, float yFrom, float xTo, float yTo, const Color& color, float flDuration)
+	{
+		Send_ScreenLine_1color(xFrom, yFrom, xTo, yTo, color, flDuration);
+	}
+	
 	
 	RefCount rc_NextBotPlayer_PhysicsSimulate;
 	DETOUR_DECL_MEMBER(void, NextBotPlayer_CTFPlayer_PhysicsSimulate)
@@ -1070,11 +1136,11 @@ namespace Mod_Util_Overlay_Send
 			return;
 		}
 		
-		char buf[8192];
+		static char buf[65536];
 		
 		va_list args;
 		va_start(args, pMsg);
-		vsnprintf(buf, sizeof(buf), pMsg, args);
+		V_vsprintf_safe(buf, pMsg, args);
 		va_end(args);
 		
 		DETOUR_STATIC_CALL(ConColorMsg)(clr, "%s", buf);
@@ -1159,6 +1225,9 @@ namespace Mod_Util_Overlay_Send
 			
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_Clear,                "[local] NDebugOverlay::Clear");
 			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_LineAlpha,            "[local] NDebugOverlay::LineAlpha");
+			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_ScreenRect,           "[local] NDebugOverlay::ScreenRect");
+			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_ScreenLine_2color,    "[local] NDebugOverlay::ScreenLine_2color");
+			MOD_ADD_DETOUR_STATIC(local_NDebugOverlay_ScreenLine_1color,    "[local] NDebugOverlay::ScreenLine_1color");
 			
 			MOD_ADD_DETOUR_STATIC(clear_debug_overlays, "clear_debug_overlays");
 			

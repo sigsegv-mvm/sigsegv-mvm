@@ -2,13 +2,19 @@
 #define _INCLUDE_SIGSEGV_FACTORY_H_
 
 
-CreateInterfaceFn GetClientFactory();
-CreateInterfaceFn GetSoundEmitterSystemFactory();
-CreateInterfaceFn GetMaterialSystemFactory();
-CreateInterfaceFn GetVGUIFactory();
-CreateInterfaceFn GetVGUIMatSurfaceFactory();
-CreateInterfaceFn GetDedicatedFactory();
-CreateInterfaceFn GetDataCacheFactory();
+inline CreateInterfaceFn EngineFactory()     { return g_SMAPI->GetEngineFactory    (false); }
+inline CreateInterfaceFn PhysicsFactory()    { return g_SMAPI->GetPhysicsFactory   (false); }
+inline CreateInterfaceFn FileSystemFactory() { return g_SMAPI->GetFileSystemFactory(false); }
+inline CreateInterfaceFn ServerFactory()     { return g_SMAPI->GetServerFactory    (false); }
+
+
+CreateInterfaceFn ClientFactory();
+CreateInterfaceFn SoundEmitterSystemFactory();
+CreateInterfaceFn MaterialSystemFactory();
+CreateInterfaceFn VGUIFactory();
+CreateInterfaceFn VGUIMatSurfaceFactory();
+CreateInterfaceFn DedicatedFactory();
+CreateInterfaceFn DataCacheFactory();
 
 
 #endif

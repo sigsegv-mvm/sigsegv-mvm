@@ -58,8 +58,11 @@ class CTFMedigunShield : public CBaseAnimating {};
 
 
 class CEconWearable : public CEconEntity {};
+
 class CTFWearable : public CEconWearable {};
+
 class CTFPowerupBottle : public CTFWearable {};
+class CTFWearableRobotArm : public CTFWearable {};
 
 
 class CBaseTFBotHintEntity : public CPointEntity {};

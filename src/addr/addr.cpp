@@ -98,23 +98,46 @@ void *AddrManager::GetAddr(const char *name)
 }
 
 
+static bool CompareAddrsForSorting(const IAddr *lhs, const IAddr *rhs)
+{
+	auto lib_lhs = (int)lhs->GetLibrary();
+	auto lib_rhs = (int)rhs->GetLibrary();
+	if (lib_lhs != lib_rhs) {
+		return (lib_lhs < lib_rhs);
+	}
+	
+	std::string name_lhs(lhs->GetName());
+	std::string name_rhs(rhs->GetName());
+	if (name_lhs != name_rhs) {
+		return (name_lhs < name_rhs);
+	}
+	
+	return ((uintptr_t)lhs < (uintptr_t)rhs);
+}
+
 static ConCommand ccmd_list_addrs("sig_list_addrs", &AddrManager::CC_ListAddrs,
 	"List addresses and show their status", FCVAR_NONE);
 void AddrManager::CC_ListAddrs(const CCommand& cmd)
 {
+	std::vector<IAddr *> addrs_sorted;
+	for (const auto& pair : s_Addrs) {
+		addrs_sorted.push_back(pair.second);
+	}
+	std::sort(addrs_sorted.begin(), addrs_sorted.end(), CompareAddrsForSorting);
+	
+	size_t max_libname_len = LibMgr::MaxStringLen();
+	
 	MAT_SINGLE_THREAD_BLOCK {
-		for (const auto& pair : s_Addrs) {
-			const IAddr *addr = pair.second;
-			
+		for (auto addr : addrs_sorted) {
 			switch (addr->GetState()) {
 			case IAddr::State::INITIAL:
-				Msg("%-8s %s\n", "INITIAL", addr->GetName());
+				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), "INITIAL", addr->GetName());
 				break;
 			case IAddr::State::OK:
-				Msg("%08x %s\n", (uintptr_t)addr->GetAddr(), addr->GetName());
+				Msg("%-*s  %08x  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), (uintptr_t)addr->GetAddr(), addr->GetName());
 				break;
 			case IAddr::State::FAIL:
-				Msg("%-8s %s\n", "FAIL", addr->GetName());
+				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), "FAIL", addr->GetName());
 				break;
 			}
 		}

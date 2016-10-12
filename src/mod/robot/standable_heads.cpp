@@ -15,10 +15,9 @@ namespace Mod_Robot_Standable_Heads
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAbsVelocityImpulse, const Vector *v1)
 	{
-		if (rc_TFPlayerThink > 0 && v1->z == 100.0f &&
-			TFGameRules()->IsMannVsMachineMode()) {
-			CTFPlayer *player = reinterpret_cast<CTFPlayer *>(this);
-			
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		if (rc_TFPlayerThink > 0 && v1->z == 100.0f && TFGameRules()->IsMannVsMachineMode()) {
 			CBaseEntity *groundent = player->GetGroundEntity();
 			if (groundent != nullptr && groundent->IsPlayer()) {
 				return;
@@ -35,7 +34,7 @@ namespace Mod_Robot_Standable_Heads
 		CMod() : IMod("Robot:Standable_Heads")
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_TFPlayerThink,           "CTFPlayer::TFPlayerThink");
-		//	MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAbsVelocityImpulse, "CTFPlayer::ApplyAbsVelocityImpulse");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAbsVelocityImpulse, "CTFPlayer::ApplyAbsVelocityImpulse");
 		}
 	};
 	CMod s_Mod;

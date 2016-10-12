@@ -5,13 +5,14 @@
 namespace Mod_Robot_Ticklish
 {
 	ConVar cvar_giants("sig_robot_ticklish_giants", "0", FCVAR_NOTIFY,
-		"Mod: tickling will only be enabled for giant robots if set to 1");
+		"Mod: enable tickling for giant robots as well");
 	
 	
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_CanBeForcedToLaugh)
 	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
 		if (!cvar_giants.GetBool()) {
-			CTFPlayer *player = reinterpret_cast<CTFPlayer *>(this);
 			return !player->IsMiniBoss();
 		}
 		

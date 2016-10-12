@@ -53,6 +53,11 @@
 					type "sym"
 					sym  "_ZNK16CTFBotMainAction33SelectMoreDangerousThreatInternalEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
 				}
+				"CTFBotMainAction::OnContact"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction9OnContactEP6CTFBotP11CBaseEntityP10CGameTrace"
+				}
 				"CTFBotMainAction::OnStuck"
 				{
 					type "sym"

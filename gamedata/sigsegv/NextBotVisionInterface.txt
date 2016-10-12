@@ -23,6 +23,21 @@
 					type "sym"
 					sym  "_ZN7IVision19UpdateKnownEntitiesEv"
 				}
+				"IVision::AddKnownEntity"
+				{
+					type "sym"
+					sym  "_ZN7IVision14AddKnownEntityEP11CBaseEntity"
+				}
+				"IVision::ForgetEntity"
+				{
+					type "sym"
+					sym  "_ZN7IVision12ForgetEntityEP11CBaseEntity"
+				}
+				"IVision::ForgetAllKnownEntities"
+				{
+					type "sym"
+					sym  "_ZN7IVision22ForgetAllKnownEntitiesEv"
+				}
 			}
 		}
 	}

@@ -6,9 +6,9 @@ template<typename... ARGS>
 //[[gnu::format(printf, 1, 2)]]
 void ClientMsg(const char *fmt, ARGS... args)
 {
-	int n_clients = server->GetNumClients();
+	int n_clients = sv->GetNumClients();
 	for (int i = 0; i < n_clients; ++i) {
-		IClient *client = server->GetClient(i);
+		IClient *client = sv->GetClient(i);
 		if (client == nullptr) continue;
 		
 		client->ClientPrintf(fmt, std::forward<ARGS>(args)...);

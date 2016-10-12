@@ -100,11 +100,20 @@ namespace Mod_Debug_Known_Entities
 	ConVar cvar_res_h("sig_debug_known_entities_res_h", "1080", FCVAR_NOTIFY,
 		"Overlay screen resolution: height");
 	
+	ConVar cvar_text_spacing("sig_debug_known_entities_text_spacing", "13", FCVAR_NOTIFY,
+		"Overlay: text line spacing");
+	
+	ConVar cvar_box_padding("sig_debug_known_entities_box_padding", "3", FCVAR_NOTIFY,
+		"Overlay: padding between text and box edge");
+	
 	void AddScreenText(int x, int y, int line, int maxchars, const Color& color, uint8_t alpha, const char *format, ...)
 	{
-		y += (13 * line);
+		y += (line * cvar_text_spacing.GetInt());
 		
-		char buf[4096];
+		x += cvar_box_padding.GetInt();
+		y += cvar_box_padding.GetInt();
+		
+		static char buf[4096];
 		int size = sizeof(buf);
 		if (maxchars != 0) {
 			size = Min(size, (maxchars + 1));
@@ -112,7 +121,7 @@ namespace Mod_Debug_Known_Entities
 		
 		va_list va;
 		va_start(va, format);
-		vsnprintf(buf, size, format, va);
+		V_vsprintf_safe(buf, format, va);
 		va_end(va);
 		
 		NDebugOverlay::ScreenText(
@@ -253,6 +262,29 @@ namespace Mod_Debug_Known_Entities
 	Color blue   (0x40, 0x40, 0xff, 0xff);
 	Color magenta(0xff, 0x40, 0xff, 0xff);
 	
+	
+	ConVar cvar_draw_x("sig_debug_known_entities_draw_x", "800", FCVAR_NOTIFY,
+		"Overlay screen position: x");
+	ConVar cvar_draw_y("sig_debug_known_entities_draw_y", "100", FCVAR_NOTIFY,
+		"Overlay screen position: y");
+	
+	ConVar cvar_box_w("sig_debug_known_entities_box_w", "800", FCVAR_NOTIFY,
+		"Overlay box size: width");
+	ConVar cvar_box_h("sig_debug_known_entities_box_h", "600", FCVAR_NOTIFY,
+		"Overlay box size: height");
+	
+	void DrawBox()
+	{
+		float x = RemapValClamped(cvar_draw_x.GetInt(), 0, cvar_res_w.GetInt(), 0.0f, 1.0f);
+		float y = RemapValClamped(cvar_draw_y.GetInt(), 0, cvar_res_h.GetInt(), 0.0f, 1.0f);
+		float w = RemapValClamped(cvar_box_w.GetInt(),  0, cvar_res_w.GetInt(), 0.0f, 1.0f);
+		float h = RemapValClamped(cvar_box_h.GetInt(),  0, cvar_res_h.GetInt(), 0.0f, 1.0f);
+		
+		NDebugOverlay::ScreenRect(x, y, x + w, y + h,
+			Color(0x00, 0x00, 0x00, 0x80),
+			Color(0xff, 0xff, 0xff, 0x80),
+			duration);
+	}
 	
 	void DrawTitle(int x, int y, int& line)
 	{
@@ -555,18 +587,20 @@ namespace Mod_Debug_Known_Entities
 	}
 	
 	
-	ConVar cvar_draw_x("sig_debug_known_entities_draw_x", "200", FCVAR_NOTIFY,
-		"Overlay screen position: x");
-	ConVar cvar_draw_y("sig_debug_known_entities_draw_y", "100", FCVAR_NOTIFY,
-		"Overlay screen position: y");
-	
 	void DrawOverlay()
 	{
 		NDebugOverlay::Clear();
 		
+	//	NDebugOverlay::ScreenLine(0.1f, -0.1f, 0.9f, -0.1f, Color(0xff, 0xff, 0xff, 0xff), duration);
+		
+	//	NDebugOverlay::ScreenLine(0.2f, 0.2f, 0.8f, 0.8f, Color(0xff, 0xff, 0xff, 0xff), duration);
+	//	NDebugOverlay::ScreenLine(0.0f, 1.0f, 1.0f, 0.0f, Color(0xff, 0xff, 0xff, 0x00), Color(0x00, 0xff, 0x00, 0xff), duration);
+		
 		int x = cvar_draw_x.GetInt();
 		int y = cvar_draw_y.GetInt();
 		int line = 0;
+		
+	//	DrawBox();
 		
 		DrawTitle(x, y, line);
 		DrawRow(x, y, line, nullptr);
@@ -702,7 +736,7 @@ namespace Mod_Debug_Known_Entities
 			}
 		}
 		
-		INextBot *nextbot = reinterpret_cast<INextBot *>(this);
+		auto nextbot = reinterpret_cast<INextBot *>(this);
 		if (nextbot == thebot) {
 			UpdateThreatRanks();
 			DrawOverlay();
@@ -720,6 +754,53 @@ namespace Mod_Debug_Known_Entities
 	}
 	
 	
+	DETOUR_DECL_MEMBER(void, IVision_AddKnownEntity, CBaseEntity *ent)
+	{
+		auto vision = reinterpret_cast<IVision *>(this);
+		
+		if (vision->GetBot() == thebot) {
+			CTFBot *bot = ToTFBot(vision->GetBot()->GetEntity());
+			if (bot != nullptr) {
+				Msg("[time %8.3f] [bot #%-2d] IVision::AddKnownEntity [ent #%-2d \"%s\"]\n", gpGlobals->curtime,
+					ENTINDEX(bot), ENTINDEX(ent),
+					(ent != nullptr ? (ent->IsPlayer() ? static_cast<CBasePlayer *>(ent)->GetPlayerName() : ent->GetClassname()) : "nullptr"));
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(IVision_AddKnownEntity)(ent);
+	}
+	
+	DETOUR_DECL_MEMBER(void, IVision_ForgetEntity, CBaseEntity *ent)
+	{
+		auto vision = reinterpret_cast<IVision *>(this);
+		
+		if (vision->GetBot() == thebot) {
+			CTFBot *bot = ToTFBot(vision->GetBot()->GetEntity());
+			if (bot != nullptr) {
+				Msg("[time %8.3f] [bot #%-2d] IVision::ForgetEntity [ent #%-2d \"%s\"]\n", gpGlobals->curtime,
+					ENTINDEX(bot), ENTINDEX(ent),
+					(ent != nullptr ? (ent->IsPlayer() ? static_cast<CBasePlayer *>(ent)->GetPlayerName() : ent->GetClassname()) : "nullptr"));
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(IVision_ForgetEntity)(ent);
+	}
+	
+	DETOUR_DECL_MEMBER(void, IVision_ForgetAllKnownEntities)
+	{
+		auto vision = reinterpret_cast<IVision *>(this);
+		
+		if (vision->GetBot() == thebot) {
+			CTFBot *bot = ToTFBot(vision->GetBot()->GetEntity());
+			if (bot != nullptr) {
+				Msg("[time %8.3f] [bot #%-2d] IVision::ForgetAllKnownEntities\n", gpGlobals->curtime, ENTINDEX(bot));
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(IVision_ForgetAllKnownEntities)();
+	}
+	
+	
 	DETOUR_DECL_MEMBER(bool, CTFBot_IsSuspectedSpy, CTFPlayer *spy)
 	{
 		// caller: CTFBotVision::IsVisibleEntityNoticed
@@ -728,12 +809,26 @@ namespace Mod_Debug_Known_Entities
 	}
 	DETOUR_DECL_MEMBER(void, CTFBot_SuspectSpy, CTFPlayer *spy)
 	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::SuspectSpy [spy #%-2d \"%s\"]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(spy), (spy != nullptr ? spy->GetPlayerName() : "nullptr"));
+		}
+		
 		// caller: CTFBot::Touch, while stealthed/disguised (MvM)
 		
 		DETOUR_MEMBER_CALL(CTFBot_SuspectSpy)(spy);
 	}
 	DETOUR_DECL_MEMBER(void, CTFBot_StopSuspectingSpy, CTFPlayer *spy)
 	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::StopSuspectingSpy [spy #%-2d \"%s\"]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(spy), (spy != nullptr ? spy->GetPlayerName() : "nullptr"));
+		}
+		
 		DETOUR_MEMBER_CALL(CTFBot_StopSuspectingSpy)(spy);
 	}
 	
@@ -747,6 +842,13 @@ namespace Mod_Debug_Known_Entities
 	}
 	DETOUR_DECL_MEMBER(void, CTFBot_RealizeSpy, CTFPlayer *spy)
 	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::RealizeSpy [spy #%-2d \"%s\"]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(spy), (spy != nullptr ? spy->GetPlayerName() : "nullptr"));
+		}
+		
 		// caller: CTFBot::Touch, while stealthed/disguised (PvP)
 		// caller: CTFBot::UpdateDelayedThreatNotices
 		// caller: CTFBotVision::IsVisibleEntityNoticed, while disguising
@@ -756,6 +858,13 @@ namespace Mod_Debug_Known_Entities
 	}
 	DETOUR_DECL_MEMBER(void, CTFBot_ForgetSpy, CTFPlayer *spy)
 	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::ForgetSpy [spy #%-2d \"%s\"]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(spy), (spy != nullptr ? spy->GetPlayerName() : "nullptr"));
+		}
+		
 		// caller: CTFBotMainAction::OnOtherKilled
 		// caller: CTFBotVision::IsVisibleEntityNoticed, if >75% stealthed
 		// caller: CTFBotVision::Update, if not visible recently and disguising
@@ -780,27 +889,72 @@ namespace Mod_Debug_Known_Entities
 	
 	DETOUR_DECL_MEMBER(void, CTFBot_DelayedThreatNotice, CHandle<CBaseEntity> ent, float delay)
 	{
-		// caller: CTFPlayer::CheckBlockBackstab, backstabber, 0.5 seconds
-		// caller: CTFBotMainAction::OnInjured, if TF_DMG_CUSTOM_BACKSTAB, inflictor, 0.5 seconds
-		// caller: CTFBotMainAction::OnInjured, if TF_DMG_CUSTOM_BACKSTAB, inflictor, 0.5 seconds, for non-victim bots based on tf_bot_notice_backstab_*
-		// caller: CTFBotMainAction::OnInjured, if DMG_CRITICAL|DMG_BURN, attacker, 0.5 seconds, based on tf_bot_notice_backstab_max_range
+		auto bot = reinterpret_cast<CTFBot *>(this);
 		
-	//	CTFPlayer *player = ToTFPlayer(ent);
-	//	if (player != nullptr) {
-			auto bot = reinterpret_cast<CTFBot *>(this);
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			const char *str_ent = "nullptr";
+			if (ent != nullptr) {
+				if (ent->IsPlayer()) {
+					str_ent = static_cast<CBasePlayer *>((CBaseEntity *)ent)->GetPlayerName();
+				} else {
+					str_ent = ent->GetClassname();
+				}
+			}
 			
-			DevMsg("CTFBot::DelayedThreatNotice(#%d): #%d, %.1f sec delay\n",
-				ENTINDEX(bot), ENTINDEX(ent), delay);
-	//	}
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::DelayedThreatNotice [ent #%-4d \"%s\"] [delay %.3f]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(ent), str_ent, delay);
+			
+			// caller: CTFPlayer::CheckBlockBackstab, backstabber, 0.5 seconds
+			// caller: CTFBotMainAction::OnInjured, if TF_DMG_CUSTOM_BACKSTAB, inflictor, 0.5 seconds
+			// caller: CTFBotMainAction::OnInjured, if TF_DMG_CUSTOM_BACKSTAB, inflictor, 0.5 seconds, for non-victim bots based on tf_bot_notice_backstab_*
+			// caller: CTFBotMainAction::OnInjured, if DMG_CRITICAL|DMG_BURN, attacker, 0.5 seconds, based on tf_bot_notice_backstab_max_range
+			
+		//	CTFPlayer *player = ToTFPlayer(ent);
+		//	if (player != nullptr) {
+		//		auto bot = reinterpret_cast<CTFBot *>(this);
+		//		
+		//		DevMsg("CTFBot::DelayedThreatNotice(#%d): #%d, %.1f sec delay\n",
+		//			ENTINDEX(bot), ENTINDEX(ent), delay);
+		//	}
+		}
 		
 		DETOUR_MEMBER_CALL(CTFBot_DelayedThreatNotice)(ent, delay);
 	}
 	
 	
+	DETOUR_DECL_MEMBER(void, CTFBot_OnWeaponFired, CBaseCombatCharacter *who, CBaseCombatWeapon *weapon)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (rtti_cast<INextBot *>(bot) == thebot) {
+			const char *str_who = "nullptr";
+			if (who != nullptr) {
+				if (who->IsPlayer()) {
+					str_who = static_cast<CBasePlayer *>(who)->GetPlayerName();
+				} else {
+					str_who = who->GetClassname();
+				}
+			}
+			
+			const char *str_weapon = "nullptr";
+			if (weapon != nullptr) {
+				str_weapon = weapon->GetClassname();
+			}
+			
+			Msg("[time %8.3f] [bot #%-2d] CTFBot::OnWeaponFired [who #%-4d \"%s\"] [weapon #%-4d \"%s\"]\n", gpGlobals->curtime,
+				ENTINDEX(bot), ENTINDEX(who), str_who, ENTINDEX(weapon), str_weapon);
+		}
+		
+		DETOUR_MEMBER_CALL(CTFBot_OnWeaponFired)(who, weapon);
+	}
+	
+	
 	DETOUR_DECL_MEMBER(EventDesiredResult<CTFBot>, CTFBotMainAction_OnInjured, CTFBot *actor, const CTakeDamageInfo& info)
 	{
-		DevMsg("CTFBotMainAction::OnInjured(#%d): attacker #%d, damage bits %08x\n",
-			ENTINDEX(actor), ENTINDEX(info.GetAttacker()), info.GetDamageType());
+	//	if (rtti_cast<INextBot *>(actor) == thebot) {
+	//		DevMsg("CTFBotMainAction::OnInjured(#%d): attacker #%d, damage bits %08x\n",
+	//			ENTINDEX(actor), ENTINDEX(info.GetAttacker()), info.GetDamageType());
+	//	}
 		
 		return DETOUR_MEMBER_CALL(CTFBotMainAction_OnInjured)(actor, info);
 	}
@@ -814,6 +968,10 @@ namespace Mod_Debug_Known_Entities
 			MOD_ADD_DETOUR_MEMBER(INextBot_Update, "INextBot::Update");
 			MOD_ADD_DETOUR_MEMBER(IVision_Update,  "IVision::Update");
 			
+			MOD_ADD_DETOUR_MEMBER(IVision_AddKnownEntity,         "IVision::AddKnownEntity");
+			MOD_ADD_DETOUR_MEMBER(IVision_ForgetEntity,           "IVision::ForgetEntity");
+			MOD_ADD_DETOUR_MEMBER(IVision_ForgetAllKnownEntities, "IVision::ForgetAllKnownEntities");
+			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_IsSuspectedSpy,    "CTFBot::IsSuspectedSpy");
 			MOD_ADD_DETOUR_MEMBER(CTFBot_SuspectSpy,        "CTFBot::SuspectSpy");
 			MOD_ADD_DETOUR_MEMBER(CTFBot_StopSuspectingSpy, "CTFBot::StopSuspectingSpy");
@@ -826,9 +984,11 @@ namespace Mod_Debug_Known_Entities
 			MOD_ADD_DETOUR_MEMBER(CTFBot_SuspectedSpyInfo_t_IsCurrentlySuspected, "CTFBot::SuspectedSpyInfo_t::IsCurrentlySuspected");
 			MOD_ADD_DETOUR_MEMBER(CTFBot_SuspectedSpyInfo_t_TestForRealizing,     "CTFBot::SuspectedSpyInfo_t::TestForRealizing");
 			
-		//	MOD_ADD_DETOUR_MEMBER(CTFBot_DelayedThreatNotice, "CTFBot::DelayedThreatNotice");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_DelayedThreatNotice, "CTFBot::DelayedThreatNotice");
 			
-		//	MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_OnInjured, "CTFBotMainAction::OnInjured");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_OnWeaponFired, "CTFBot::OnWeaponFired");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_OnInjured, "CTFBotMainAction::OnInjured");
 		}
 		
 		virtual void OnEnable() override

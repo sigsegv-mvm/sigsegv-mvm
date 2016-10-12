@@ -22,7 +22,7 @@ SMEXT_LINK(&g_Ext);
 IFileSystem *filesystem                          = nullptr;
 IServerGameClients *serverGameClients            = nullptr;
 ICvar *icvar                                     = nullptr;
-IServer *server                                  = nullptr;
+IServer *sv                                      = nullptr;
 ISpatialPartition *partition                     = nullptr;
 IEngineTrace *enginetrace                        = nullptr;
 IStaticPropMgrServer *staticpropmgr              = nullptr;
@@ -31,6 +31,9 @@ INetworkStringTableContainer *networkstringtable = nullptr;
 IEngineSound *enginesound                        = nullptr;
 IVModelInfo *modelinfo                           = nullptr;
 IVDebugOverlay *debugoverlay                     = nullptr;
+
+IPlayerInfoManager *playerinfomanager = nullptr;
+IBotManager *botmanager               = nullptr;
 
 IPhysics *physics                = nullptr;
 IPhysicsCollision *physcollision = nullptr;
@@ -148,79 +151,93 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 }
 
 
+#define GET_IFACE_OPTIONAL(factory, var, name) \
+	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1))
+
+#define GET_IFACE_REQUIRED(factory, var, name) \
+	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1)); \
+	if (var == nullptr) { \
+		if (error != nullptr && maxlen != 0) { \
+			ismm->Format(error, maxlen, "Could not find interface: %s", name); \
+		} \
+		return false; \
+	}
+
+
 bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	DevMsg("CExtSigsegv: compiled @ %s %s\n", GetBuildDate(), GetBuildTime());
 	
-	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
-	GET_V_IFACE_CURRENT(GetServerFactory, gamedll, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
-	GET_V_IFACE_CURRENT(GetFileSystemFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetServerFactory, serverGameClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
+	GET_IFACE_REQUIRED(Engine,     engine,            INTERFACEVERSION_VENGINESERVER);
+	GET_IFACE_REQUIRED(Server,     gamedll,           INTERFACEVERSION_SERVERGAMEDLL);
+	GET_IFACE_REQUIRED(FileSystem, filesystem,        FILESYSTEM_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Server,     serverGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	
-	server = engine->GetIServer();
+	sv = engine->GetIServer();
 	
-	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Engine, icvar, CVAR_INTERFACE_VERSION);
 	g_pCVar = icvar;
 	ConVar_Register(0, this);
 	
-	GET_V_IFACE_CURRENT(GetEngineFactory, partition, ISpatialPartition, INTERFACEVERSION_SPATIALPARTITION);
-	GET_V_IFACE_CURRENT(GetEngineFactory, enginetrace, IEngineTrace, INTERFACEVERSION_ENGINETRACE_SERVER);
-	GET_V_IFACE_CURRENT(GetEngineFactory, staticpropmgr, IStaticPropMgrServer, INTERFACEVERSION_STATICPROPMGR_SERVER);
-	GET_V_IFACE_CURRENT(GetEngineFactory, gameeventmanager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
-	GET_V_IFACE_CURRENT(GetEngineFactory, networkstringtable, INetworkStringTableContainer, INTERFACENAME_NETWORKSTRINGTABLESERVER);
-	GET_V_IFACE_CURRENT(GetEngineFactory, enginesound, IEngineSound, IENGINESOUND_SERVER_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetEngineFactory, modelinfo, IVModelInfo, VMODELINFO_SERVER_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Engine, partition,          INTERFACEVERSION_SPATIALPARTITION);
+	GET_IFACE_REQUIRED(Engine, enginetrace,        INTERFACEVERSION_ENGINETRACE_SERVER);
+	GET_IFACE_REQUIRED(Engine, staticpropmgr,      INTERFACEVERSION_STATICPROPMGR_SERVER);
+	GET_IFACE_REQUIRED(Engine, gameeventmanager,   INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	GET_IFACE_REQUIRED(Engine, networkstringtable, INTERFACENAME_NETWORKSTRINGTABLESERVER);
+	GET_IFACE_REQUIRED(Engine, enginesound,        IENGINESOUND_SERVER_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Engine, modelinfo,          VMODELINFO_SERVER_INTERFACE_VERSION);
 	
-	GET_V_IFACE_CURRENT(GetServerFactory, servertools, IServerTools, VSERVERTOOLS_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Server, playerinfomanager, INTERFACEVERSION_PLAYERINFOMANAGER);
+	GET_IFACE_REQUIRED(Server, botmanager,        INTERFACEVERSION_PLAYERBOTMANAGER);
+	GET_IFACE_REQUIRED(Server, servertools,       VSERVERTOOLS_INTERFACE_VERSION);
 	
-	/* optional stuff */
-	debugoverlay = (IVDebugOverlay *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VDEBUG_OVERLAY_INTERFACE_VERSION, 0);
-	enginetools = (IEngineTool *)ismm->VInterfaceMatch(ismm->GetEngineFactory(), VENGINETOOL_INTERFACE_VERSION, 0);
+	GET_IFACE_REQUIRED(Physics, physics,       VPHYSICS_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(Physics, physcollision, VPHYSICS_COLLISION_INTERFACE_VERSION);
 	
-	GET_V_IFACE_CURRENT(GetPhysicsFactory, physics, IPhysics, VPHYSICS_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetPhysicsFactory, physcollision, IPhysicsCollision, VPHYSICS_COLLISION_INTERFACE_VERSION);
+	GET_IFACE_OPTIONAL(Engine, debugoverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
+	GET_IFACE_OPTIONAL(Engine, enginetools,  VENGINETOOL_INTERFACE_VERSION);
 	
-	if (GetSoundEmitterSystemFactory() != nullptr) {
-		soundemitterbase = (ISoundEmitterSystemBase *)ismm->VInterfaceMatch(GetSoundEmitterSystemFactory(), SOUNDEMITTERSYSTEM_INTERFACE_VERSION, 0);
+	if (SoundEmitterSystemFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(SoundEmitterSystem, soundemitterbase, SOUNDEMITTERSYSTEM_INTERFACE_VERSION);
 	}
 	
-	if (GetMaterialSystemFactory() != nullptr) {
-		g_pMaterialSystem = (IMaterialSystem *)ismm->VInterfaceMatch(GetMaterialSystemFactory(), MATERIAL_SYSTEM_INTERFACE_VERSION, 0);
+	if (MaterialSystemFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(MaterialSystem, g_pMaterialSystem, MATERIAL_SYSTEM_INTERFACE_VERSION);
 	}
 	
-	if (GetVGUIFactory() != nullptr) {
-		g_pVGuiSchemeManager = (vgui::ISchemeManager *)ismm->VInterfaceMatch(GetVGUIFactory(), VGUI_SCHEME_INTERFACE_VERSION, 0);
+	if (VGUIFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiSchemeManager, VGUI_SCHEME_INTERFACE_VERSION);
 	}
 	
-	if (GetVGUIMatSurfaceFactory() != nullptr) {
-		g_pVGuiSurface = (vgui::ISurface *)ismm->VInterfaceMatch(GetVGUIMatSurfaceFactory(), VGUI_SURFACE_INTERFACE_VERSION, 0);
-		g_pMatSystemSurface = (IMatSystemSurface *)ismm->VInterfaceMatch(GetVGUIMatSurfaceFactory(), MAT_SYSTEM_SURFACE_INTERFACE_VERSION, 0);
+	if (VGUIMatSurfaceFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(VGUIMatSurface, g_pVGuiSurface,      VGUI_SURFACE_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUIMatSurface, g_pMatSystemSurface, MAT_SYSTEM_SURFACE_INTERFACE_VERSION);
 	}
 	
-	if (GetClientFactory() != nullptr) {
-		GET_V_IFACE_CURRENT(GetEngineFactory, engineclient, IVEngineClient, VENGINE_CLIENT_INTERFACE_VERSION);
-		clientdll = (IBaseClientDLL *)ismm->VInterfaceMatch(GetClientFactory(), CLIENT_DLL_INTERFACE_VERSION, 0);
-		clienttools = (IClientTools *)ismm->VInterfaceMatch(GetClientFactory(), VCLIENTTOOLS_INTERFACE_VERSION, 0);
+	if (ClientFactory() != nullptr) {
+		GET_IFACE_REQUIRED(Engine, engineclient, VENGINE_CLIENT_INTERFACE_VERSION);
+		GET_IFACE_REQUIRED(Client, clientdll,    CLIENT_DLL_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(Client, clienttools,  VCLIENTTOOLS_INTERFACE_VERSION);
 	}
 	
-	if (GetDedicatedFactory() != nullptr) {
-		dedicated = (IDedicatedExports *)ismm->VInterfaceMatch(GetDedicatedFactory(), VENGINE_DEDICATEDEXPORTS_API_VERSION, 0);
+	if (DedicatedFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(Dedicated, dedicated, VENGINE_DEDICATEDEXPORTS_API_VERSION);
 	}
 	
-	if (GetDataCacheFactory() != nullptr) {
-		mdlcache = (IMDLCache *)ismm->VInterfaceMatch(GetDataCacheFactory(), MDLCACHE_INTERFACE_VERSION, 0);
+	if (DataCacheFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(DataCache, mdlcache, MDLCACHE_INTERFACE_VERSION);
 	}
 	
-	GET_V_IFACE_CURRENT(GetEngineFactory, vprofexport, IVProfExport, "VProfExport001");
+	GET_IFACE_REQUIRED(Engine, vprofexport, "VProfExport001");
 	
 	gpGlobals = ismm->GetCGlobals();
 	
-	LibMgr::SetPtr(Library::SERVER,         (void *)ismm->GetServerFactory(false));
-	LibMgr::SetPtr(Library::ENGINE,         (void *)ismm->GetEngineFactory(false));
-	LibMgr::SetPtr(Library::DEDICATED,      (void *)dedicated);
-	LibMgr::SetPtr(Library::TIER0,          (void *)&MemAllocScratch);
-	LibMgr::SetPtr(Library::CLIENT,         (void *)clientdll);
-	LibMgr::SetPtr(Library::VGUIMATSURFACE, (void *)g_pVGuiSurface);
+	LibMgr::SetPtr(Library::SERVER,         ServerFactory());
+	LibMgr::SetPtr(Library::ENGINE,         EngineFactory());
+	LibMgr::SetPtr(Library::DEDICATED,      dedicated);
+	LibMgr::SetPtr(Library::TIER0,          &MemAllocScratch);
+	LibMgr::SetPtr(Library::CLIENT,         clientdll);
+	LibMgr::SetPtr(Library::VGUIMATSURFACE, g_pVGuiSurface);
 	
 	return true;
 }

@@ -144,7 +144,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
-//		DevMsg("CTFBotSpawner %08x: dtor0\n", (uintptr_t)spawner);
+		DevMsg("CTFBotSpawner %08x: dtor0\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor0)();
@@ -154,7 +154,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
-//		DevMsg("CTFBotSpawner %08x: dtor2\n", (uintptr_t)spawner);
+		DevMsg("CTFBotSpawner %08x: dtor2\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor2)();
@@ -199,7 +199,7 @@ namespace Mod_Pop_TFBot_Extensions
 			return;
 		}
 		
-//		DevMsg("CTFBotSpawner %08x: add AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
+		DevMsg("CTFBotSpawner %08x: add AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
 		spawners[spawner].addconds.push_back(addcond);
 	}
 	
@@ -275,7 +275,7 @@ namespace Mod_Pop_TFBot_Extensions
 		//				DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
 						for (auto addcond : data.addconds) {
 							if (addcond.delay == 0.0f) {
-		//						DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
+								DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
 								bot->m_Shared->AddCond(addcond.cond, addcond.duration);
 							} else {
 								delayed_addconds.push_back({

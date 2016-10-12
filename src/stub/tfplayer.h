@@ -225,6 +225,7 @@ public:
 	void UpdateModel()                                           {        ft_UpdateModel                   (this); }
 	CTFWeaponBase *Weapon_OwnsThisID(int id) const               { return ft_Weapon_OwnsThisID             (this, id); }
 	CBaseObject *GetObjectOfType(int iType, int iMode)           { return ft_GetObjectOfType               (this, iType, iMode); }
+	int GetMaxAmmo(int iAmmoIndex, int iClassNumber = -1)        { return ft_GetMaxAmmo                    (this, iAmmoIndex, iClassNumber); }
 	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
@@ -245,6 +246,7 @@ private:
 	static MemberFuncThunk<      CTFPlayer *, void                    > ft_UpdateModel;
 	static MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int    > ft_Weapon_OwnsThisID;
 	static MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int > ft_GetObjectOfType;
+	static MemberFuncThunk<      CTFPlayer *, int, int, int           > ft_GetMaxAmmo;
 //	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int     > ft_Taunt;
 };
 

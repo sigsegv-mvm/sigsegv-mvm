@@ -313,6 +313,22 @@ static CAddr_ISurface addr_ISurface_SetFontGlyphSet("SetFontGlyphSet", GetVIdxOf
 #endif
 
 
+class CAddr_IGameEventManager2 : public CAddr_InterfaceVFunc
+{
+public:
+	CAddr_IGameEventManager2(const std::string& n_func, int vtidx) :
+		CAddr_InterfaceVFunc(&gameeventmanager, "IGameEventManager2", n_func, vtidx) {}
+};
+#if defined _WINDOWS
+#pragma message("CAddr_IGameEventManager2 is using hard-coded vtidx's until we get GetVIdxOfMemberFunc working on MSVC")
+static CAddr_IGameEventManager2 addr_IGameEventManager2_FireEvent          ("FireEvent",           0x07);
+static CAddr_IGameEventManager2 addr_IGameEventManager2_FireEventClientSide("FireEventClientSide", 0x08);
+#else
+static CAddr_IGameEventManager2 addr_IGameEventManager2_FireEvent          ("FireEvent",           GetVIdxOfMemberFunc(&IGameEventManager2::FireEvent));
+static CAddr_IGameEventManager2 addr_IGameEventManager2_FireEventClientSide("FireEventClientSide", GetVIdxOfMemberFunc(&IGameEventManager2::FireEventClientSide));
+#endif
+
+
 static CAddr_Func_KnownVTIdx addr_CTFBotUseItem_D2("CTFBotUseItem::~CTFBotUseItem [D2]", "<nosym>", ".?AVCTFBotUseItem@@", 0x00);
 class CAddr_CTFBotUseItem_C1 : public IAddr_Sym
 {
@@ -442,6 +458,9 @@ static CAddr_Pointer addr_NDebugOverlay_Circle_axes(               "[local] NDeb
 static CAddr_Pointer addr_NDebugOverlay_Sphere_ang(                "[local] NDebugOverlay::Sphere_ang",                 (const void *)(void (*)(const Vector&, const QAngle&, float, int, int, int, int, bool, float))&NDebugOverlay::Sphere);
 static CAddr_Pointer addr_NDebugOverlay_Clear(                     "[local] NDebugOverlay::Clear",                      (const void *)&NDebugOverlay::Clear);
 static CAddr_Pointer addr_NDebugOverlay_LineAlpha(                 "[local] NDebugOverlay::LineAlpha",                  (const void *)&NDebugOverlay::LineAlpha);
+static CAddr_Pointer addr_NDebugOverlay_ScreenRect(                "[local] NDebugOverlay::ScreenRect",                 (const void *)&NDebugOverlay::ScreenRect);
+static CAddr_Pointer addr_NDebugOverlay_ScreenLine_2color(         "[local] NDebugOverlay::ScreenLine_2color",          (const void *)(void (*)(float, float, float, float, const Color&, const Color&, float))&NDebugOverlay::ScreenLine);
+static CAddr_Pointer addr_NDebugOverlay_ScreenLine_1color(         "[local] NDebugOverlay::ScreenLine_1color",          (const void *)(void (*)(float, float, float, float, const Color&,               float))&NDebugOverlay::ScreenLine);
 
 
 class CAddr_Client_UserMessages : public IAddr_Sym

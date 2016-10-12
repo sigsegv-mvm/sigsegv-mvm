@@ -781,6 +781,166 @@ namespace Mod_Util_Overlay_Recv
 		}
 	}
 	
+	void ScreenRect(bf_read& msg)
+	{
+		float xFrom; _float32(&xFrom, msg.ReadWord());
+		float yFrom; _float32(&yFrom, msg.ReadWord());
+		float xTo;   _float32(&xTo,   msg.ReadWord());
+		float yTo;   _float32(&yTo,   msg.ReadWord());
+		Color cFill; cFill.SetRawColor((int)msg.ReadLong());
+		Color cEdge; cEdge.SetRawColor((int)msg.ReadLong());
+		float flDuration; _float32(&flDuration, msg.ReadWord());
+		
+		if (cvar_trace.GetBool()) {
+			DevMsg("[ScreenRect] <%5.1f %5.1f> <%5.1f %5.1f> %02x%02x%02x%02x %02x%02x%02x%02x %.2f\n",
+				xFrom, xFrom,
+				xTo,   yTo,
+				cFill[0], cFill[1], cFill[2], cFill[3],
+				cEdge[0], cEdge[1], cEdge[2], cEdge[3],
+				flDuration);
+		}
+		
+		if (debugoverlay != nullptr) {
+			Vector origin;
+			Vector mins;
+			Vector maxs;
+			QAngle angles;
+			int r;
+			int g;
+			int b;
+			int a;
+			
+			static constexpr uint32_t nan1  = 0x7fc00001;
+			static constexpr uint32_t nan2  = 0x7fc00002;
+			static constexpr uint32_t nan3  = 0x7fc00003;
+			static constexpr uint32_t nan4  = 0x7fc00004;
+			static constexpr uint32_t nanID = 0x7fc00100;
+			
+			memcpy(&origin.x, &nan1, sizeof(float));
+			memcpy(&origin.y, &nan2, sizeof(float));
+			memcpy(&origin.z, &nan3, sizeof(float));
+			mins.x = xFrom;
+			mins.y = yFrom;
+			memcpy(&mins.z, &nan4, sizeof(float));
+			maxs.x = xTo;
+			maxs.y = yTo;
+			memcpy(&maxs.z, &nanID, sizeof(float));
+			angles.x = -0.0f;
+			angles.y = -0.0f;
+			angles.z = -0.0f;
+			memcpy(&r, &cFill, sizeof(int));
+			memcpy(&g, &cEdge, sizeof(int));
+			b = std::numeric_limits<int>::max();
+			a = std::numeric_limits<int>::min();
+			
+			DevMsg("<<< RecvScreenRect [xFrom %.3f] [yFrom %.3f] [xTo %.3f] [yTo %.3f] [cFill %02x%02x%02x%02x] [cEdge %02x%02x%02x%02x]\n",
+				xFrom, yFrom, xTo, yTo,
+				cFill[0], cFill[1], cFill[2], cFill[3],
+				cEdge[0], cEdge[1], cEdge[2], cEdge[3]);
+			DevMsg(
+				"<<< %08x %08x %08x %08x %08x %08x %08x %08x\n"
+				"<<< %08x %08x %08x %08x %08x %08x %08x %08x\n",
+				*(uint32_t *)((uintptr_t)&origin + 0x00),
+				*(uint32_t *)((uintptr_t)&origin + 0x04),
+				*(uint32_t *)((uintptr_t)&origin + 0x08),
+				*(uint32_t *)((uintptr_t)&mins   + 0x00),
+				*(uint32_t *)((uintptr_t)&mins   + 0x04),
+				*(uint32_t *)((uintptr_t)&mins   + 0x08),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x00),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x04),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x08),
+				*(uint32_t *)((uintptr_t)&angles + 0x00),
+				*(uint32_t *)((uintptr_t)&angles + 0x04),
+				*(uint32_t *)((uintptr_t)&angles + 0x08),
+				*(uint32_t *)((uintptr_t)&r      + 0x00),
+				*(uint32_t *)((uintptr_t)&g      + 0x00),
+				*(uint32_t *)((uintptr_t)&b      + 0x00),
+				*(uint32_t *)((uintptr_t)&a      + 0x00));
+			
+			debugoverlay->AddBoxOverlay(origin, mins, maxs, angles, r, g, b, a, flDuration);
+		}
+	}
+	
+	void ScreenLine(bf_read& msg, int colors)
+	{
+		float xFrom; _float32(&xFrom, msg.ReadWord());
+		float yFrom; _float32(&yFrom, msg.ReadWord());
+		float xTo;   _float32(&xTo,   msg.ReadWord());
+		float yTo;   _float32(&yTo,   msg.ReadWord());
+		Color cFrom; cFrom.SetRawColor((int)msg.ReadLong());
+		Color cTo;   cTo.SetRawColor((colors == 1 ? cFrom.GetRawColor() : (int)msg.ReadLong()));
+		float flDuration; _float32(&flDuration, msg.ReadWord());
+		
+		if (cvar_trace.GetBool()) {
+			DevMsg("[ScreenLine] <%5.1f %5.1f> <%5.1f %5.1f> %02x%02x%02x%02x %02x%02x%02x%02x %.2f\n",
+				xFrom, xFrom,
+				xTo,   yTo,
+				cFrom[0], cFrom[1], cFrom[2], cFrom[3],
+				cTo  [0], cTo  [1], cTo  [2], cTo  [3],
+				flDuration);
+		}
+		
+		if (debugoverlay != nullptr) {
+			Vector origin;
+			Vector mins;
+			Vector maxs;
+			QAngle angles;
+			int r;
+			int g;
+			int b;
+			int a;
+			
+			static constexpr uint32_t nan1  = 0x7fc00001;
+			static constexpr uint32_t nan2  = 0x7fc00002;
+			static constexpr uint32_t nan3  = 0x7fc00003;
+			static constexpr uint32_t nan4  = 0x7fc00004;
+			static constexpr uint32_t nanID = 0x7fc00200;
+			
+			memcpy(&origin.x, &nan1, sizeof(float));
+			memcpy(&origin.y, &nan2, sizeof(float));
+			memcpy(&origin.z, &nan3, sizeof(float));
+			mins.x = xFrom;
+			mins.y = yFrom;
+			memcpy(&mins.z, &nan4, sizeof(float));
+			maxs.x = xTo;
+			maxs.y = yTo;
+			memcpy(&maxs.z, &nanID, sizeof(float));
+			angles.x = -0.0f;
+			angles.y = -0.0f;
+			angles.z = -0.0f;
+			memcpy(&r, &cFrom, sizeof(int));
+			memcpy(&g, &cTo,   sizeof(int));
+			b = std::numeric_limits<int>::max();
+			a = std::numeric_limits<int>::min();
+			
+			DevMsg("<<< RecvScreenLine [xFrom %.3f] [yFrom %.3f] [xTo %.3f] [yTo %.3f] [cFrom %02x%02x%02x%02x] [cTo %02x%02x%02x%02x]\n",
+				xFrom, yFrom, xTo, yTo,
+				cFrom[0], cFrom[1], cFrom[2], cFrom[3],
+				cTo  [0], cTo  [1], cTo  [2], cTo  [3]);
+			DevMsg(
+				"<<< %08x %08x %08x %08x %08x %08x %08x %08x\n"
+				"<<< %08x %08x %08x %08x %08x %08x %08x %08x\n",
+				*(uint32_t *)((uintptr_t)&origin + 0x00),
+				*(uint32_t *)((uintptr_t)&origin + 0x04),
+				*(uint32_t *)((uintptr_t)&origin + 0x08),
+				*(uint32_t *)((uintptr_t)&mins   + 0x00),
+				*(uint32_t *)((uintptr_t)&mins   + 0x04),
+				*(uint32_t *)((uintptr_t)&mins   + 0x08),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x00),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x04),
+				*(uint32_t *)((uintptr_t)&maxs   + 0x08),
+				*(uint32_t *)((uintptr_t)&angles + 0x00),
+				*(uint32_t *)((uintptr_t)&angles + 0x04),
+				*(uint32_t *)((uintptr_t)&angles + 0x08),
+				*(uint32_t *)((uintptr_t)&r      + 0x00),
+				*(uint32_t *)((uintptr_t)&g      + 0x00),
+				*(uint32_t *)((uintptr_t)&b      + 0x00),
+				*(uint32_t *)((uintptr_t)&a      + 0x00));
+			
+			debugoverlay->AddBoxOverlay(origin, mins, maxs, angles, r, g, b, a, flDuration);
+		}
+	}
+	
 	
 	void BandwidthTest(bf_read& msg)
 	{
@@ -823,6 +983,9 @@ namespace Mod_Util_Overlay_Recv
 			case OV_SPHERE_ANG:              Sphere_ang(msg);           break;
 			case OV_CLEAR:                   Clear(msg);                break;
 			case OV_LINE_ALPHA:              LineAlpha(msg);            break;
+			case OV_SCREEN_RECT:             ScreenRect(msg);           break;
+			case OV_SCREEN_LINE_2COLOR:      ScreenLine(msg, 2);        break;
+			case OV_SCREEN_LINE_1COLOR:      ScreenLine(msg, 1);        break;
 			case OV_BANDWIDTH_TEST:          BandwidthTest(msg);        break;
 				
 			default:

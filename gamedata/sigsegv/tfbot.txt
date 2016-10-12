@@ -275,6 +275,18 @@
 					sym  "_ZN6CTFBot9ClearTagsEv"
 				}
 				
+				"CTFBot::OnWeaponFired"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot13OnWeaponFiredEP20CBaseCombatCharacterP17CBaseCombatWeapon"
+				}
+				
+				"CTFBot::ShouldGib"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot9ShouldGibERK15CTakeDamageInfo"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

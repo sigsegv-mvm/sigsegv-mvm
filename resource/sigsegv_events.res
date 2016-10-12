@@ -21,9 +21,10 @@
 {
 	"console_forward"
 	{
-		r    short
-		g    short
-		b    short
-		text string
+		type long
+		r    byte
+		g    byte
+		b    byte
+		str  string
 	}
 }

@@ -22,6 +22,9 @@ class IEngineSound;
 class IVModelInfo;
 class IVDebugOverlay;
 
+class IPlayerInfoManager;
+class IBotManager;
+
 class IPhysics;
 class IPhysicsCollision;
 
@@ -63,7 +66,7 @@ extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
 extern IFileSystem *filesystem;
 extern IServerGameClients *serverGameClients;
-extern IServer *server;
+extern IServer *sv;
 extern ICvar *icvar;
 extern ISpatialPartition *partition;
 extern IEngineTrace *enginetrace;
@@ -73,6 +76,9 @@ extern INetworkStringTableContainer *networkstringtable;
 extern IEngineSound *enginesound;
 extern IVModelInfo *modelinfo;
 extern IVDebugOverlay *debugoverlay;
+
+extern IPlayerInfoManager *playerinfomanager;
+extern IBotManager *botmanager;
 
 extern IPhysics *physics;
 extern IPhysicsCollision *physcollision;
@@ -282,6 +288,8 @@ class IVideoRecorder;
 #include <iserver.h>
 #include <iclient.h>
 #include <datacache/imdlcache.h>
+#include <materialsystem/imesh.h>
+#include <../server/iplayerinfo.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
@@ -308,6 +316,14 @@ class IVideoRecorder;
 
 //#define bf_write old_bf_write
 //#define bf_read old_bf_read
+
+
+/* dammit Valve, why do you have to do stupid shit like redefining offsetof?
+ * maybe you live in a world where it's impossible to overload operator&, but
+ * some of us use non-ancient development tools where a proper, working offsetof
+ * is actually important for things to work right */
+#undef offsetof
+#define offsetof(OBJECT, MEMBER) reinterpret_cast<size_t>(std::addressof(((OBJECT *)nullptr)->MEMBER))
 
 
 #endif

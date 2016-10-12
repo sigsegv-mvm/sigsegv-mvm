@@ -219,7 +219,7 @@ public:
 		MemberVFuncThunkBase<C, RET, PARAMS...>(n_vtable, n_func) {}
 	
 	RET operator()(const C *obj, PARAMS... args) const = delete;
-	RET operator()(C *obj, PARAMS... args) const
+	RET operator()(      C *obj, PARAMS... args) const
 	{
 		int vt_index = this->GetVTableIndex();
 		
@@ -241,7 +241,7 @@ public:
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
 		MemberVFuncThunkBase<C, RET, PARAMS...>(n_vtable, n_func) {}
 	
-	RET operator()(C *obj, PARAMS... args) const = delete;
+	RET operator()(      C *obj, PARAMS... args) const = delete;
 	RET operator()(const C *obj, PARAMS... args) const
 	{
 		int vt_index = this->GetVTableIndex();
@@ -377,6 +377,21 @@ private:
 namespace Link
 {
 	bool InitAll();
+}
+
+
+/* for those times when you want to call a vfunc in the base class, not through
+ * the vtable */
+template<class C, typename RET, typename... PARAMS>
+RET CallNonVirt(C *obj, const char *n_func, PARAMS... args)
+{
+	assert(obj != nullptr);
+	
+	void *addr = AddrManager::GetAddr(n_func);
+	assert(addr != nullptr);
+	
+	auto pFunc = MakePtrToMemberFunc<C, RET, PARAMS...>(addr);
+	return (obj->*pFunc)(args...);
 }
 
 

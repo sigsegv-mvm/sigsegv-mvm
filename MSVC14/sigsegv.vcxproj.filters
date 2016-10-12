@@ -119,9 +119,6 @@
     <ClCompile Include="..\src\mod\sniper\head_uncap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mod\visualize\airblast.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mod\visualize\explosive_headshot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -348,6 +345,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mod\util\debugoverlay_font_v3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mod\visualize\airblast_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\debug\flamethrower_impulse_101.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\se2007\meshutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\prof\mvm_shield_events.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

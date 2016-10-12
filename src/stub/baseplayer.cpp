@@ -16,12 +16,25 @@ MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      C
 MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> CBaseCombatCharacter::vt_Weapon_Switch     (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_Switch");
 MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     CBaseCombatCharacter::vt_GetLastKnownArea  (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetLastKnownArea");
 MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            CBaseCombatCharacter::vt_GiveAmmo          (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GiveAmmo");
+MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       CBaseCombatCharacter::vt_GetAmmoCount      (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetAmmoCount");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   CBaseCombatCharacter::vt_ShouldGib         (TypeName<CTFPlayer>(),            "CTFPlayer::ShouldGib");
 
 
-IMPL_DATAMAP(char[32], CBasePlayer, m_szNetname);
+//IMPL_SENDPROP(bool,  CPlayerLocalData, m_bDucked,        CBasePlayer);
+//IMPL_SENDPROP(bool,  CPlayerLocalData, m_bDucking,       CBasePlayer);
+//IMPL_SENDPROP(bool,  CPlayerLocalData, m_bInDuckJump,    CBasePlayer);
+//IMPL_SENDPROP(float, CPlayerLocalData, m_flDucktime,     CBasePlayer);
+//IMPL_SENDPROP(float, CPlayerLocalData, m_flDuckJumpTime, CBasePlayer);
 
-IMPL_SENDPROP(int,   CBasePlayer, m_nTickBase,  CBasePlayer);
-IMPL_SENDPROP(float, CBasePlayer, m_flMaxSpeed, CBasePlayer);
+
+IMPL_DATAMAP(char[32],     CBasePlayer, m_szNetname);
+IMPL_DATAMAP(bool,         CBasePlayer, m_bDuckToggled);
+IMPL_DATAMAP(unsigned int, CBasePlayer, m_afPhysicsFlags);
+IMPL_DATAMAP(int,          CBasePlayer, m_vphysicsCollisionState);
+
+IMPL_SENDPROP(CPlayerLocalData, CBasePlayer, m_Local,      CBasePlayer);
+IMPL_SENDPROP(int,              CBasePlayer, m_nTickBase,  CBasePlayer);
+IMPL_SENDPROP(float,            CBasePlayer, m_flMaxspeed, CBasePlayer);
 
 MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors   ("CBasePlayer::EyeVectors");
 MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID   ("CBasePlayer::GetSteamID");
