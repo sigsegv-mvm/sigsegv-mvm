@@ -397,7 +397,7 @@ protected:
 	{
 		if (NET) {
 			if (memcmp(this->GetPtrRO(), &val, sizeof(T)) != 0) {
-				PROP->StateChanged(reinterpret_cast<void *>(this->GetObjBase()), this->GetPtrRW());
+				PROP->StateChanged(reinterpret_cast<void *>(this->GetInstanceBaseAddr()), this->GetPtrRW());
 				return (this->GetRW() = val);
 			} else {
 				return this->GetRO();
@@ -414,20 +414,21 @@ protected:
 	Ref_t   Get  () const { return *this->GetPtr  (); }
 	
 	/* pointer getters */
-	PtrRO_t GetPtrRO() const { return reinterpret_cast<PtrRO_t>(this->GetCachedVarAddr()); }
-	PtrRW_t GetPtrRW() const { return reinterpret_cast<PtrRW_t>(this->GetCachedVarAddr()); }
-	Ptr_t   GetPtr  () const { return reinterpret_cast<Ptr_t  >(this->GetCachedVarAddr()); }
+	PtrRO_t GetPtrRO() const { return reinterpret_cast<PtrRO_t>(this->GetInstanceVarAddr()); }
+	PtrRW_t GetPtrRW() const { return reinterpret_cast<PtrRW_t>(this->GetInstanceVarAddr()); }
+	Ptr_t   GetPtr  () const { return reinterpret_cast<Ptr_t  >(this->GetInstanceVarAddr()); }
 	
 	
-	const uintptr_t CalculateVarAddr() const { return (this->GetObjBase() + this->GetVarOff()); }
-	uintptr_t GetCachedVarAddr() const
+	uintptr_t GetInstanceBaseAddr() const { return (reinterpret_cast<uintptr_t>(this) - *ADJUST); }
+	
+private:
+	uintptr_t GetInstanceVarAddr() const { return (this->GetInstanceBaseAddr() + this->GetCachedVarOffset()); }
+	
+	ptrdiff_t GetCachedVarOffset() const
 	{
-		static uintptr_t s_CachedAddr = this->CalculateVarAddr();
-		return s_CachedAddr;
+		static ptrdiff_t s_CachedVarOff = PROP->GetOffsetAssert();
+		return s_CachedVarOff;
 	}
-	
-	uintptr_t GetObjBase() const { return (reinterpret_cast<uintptr_t>(this) - *ADJUST); }
-	ptrdiff_t GetVarOff() const  { return PROP->GetOffsetAssert(); }
 };
 
 template<typename U, T_PARAMS> struct CPropAccessorHandle : public CPropAccessorBase<CHandle<U>, T_ARGS>
@@ -461,7 +462,7 @@ template<typename U, T_PARAMS> struct CPropAccessor<CHandle<U>, T_ARGS> : public
 #define DECL_PROP(TYPE, PROPNAME, VARIANT, NET, RW) \
 	typedef CProp_##VARIANT<TYPE> _type_prop_##PROPNAME; \
 	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
-	const static size_t _adj_##PROPNAME; \
+	static const size_t _adj_##PROPNAME; \
 	typedef CPropAccessor<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW> _type_accessor_##PROPNAME; \
 	_type_accessor_##PROPNAME PROPNAME; \
 	CHECK_ACCESSOR(_type_accessor_##PROPNAME)
