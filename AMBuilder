@@ -314,7 +314,6 @@ binary.compiler.includes += [
   os.path.join(builder.currentSourcePath, 'libs', 'lz4', 'lib'),
   os.path.join(builder.currentSourcePath, 'libs', 'lodepng'),
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
-#  os.path.join(builder.currentSourcePath, 'libs', 'cccapstone', 'cppbindings'),
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
 ]
 
