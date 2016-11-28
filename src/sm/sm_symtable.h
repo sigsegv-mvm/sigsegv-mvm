@@ -222,14 +222,12 @@ public:
 		return kvs;
 	}
 	
-	void ForEachSymbol(const std::function<void(Symbol *)>& functor)
+	template<typename FUNCTOR>
+	void ForEachSymbol(FUNCTOR&& functor)
 	{
 		for (uint32_t i = 0; i < nbuckets; ++i) {
-			Symbol *sym = buckets[i];
-			
-			while (sym != nullptr) {
-				functor(sym);
-				sym = sym->tbl_next;
+			for (Symbol *sym = buckets[i]; sym != nullptr; sym = sym->tbl_next) {
+				if (!functor(sym)) return;
 			}
 		}
 	}

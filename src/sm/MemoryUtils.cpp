@@ -569,7 +569,7 @@ bool MemoryUtils::GetLibraryInfo(const void *libPtr, DynLibInfo &lib)
 	return true;
 }
 
-void MemoryUtils::ForEachSymbol(void *handle, const std::function<void(Symbol *)>& functor)
+void MemoryUtils::ForEachSymbol(void *handle, const std::function<bool(Symbol *)>& functor)
 {
 	/* do a bogus symbol lookup to force everything into the symbol table cache */
 	assert(ResolveSymbol(handle, "________________") == nullptr);

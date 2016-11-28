@@ -65,7 +65,7 @@ public:
 	~MemoryUtils();
 	void *ResolveSymbol(void *handle, const char *symbol);
 	bool GetLibraryInfo(const void *libPtr, DynLibInfo &lib);
-	void ForEachSymbol(void *handle, const std::function<void(Symbol *)>& functor);
+	void ForEachSymbol(void *handle, const std::function<bool(Symbol *)>& functor);
 #if defined PLATFORM_LINUX
 	void ForEachSection(void *handle, const std::function<void(const Elf32_Shdr *, const char *)>& functor);
 #elif defined PLATFORM_WINDOWS

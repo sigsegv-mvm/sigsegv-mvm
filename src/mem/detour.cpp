@@ -3,6 +3,7 @@
 #include "mem/protect.h"
 #include "mem/opcode.h"
 #include "util/backtrace.h"
+#include "util/demangle.h"
 
 
 #if !(defined(__i386) || defined(_M_IX86))
@@ -167,11 +168,11 @@ bool IDetour_SymRegex::DoLoad()
 		return false;
 	}
 	
-	const LibInfo& info = LibMgr::GetInfo(this->m_Library);
-	void *text_begin = (void *)(info.baseaddr         + info.segs.at(".text").off);
-	void *text_end   = (void *)((uintptr_t)text_begin + info.segs.at(".text").len);
+	const SegInfo& info_seg_text = LibMgr::GetInfo(this->m_Library).GetSeg(Segment::TEXT);
+	auto text_begin = reinterpret_cast<const void *>(info_seg_text.AddrBegin());
+	auto text_end   = reinterpret_cast<const void *>(info_seg_text.AddrEnd());
 	
-	std::regex filter(this->m_strPattern);
+	std::regex filter(this->m_strPattern, std::regex_constants::ECMAScript);
 	std::vector<Symbol *> syms;
 	LibMgr::ForEachSym(this->m_Library, [&](Symbol *sym){
 		const char *it_begin = sym->buffer();
@@ -181,6 +182,8 @@ bool IDetour_SymRegex::DoLoad()
 				syms.push_back(sym);
 			}
 		}
+		
+		return true;
 	});
 	
 	if (syms.size() != 1) {
@@ -195,7 +198,7 @@ bool IDetour_SymRegex::DoLoad()
 	this->m_strSymbol = std::string(syms[0]->buffer(), syms[0]->length);
 	this->m_pFunc     = syms[0]->address;
 	
-	this->Demangle();
+	DemangleName(this->m_strSymbol.c_str(), this->m_strDemangled);
 	
 	return true;
 }
@@ -203,22 +206,6 @@ bool IDetour_SymRegex::DoLoad()
 void IDetour_SymRegex::DoUnload()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
-}
-
-
-void IDetour_SymRegex::Demangle()
-{
-#if defined _LINUX || defined _OSX
-	const char *demangled = cplus_demangle(this->m_strSymbol.c_str(), DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS);
-	if (demangled != nullptr) {
-		this->m_strDemangled = demangled;
-		free((void *)demangled);
-	} else {
-		this->m_strDemangled = this->m_strSymbol;
-	}
-#else
-	this->m_strDemangled = this->m_strSymbol;
-#endif
 }
 
 
@@ -520,6 +507,9 @@ void CDetouredFunc::StorePrologue()
 	
 	size_t n_bytes = copy_bytes((unsigned char *)this->m_pFunc, nullptr, JmpRelImm32::Size());
 	assert(n_bytes >= JmpRelImm32::Size());
+	// this assert will fail in some cases if you've set a breakpoint in gdb on
+	// the function in question, because copy_bytes stops early if it hits an
+	// int3 instruction
 	
 	this->m_Prologue.resize(n_bytes);
 	memcpy(this->m_Prologue.data(), this->m_pFunc, n_bytes);

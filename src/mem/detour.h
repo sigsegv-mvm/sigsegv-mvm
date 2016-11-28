@@ -78,8 +78,6 @@ protected:
 	virtual void DoUnload() override;
 	
 private:
-	void Demangle();
-	
 	Library m_Library;
 	std::string m_strPattern;
 	

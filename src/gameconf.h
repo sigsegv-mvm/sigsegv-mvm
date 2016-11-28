@@ -44,20 +44,25 @@ private:
 	SMCResult AddrEntry_End();
 	
 	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
-		{ "sym",                                &CSigsegvGameConf::AddrEntry_Load_Sym },
-		{ "fixed",                              &CSigsegvGameConf::AddrEntry_Load_Fixed },
-		{ "pattern",                            &CSigsegvGameConf::AddrEntry_Load_Pattern },
-		{ "datamap",                            &CSigsegvGameConf::AddrEntry_Load_DataDescMap },
-		{ "func knownvtidx",                    &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
-		{ "func datamap vthunk",                &CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk },
-		{ "func ebpprologue uniref",            &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueRef },
-		{ "func ebpprologue unistr",            &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr },
-		{ "func ebpprologue unistr knownvtidx", &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx },
-		{ "func ebpprologue vprof",             &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf },
+		{ "sym",                                   &CSigsegvGameConf::AddrEntry_Load_Sym },
+		{ "sym regex",                             &CSigsegvGameConf::AddrEntry_Load_Sym_Regex },
+		{ "fixed",                                 &CSigsegvGameConf::AddrEntry_Load_Fixed },
+		{ "pattern",                               &CSigsegvGameConf::AddrEntry_Load_Pattern },
+		{ "datamap",                               &CSigsegvGameConf::AddrEntry_Load_DataDescMap },
+		{ "func knownvtidx",                       &CSigsegvGameConf::AddrEntry_Load_Func_KnownVTIdx },
+		{ "func datamap vthunk",                   &CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk },
+		{ "func ebpprologue uniref",               &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueRef },
+		{ "func ebpprologue unistr",               &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr },
+		{ "func ebpprologue unistr knownvtidx",    &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx },
+		{ "func ebpprologue nonunistr knownvtidx", &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_NonUniqueStr_KnownVTIdx },
+		{ "func ebpprologue vprof",                &CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf },
+		{ "convar",                                &CSigsegvGameConf::AddrEntry_Load_ConVar },
+		{ "concommand",                            &CSigsegvGameConf::AddrEntry_Load_ConCommand },
 	};
 	
 	void AddrEntry_Load_Common(IAddr *addr);
 	SMCResult AddrEntry_Load_Sym();
+	SMCResult AddrEntry_Load_Sym_Regex();
 	SMCResult AddrEntry_Load_Fixed();
 	SMCResult AddrEntry_Load_Pattern();
 	SMCResult AddrEntry_Load_DataDescMap();
@@ -66,7 +71,12 @@ private:
 	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueRef();
 	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr();
 	SMCResult AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx();
+	SMCResult AddrEntry_Load_Func_EBPPrologue_NonUniqueStr_KnownVTIdx();
 	SMCResult AddrEntry_Load_Func_EBPPrologue_VProf();
+	
+	SMCResult AddrEntry_Load_ConCommandBase(bool is_command);
+	SMCResult AddrEntry_Load_ConVar()     { return this->AddrEntry_Load_ConCommandBase(false); }
+	SMCResult AddrEntry_Load_ConCommand() { return this->AddrEntry_Load_ConCommandBase(true);  }
 };
 extern CSigsegvGameConf g_GCHook;
 

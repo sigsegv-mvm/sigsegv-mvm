@@ -1,5 +1,10 @@
 #include "prop.h"
+#include "stub/baseentity.h"
 #include "util/misc.h"
+#include "util/demangle.h"
+
+// TODO: move this to common.h
+#include <../extensions/sdktools/util.h>
 
 
 void CC_ListProps(const CCommand& cmd)
@@ -71,4 +76,103 @@ namespace Prop
 		assert(FindOffset(off, obj, var));
 		return off;
 	}
+	
+	
+#if 0
+	static std::unordered_map<std::string, const datamap_t *> datamaps_by_classname;
+	static std::unordered_map<std::string, std::string>       classnames_by_rtti_name;
+	
+	static void PreloadDataMaps()
+	{
+		static bool init = false;
+		
+		if (!init) {
+			assert(datamaps_by_classname  .empty());
+			assert(classnames_by_rtti_name.empty());
+			
+			auto dict = static_cast<CEntityFactoryDictionary *>(servertools->GetEntityFactoryDictionary());
+			assert(dict != nullptr);
+			
+			FOR_EACH_DICT_FAST(dict->m_Factories, i) {
+				const char *classname = dict->m_Factories.GetElementName(i);
+				assert(classname != nullptr);
+				assert(classname[0] != '\0');
+				
+				IServerNetworkable *sv_networkable = dict->Create(classname);
+				assert(sv_networkable != nullptr);
+				
+				CBaseEntity *entity = sv_networkable->GetBaseEntity();
+				assert(entity != nullptr);
+				
+				const datamap_t *p_datamap = entity->GetDataDescMap();
+				assert(p_datamap != nullptr);
+				
+				const char *rtti_name = TypeName(entity);
+				assert(rtti_name != nullptr);
+				assert(rtti_name[0] != '\0');
+				
+				std::string rtti_name_demangled;
+				assert(DemangleTypeName(rtti_name, rtti_name_demangled));
+				rtti_name = rtti_name_demangled.c_str();
+				
+			//	servertools->RemoveEntityImmediate(entity);
+				
+				sm_datatable_info_t info;
+				if (gamehelpers->FindDataMapInfo(gamehelpers->GetDataMap(entity), "m_iEFlags", &info)) {
+					*(int *)((char *)entity + info.actual_offset) |= EFL_KILLME;
+				}
+				
+				ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "%-60s%s",
+					CFmtStr("classname '%s':",  classname).Get(),
+					CFmtStr("rtti_name '%s'\n", rtti_name).Get());
+				
+				auto result1 = datamaps_by_classname.insert(std::make_pair(classname, p_datamap));
+				assert(result1.second);
+				
+				auto result2 = classnames_by_rtti_name.insert(std::make_pair(rtti_name, classname));
+			//	assert(result2.second);
+			}
+			
+			//	sm_datatable_info_t info;
+			//	for ( int i = dict->m_Factories.First(); i != dict->m_Factories.InvalidIndex(); i = dict->m_Factories.Next( i ) )
+			//	{
+			//		IServerNetworkable *entity = dict->Create(dict->m_Factories.GetElementName(i));
+			//		ServerClass *sclass = entity->GetServerClass();
+			//		fprintf(fp,"%s - %s\n",sclass->GetName(), dict->m_Factories.GetElementName(i));
+			//		
+			//		if (!gamehelpers->FindDataMapInfo(gamehelpers->GetDataMap(entity->GetBaseEntity()), "m_iEFlags", &info))
+			//			continue;
+			//		
+			//		int *eflags = (int *)((char *)entity->GetBaseEntity() + info.actual_offset);
+			//		*eflags |= (1<<0); // EFL_KILLME
+			//	}
+			
+			init = true;
+		}
+	}
+	
+	const datamap_t *GetDataMapByClassname(const char *classname)
+	{
+		PreloadDataMaps();
+		
+		auto it = datamaps_by_classname.find(classname);
+		if (it != datamaps_by_classname.end()) {
+			return (*it).second;
+		} else {
+			return nullptr;
+		}
+	}
+	
+	const datamap_t *GetDataMapByRTTIName(const char *rtti_name)
+	{
+		PreloadDataMaps();
+		
+		auto it = classnames_by_rtti_name.find(rtti_name);
+		if (it != classnames_by_rtti_name.end()) {
+			return GetDataMapByClassname((*it).second.c_str());
+		} else {
+			return nullptr;
+		}
+	}
+#endif
 }

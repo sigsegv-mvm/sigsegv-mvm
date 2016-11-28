@@ -48,7 +48,32 @@ private:
 	
 	int m_iCounter = 0;
 };
-#define MAT_SINGLE_THREAD_BLOCK for (MatSingleThreadBlock __mat_single_thread_block; __mat_single_thread_block.ShouldContinue(); )
+//#define MAT_SINGLE_THREAD_BLOCK for (MatSingleThreadBlock __mat_single_thread_block; __mat_single_thread_block.ShouldContinue(); )
+#define MAT_SINGLE_THREAD_BLOCK
+
+
+inline bool FStrEq(const char *sz1, const char *sz2)
+{
+	return (sz1 == sz2 || V_stricmp(sz1, sz2) == 0);
+}
+
+
+#if 0
+/* allow using CHandle<T> as the key type in std::unordered_map */
+namespace std
+{
+	template<typename T> template<> struct hash<CHandle<T>>
+	{
+		using argument_type = CHandle<T>;
+		using result_type   = size_t;
+		
+		result_type operator()(const argument_type& arg) const
+		{
+			// TODO
+		}
+	};
+}
+#endif
 
 
 #endif

@@ -124,13 +124,16 @@ private:
 	static MemberVFuncThunk<CTFBaseBoss *, void> vt_UpdateCollisionBounds;
 };
 
+class IBody;
 class CTFTankBoss : public CTFBaseBoss
 {
 public:
-	DECL_EXTRACT(CHandle<CPathTrack>, m_hCurrentNode);
-	DECL_EXTRACT(CUtlVector<float>,   m_NodeDists);
-	DECL_EXTRACT(float,               m_flTotalDistance);
-	DECL_EXTRACT(int,                 m_iCurrentNode);
+	DECL_EXTRACT (IBody *,             m_pBodyInterface);
+	DECL_RELATIVE(CHandle<CPathTrack>, m_hCurrentNode);
+	DECL_RELATIVE(CUtlVector<float>,   m_NodeDists);
+	DECL_RELATIVE(float,               m_flTotalDistance);
+	DECL_RELATIVE(int,                 m_iCurrentNode);
+	DECL_RELATIVE(int,                 m_iModelIndex);
 };
 
 
@@ -151,6 +154,48 @@ private:
 	static MemberFuncThunk<const CUpgrades *, const char *, int> ft_GetUpgradeAttributeName;
 };
 extern GlobalThunk<CHandle<CUpgrades>> g_hUpgradeEntity;
+
+class CFuncNavPrerequisite : public CBaseTrigger
+{
+public:
+	enum TaskType
+	{
+		DESTROY_ENTITY = 1,
+		MOVE_TO        = 2,
+		WAIT           = 3,
+	};
+	
+	DECL_DATAMAP(int,      m_task);
+	DECL_DATAMAP(string_t, m_taskEntityName);
+	DECL_DATAMAP(float,    m_taskValue);
+	DECL_DATAMAP(bool,     m_isDisabled);
+	// CHandle<T> @ m_isDisabled+4
+};
+
+
+class CServerOnlyEntity : public CBaseEntity {};
+class CLogicalEntity : public CServerOnlyEntity {};
+
+class CBaseFilter : public CLogicalEntity
+{
+public:
+	// TODO
+};
+
+class CFilterMultiple : public CBaseFilter
+{
+public:
+	// TODO
+};
+
+class CFilterTFBotHasTag : public CBaseFilter
+{
+public:
+	DECL_RELATIVE(CUtlStringList, m_TagList);
+	DECL_DATAMAP (string_t,       m_iszTags);
+	DECL_DATAMAP (bool,           m_bRequireAllTags);
+	DECL_DATAMAP (bool,           m_bNegated);
+};
 
 
 class CCurrencyPack : public CTFPowerup
@@ -211,6 +256,10 @@ public:
 private:
 	static GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> m_ITFFlameEntityAutoListAutoList;
 };
+
+
+extern GlobalThunk<const char *[4]> s_TankModel;
+extern GlobalThunk<const char *[4]> s_TankModelRome;
 
 
 // 20151007a

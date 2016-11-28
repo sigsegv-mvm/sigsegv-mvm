@@ -19,11 +19,11 @@ namespace Mod_Util_JumboFrames
 	
 #if defined _LINUX
 	
-	class CPatch_ConVar_Max : public IPatch
+	class CPatch_ConVar_Max : public CPatch
 	{
 	public:
 		CPatch_ConVar_Max(const char *name, float old_max, float new_max) :
-			IPatch(sizeof(float)), m_strName(name), m_flOldMax(old_max), m_flNewMax(new_max) {}
+			CPatch(sizeof(float)), m_strName(name), m_flOldMax(old_max), m_flNewMax(new_max) {}
 		
 		virtual const char *GetFuncName() const override { return this->m_strName.c_str(); }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0040; }
@@ -51,9 +51,9 @@ namespace Mod_Util_JumboFrames
 	constexpr uint8_t buf_NET_SendPacket_default[] = {
 		0xbe, 0xec, 0x04, 0x00, 0x00, // +0000  mov esi,1260
 	};
-	struct CPatch_Net_SendPacket_Default : public IPatch
+	struct CPatch_Net_SendPacket_Default : public CPatch
 	{
-		CPatch_Net_SendPacket_Default() : IPatch(sizeof(buf_NET_SendPacket_default)) {}
+		CPatch_Net_SendPacket_Default() : CPatch(sizeof(buf_NET_SendPacket_default)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendPacket"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x1200; } // @ +0x0c00
@@ -77,9 +77,9 @@ namespace Mod_Util_JumboFrames
 		0x81, 0xfe, 0xec, 0x04, 0x00, 0x00, // +0005  cmp esi,0x4ec
 		0x0f, 0x4d, 0xf0,                   // +000B  cmovge esi,eax
 	};
-	struct CPatch_Net_SendPacket_Clamp : public IPatch
+	struct CPatch_Net_SendPacket_Clamp : public CPatch
 	{
-		CPatch_Net_SendPacket_Clamp() : IPatch(sizeof(buf_NET_SendPacket_clamp)) {}
+		CPatch_Net_SendPacket_Clamp() : CPatch(sizeof(buf_NET_SendPacket_clamp)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendPacket"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x1200; } // @ +0x0855
@@ -108,9 +108,9 @@ namespace Mod_Util_JumboFrames
 		0x53,                               // +0005  push ebx
 		0x81, 0xec, 0x8c, 0x05, 0x00, 0x00, // +0006  sub esp,0x58c
 	};
-	struct CPatch_Net_SendLong_Prologue : public IPatch
+	struct CPatch_Net_SendLong_Prologue : public CPatch
 	{
-		CPatch_Net_SendLong_Prologue() : IPatch(sizeof(buf_NET_SendLong_prologue)) {}
+		CPatch_Net_SendLong_Prologue() : CPatch(sizeof(buf_NET_SendLong_prologue)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0000; }
@@ -140,9 +140,9 @@ namespace Mod_Util_JumboFrames
 		0x5d,                               // +0009  pop ebp
 		0xc3,                               // +000A  ret
 	};
-	struct CPatch_Net_SendLong_Epilogue : public IPatch
+	struct CPatch_Net_SendLong_Epilogue : public CPatch
 	{
-		CPatch_Net_SendLong_Epilogue() : IPatch(sizeof(buf_NET_SendLong_epilogue)) {}
+		CPatch_Net_SendLong_Epilogue() : CPatch(sizeof(buf_NET_SendLong_epilogue)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x0497
@@ -171,9 +171,9 @@ namespace Mod_Util_JumboFrames
 		0x85, 0xd2,                                                 // +0016  test edx,edx
 		0x89, 0x85, 0xdc, 0xfa, 0xff, 0xff,                         // +0018  mov dword ptr [ebp+packet+0x4],eax
 	};
-	struct CPatch_Net_SendLong_PacketRef1 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef1 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef1() : IPatch(sizeof(buf_NET_SendLong_packet_ref1)) {}
+		CPatch_Net_SendLong_PacketRef1() : CPatch(sizeof(buf_NET_SendLong_packet_ref1)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x0132
@@ -213,9 +213,9 @@ namespace Mod_Util_JumboFrames
 		0x66, 0x89, 0x85, 0xe0, 0xfa, 0xff, 0xff, // +002C  mov word ptr [ebp+packet+0x8],ax
 		0xe8, 0x85, 0x5e, 0x23, 0x00,             // +0033  call memcpy
 	};
-	struct CPatch_Net_SendLong_PacketRef2 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef2 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef2() : IPatch(sizeof(buf_NET_SendLong_packet_ref2)) {}
+		CPatch_Net_SendLong_PacketRef2() : CPatch(sizeof(buf_NET_SendLong_packet_ref2)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x035b
@@ -255,9 +255,9 @@ namespace Mod_Util_JumboFrames
 		0x89, 0x4c, 0x24, 0x04,                         // +002E  mov [ebp+0x4],ecx
 		0xe8, 0x09, 0xb0, 0xff, 0xff,                   // +0032  call NET_SendTo
 	};
-	struct CPatch_Net_SendLong_PacketRef3 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef3 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef3() : IPatch(sizeof(buf_NET_SendLong_packet_ref3)) {}
+		CPatch_Net_SendLong_PacketRef3() : CPatch(sizeof(buf_NET_SendLong_packet_ref3)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x03c0
@@ -288,9 +288,9 @@ namespace Mod_Util_JumboFrames
 		0x85, 0xd2,                                                 // +0016  test edx,edx
 		0x89, 0x85, 0xdc, 0xfa, 0xff, 0xff,                         // +0018  mov dword ptr [ebp+packet+0x4],eax
 	};
-	struct CPatch_Net_SendLong_PacketRef1 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef1 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef1() : IPatch(sizeof(buf_NET_SendLong_packet_ref1)) {}
+		CPatch_Net_SendLong_PacketRef1() : CPatch(sizeof(buf_NET_SendLong_packet_ref1)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x0132
@@ -337,9 +337,9 @@ namespace Mod_Util_JumboFrames
 		0x66, 0x89, 0x85, 0xe0, 0xfa, 0xff, 0xff, // +002C  mov word ptr [ebp+packet+0x8],ax
 		0xe8, 0x85, 0x5e, 0x23, 0x00,             // +0033  call memcpy
 	};
-	struct CPatch_Net_SendLong_PacketRef2 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef2 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef2() : IPatch(sizeof(buf_NET_SendLong_packet_ref2)) {}
+		CPatch_Net_SendLong_PacketRef2() : CPatch(sizeof(buf_NET_SendLong_packet_ref2)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x035b
@@ -385,9 +385,9 @@ namespace Mod_Util_JumboFrames
 		0x89, 0x4c, 0x24, 0x04,                         // +002E  mov [ebp+0x4],ecx
 		0xe8, 0x09, 0xb0, 0xff, 0xff,                   // +0032  call NET_SendTo
 	};
-	struct CPatch_Net_SendLong_PacketRef3 : public IPatch
+	struct CPatch_Net_SendLong_PacketRef3 : public CPatch
 	{
-		CPatch_Net_SendLong_PacketRef3() : IPatch(sizeof(buf_NET_SendLong_packet_ref3)) {}
+		CPatch_Net_SendLong_PacketRef3() : CPatch(sizeof(buf_NET_SendLong_packet_ref3)) {}
 		virtual const char *GetFuncName() const override { return "NET_SendLong"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
 		virtual uint32_t GetFuncOffMax() const override  { return 0x0700; } // @ +0x03c0

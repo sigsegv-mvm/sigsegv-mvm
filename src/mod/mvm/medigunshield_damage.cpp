@@ -11,9 +11,9 @@ namespace Mod_MvM_MedigunShield_Damage
 		0xe9, 0x36, 0xfd, 0xff, 0xff,       // +0011  jmp -0x2ca
 	};
 	
-	struct CPatch_CTFMedigunShield_ShieldTouch : public IPatch
+	struct CPatch_CTFMedigunShield_ShieldTouch : public CPatch
 	{
-		CPatch_CTFMedigunShield_ShieldTouch() : IPatch(sizeof(s_Buf)) {}
+		CPatch_CTFMedigunShield_ShieldTouch() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFMedigunShield::ShieldTouch"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x02c0; }

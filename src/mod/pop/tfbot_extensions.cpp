@@ -90,11 +90,23 @@ namespace Mod_Pop_TFBot_Extensions
 		float delay    =  0.0f;
 	};
 	
+	enum ActionType
+	{
+		Action_Default,
+		
+		// built-in
+		Action_FetchFlag,
+		Action_PushToCapturePoint,
+		
+		// custom
+		Action_Mobber,
+	};
+	
 	struct SpawnerData
 	{
 		std::vector<AddCond> addconds;
 		
-		bool action_mobber = false;
+		ActionType action = Action_Default;
 		
 		bool use_human_model = false;
 	};
@@ -103,9 +115,9 @@ namespace Mod_Pop_TFBot_Extensions
 	std::map<CTFBotSpawner *, SpawnerData> spawners;
 	
 	
-	/* this is really dodgy... should probably do this with the ECAttr
-	 * extension system, provided we ever finish that contraption */
-	std::vector<CHandle<CTFBot>> action_override_mobber;
+//	/* this is really dodgy... should probably do this with the ECAttr
+//	 * extension system, provided we ever finish that contraption */
+//	std::map<CHandle<CTFBot>, ActionType> pending_action_overrides;
 	
 	
 	struct DelayedAddCond
@@ -140,12 +152,49 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	/* for keeping track of which spawner each bot came from */
+	CTFBotSpawner *bot_spawner_tracker[33];
+	CTFBotSpawner *GetSpawnerOfBot(const CTFBot *bot)
+	{
+		int idx = ENTINDEX(bot);
+		if (idx == 0) return nullptr;
+		
+		assert(idx > 0);
+		assert(idx < 33);
+		return bot_spawner_tracker[idx];
+	}
+	void SetSpawnerOfBot(const CTFBot *bot, CTFBotSpawner *spawner)
+	{
+		int idx = ENTINDEX(bot);
+		if (idx == 0) return;
+		
+		assert(idx > 0);
+		assert(idx < 33);
+		bot_spawner_tracker[idx] = spawner;
+	}
+	void ClearTrackingForSpawner(CTFBotSpawner *spawner)
+	{
+		for (auto& elem : bot_spawner_tracker) {
+			if (elem == spawner) {
+				elem = nullptr;
+			}
+		}
+	}
+	void ClearAllTracking()
+	{
+		for (auto& elem : bot_spawner_tracker) {
+			elem = nullptr;
+		}
+	}
+	
+	
 	DETOUR_DECL_MEMBER(void, CTFBotSpawner_dtor0)
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
 		DevMsg("CTFBotSpawner %08x: dtor0\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
+		ClearTrackingForSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor0)();
 	}
@@ -156,6 +205,7 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		DevMsg("CTFBotSpawner %08x: dtor2\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
+		ClearTrackingForSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor2)();
 	}
@@ -207,8 +257,14 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		const char *value = kv->GetString();
 		
-		if (V_stricmp(value, "Mobber") == 0) {
-			spawners[spawner].action_mobber = true;
+		if (V_stricmp(value, "Default") == 0) {
+			spawners[spawner].action = Action_Default;
+		} else if (V_stricmp(value, "FetchFlag") == 0) {
+			spawners[spawner].action = Action_FetchFlag;
+		} else if (V_stricmp(value, "PushToCapturePoint") == 0) {
+			spawners[spawner].action = Action_PushToCapturePoint;
+		} else if (V_stricmp(value, "Mobber") == 0) {
+			spawners[spawner].action = Action_Mobber;
 		} else {
 			Warning("Unknown value \'%s\' for TFBot Action.\n", value);
 		}
@@ -264,40 +320,53 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		auto result = DETOUR_MEMBER_CALL(CTFBotSpawner_Spawn)(where, ents);
 		
-		if (ents != nullptr) {
+	//	DevMsg("\nCTFBotSpawner %08x: SPAWNED\n", (uintptr_t)spawner);
+	//	DevMsg("  [classicon \"%s\"] [miniboss %d]\n", STRING(spawner->GetClassIcon(0)), spawner->IsMiniBoss(0));
+	//	DevMsg("- result: %d\n", result);
+	//	if (ents != nullptr) {
+	//		DevMsg("- ents:  ");
+	//		FOR_EACH_VEC((*ents), i) {
+	//			DevMsg(" #%d", ENTINDEX((*ents)[i]));
+	//		}
+	//		DevMsg("\n");
+	//	}
+		
+		if (result && ents != nullptr && !ents->IsEmpty()) {
 			auto it = spawners.find(spawner);
 			if (it != spawners.end()) {
 				SpawnerData& data = (*it).second;
 				
-				FOR_EACH_VEC((*ents), i) {
-					CTFBot *bot = ToTFBot((*ents)[i]);
-					if (bot != nullptr) {
-		//				DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
-						for (auto addcond : data.addconds) {
-							if (addcond.delay == 0.0f) {
-								DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
-								bot->m_Shared->AddCond(addcond.cond, addcond.duration);
-							} else {
-								delayed_addconds.push_back({
-									bot,
-									gpGlobals->curtime + addcond.delay,
-									addcond.cond,
-									addcond.duration,
-								});
-							}
+				CTFBot *bot = ToTFBot(ents->Tail());
+				if (bot != nullptr) {
+					SetSpawnerOfBot(bot, spawner);
+					
+				//	DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
+					for (auto addcond : data.addconds) {
+						if (addcond.delay == 0.0f) {
+							DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
+							bot->m_Shared->AddCond(addcond.cond, addcond.duration);
+						} else {
+							delayed_addconds.push_back({
+								bot,
+								gpGlobals->curtime + addcond.delay,
+								addcond.cond,
+								addcond.duration,
+							});
 						}
+					}
+					
+				//	if (data.action != Action_Default) {
+				//		pending_action_overrides.emplace(bot, data.action);
+				//	}
+					
+					if (data.use_human_model) {
+						DevMsg("CTFBotSpawner %08x: applying UseHumanModel on bot #%d\n", (uintptr_t)spawner, ENTINDEX(bot));
 						
-						if (data.action_mobber) {
-							action_override_mobber.push_back(bot);
-						}
-						
-						if (data.use_human_model) {
-							// calling SetCustomModel with a nullptr string *seems* to reset the model
-							// dunno what the bool parameter should be; I think it doesn't matter for the nullptr case
-							bot->GetPlayerClass()->SetCustomModel(nullptr, true);
-							bot->UpdateModel();
-							bot->SetBloodColor(BLOOD_COLOR_RED);
-						}
+						// calling SetCustomModel with a nullptr string *seems* to reset the model
+						// dunno what the bool parameter should be; I think it doesn't matter for the nullptr case
+						bot->GetPlayerClass()->SetCustomModel(nullptr, true);
+						bot->UpdateModel();
+						bot->SetBloodColor(BLOOD_COLOR_RED);
 					}
 				}
 			}
@@ -309,22 +378,76 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
 	{
-		bool override_mobber = false;
+		ActionType action = Action_Default;
 		
-		for (auto it = action_override_mobber.begin(); it != action_override_mobber.end(); ) {
-			if (*it == actor) {
-				it = action_override_mobber.erase(it);
-				override_mobber = true;
-			} else {
-				++it;
+		CTFBotSpawner *spawner = GetSpawnerOfBot(actor);
+		if (spawner != nullptr) {
+			auto it = spawners.find(spawner);
+			if (it != spawners.end()) {
+				SpawnerData& data = (*it).second;
+				action = data.action;
 			}
 		}
 		
-		if (override_mobber) {
+		switch (action) {
+		case Action_FetchFlag:
+			DevMsg("CTFBotSpawner: setting initial action of bot #%d to FetchFlag\n", ENTINDEX(actor));
+			return CTFBotFetchFlag::New();
+		case Action_PushToCapturePoint:
+			DevMsg("CTFBotSpawner: setting initial action of bot #%d to PushToCapturePoint[-->FetchFlag]\n", ENTINDEX(actor));
+			return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
+		case Action_Mobber:
+			DevMsg("CTFBotSpawner: setting initial action of bot #%d to Mobber\n", ENTINDEX(actor));
 			return new CTFBotMobber();
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
+	}
+	
+	
+	/* make engiebots that don't have any Action override always have Attributes
+	 * IgnoreFlag, so that we can safely remove the special-case class check in
+	 * CTFBot::GetFlagToFetch */
+	DETOUR_DECL_MEMBER(void, CTFBot_OnEventChangeAttributes, const CTFBot::EventChangeAttributes_t *ecattr)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (bot->IsPlayerClass(TF_CLASS_ENGINEER)) {
+			CTFBotSpawner *spawner = GetSpawnerOfBot(bot);
+			if (spawner != nullptr) {
+				auto it = spawners.find(spawner);
+				if (it != spawners.end()) {
+					SpawnerData& data = (*it).second;
+					
+					if (data.action == Action_Default) {
+						DevMsg("CTFBot::OnEventChangeAttributes(engie #%d): adding Attributes IgnoreFlag\n", ENTINDEX(bot));
+					//	const_cast<CTFBot::EventChangeAttributes_t *>(ecattr)->m_nBotAttrs |= CTFBot::ATTR_IGNORE_FLAG;
+						(int&)(ecattr->m_nBotAttrs) |= CTFBot::ATTR_IGNORE_FLAG;
+					} else {
+						DevMsg("CTFBot::OnEventChangeAttributes(engie #%d): not adding Attributes IgnoreFlag due to Action override\n", ENTINDEX(bot));
+					}
+				}
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(CTFBot_OnEventChangeAttributes)(ecattr);
+	}
+	
+	
+	RefCount rc_CTFBot_GetFlagToFetch;
+	DETOUR_DECL_MEMBER(CCaptureFlag *, CTFBot_GetFlagToFetch)
+	{
+		SCOPED_INCREMENT(rc_CTFBot_GetFlagToFetch);
+		return DETOUR_MEMBER_CALL(CTFBot_GetFlagToFetch)();
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CTFPlayer_IsPlayerClass, int iClass)
+	{
+		if (rc_CTFBot_GetFlagToFetch > 0 && iClass == TF_CLASS_ENGINEER) {
+			return false;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFPlayer_IsPlayerClass)(iClass);
 	}
 	
 	
@@ -357,6 +480,11 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFBot_OnEventChangeAttributes, "CTFBot::OnEventChangeAttributes");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,   "CTFBot::GetFlagToFetch");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass, "CTFPlayer::IsPlayerClass");
+			
 			// TEST! REMOVE ME!
 //			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetOverrideStepSound, "CTFPlayer::GetOverrideStepSound");
 //			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetSceneSoundToken,   "CTFPlayer::GetSceneSoundToken");
@@ -365,11 +493,13 @@ namespace Mod_Pop_TFBot_Extensions
 		virtual void OnUnload() override
 		{
 			spawners.clear();
+			ClearAllTracking();
 		}
 		
 		virtual void OnDisable() override
 		{
 			spawners.clear();
+			ClearAllTracking();
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }

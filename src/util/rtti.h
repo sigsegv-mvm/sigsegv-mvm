@@ -13,11 +13,11 @@ typedef _TypeDescriptor rtti_t;
 
 
 #if defined __GNUC__
-template<class T> inline const char *TypeName()           { return typeid( T).name(); }
-template<class T> inline const char *TypeName(const T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
+template<class T> inline const char *TypeName()     { return typeid( T).name(); }
+template<class T> inline const char *TypeName(T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
 #elif defined _MSC_VER
-template<class T> inline const char *TypeName()           { return typeid( T).raw_name(); }
-template<class T> inline const char *TypeName(const T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
+template<class T> inline const char *TypeName()     { return typeid( T).raw_name(); }
+template<class T> inline const char *TypeName(T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
 #endif
 
 

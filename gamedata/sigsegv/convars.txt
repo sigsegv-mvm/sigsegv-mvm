@@ -1,0 +1,37 @@
+// convars
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"con_filter_enable"
+				{
+					type "convar"
+					name "con_filter_enable"
+					lib  "engine"
+				}
+				"con_filter_text"
+				{
+					type "convar"
+					name "con_filter_text"
+					lib  "engine"
+				}
+				"con_filter_text_out"
+				{
+					type "convar"
+					name "con_filter_text_out"
+					lib  "engine"
+				}
+			}
+		}
+	}
+}

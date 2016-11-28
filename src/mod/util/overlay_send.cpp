@@ -760,7 +760,6 @@ namespace Mod_Util_Overlay_Send
 		MSG_END();
 	}
 	
-	
 	void Send_Clear()
 	{
 		MSG_BEGIN();

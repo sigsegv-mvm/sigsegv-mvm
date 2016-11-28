@@ -13,6 +13,8 @@ public:
 	void SetModelScale(float scale, float change_duration = 0.0f)          { ft_SetModelScale     (this, scale, change_duration); }
 	void DrawServerHitboxes(float duration = 0.0f, bool monocolor = false) { ft_DrawServerHitboxes(this, duration, monocolor); }
 	
+	DECL_SENDPROP(int,   m_nSkin);
+	
 private:
 	DECL_SENDPROP(float, m_flModelScale);
 	

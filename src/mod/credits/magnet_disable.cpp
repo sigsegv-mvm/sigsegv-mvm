@@ -16,9 +16,9 @@ namespace Mod_Credits_Magnet_Disable
 	//	0xc7, 0x43, 0x3c, 0x00, 0x00, 0x02, 0x44, // +0000 mov dword ptr [ebx+0x3c],520.0f
 	};
 	
-	struct CPatch_CTFPlayerShared_RadiusCurrencyCollectionCheck : public IPatch
+	struct CPatch_CTFPlayerShared_RadiusCurrencyCollectionCheck : public CPatch
 	{
-		CPatch_CTFPlayerShared_RadiusCurrencyCollectionCheck() : IPatch(sizeof(s_Buf)) {}
+		CPatch_CTFPlayerShared_RadiusCurrencyCollectionCheck() : CPatch(sizeof(s_Buf)) {}
 		
 		#error need addr
 		virtual const char *GetFuncName() const override { return "[client] CTFGameMovement::ProcessMovement"; }

@@ -14,18 +14,22 @@ IMPL_DATAMAP(Vector,                 CBaseEntity, m_vecAbsVelocity);
 IMPL_DATAMAP(IPhysicsObject*,        CBaseEntity, m_pPhysicsObject);
 IMPL_DATAMAP(matrix3x4_t,            CBaseEntity, m_rgflCoordinateFrame);
 IMPL_DATAMAP(int,                    CBaseEntity, m_nNextThinkTick);
+IMPL_DATAMAP(CHandle<CBaseEntity>,   CBaseEntity, m_hMoveChild);
+IMPL_DATAMAP(CHandle<CBaseEntity>,   CBaseEntity, m_hMovePeer);
+IMPL_DATAMAP(CHandle<CBaseEntity>,   CBaseEntity, m_hMoveParent);
 
-IMPL_SENDPROP(CCollisionProperty,   CBaseEntity, m_Collision,      CBaseEntity);
-IMPL_SENDPROP(int,                  CBaseEntity, m_iTeamNum,       CBaseEntity);
-IMPL_SENDPROP(int,                  CBaseEntity, m_iMaxHealth,     CBaseObject);
-IMPL_SENDPROP(int,                  CBaseEntity, m_iHealth,        CBasePlayer);
-IMPL_SENDPROP(char,                 CBaseEntity, m_lifeState,      CBasePlayer);
-IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hGroundEntity,  CBasePlayer);
-IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hOwnerEntity,   CBaseEntity);
-IMPL_SENDPROP(int,                  CBaseEntity, m_fFlags,         CBasePlayer);
-IMPL_SENDPROP(int,                  CBaseEntity, m_CollisionGroup, CBaseEntity);
-IMPL_SENDPROP(unsigned char,        CBaseEntity, m_nRenderMode,    CBaseEntity);
-IMPL_SENDPROP(unsigned char,        CBaseEntity, m_MoveType,       CBaseEntity, "movetype");
+IMPL_SENDPROP(CCollisionProperty,   CBaseEntity, m_Collision,            CBaseEntity);
+IMPL_SENDPROP(int,                  CBaseEntity, m_iTeamNum,             CBaseEntity);
+IMPL_SENDPROP(int,                  CBaseEntity, m_iMaxHealth,           CBaseObject);
+IMPL_SENDPROP(int,                  CBaseEntity, m_iHealth,              CBasePlayer);
+IMPL_SENDPROP(char,                 CBaseEntity, m_lifeState,            CBasePlayer);
+IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hGroundEntity,        CBasePlayer);
+IMPL_SENDPROP(CHandle<CBaseEntity>, CBaseEntity, m_hOwnerEntity,         CBaseEntity);
+IMPL_SENDPROP(int,                  CBaseEntity, m_fFlags,               CBasePlayer);
+IMPL_SENDPROP(int,                  CBaseEntity, m_CollisionGroup,       CBaseEntity);
+IMPL_SENDPROP(unsigned char,        CBaseEntity, m_nRenderMode,          CBaseEntity);
+IMPL_SENDPROP(unsigned char,        CBaseEntity, m_MoveType,             CBaseEntity, "movetype");
+IMPL_SENDPROP(int[4],               CBaseEntity, m_nModelIndexOverrides, CBaseEntity);
 
 MemberFuncThunk<      CBaseEntity *, void                              > CBaseEntity::ft_Remove              ("CBaseEntity::Remove");
 MemberFuncThunk<      CBaseEntity *, void                              > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
@@ -44,10 +48,15 @@ MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEnt
 MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> CBaseEntity::vt_GetVelocity              (TypeName<CBaseEntity>(), "CBaseEntity::GetVelocity");
 MemberVFuncThunk<const CBaseEntity *, const Vector&                   > CBaseEntity::vt_WorldSpaceCenter         (TypeName<CBaseEntity>(), "CBaseEntity::WorldSpaceCenter");
 MemberVFuncThunk<const CBaseEntity *, bool                            > CBaseEntity::vt_IsCombatItem             (TypeName<CBaseEntity>(), "CBaseEntity::IsCombatItem");
+MemberVFuncThunk<      CBaseEntity *, void, int                       > CBaseEntity::vt_SetModelIndex            (TypeName<CBaseEntity>(), "CBaseEntity::SetModelIndex");
 MemberVFuncThunk<const CBaseEntity *, int                             > CBaseEntity::vt_GetModelIndex            (TypeName<CBaseEntity>(), "CBaseEntity::GetModelIndex");
+MemberVFuncThunk<const CBaseEntity *, string_t                        > CBaseEntity::vt_GetModelName             (TypeName<CBaseEntity>(), "CBaseEntity::GetModelName");
 MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *          > CBaseEntity::vt_MyCombatCharacterPointer (TypeName<CBaseEntity>(), "CBaseEntity::MyCombatCharacterPointer");
 MemberVFuncThunk<const CBaseEntity *, bool, int, int                  > CBaseEntity::vt_ShouldCollide            (TypeName<CBaseEntity>(), "CBaseEntity::ShouldCollide");
 MemberVFuncThunk<      CBaseEntity *, void                            > CBaseEntity::vt_DrawDebugGeometryOverlays(TypeName<CBaseEntity>(), "CBaseEntity::DrawDebugGeometryOverlays");
+MemberVFuncThunk<      CBaseEntity *, void, int                       > CBaseEntity::vt_ChangeTeam               (TypeName<CBaseEntity>(), "CBaseEntity::ChangeTeam");
+MemberVFuncThunk<      CBaseEntity *, void, int, int                  > CBaseEntity::vt_SetModelIndexOverride    (TypeName<CBaseEntity>(), "CBaseEntity::SetModelIndexOverride");
+MemberVFuncThunk<      CBaseEntity *, datamap_t *                     > CBaseEntity::vt_GetDataDescMap           (TypeName<CBaseEntity>(), "CBaseEntity::GetDataDescMap");
 
 
 bool CBaseEntity::IsPlayer() const

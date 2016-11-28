@@ -1,24 +1,9 @@
 #include "util/backtrace.h"
+#include "util/demangle.h"
 #include "library.h"
 
 
 #if defined _LINUX || defined _OSX
-
-
-const char *try_demangle(const char *mangled)
-{
-	if (strlen(mangled) == 0) {
-		return strdup("???");
-	}
-	
-	const char *demangled = cplus_demangle(mangled, DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS);
-	
-	if (demangled != nullptr) {
-		return demangled;
-	} else {
-		return strdup(mangled);
-	}
-}
 
 
 void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *offp)
@@ -43,6 +28,8 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 				best = sym;
 			}
 		}
+		
+		return true;
 	}
 	);
 	
@@ -91,11 +78,14 @@ void cached_get_proc_name(unw_cursor_t *cp, const char **p_name, unw_word_t *p_o
 		sym_get_proc_name(cp, buf, sizeof(buf), &off);
 	}
 	
-	const char *demangled = try_demangle(buf);
+	std::string demangled = "???";
+	if (buf[0] != '\0') {
+		DemangleName(buf, demangled);
+	}
+	
 	auto& entry = cache[r_ip];
 	entry.name = demangled;
 	entry.off  = off;
-	free((void *)demangled);
 	
 	*p_name = entry.name.c_str();
 	*p_off  = entry.off;

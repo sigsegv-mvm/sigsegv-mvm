@@ -7,6 +7,8 @@
 #include "util/misc.h"
 #include "util/clientmsg.h"
 
+#include <tier1/utlstack.h>
+
 
 //#include "../mvm-reversed/server/tf/bot/behavior/tf_bot_use_item.h"
 class CTFBotUseItem : public Action<CTFBot>
@@ -215,6 +217,16 @@ namespace Mod_Debug_UseItem_Broken
 		
 		ClientMsg(" \n[%8.3f] CTFBotUseItem::Update(#%d)\n", gpGlobals->curtime, ENTINDEX(actor));
 		
+		if (useitem->m_hItem != nullptr) {
+			ClientMsg("%*s[m_bRageDraining: %s]\n",                 13, " ", (actor->m_Shared->m_bRageDraining ? "true" : "false"));
+			ClientMsg("%*s[m_flRageMeter: %6.2f]\n",                13, " ", (float)actor->m_Shared->m_flRageMeter);
+			ClientMsg("%*s[m_flEnergyDrinkMeter: %6.2f]\n",         13, " ", (float)actor->m_Shared->m_flEnergyDrinkMeter);
+			ClientMsg("%*s[InCond(TF_COND_TAUNTING): %s]\n",        13, " ", (actor->m_Shared->InCond(TF_COND_TAUNTING) ? "true" : "false"));
+			ClientMsg("%*s[item->HasAmmo(): %s]\n",                 13, " ", (useitem->m_hItem->HasAmmo() ? "true" : "false"));
+			ClientMsg("%*s[item->m_flLastFireTime: %8.3f]\n",       13, " ", (float)useitem->m_hItem->m_flLastFireTime);
+			ClientMsg("%*s[item->m_flEffectBarRegenTime: %8.3f]\n", 13, " ", (float)useitem->m_hItem->m_flEffectBarRegenTime);
+		}
+		
 		if (useitem->m_ctInitialDelay.HasStarted() && useitem->m_ctInitialDelay.IsElapsed()) {
 			ClientMsg("%*sInitial delay elapsed; pressing +attack now\n", 13, " ");
 		}
@@ -242,8 +254,8 @@ namespace Mod_Debug_UseItem_Broken
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
 		/* TODO: remove this garbage! */
-		constexpr int OFF_m_RequiredWeapons = 0x2570;
-		auto m_RequiredWeapons = reinterpret_cast<CUtlVector<CHandle<CTFWeaponBase>> *>((uintptr_t)bot + OFF_m_RequiredWeapons);
+		constexpr int OFF_m_RequiredWeapons = 0x25c4;
+		auto m_RequiredWeapons = reinterpret_cast<CUtlStack<CHandle<CTFWeaponBase>> *>((uintptr_t)bot + OFF_m_RequiredWeapons);
 		
 		DETOUR_MEMBER_CALL(CTFBot_PushRequiredWeapon)(weapon);
 		if (rc_CTFBotUseItem_OnStart > 0) {
@@ -265,8 +277,8 @@ namespace Mod_Debug_UseItem_Broken
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
 		/* TODO: remove this garbage! */
-		constexpr int OFF_m_RequiredWeapons = 0x2570;
-		auto m_RequiredWeapons = reinterpret_cast<CUtlVector<CHandle<CTFWeaponBase>> *>((uintptr_t)bot + OFF_m_RequiredWeapons);
+		constexpr int OFF_m_RequiredWeapons = 0x25c4;
+		auto m_RequiredWeapons = reinterpret_cast<CUtlStack<CHandle<CTFWeaponBase>> *>((uintptr_t)bot + OFF_m_RequiredWeapons);
 		
 		DETOUR_MEMBER_CALL(CTFBot_PopRequiredWeapon)();
 		if (rc_CTFBotUseItem_OnEnd > 0) {
@@ -288,9 +300,9 @@ namespace Mod_Debug_UseItem_Broken
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
-		const char *before = WeaponID_ToString(bot->GetActiveTFWeapon()->GetWeaponID());
+		const char *before = (bot->GetActiveTFWeapon() != nullptr ? WeaponID_ToString(bot->GetActiveTFWeapon()->GetWeaponID()) : "nullptr");
 		auto result = DETOUR_MEMBER_CALL(CTFBot_EquipRequiredWeapon)();
-		const char *after  = WeaponID_ToString(bot->GetActiveTFWeapon()->GetWeaponID());
+		const char *after  = (bot->GetActiveTFWeapon() != nullptr ? WeaponID_ToString(bot->GetActiveTFWeapon()->GetWeaponID()) : "nullptr");
 		
 		if (strcmp(before, after) != 0) {
 			ClientMsg(" \n[%8.3f] CTFBot::EquipRequiredWeapon(#%d): %s -> %s\n", gpGlobals->curtime, ENTINDEX(bot), before, after);

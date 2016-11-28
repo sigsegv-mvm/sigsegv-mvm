@@ -71,6 +71,7 @@ CopyFiles('gamedata/sigsegv', 'addons/sourcemod/gamedata/sigsegv',
     'misc.txt',
     'debugoverlay.txt',
     'client.txt',
+    'convars.txt',
   ]
 )
 

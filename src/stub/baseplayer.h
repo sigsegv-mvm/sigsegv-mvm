@@ -7,6 +7,7 @@
 
 class CNavArea;
 class CBaseCombatWeapon;
+class CEconWearable;
 
 
 class CBaseCombatCharacter : public CBaseFlex
@@ -15,6 +16,9 @@ public:
 	enum FieldOfViewCheckType { USE_FOV, DISREGARD_FOV };
 	
 	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
+	int WeaponCount() const                    { return MAX_WEAPONS; }
+	CBaseCombatWeapon *GetWeapon(int i) const  { return this->m_hMyWeapons[i]; }
+	static_assert(MAX_WEAPONS == 48, "");
 	
 	void AddGlowEffect()                                                        {        ft_AddGlowEffect     (this); }
 	void RemoveGlowEffect()                                                     {        ft_RemoveGlowEffect  (this); }
@@ -32,7 +36,8 @@ public:
 	bool ShouldGib(const CTakeDamageInfo& info)                            { return vt_ShouldGib         (this, info); }
 	
 private:
-	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hActiveWeapon);
+	DECL_SENDPROP(CHandle<CBaseCombatWeapon>,              m_hActiveWeapon);
+	DECL_SENDPROP(CHandle<CBaseCombatWeapon>[MAX_WEAPONS], m_hMyWeapons);
 	
 	static MemberFuncThunk<CBaseCombatCharacter *, void>                                               ft_AddGlowEffect;
 	static MemberFuncThunk<CBaseCombatCharacter *, void>                                               ft_RemoveGlowEffect;
@@ -65,9 +70,11 @@ public:
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
-	const char *GetPlayerName() { return this->m_szNetname; }
-	float MaxSpeed() const      { return this->m_flMaxspeed; }
-	int GetUserID()             { return engine->GetPlayerUserId(this->edict()); }
+	const char *GetPlayerName()             { return this->m_szNetname; }
+	float MaxSpeed() const                  { return this->m_flMaxspeed; }
+	int GetUserID()                         { return engine->GetPlayerUserId(this->edict()); }
+	int GetNumWearables() const             { return this->m_hMyWearables->Count(); }
+	CEconWearable *GetWearable(int i) const { return this->m_hMyWearables[i]; }
 	
 	/* easy-but-slow calls via IPlayerInfo */
 	const char *GetNetworkIDString() const { return this->GetPlayerInfo()->GetNetworkIDString(); }
@@ -98,7 +105,8 @@ public:
 private:
 	IPlayerInfo *GetPlayerInfo() const { return playerinfomanager->GetPlayerInfo(this->edict()); }
 	
-	DECL_SENDPROP(float, m_flMaxspeed);
+	DECL_SENDPROP(float,                              m_flMaxspeed);
+	DECL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, m_hMyWearables);
 	
 	DECL_DATAMAP(char[32],     m_szNetname);
 	DECL_DATAMAP(bool,         m_bDuckToggled);

@@ -301,6 +301,12 @@
 					sym  "_ZN9CTFPlayer19CreateRagdollEntityEbbbbbbbbib"
 				}
 				
+				"CTFPlayer::ClientCommand"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13ClientCommandERK8CCommand"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -346,6 +352,21 @@
 					type "sym"
 					sym  "_ZN15CTFPlayerShared12SetRageMeterEf"
 				}
+				"CTFPlayerShared::GetConditionsBits"
+				{
+					type "sym regex"
+					sym  "_ZNK15CTFPlayerShared17GetConditionsBitsER7CBitVecILi[[:digit:]]{3}EE"
+				}
+				"CTFPlayerShared::GetConditionDuration"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared20GetConditionDurationE7ETFCond"
+				}
+				"CTFPlayerShared::GetConditionProvider"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared20GetConditionProviderE7ETFCond"
+				}
 				
 				"CTFPlayerClassShared::SetCustomModel"
 				{
@@ -359,16 +380,16 @@
 					sym  "_ZN20CTFPlayerSharedUtils28GetEconItemViewByLoadoutSlotEP9CTFPlayeriPP11CEconEntity"
 				}
 				
-				"GetTFConditionName"
-				{
-					type "sym"
-					sym  "_Z18GetTFConditionName7ETFCond"
-				}
-				"GetTFConditionFromName"
-				{
-					type "sym"
-					sym  "_Z22GetTFConditionFromNamePKc"
-				}
+			//	"GetTFConditionName"
+			//	{
+			//		type "sym"
+			//		sym  "_Z18GetTFConditionName7ETFCond"
+			//	}
+			//	"GetTFConditionFromName"
+			//	{
+			//		type "sym"
+			//		sym  "_Z22GetTFConditionFromNamePKc"
+			//	}
 			}
 		}
 	}

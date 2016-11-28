@@ -42,7 +42,13 @@ ISoundEmitterSystemBase *soundemitterbase = nullptr;
 
 IMaterialSystem *g_pMaterialSystem = nullptr;
 
+vgui::IVGui *g_pVGui                       = nullptr;
+vgui::IInput *g_pVGuiInput                 = nullptr;
+vgui::IPanel *g_pVGuiPanel                 = nullptr;
 vgui::ISchemeManager *g_pVGuiSchemeManager = nullptr;
+vgui::ISystem *g_pVGuiSystem               = nullptr;
+vgui::ILocalize *g_pVGuiLocalize           = nullptr;
+vgui::IInputInternal *g_pVGuiInputInternal = nullptr;
 
 vgui::ISurface *g_pVGuiSurface         = nullptr;
 IMatSystemSurface *g_pMatSystemSurface = nullptr;
@@ -67,6 +73,8 @@ IVProfExport *vprofexport = nullptr;
 IDedicatedExports *dedicated = nullptr;
 
 IMDLCache *mdlcache = nullptr;
+
+IClientMode *g_pClientMode = nullptr;
 
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
@@ -95,6 +103,8 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	RTTI::PreLoad();
 	AddrManager::Load();
+	
+	g_pClientMode = reinterpret_cast<IClientMode *>(AddrManager::GetAddr("g_pClientMode"));
 	
 	if (!Link::InitAll()) goto fail;
 	
@@ -152,13 +162,16 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 
 
 #define GET_IFACE_OPTIONAL(factory, var, name) \
-	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1))
+	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1)); \
+	if (var == nullptr) { \
+		DevWarning("Could not find optional interface: %s\n", name); \
+	}
 
 #define GET_IFACE_REQUIRED(factory, var, name) \
 	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1)); \
 	if (var == nullptr) { \
 		if (error != nullptr && maxlen != 0) { \
-			ismm->Format(error, maxlen, "Could not find interface: %s", name); \
+			ismm->Format(error, maxlen, "Could not find required interface: %s", name); \
 		} \
 		return false; \
 	}
@@ -191,8 +204,8 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_IFACE_REQUIRED(Server, botmanager,        INTERFACEVERSION_PLAYERBOTMANAGER);
 	GET_IFACE_REQUIRED(Server, servertools,       VSERVERTOOLS_INTERFACE_VERSION);
 	
-	GET_IFACE_REQUIRED(Physics, physics,       VPHYSICS_INTERFACE_VERSION);
-	GET_IFACE_REQUIRED(Physics, physcollision, VPHYSICS_COLLISION_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(VPhysics, physics,       VPHYSICS_INTERFACE_VERSION);
+	GET_IFACE_REQUIRED(VPhysics, physcollision, VPHYSICS_COLLISION_INTERFACE_VERSION);
 	
 	GET_IFACE_OPTIONAL(Engine, debugoverlay, VDEBUG_OVERLAY_INTERFACE_VERSION);
 	GET_IFACE_OPTIONAL(Engine, enginetools,  VENGINETOOL_INTERFACE_VERSION);
@@ -206,7 +219,13 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	}
 	
 	if (VGUIFactory() != nullptr) {
+		GET_IFACE_OPTIONAL(VGUI, g_pVGui,              VGUI_IVGUI_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiInput,         VGUI_INPUT_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiPanel,         VGUI_PANEL_INTERFACE_VERSION);
 		GET_IFACE_OPTIONAL(VGUI, g_pVGuiSchemeManager, VGUI_SCHEME_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiSystem,        VGUI_SYSTEM_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiLocalize,      VGUI_LOCALIZE_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(VGUI, g_pVGuiInputInternal, VGUI_INPUTINTERNAL_INTERFACE_VERSION);
 	}
 	
 	if (VGUIMatSurfaceFactory() != nullptr) {
@@ -232,12 +251,17 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	gpGlobals = ismm->GetCGlobals();
 	
-	LibMgr::SetPtr(Library::SERVER,         ServerFactory());
-	LibMgr::SetPtr(Library::ENGINE,         EngineFactory());
-	LibMgr::SetPtr(Library::DEDICATED,      dedicated);
-	LibMgr::SetPtr(Library::TIER0,          &MemAllocScratch);
-	LibMgr::SetPtr(Library::CLIENT,         clientdll);
-	LibMgr::SetPtr(Library::VGUIMATSURFACE, g_pVGuiSurface);
+	LibMgr::SetPtr(Library::SERVER,             ServerFactory());
+	LibMgr::SetPtr(Library::ENGINE,             EngineFactory());
+	LibMgr::SetPtr(Library::DEDICATED,          DedicatedFactory());
+	LibMgr::SetPtr(Library::TIER0,              &MemAllocScratch);
+	LibMgr::SetPtr(Library::CLIENT,             ClientFactory());
+	LibMgr::SetPtr(Library::VGUIMATSURFACE,     VGUIMatSurfaceFactory());
+	LibMgr::SetPtr(Library::MATERIALSYSTEM,     MaterialSystemFactory());
+	LibMgr::SetPtr(Library::SOUNDEMITTERSYSTEM, SoundEmitterSystemFactory());
+	LibMgr::SetPtr(Library::DATACACHE,          DataCacheFactory());
+	LibMgr::SetPtr(Library::VGUI,               VGUIFactory());
+	LibMgr::SetPtr(Library::VPHYSICS,           VPhysicsFactory());
 	
 	return true;
 }

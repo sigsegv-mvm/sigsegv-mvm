@@ -10,9 +10,9 @@ namespace Mod_MvM_Dominations
 		0x75, 0xcc,                               // +0009  jnz -0x34
 	};
 	
-	struct CPatch_CTFGameRules_CalcDominationAndRevenge : public IPatch
+	struct CPatch_CTFGameRules_CalcDominationAndRevenge : public CPatch
 	{
-		CPatch_CTFGameRules_CalcDominationAndRevenge() : IPatch(sizeof(s_Buf)) {}
+		CPatch_CTFGameRules_CalcDominationAndRevenge() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFGameRules::CalcDominationAndRevenge"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }

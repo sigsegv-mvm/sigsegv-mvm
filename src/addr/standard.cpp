@@ -1,4 +1,5 @@
 #include "addr/standard.h"
+#include "prop.h"
 #include "mem/scan.h"
 #include "util/rtti.h"
 
@@ -15,6 +16,27 @@ bool IAddr_Sym::FindAddrLinux(uintptr_t& addr) const
 }
 
 
+bool CAddr_Sym_Regex::FindAddrLinux(uintptr_t& addr) const
+{
+	float t1 = Plat_FloatTime();
+	auto results = LibMgr::FindSymRegex(this->GetLibrary(), this->GetSymbol());
+	float t2 = Plat_FloatTime();
+	ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "Regex lookup for \"%s\" \"%s\": %.3f ms\n",
+		this->GetName(), this->GetSymbol(), (t2 - t1) * 1000.0f);
+	
+	bool success      = std::get<0>(results);
+	std::string& name = std::get<1>(results);
+	void *sym_addr    = std::get<2>(results);
+	
+	if (!success || sym_addr == nullptr) {
+		return false;
+	}
+	
+	addr = (uintptr_t)sym_addr;
+	return true;
+}
+
+
 bool IAddr_FixedAddr::FindAddrWin(uintptr_t& addr) const
 {
 	if (engine->GetServerVersion() != this->GetServerVersion()) {
@@ -22,8 +44,7 @@ bool IAddr_FixedAddr::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	const LibInfo& info = LibMgr::GetInfo(this->GetLibrary());
-	addr = info.baseaddr + this->GetAddress();
+	addr = LibMgr::GetInfo(this->GetLibrary()).BaseAddr() + this->GetAddress();
 	return true;
 }
 
@@ -35,8 +56,8 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 		uint8_t buf[6];
 	};
 	
-	using ClassNameRefScanner   = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL,  0x4, const char *>;
-	using GetDataDescMapScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 0x10, GetDataDescMap>;
+	using ClassNameRefScanner   = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const char *,   0x4>;
+	using GetDataDescMapScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, GetDataDescMap, 0x10>;
 	
 	const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), this->GetClassName());
 	if (p_str == nullptr) {
@@ -44,7 +65,7 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CScan<ClassNameRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".data"), p_str);
+	CScan<ClassNameRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::DATA), p_str);
 	std::vector<GetDataDescMapScanner *> scanners;
 	for (auto match : scan1.Matches()) {
 		GetDataDescMap gddm;
@@ -52,7 +73,7 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 		*(uint32_t *)(&gddm.buf[0x01]) = (uint32_t)match - offsetof(datamap_t, dataClassName);
 		gddm.buf[0x05] = 0xc3; // ret
 		
-		scanners.push_back(new GetDataDescMapScanner(CLibSegBounds(this->GetLibrary(), ".text"), gddm));
+		scanners.push_back(new GetDataDescMapScanner(CLibSegBounds(this->GetLibrary(), Segment::TEXT), gddm));
 	}
 	
 	CMultiScan<GetDataDescMapScanner> scan2(scanners);
@@ -88,8 +109,9 @@ bool IAddr_Func_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 bool IAddr_Func_DataMap_VThunk::FindAddrWin(uintptr_t& addr) const
 {
 	auto p_DM = (const datamap_t *)AddrManager::GetAddr(this->GetDataMapName());
+//	auto p_DM = Prop::GetDataMapByClassname(this->GetEntClassname());
 	if (p_DM == nullptr) {
-		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": no addr for datamap\n", this->GetName());
+		DevMsg("IAddr_Func_DataMap_VThunk: \"%s\": can't find datamap: %s\n", this->GetName(), this->GetDataMapName());
 		return false;
 	}
 	
@@ -144,7 +166,7 @@ bool IAddr_Func_DataMap_VThunk::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 {
-	using SymRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, const void *>;
+	using SymRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const void *>;
 	
 	auto p_ref = AddrManager::GetAddr(this->GetUniqueSymbol());
 	if (p_ref == nullptr) {
@@ -152,7 +174,7 @@ bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CScan<SymRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_ref);
+	CScan<SymRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_ref);
 	if (!scan1.ExactlyOneMatch()) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueRef: \"%s\": found %u refs to ostensibly unique symbol\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -172,7 +194,7 @@ bool IAddr_Func_EBPPrologue_UniqueRef::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 {
-	using StrRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, const char *>;
+	using StrRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const char *>;
 	
 	const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), this->GetUniqueStr());
 	if (p_str == nullptr) {
@@ -180,7 +202,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 		return false;
 	}
 	
-	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_str);
 	if (!scan1.ExactlyOneMatch()) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -200,7 +222,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr::FindAddrWin(uintptr_t& addr) const
 
 bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
 {
-	using StrRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, const char *>;
+	using StrRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const char *>;
 	
 	const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), this->GetUniqueStr());
 	if (p_str == nullptr) {
@@ -208,7 +230,7 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 		return false;
 	}
 	
-	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_str);
 	if (!scan1.ExactlyOneMatch()) {
 		DevMsg("IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -238,6 +260,46 @@ bool IAddr_Func_EBPPrologue_UniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) c
 }
 
 
+bool IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx::FindAddrWin(uintptr_t& addr) const
+{
+	using StrRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const char *>;
+	
+	const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), this->GetStr());
+	if (p_str == nullptr) {
+		DevMsg("IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx: \"%s\": failed to find string\n", this->GetName());
+		return false;
+	}
+	
+	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_str);
+	if (scan1.Matches().empty()) {
+		DevMsg("IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx: \"%s\": no refs to string\n", this->GetName());
+		return false;
+	}
+	
+	auto p_VT = RTTI::GetVTable(this->GetVTableName());
+	if (p_VT == nullptr) {
+		DevMsg("IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx: \"%s\": no addr for vtable\n", this->GetName());
+		return false;
+	}
+	
+	for (auto p_in_func : scan1.Matches()) {
+		auto p_func = Scan::FindFuncPrologue(p_in_func);
+		if (p_func == nullptr) {
+			continue;
+		}
+		
+		auto vfptr = p_VT[this->GetVTableIndex()];
+		if (vfptr == p_func) {
+			addr = (uintptr_t)p_func;
+			return true;
+		}
+	}
+	
+	DevMsg("IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx: \"%s\": found %u string refs, but none matched vtable entry\n", this->GetName(), scan1.Matches().size());
+	return false;
+}
+
+
 bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 {
 #if defined __GNUC__
@@ -263,7 +325,7 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 	};
 	*(const char **)(vprof + 0x01) = p_name;
 	*(const char **)(vprof + 0x06) = p_group;
-	CScan<VProfScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), (const void *)vprof, sizeof(vprof));
+	CScan<VProfScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), (const void *)vprof, sizeof(vprof));
 	if (!scan1.ExactlyOneMatch()) {
 		DevMsg("IAddr_Func_EBPPrologue_VProf: \"%s\": could not locate VPROF_BUDGET\n", this->GetName());
 		return false;
@@ -284,7 +346,7 @@ bool IAddr_Func_EBPPrologue_VProf::FindAddrWin(uintptr_t& addr) const
 #if 0
 bool IAddr_Func_EBPPrologue_UniqueConVar::FindAddrWin(uintptr_t& addr) const
 {
-	using ConVarRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, uintptr_t>;
+	using ConVarRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, uintptr_t>;
 	
 	ConVarRef cvref(this->GetConVarName());
 	if (!cvref.IsValid()) {
@@ -317,7 +379,7 @@ bool IAddr_Func_EBPPrologue_UniqueConVar::FindAddrWin(uintptr_t& addr) const
 //		return false;
 //	}
 //	
-//	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+//	CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_str);
 //	if (!scan1.ExactlyOneMatch()) {
 //		DevMsg("IAddr_Func_EBPPrologue_UniqueStr: \"%s\": found %u refs to ostensibly unique string\n", this->GetName(), scan1.Matches().size());
 //		return false;
@@ -381,7 +443,7 @@ bool IAddr_Pattern::FindAddrWin(uintptr_t& addr) const
 		mask[i] = std::stoi(buf, nullptr, 0x10);
 	}
 	
-	CScan<PatternScanner> scan1(CLibSegBounds(this->GetLibrary(), this->GetSegment()), seek, mask);
+	CScan<PatternScanner> scan1(CLibSegBounds(this->GetLibrary(), LibMgr::Seg_FromString(this->GetSegment())), seek, mask);
 	if (!scan1.ExactlyOneMatch()) {
 		DevMsg("IAddr_Pattern: \"%s\": found %u pattern matches\n", this->GetName(), scan1.Matches().size());
 		return false;
@@ -414,4 +476,18 @@ void CAddr_Pattern::ProcessStrings()
 	}
 	buf_mask.push_back('\0');
 	this->m_strMask = buf_mask.data();
+}
+
+
+bool IAddr_ConCommandBase::FindAddrLinux(uintptr_t& addr) const
+{
+	const char *name = this->GetConName();
+	bool is_command  = this->IsCommand();
+	
+	#warning FINISH THIS!
+	#warning FINISH THIS!
+	#warning FINISH THIS!
+	#warning FINISH THIS!
+	#warning FINISH THIS!
+	#warning FINISH THIS!
 }

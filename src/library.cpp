@@ -7,13 +7,42 @@ std::map<Library, void *> LibMgr::s_LibHandles;
 
 
 static std::map<Library, const char *> libnames{
-	{ Library::INVALID,        "invalid"        },
-	{ Library::SERVER,         "server"         },
-	{ Library::ENGINE,         "engine"         },
-	{ Library::DEDICATED,      "dedicated"      },
-	{ Library::TIER0,          "tier0"          },
-	{ Library::CLIENT,         "client"         },
-	{ Library::VGUIMATSURFACE, "vguimatsurface" },
+	{ Library::INVALID,            "invalid"            },
+	{ Library::SERVER,             "server"             },
+	{ Library::ENGINE,             "engine"             },
+	{ Library::DEDICATED,          "dedicated"          },
+	{ Library::TIER0,              "tier0"              },
+	{ Library::CLIENT,             "client"             },
+	{ Library::VGUIMATSURFACE,     "vguimatsurface"     },
+	{ Library::MATERIALSYSTEM,     "materialsystem"     },
+	{ Library::SOUNDEMITTERSYSTEM, "soundemittersystem" },
+	{ Library::DATACACHE,          "datacache"          },
+	{ Library::VGUI,               "vgui"               },
+	{ Library::VPHYSICS,           "vphysics"           },
+};
+
+static std::map<Segment, const char *> segnames{
+	{ Segment::INVALID, "invalid" },
+	{ Segment::TEXT,    "text"    },
+	{ Segment::DATA,    "data"    },
+	{ Segment::RODATA,  "rodata"  },
+	{ Segment::BSS,     "bss"     },
+};
+
+static std::map<std::string, Segment> segnames_plat{
+#if defined _LINUX
+	{ ".text",   Segment::TEXT,   },
+	{ ".data",   Segment::DATA,   },
+	{ ".rodata", Segment::RODATA, },
+	{ ".bss",    Segment::BSS,    },
+#elif defined _WINDOWS
+	{ ".text",   Segment::TEXT,   },
+	{ ".data",   Segment::DATA,   },
+	{ ".rdata",  Segment::RODATA, },
+	{ ".bss",    Segment::BSS,    },
+#elif defined _OSX
+	#error TODO
+#endif
 };
 
 
@@ -64,37 +93,51 @@ void LibMgr::FindInfo(Library lib)
 	memset(&dlinfo, 0x00, sizeof(dlinfo));
 	assert(g_MemUtils.GetLibraryInfo(GetPtr(lib), dlinfo));
 	
-	LibInfo info;
-	info.baseaddr = (uintptr_t)dlinfo.baseAddress;
-	info.len      = (uintptr_t)dlinfo.memorySize;
+	LibInfo lib_info((uintptr_t)dlinfo.baseAddress, (uintptr_t)dlinfo.memorySize);
 	
 #if defined _LINUX
 	g_MemUtils.ForEachSection(s_LibHandles[lib], [&](const Elf32_Shdr *shdr, const char *name){
-		SegInfo seg;
-		seg.off = shdr->sh_addr;
-		seg.len = shdr->sh_size;
+		SegInfo seg_info(shdr->sh_addr, shdr->sh_size);
+		seg_info.m_LibBaseAddr = lib_info.BaseAddr();
 		
-		info.segs[name] = seg;
+		auto it = segnames_plat.find(name);
+		if (it != segnames_plat.end()) {
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "Library %s: segment '%s' found: %s\n",
+				Lib_ToString(lib), name, Seg_ToString((*it).second));
+			auto result = lib_info.m_SegmentsByType.insert(std::make_pair((*it).second, seg_info));
+			assert(result.second);
+		} else {
+			ConColorMsg(Color(0xff, 0x00, 0x00, 0xff), "Library %s: segment '%s' not found!\n",
+				Lib_ToString(lib), name);
+		}
+		
+		auto result = lib_info.m_SegmentsByName.insert(std::make_pair(name, seg_info));
+		assert(result.second);
 	});
 #elif defined _WINDOWS
 	g_MemUtils.ForEachSection(s_LibHandles[lib], [&](const IMAGE_SECTION_HEADER *pSectHdr){
-		SegInfo seg;
-		seg.off = pSectHdr->VirtualAddress;
-		seg.len = pSectHdr->Misc.VirtualSize;
+		SegInfo seg_info(pSectHdr->VirtualAddress, pSectHdr->Misc.VirtualSize);
+		seg_info.m_LibBaseAddr = lib_info.BaseAddr();
 		
 		auto name = (const char *)pSectHdr->Name;
-		info.segs[name] = seg;
+		
+		auto it = segnames_plat.find(name);
+		if (it != segnames_plat.end()) {
+			auto result = lib_info.m_SegmentsByType.insert(std::make_pair((*it).second, seg_info));
+			assert(result.second);
+		}
+		
+		auto result = lib_info.m_SegmentsByName.insert(std::make_pair(name, seg_info));
+		assert(result.second);
 	});
 #endif
 	
-	s_LibInfos[lib] = info;
+	auto result = s_LibInfos.insert(std::make_pair(lib, lib_info));
+	assert(result.second);
 	
-	DevMsg("Library %-34s [ %08x %08x ]\n", libnames.at(lib), info.baseaddr, info.baseaddr + info.len);
-	for (const auto& pair : info.segs) {
-		DevMsg("  %-40s [ %08x %08x ]\n",
-			pair.first.c_str(),
-			info.baseaddr + pair.second.off,
-			info.baseaddr + pair.second.off + pair.second.len);
+	DevMsg("Library %-34s [ %08x %08x ]\n", libnames.at(lib), lib_info.AddrBegin(), lib_info.AddrEnd());
+	for (const auto& pair : lib_info.m_SegmentsByName) {
+		DevMsg("  %-40s [ %08x %08x ]\n", pair.first.c_str(), pair.second.AddrBegin(), pair.second.AddrEnd());
 	}
 }
 
@@ -109,18 +152,21 @@ void *LibMgr::FindSym(Library lib, const char *sym)
 	return g_MemUtils.ResolveSymbol(handle, sym);
 }
 
-std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern, std::regex::flag_type flags)
+std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern)
 {
-	std::regex filter(pattern);
+	std::regex filter(pattern, std::regex_constants::ECMAScript);
 	
 	std::vector<Symbol *> matches;
 	
 	LibMgr::ForEachSym(lib, [&](Symbol *sym){
 		std::string name(sym->buffer(), sym->length);
 		
-		if (std::regex_search(name, filter, std::regex_constants::match_any)) {
+		if (std::regex_match(name, filter, std::regex_constants::match_any)) {
 			matches.push_back(sym);
+			if (matches.size() > 1) return false;
 		}
+		
+		return true;
 	});
 	
 	if (matches.size() == 1) {
@@ -129,13 +175,6 @@ std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const ch
 	} else {
 		return std::make_tuple(false, nullptr, nullptr);
 	}
-}
-
-void LibMgr::ForEachSym(Library lib, const std::function<void(Symbol *)>& functor)
-{
-	void *handle = s_LibHandles.at(lib);
-	assert(handle != nullptr);
-	g_MemUtils.ForEachSymbol(handle, functor);
 }
 
 
@@ -201,9 +240,9 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 		Library lib = pair.first;
 		if (lib == Library::INVALID) continue;
 		
-		const LibInfo& info = GetInfo(lib);
+		const LibInfo& lib_info = GetInfo(lib);
 		
-		if (addr >= info.baseaddr && addr < info.baseaddr + info.len) {
+		if (GetInfo(lib).ContainsAddr(addr, 1)) {
 			return lib;
 		}
 	}
@@ -212,7 +251,7 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 }
 
 
-Library LibMgr::FromString(const char *str)
+Library LibMgr::Lib_FromString(const char *str)
 {
 	for (const auto& pair : libnames) {
 		if (stricmp(pair.second, str) == 0) {
@@ -223,7 +262,7 @@ Library LibMgr::FromString(const char *str)
 	return Library::INVALID;
 }
 
-const char *LibMgr::ToString(Library lib)
+const char *LibMgr::Lib_ToString(Library lib)
 {
 	for (const auto& pair : libnames) {
 		if (pair.first == lib) {
@@ -234,11 +273,45 @@ const char *LibMgr::ToString(Library lib)
 	return libnames.at(Library::INVALID);
 }
 
-size_t LibMgr::MaxStringLen()
+size_t LibMgr::Lib_MaxStringLen()
 {
 	size_t max = 0;
 	
 	for (const auto& pair : libnames) {
+		max = Max(max, strlen(pair.second));
+	}
+	
+	return max;
+}
+
+
+Segment LibMgr::Seg_FromString(const char *str)
+{
+	for (const auto& pair : segnames) {
+		if (stricmp(pair.second, str) == 0) {
+			return pair.first;
+		}
+	}
+	
+	return Segment::INVALID;
+}
+
+const char *LibMgr::Seg_ToString(Segment seg)
+{
+	for (const auto& pair : segnames) {
+		if (pair.first == seg) {
+			return pair.second;
+		}
+	}
+	
+	return segnames.at(Segment::INVALID);
+}
+
+size_t LibMgr::Seg_MaxStringLen()
+{
+	size_t max = 0;
+	
+	for (const auto& pair : segnames) {
 		max = Max(max, strlen(pair.second));
 	}
 	

@@ -20,8 +20,10 @@ protected:
 class CTFBotAttack : public ActionStub
 {
 public:
-	CTFBotAttack() = delete;
 	static CTFBotAttack *New();
+	
+protected:
+	CTFBotAttack() = delete;
 	
 private:
 	PathFollower m_PathFollower;      // +0x0034
@@ -34,8 +36,10 @@ SIZE_CHECK(CTFBotAttack, 0x9014);
 class CTFBotSeekAndDestroy : public ActionStub
 {
 public:
-	CTFBotSeekAndDestroy() = delete;
 	static CTFBotSeekAndDestroy *New(float duration = -1.0f);
+	
+protected:
+	CTFBotSeekAndDestroy() = delete;
 	
 private:
 	uint32_t m_Dword0034;        // +0x0034
@@ -47,11 +51,45 @@ private:
 SIZE_CHECK(CTFBotSeekAndDestroy, 0x4828);
 
 
+class CTFBotFetchFlag : public ActionStub
+{
+public:
+	static CTFBotFetchFlag *New(bool give_up_when_done = false);
+	
+protected:
+	CTFBotFetchFlag() = delete;
+	
+private:
+	bool m_bGiveUpWhenDone;           // +0x0032
+	PathFollower m_PathFollower;      // +0x0034
+	CountdownTimer m_ctRecomputePath; // +0x4808
+};
+SIZE_CHECK(CTFBotFetchFlag, 0x4814);
+
+
+class CTFBotPushToCapturePoint : public ActionStub
+{
+public:
+	static CTFBotPushToCapturePoint *New(Action<CTFBot> *done_action);
+	
+protected:
+	CTFBotPushToCapturePoint() = delete;
+	
+private:
+	PathFollower m_PathFollower;      // +0x0034
+	CountdownTimer m_ctRecomputePath; // +0x4808
+	Action<CTFBot> *m_DoneAction;     // +0x4814
+};
+SIZE_CHECK(CTFBotPushToCapturePoint, 0x4818);
+
+
 class CTFBotMedicHeal : public ActionStub
 {
 public:
-	CTFBotMedicHeal() = delete;
 	static CTFBotMedicHeal *New();
+	
+protected:
+	CTFBotMedicHeal() = delete;
 	
 private:
 	ChasePath m_ChasePath;         // +0x0034
@@ -71,8 +109,10 @@ SIZE_CHECK(CTFBotMedicHeal, 0x9058);
 class CTFBotSniperLurk : public ActionStub
 {
 public:
-	CTFBotSniperLurk() = delete;
 	static CTFBotSniperLurk *New();
+	
+protected:
+	CTFBotSniperLurk() = delete;
 	
 private:
 	CountdownTimer m_ctUnknown1; // +0x0034
@@ -88,8 +128,10 @@ SIZE_CHECK(CTFBotSniperLurk, 0x485c);
 class CTFBotSpyInfiltrate : public ActionStub
 {
 public:
-	CTFBotSpyInfiltrate() = default;
 	static CTFBotSpyInfiltrate *New();
+	
+protected:
+	CTFBotSpyInfiltrate() = default;
 	
 private:
 	CountdownTimer m_ctUnknown1; // +0x0034
@@ -105,8 +147,10 @@ SIZE_CHECK(CTFBotSpyInfiltrate, 0x4834);
 class CTFBotEngineerBuild : public ActionStub
 {
 public:
-	CTFBotEngineerBuild() = default;
 	static CTFBotEngineerBuild *New();
+	
+protected:
+	CTFBotEngineerBuild() = default;
 };
 SIZE_CHECK(CTFBotEngineerBuild, 0x0034);
 
@@ -114,8 +158,10 @@ SIZE_CHECK(CTFBotEngineerBuild, 0x0034);
 class CTFBotDead : public ActionStub
 {
 public:
-	CTFBotDead() = default;
 	static CTFBotDead *New();
+	
+protected:
+	CTFBotDead() = default;
 	
 private:
 	IntervalTimer m_itDeathEpoch; // +0x0034

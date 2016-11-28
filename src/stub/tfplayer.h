@@ -32,6 +32,8 @@ enum
 
 enum ETFCond
 {
+	TF_COND_INVALID                          =  -1,
+	
 	TF_COND_AIMING                           =   0,
 	TF_COND_ZOOMED                           =   1,
 	TF_COND_DISGUISING                       =   2,
@@ -150,7 +152,10 @@ enum ETFCond
 	TF_COND_KNOCKED_INTO_AIR                 = 115,
 	TF_COND_COMPETITIVE_WINNER               = 116,
 	TF_COND_COMPETITIVE_LOSER                = 117,
-	TF_COND_NO_TAUNTING                      = 118,
+	TF_COND_HEALING_DEBUFF                   = 118,
+	TF_COND_PASSTIME_PENALTY_DEBUFF          = 119,
+	
+	TF_COND_COUNT,
 };
 
 
@@ -186,12 +191,18 @@ public:
 	
 	CTFPlayer *GetOuter();
 	
-	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond       (this, cond, duration, provider); }
-	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond    (this, cond, b1); }
-	bool InCond(ETFCond cond) const                                                     { return ft_InCond        (this, cond); }
-	bool IsInvulnerable() const                                                         { return ft_IsInvulnerable(this); }
-	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner)        {        ft_StunPlayer    (this, duration, amount, flags, stunner); }
+	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond             (this, cond, duration, provider); }
+	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond          (this, cond, b1); }
+	bool InCond(ETFCond cond) const                                                     { return ft_InCond              (this, cond); }
+	bool IsInvulnerable() const                                                         { return ft_IsInvulnerable      (this); }
+	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner)        {        ft_StunPlayer          (this, duration, amount, flags, stunner); }
+	void GetConditionsBits(CBitVec<192>& bitvec)                                        {        ft_GetConditionsBits   (this, bitvec); }
+	float GetConditionDuration(ETFCond cond)                                            { return ft_GetConditionDuration(this, cond); }
+	CBaseEntity *GetConditionProvider(ETFCond cond)                                     { return ft_GetConditionProvider(this, cond); }
 	
+	DECL_SENDPROP(float, m_flEnergyDrinkMeter);
+	DECL_SENDPROP(float, m_flHypeMeter);
+	DECL_SENDPROP(float, m_flChargeMeter);
 	DECL_SENDPROP(float, m_flRageMeter);
 	DECL_SENDPROP(bool,  m_bRageDraining);
 	DECL_SENDPROP(bool,  m_bInUpgradeZone);
@@ -202,6 +213,9 @@ private:
 	static MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > ft_InCond;
 	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsInvulnerable;
 	static MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> ft_StunPlayer;
+	static MemberFuncThunk<      CTFPlayerShared *, void, CBitVec<192>&                 > ft_GetConditionsBits;
+	static MemberFuncThunk<      CTFPlayerShared *, float, ETFCond                      > ft_GetConditionDuration;
+	static MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > ft_GetConditionProvider;
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
@@ -297,8 +311,10 @@ inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
 }
 
 
-ETFCond GetTFConditionFromName(const char *name);
+bool IsValidTFConditionNumber(int num);
+ETFCond ClampTFConditionNumber(int num);
 const char *GetTFConditionName(ETFCond cond);
+ETFCond GetTFConditionFromName(const char *name);
 
 
 #endif

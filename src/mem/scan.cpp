@@ -3,19 +3,18 @@
 
 CLibBounds::CLibBounds(Library lib)
 {
-	const LibInfo& info = LibMgr::GetInfo(lib);
+	const LibInfo& lib_info = LibMgr::GetInfo(lib);
 	
-	this->m_AddrLow  = (const void *)info.baseaddr;
-	this->m_AddrHigh = (const void *)(info.baseaddr + info.len);
+	this->m_AddrLow  = reinterpret_cast<const void *>(lib_info.AddrBegin());
+	this->m_AddrHigh = reinterpret_cast<const void *>(lib_info.AddrEnd());
 }
 
-CLibSegBounds::CLibSegBounds(Library lib, const char *seg)
+CLibSegBounds::CLibSegBounds(Library lib, Segment seg)
 {
-	const LibInfo& l_info = LibMgr::GetInfo(lib);
-	const SegInfo& s_info = l_info.segs.at(seg);
+	const SegInfo& seg_info = LibMgr::GetInfo(lib).GetSeg(seg);
 	
-	this->m_AddrLow  = (const void *)(l_info.baseaddr + s_info.off);
-	this->m_AddrHigh = (const void *)(l_info.baseaddr + s_info.off + s_info.len);
+	this->m_AddrLow  = reinterpret_cast<const void *>(seg_info.AddrBegin());
+	this->m_AddrHigh = reinterpret_cast<const void *>(seg_info.AddrEnd());
 }
 
 
@@ -25,7 +24,7 @@ namespace Scan
 	{
 		using StrScanner = CStringScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
 		
-		CScan<StrScanner> scan(CLibSegBounds(lib, ".rdata"), str);
+		CScan<StrScanner> scan(CLibSegBounds(lib, Segment::RODATA), str);
 		if (scan.ExactlyOneMatch()) {
 			return (const char *)scan.FirstMatch();
 		}

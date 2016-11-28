@@ -83,6 +83,23 @@
 					type "sym"
 					sym  "lagcompensation"
 				}
+				
+				"s_pTokenBuf"
+				{
+					type "sym"
+					sym  "_ZL11s_pTokenBuf"
+				}
+				
+				"s_TankModel"
+				{
+					type "sym"
+					sym  "_ZL11s_TankModel"
+				}
+				"s_TankModelRome"
+				{
+					type "sym"
+					sym  "_ZL15s_TankModelRome"
+				}
 			}
 		}
 	}

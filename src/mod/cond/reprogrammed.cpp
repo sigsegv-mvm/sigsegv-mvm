@@ -15,9 +15,9 @@ namespace Mod_Cond_Reprogrammed
 		0xe8,                                           // +001B  call CollectPlayers<CTFPlayer>
 	};
 	
-	struct CPatch_CMissionPopulator_UpdateMission : public IPatch
+	struct CPatch_CMissionPopulator_UpdateMission : public CPatch
 	{
-		CPatch_CMissionPopulator_UpdateMission() : IPatch(sizeof(s_Buf_UpdateMission)) {}
+		CPatch_CMissionPopulator_UpdateMission() : CPatch(sizeof(s_Buf_UpdateMission)) {}
 		
 		virtual const char *GetFuncName() const override { return "CMissionPopulator::UpdateMission"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
@@ -55,9 +55,9 @@ namespace Mod_Cond_Reprogrammed
 //	};
 	
 	using FPtr_IsBot = bool (CBasePlayer:: *)() const;
-	struct CPatch_CTFGameMovement_CheckStuck : public IPatch
+	struct CPatch_CTFGameMovement_CheckStuck : public CPatch
 	{
-		CPatch_CTFGameMovement_CheckStuck() : IPatch(sizeof(s_Buf_CheckStuck)) {}
+		CPatch_CTFGameMovement_CheckStuck() : CPatch(sizeof(s_Buf_CheckStuck)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFGameMovement::CheckStuck"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
@@ -102,6 +102,47 @@ namespace Mod_Cond_Reprogrammed
 		"Mod: make some tweaks to TF_COND_REPROGRAMMED that Hell-met requested");
 	
 	
+	void ChangeWeaponAndWearableTeam(CTFPlayer *player, int team)
+	{
+	//	DevMsg("ChangeWeaponAndWearableTeam (#%d \"%s\"): teamnum %d => %d\n",
+	//		ENTINDEX(player), player->GetPlayerName(), player->GetTeamNumber(), team);
+		
+		for (int i = player->WeaponCount() - 1; i >= 0; --i) {
+			CBaseCombatWeapon *weapon = player->GetWeapon(i);
+			if (weapon == nullptr) continue;
+			
+			int pre_team = weapon->GetTeamNumber();
+			int pre_skin = weapon->m_nSkin;
+			
+			weapon->ChangeTeam(team);
+			weapon->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
+			
+			int post_team = weapon->GetTeamNumber();
+			int post_skin = weapon->m_nSkin;
+			
+		//	DevMsg("  weapon %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+		//		i, ENTINDEX(weapon), weapon->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+		}
+		
+		for (int i = player->GetNumWearables() - 1; i >= 0; --i) {
+			CEconWearable *wearable = player->GetWearable(i);
+			if (wearable == nullptr) continue;
+			
+			int pre_team = wearable->GetTeamNumber();
+			int pre_skin = wearable->m_nSkin;
+			
+			wearable->ChangeTeam(team);
+			wearable->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
+			
+			int post_team = wearable->GetTeamNumber();
+			int post_skin = wearable->m_nSkin;
+			
+		//	DevMsg("  wearable %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+		//		i, ENTINDEX(wearable), wearable->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+		}
+	}
+	
+	
 	void OnAddReprogrammed(CTFPlayer *player)
 	{
 		DevMsg("OnAddReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
@@ -111,6 +152,11 @@ namespace Mod_Cond_Reprogrammed
 		}
 		
 		player->ForceChangeTeam(TF_TEAM_RED, false);
+		
+		/* ensure that all weapons and wearables have their colors updated */
+		if (cvar_hellmet.GetBool()) {
+			ChangeWeaponAndWearableTeam(player, TF_TEAM_RED);
+		}
 		
 		/* this used to be in CTFPlayerShared::OnAddReprogrammed on the client
 		 * side, but we now have to do it from the server side */
@@ -131,6 +177,20 @@ namespace Mod_Cond_Reprogrammed
 		DevMsg("OnRemoveReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
 		
 		player->ForceChangeTeam(TF_TEAM_BLUE, false);
+		
+		/* ensure that all weapons and wearables have their colors updated;
+		 * we don't do this in the case of LIFE_DYING, however, because
+		 * CTFPlayer::Event_Killed calls CTFPlayerShared::RemoveAllCond, and we
+		 * end up making the ragdoll wearables and dropped hats etc the wrong
+		 * color compared to the player ragdoll itself */
+		if (cvar_hellmet.GetBool()) {
+			if (player->m_lifeState == LIFE_DYING) {
+				// hack hack hack: make wearable gibs be red
+				player->m_nSkin = 0;
+			} else {
+				ChangeWeaponAndWearableTeam(player, TF_TEAM_BLUE);
+			}
+		}
 		
 		/* this is far from ideal; we can only remove ALL particle effects from
 		 * the server side */

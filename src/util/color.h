@@ -7,7 +7,10 @@ class Color32
 public:
 	constexpr Color32() = default;
 	
-	constexpr Color32(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff)
+#if !defined _MSC_VER
+	constexpr
+#endif
+	Color32(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff)
 	{
 		m_Bytes[0] = r;
 		m_Bytes[1] = g;

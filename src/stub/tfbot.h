@@ -16,6 +16,18 @@ class IVision;
 class IIntention;
 
 
+union attribute_data_union_t
+{
+	void *ptr;
+};
+
+struct static_attrib_t
+{
+	unsigned short m_iAttrIndex;    // +0x00
+	attribute_data_union_t m_Value; // +0x04
+};
+
+
 template<typename T>
 class NextBotPlayer : public T
 {
@@ -142,6 +154,31 @@ public:
 		CHandle<CBaseEntity> m_hEnt;
 		float m_flWhen;
 	};
+	
+	enum DifficultyType : int;
+	enum WeaponRestriction : int;
+	
+	struct EventChangeAttributes_t
+	{
+		struct item_attributes_t
+		{
+			CUtlString m_strItemName;                    // +0x00
+			CCopyableUtlVector<static_attrib_t> m_Attrs; // +0x04
+		};
+		
+		CUtlString m_strName;                      // +0x00
+		DifficultyType m_iSkill;                   // +0x04
+		WeaponRestriction m_nWeaponRestrict;       // +0x08
+		uint32_t pad_0c; // TODO: 0x0c m_nMission, not parsed, defaults to 0
+		uint32_t pad_10; // TODO: 0x10
+		AttributeType m_nBotAttrs;                 // +0x14
+		float m_flVisionRange;                     // +0x18
+		CUtlStringList m_ItemNames;                // +0x1c
+		CUtlVector<item_attributes_t> m_ItemAttrs; // +0x30
+		CUtlVector<static_attrib_t> m_CharAttrs;   // +0x44
+		CUtlStringList m_Tags;                     // +0x58
+	};
+	SIZE_CHECK(EventChangeAttributes_t, 0x6c);
 	
 	/* custom */
 	class ExtraData

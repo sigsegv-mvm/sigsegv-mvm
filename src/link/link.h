@@ -56,11 +56,13 @@ public:
 	
 	RET operator()(PARAMS... args) const
 	{
-		assert(this->m_pFuncPtr != nullptr);
-		return (*this->m_pFuncPtr)(args...);
+		assert(this->GetFuncPtr() != nullptr);
+		return (*this->GetFuncPtr())(args...);
 	}
 	
 private:
+	FPtr GetFuncPtr() const { return this->m_pFuncPtr; }
+	
 	const char *m_pszFuncName;
 	
 	FPtr m_pFuncPtr = nullptr;

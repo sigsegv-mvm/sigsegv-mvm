@@ -4,6 +4,7 @@
 #include "stub/gamerules.h"
 #include "util/rtti.h"
 #include "addr/standard.h"
+#include "disasm/disasm.h"
 
 
 static constexpr uint8_t s_Buf_g_pGameRules[] = {
@@ -88,11 +89,11 @@ public:
 		// +0x24 ptr: ""
 		// +0x28 ptr: "tf_weapon_shotgun_primary"
 		
-		auto strscan1 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun");
-		auto strscan2 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_soldier");
-		auto strscan3 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_hwg");
-		auto strscan4 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_pyro");
-		auto strscan5 = new StrScanner(CLibSegBounds(Library::SERVER, ".rdata"), "tf_weapon_shotgun_primary");
+		auto strscan1 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun");
+		auto strscan2 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_soldier");
+		auto strscan3 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_hwg");
+		auto strscan4 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_pyro");
+		auto strscan5 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_primary");
 		CMultiScan<StrScanner> scan1({ strscan1, strscan2, strscan3, strscan4, strscan5 });
 		if (!strscan1->ExactlyOneMatch()) { DevMsg("Fail strscan1\n"); return false; }
 		if (!strscan2->ExactlyOneMatch()) { DevMsg("Fail strscan2\n"); return false; }
@@ -107,7 +108,7 @@ public:
 		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->FirstMatch());
 		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->FirstMatch());
 		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->FirstMatch());
-		CScan<ArrScanner> scan2(CLibSegBounds(Library::SERVER, ".data"), seek, mask);
+		CScan<ArrScanner> scan2(CLibSegBounds(Library::SERVER, Segment::DATA), seek, mask);
 		if (!scan2.ExactlyOneMatch()) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
 		
 		auto match = (const char **)scan2.FirstMatch();
@@ -180,7 +181,7 @@ public:
 //		DevMsg("g_pGameRules: %08x\n", (uintptr_t)addr_g_pGameRules);
 //		DevMsg("m_bPlayingMannVsMachine: %08x\n", off_CTFGameRules_m_bPlayingMannVsMachine);
 		
-		CScan<FuncScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), seek, mask);
+		CScan<FuncScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), seek, mask);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("Fail scan1 %u\n", scan1.Matches().size());
 			return false;
@@ -296,6 +297,7 @@ public:
 	CAddr_IServerGameDLL(const std::string& n_func, int vtidx) :
 		CAddr_InterfaceVFunc(&gamedll, "IServerGameDLL", n_func, vtidx) {}
 };
+static CAddr_IServerGameDLL addr_IServerGameDLL_LevelInit("LevelInit", GetVIdxOfMemberFunc(&IServerGameDLL::LevelInit));
 static CAddr_IServerGameDLL addr_IServerGameDLL_GameFrame("GameFrame", GetVIdxOfMemberFunc(&IServerGameDLL::GameFrame));
 
 
@@ -338,12 +340,12 @@ public:
 	
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
-		using VTRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 1, const void **>;
+		using VTRefScanner = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const void **>;
 		
 		auto p_VT   = RTTI::GetVTable(".?AVCTFBotUseItem@@");
 		auto p_dtor = AddrManager::GetAddr("CTFBotUseItem::~CTFBotUseItem [D2]");
 		
-		CScan<VTRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_VT);
+		CScan<VTRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_VT);
 		
 		std::vector<const void *> matches;
 		for (auto match : scan1.Matches()) {
@@ -377,7 +379,7 @@ public:
 			return false;
 		}
 		
-		CScan<CallScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), (uint32_t)p_ref);
+		CScan<CallScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), (uint32_t)p_ref);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("IAddr_Func_EBPPrologue_UniqueCall: \"%s\": found %u refs to ostensibly unique func\n", this->GetName(), scan1.Matches().size());
 			return false;
@@ -500,7 +502,7 @@ public:
 		seek.SetDword(0x08 + 1, (uint32_t)p_str);
 		mask.SetRange(0x0d + 1, 0x04, 0x00);
 		
-		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, Segment::TEXT), seek, mask);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
 			return false;
@@ -550,7 +552,7 @@ public:
 		seek.SetDword(0x08 + 1, (uint32_t)p_str);
 		mask.SetRange(0x0d + 1, 0x04, 0x00);
 		
-		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, Segment::TEXT), seek, mask);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
 			return false;
@@ -602,7 +604,7 @@ public:
 		seek.SetDword(0x0b + 1, (uint32_t)p_str);
 		mask.SetRange(0x10 + 1, 0x04, 0x00);
 		
-		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, ".text"), seek, mask);
+		CScan<MyScanner> scan1(CLibSegBounds(Library::CLIENT, Segment::TEXT), seek, mask);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
 			return false;
@@ -622,7 +624,7 @@ class IAddr_Client_CDebugOverlay : public IAddr_Sym
 public:
 	virtual bool FindAddrWin(uintptr_t& addr) const override
 	{
-		using StrRefScanner        = CTypeScanner  <ScanDir::FORWARD, ScanResults::ALL, 1, const char *>;
+		using StrRefScanner        = CTypeScanner  <ScanDir::FORWARD, ScanResults::ALL, const char *>;
 		using NearbyPatternScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
 		
 		constexpr const char *str = "s_OverlayMutex";
@@ -632,7 +634,7 @@ public:
 			return false;
 		}
 		
-		CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), ".text"), p_str);
+		CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::TEXT), p_str);
 		DevMsg("IAddr_Client_CDebugOverlay: \"%s\": found %u preliminary matches\n", this->GetName(), scan1.Matches().size());
 		for (auto match : scan1.Matches()) {
 			DevMsg("  %08x\n", (uintptr_t)match);
@@ -772,7 +774,7 @@ public:
 		mask.SetRange(0x30 + 1, 4, 0x00);
 		mask.SetRange(0x35 + 1, 4, 0x00);
 		
-		CScan<MyScanner> scan1(CLibSegBounds(Library::ENGINE, ".text"), seek, mask);
+		CScan<MyScanner> scan1(CLibSegBounds(Library::ENGINE, Segment::TEXT), seek, mask);
 		if (!scan1.ExactlyOneMatch()) {
 			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
 			return false;
@@ -864,3 +866,126 @@ private:
 static CAddr_CAttributeManager_AttribHookValue addr_CAttributeManager_AttribHookValue_int  ("CAttributeManager::AttribHookValue<int>",   "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb", 0x24);
 static CAddr_CAttributeManager_AttribHookValue addr_CAttributeManager_AttribHookValue_float("CAttributeManager::AttribHookValue<float>", "_ZN17CAttributeManager15AttribHookValueIfEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb", 0x28);
 #endif
+
+
+class CAddr_Client_g_pClientMode : public IAddr_Sym
+{
+public:
+	CAddr_Client_g_pClientMode()
+	{
+		this->SetLibrary(Library::CLIENT);
+	}
+	
+	virtual const char *GetName() const override   { return "g_pClientMode"; }
+	virtual const char *GetSymbol() const override { return "g_pClientMode"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using MyScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
+		
+		void *p_func = AddrManager::GetAddr("[client] CTFModeManager::LevelInit");
+		if (p_func == nullptr) {
+			DevMsg("CAddr_Client_g_pClientMode: \"%s\": failed to find parent function\n", this->GetName());
+			return false;
+		}
+		
+		constexpr uint8_t buf[] = {
+			0x55,                               // +0000  push ebp
+			0x8b, 0xec,                         // +0001  mov ebp,esp
+			0x8b, 0x0d, 0x00, 0x00, 0x00, 0x00, // +0003  mov ecx,0xVVVVVVVV
+			0x83, 0xec, 0x00,                   // +0009  sub esp,0xXX
+			0x8b, 0x01,                         // +000C  mov eax,[ecx]
+			0xff, 0x75, 0x08,                   // +000E  push [ebp+0x8]
+			0xff, 0x50, 0x58,                   // +0011  call dword ptr [eax+0x58]
+		};
+		
+		ByteBuf seek(sizeof(buf));
+		ByteBuf mask(sizeof(buf));
+		seek.CopyFrom(buf);
+		mask.SetAll(0xff);
+		
+		mask.SetRange(0x03 + 2, 0x04, 0x00);
+		mask.SetRange(0x09 + 2, 0x01, 0x00);
+		
+		CScan<MyScanner> scan1(CAddrOffBounds(p_func, sizeof(buf)), seek, mask);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("%s: %u matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		addr = **(uintptr_t **)((uintptr_t)scan1.FirstMatch() + 0x05);
+		return true;
+	}
+};
+static CAddr_Client_g_pClientMode addr_g_pClientMode;
+
+
+class CAddr_TGAWriter_WriteToBuffer : public IAddr_Sym
+{
+public:
+	CAddr_TGAWriter_WriteToBuffer()
+	{
+		this->SetLibrary(Library::ENGINE);
+	}
+	
+	virtual const char *GetName() const override   { return "TGAWriter::WriteToBuffer"; }
+	virtual const char *GetSymbol() const override { return "_ZN9TGAWriter13WriteToBufferEPhR10CUtlBufferii11ImageFormatS3_"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr)
+	{
+		void *p_func = AddrManager::GetAddr("CVideoMode_Common::TakeSnapshotTGA");
+		if (p_func == nullptr) {
+			DevMsg("CAddr_TGAWriter_WriteToBuffer: \"%s\": failed to find parent function\n", this->GetName());
+			return false;
+		}
+		
+		#warning TODO TODO TODO
+		
+		/*
+		Disassembler dasm;
+		if (dasm.HasError()) {
+			DevMsg("CAddr_TGAWriter_WriteToBuffer: \"%s\": error in Disassembler ctor: \"%s\"\n", this->GetName(), dasm.ErrorStr());
+			return false;
+		}
+		
+		auto insns = dasm.Disasm(p_func, 0x120);
+		if (dasm.HasError()) {
+			DevMsg("CAddr_TGAWriter_WriteToBuffer: \"%s\": error in Disassembler Disasm: \"%s\"\n", this->GetName(), dasm.ErrorStr());
+			return false;
+		}
+		
+		for ()*/
+		
+	}
+};
+static CAddr_TGAWriter_WriteToBuffer addr_TGAWriter_WriteToBuffer;
+
+
+class CAddr_g_aConditionNames : public IAddr_Sym
+{
+public:
+	virtual const char *GetName() const override   { return "g_aConditionNames"; }
+	virtual const char *GetSymbol() const override { return "_ZL17g_aConditionNames"; }
+	
+	virtual bool FindAddrWin(uintptr_t& addr) const override
+	{
+		using StrRefScanner = CAlignedTypeScanner<ScanDir::FORWARD, ScanResults::ALL, const char *>;
+		
+		constexpr char str[] = "TF_COND_AIMING";
+		const char *p_str = Scan::FindUniqueConstStr(this->GetLibrary(), str);
+		if (p_str == nullptr) {
+			DevMsg("CAddr_g_aConditionNames: \"%s\": failed to find string \"%s\"\n", this->GetName(), str);
+			return false;
+		}
+		
+		CScan<StrRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::RODATA), p_str);
+		if (!scan1.ExactlyOneMatch()) {
+			DevMsg("CAddr_g_aConditionNames: \"%s\": %u string ref matches\n", this->GetName(), scan1.Matches().size());
+			return false;
+		}
+		
+		addr = (uintptr_t)scan1.FirstMatch();
+		return true;
+	}
+};
+static CAddr_g_aConditionNames addr_g_aConditionNames;

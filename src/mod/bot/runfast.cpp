@@ -21,9 +21,9 @@ namespace Mod_Bot_RunFast
 	};
 	static_assert(sizeof(s_Buf_Verify) == sizeof(s_Buf_Patch), "size mismatch");
 	
-	struct CPatch_CTFBotPushToCapturePoint_Update : public IPatch
+	struct CPatch_CTFBotPushToCapturePoint_Update : public CPatch
 	{
-		CPatch_CTFBotPushToCapturePoint_Update() : IPatch(sizeof(s_Buf_Verify)) {}
+		CPatch_CTFBotPushToCapturePoint_Update() : CPatch(sizeof(s_Buf_Verify)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFBotPushToCapturePoint::Update"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }

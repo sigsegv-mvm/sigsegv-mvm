@@ -15,9 +15,9 @@ namespace Mod_MvM_Gib_Improvements
 		0x75, 0xde,                               // +0009  jnz -0x22
 	};
 	
-	struct CPatch_CTFPlayer_ShouldGib : public IPatch
+	struct CPatch_CTFPlayer_ShouldGib : public CPatch
 	{
-		CPatch_CTFPlayer_ShouldGib() : IPatch(sizeof(s_Buf)) {}
+		CPatch_CTFPlayer_ShouldGib() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFPlayer::ShouldGib"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
@@ -118,15 +118,22 @@ namespace Mod_MvM_Gib_Improvements
 			}
 		}
 		
-		/* explosive headshot gibbing :) */
-		if (eh_tick == gpGlobals->tickcount && eh_victims.count(bot) != 0) {
-			return true;
-		}
-		
 		/* can't use the vfunc thunk for this call because we specifically
 		 * want to call the implementation in CTFPlayer */
 		static auto p_CTFPlayer_ShouldGib = MakePtrToMemberFunc<CTFPlayer, bool, const CTakeDamageInfo&>(AddrManager::GetAddr("CTFPlayer::ShouldGib"));
 		return (bot->*p_CTFPlayer_ShouldGib)(info);
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CTFPlayer_ShouldGib, const CTakeDamageInfo& info)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		/* explosive headshot gibbing :) */
+		if (eh_tick == gpGlobals->tickcount && eh_victims.count(player) != 0) {
+			return true;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFPlayer_ShouldGib)(info);
 	}
 	
 	
@@ -170,7 +177,8 @@ namespace Mod_MvM_Gib_Improvements
 			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_ExplosiveHeadShot, "CTFSniperRifle::ExplosiveHeadShot");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_StunPlayer,       "CTFPlayerShared::StunPlayer");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFBot_ShouldGib, "CTFBot::ShouldGib");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_ShouldGib,    "CTFBot::ShouldGib");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ShouldGib, "CTFPlayer::ShouldGib");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_CreateRagdollEntity, "CTFPlayer::CreateRagdollEntity [args]");
 		}

@@ -1,5 +1,6 @@
 #include "stub/tfplayer.h"
 #include "stub/tfweaponbase.h"
+#include "util/misc.h"
 
 
 IMPL_SENDPROP(int,      CTFPlayerClassShared, m_iClass,         CTFPlayer);
@@ -9,15 +10,21 @@ IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszCustomModel, CTFPlayer);
 MemberFuncThunk<CTFPlayerClassShared *, void, const char *, bool> CTFPlayerClassShared::ft_SetCustomModel("CTFPlayerClassShared::SetCustomModel");
 
 
-IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,    CTFPlayer);
-IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,  CTFPlayer);
-IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone, CTFPlayer);
+IMPL_SENDPROP(float, CTFPlayerShared, m_flEnergyDrinkMeter, CTFPlayer);
+IMPL_SENDPROP(float, CTFPlayerShared, m_flHypeMeter,        CTFPlayer);
+IMPL_SENDPROP(float, CTFPlayerShared, m_flChargeMeter,      CTFPlayer);
+IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,        CTFPlayer);
+IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,      CTFPlayer);
+IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone,     CTFPlayer);
 
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond       ("CTFPlayerShared::AddCond");
-MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond    ("CTFPlayerShared::RemoveCond");
-MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > CTFPlayerShared::ft_InCond        ("CTFPlayerShared::InCond");
-MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsInvulnerable("CTFPlayerShared::IsInvulnerable");
-MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer    ("CTFPlayerShared::StunPlayer");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond             ("CTFPlayerShared::AddCond");
+MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond          ("CTFPlayerShared::RemoveCond");
+MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > CTFPlayerShared::ft_InCond              ("CTFPlayerShared::InCond");
+MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsInvulnerable      ("CTFPlayerShared::IsInvulnerable");
+MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer          ("CTFPlayerShared::StunPlayer");
+MemberFuncThunk<      CTFPlayerShared *, void, CBitVec<192>&                 > CTFPlayerShared::ft_GetConditionsBits   ("CTFPlayerShared::GetConditionsBits");
+MemberFuncThunk<      CTFPlayerShared *, float, ETFCond                      > CTFPlayerShared::ft_GetConditionDuration("CTFPlayer::GetConditionDuration");
+MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > CTFPlayerShared::ft_GetConditionProvider("CTFPlayer::GetConditionProvider");
 
 
 IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
@@ -60,8 +67,63 @@ CTFWeaponBase *CTFPlayer::GetActiveTFWeapon() const
 }
 
 
-static StaticFuncThunk<ETFCond, const char *> ft_GetTFConditionFromName("GetTFConditionFromName");
-ETFCond GetTFConditionFromName(const char *name) { return ft_GetTFConditionFromName(name); }
+static GlobalThunk<const char *[]> g_aConditionNames("g_aConditionNames");
 
-static StaticFuncThunk<const char *, ETFCond> ft_GetTFConditionName("GetTFConditionName");
-const char *GetTFConditionName(ETFCond cond) { return ft_GetTFConditionName(cond); }
+static int GetNumberOfTFConds()
+{
+	static int iNumTFConds =
+	[]{
+		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "GetNumberOfTFConds: in lambda\n");
+		
+		const SegInfo& info_seg_server_rodata = LibMgr::GetInfo(Library::SERVER).GetSeg(Segment::RODATA);
+		
+		constexpr char prefix[] = "TF_COND_";
+		
+		for (int i = 0; i < 256; ++i) {
+			const char *str = g_aConditionNames[i];
+			
+			if (str == nullptr || !info_seg_server_rodata.ContainsAddr(str, 1) || strncmp(str, prefix, strlen(prefix)) != 0) {
+				return i;
+			}
+		}
+		
+		assert(false);
+		return 0;
+	}();
+	
+	return iNumTFConds;
+}
+
+bool IsValidTFConditionNumber(int num)
+{
+	return (num >= 0 && num < GetNumberOfTFConds());
+}
+
+ETFCond ClampTFConditionNumber(int num)
+{
+	return static_cast<ETFCond>(Clamp(num, 0, GetNumberOfTFConds() - 1));
+}
+
+
+const char *GetTFConditionName(ETFCond cond)
+{
+	int num = static_cast<int>(cond);
+	
+	if (!IsValidTFConditionNumber(num)) {
+		return nullptr;
+	}
+	
+	return g_aConditionNames[num];
+}
+
+ETFCond GetTFConditionFromName(const char *name)
+{
+	int cond_count = GetNumberOfTFConds();
+	for (int i = 0; i < cond_count; ++i) {
+		if (FStrEq(g_aConditionNames[i], name)) {
+			return static_cast<ETFCond>(i);
+		}
+	}
+	
+	return TF_COND_INVALID;
+}

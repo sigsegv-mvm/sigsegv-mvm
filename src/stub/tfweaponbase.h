@@ -16,23 +16,25 @@ public:
 	
 	int GetMaxClip1() const { return vt_GetMaxClip1(this); }
 	int GetMaxClip2() const { return vt_GetMaxClip2(this); }
+	bool HasAmmo()          { return vt_HasAmmo    (this); }
 	
-	DECL_SENDPROP(float,                         m_flNextPrimaryAttack);
-	DECL_SENDPROP(float,                         m_flNextSecondaryAttack);
-	DECL_SENDPROP(float,                         m_flTimeWeaponIdle);
-	DECL_SENDPROP(int,                           m_iState);
-	DECL_SENDPROP(int,                           m_iPrimaryAmmoType);
-	DECL_SENDPROP(int,                           m_iSecondaryAmmoType);
-	DECL_SENDPROP(int,                           m_iClip1);
-	DECL_SENDPROP(int,                           m_iClip2);
+	DECL_SENDPROP(float, m_flNextPrimaryAttack);
+	DECL_SENDPROP(float, m_flNextSecondaryAttack);
+	DECL_SENDPROP(float, m_flTimeWeaponIdle);
+	DECL_SENDPROP(int,   m_iState);
+	DECL_SENDPROP(int,   m_iPrimaryAmmoType);
+	DECL_SENDPROP(int,   m_iSecondaryAmmoType);
+	DECL_SENDPROP(int,   m_iClip1);
+	DECL_SENDPROP(int,   m_iClip2);
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatCharacter>, m_hOwner);
 	
 	static MemberFuncThunk<const CBaseCombatWeapon *, bool> ft_IsMeleeWeapon;
 	
-	static MemberVFuncThunk<const CBaseCombatWeapon *, int> vt_GetMaxClip1;
-	static MemberVFuncThunk<const CBaseCombatWeapon *, int> vt_GetMaxClip2;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, int>  vt_GetMaxClip1;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, int>  vt_GetMaxClip2;
+	static MemberVFuncThunk<      CBaseCombatWeapon *, bool> vt_HasAmmo;
 };
 
 class CTFWeaponBase : public CBaseCombatWeapon
@@ -43,18 +45,13 @@ public:
 	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
 	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
 	
+	DECL_SENDPROP(float, m_flLastFireTime);
+	DECL_SENDPROP(float, m_flEffectBarRegenTime);
+	DECL_SENDPROP(float, m_flEnergy);
+	
 private:
 	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetWeaponID;
 	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetPenetrateType;
-};
-
-class CTFWeaponBaseMelee : public CTFWeaponBase
-{
-public:
-	int GetSwingRange() { return vt_GetSwingRange(this); }
-	
-private:
-	static MemberVFuncThunk<CTFWeaponBaseMelee *, int> vt_GetSwingRange;
 };
 
 class CTFWeaponBaseGun : public CTFWeaponBase {};
@@ -72,6 +69,28 @@ private:
 	static MemberFuncThunk<CTFSniperRifleDecap *, int> ft_GetCount;
 };
 
+
+class CTFWeaponBaseMelee : public CTFWeaponBase
+{
+public:
+	int GetSwingRange()            { return vt_GetSwingRange(this); }
+	bool DoSwingTrace(trace_t& tr) { return vt_DoSwingTrace (this, tr); }
+	
+private:
+	static MemberVFuncThunk<CTFWeaponBaseMelee *, int>            vt_GetSwingRange;
+	static MemberVFuncThunk<CTFWeaponBaseMelee *, bool, trace_t&> vt_DoSwingTrace;
+};
+
+class CTFKnife : public CTFWeaponBaseMelee
+{
+public:
+	bool CanPerformBackstabAgainstTarget(CTFPlayer *player) { return ft_CanPerformBackstabAgainstTarget(this, player); }
+	bool IsBehindAndFacingTarget(CTFPlayer *player)         { return ft_IsBehindAndFacingTarget        (this, player); }
+	
+private:
+	static MemberFuncThunk<CTFKnife *, bool, CTFPlayer *> ft_CanPerformBackstabAgainstTarget;
+	static MemberFuncThunk<CTFKnife *, bool, CTFPlayer *> ft_IsBehindAndFacingTarget;
+};
 
 class CTFBonesaw : public CTFWeaponBaseMelee {};
 

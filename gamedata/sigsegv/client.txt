@@ -78,7 +78,7 @@
 					type  "pattern"
 					sym   "_ZN13CDebugOverlay15DrawAllOverlaysEv"
 					lib   "engine"
-					seg   ".text"
+					seg   "text"
 					seek  "558beca1c43c491083ec20837830000f840601000053576a0168e5030000689417311068d41731108d45e068043d491050e84aa0ffff8b3da03c491083c41833db85ff0f8493000000f30f100db01e2f1056"
 					mask  "ffffffff00000000ffffffffffffffffff00000000ffffff00ff00000000ff00000000ff00000000ffffffff00000000ffff00000000ffff00000000ffffffffffffffffff00000000ffffffff00000000ff"
 				}
@@ -87,7 +87,7 @@
 					type  "pattern"
 					sym   "_ZN13CDebugOverlay11DrawOverlayEPNS_13OverlayBase_tE"
 					lib   "engine"
-					seg   ".text"
+					seg   "text"
 					seek  "558bec83ec348d45cc566a016863030000684c173110688c17311068043d491050e86a9bffff8b750883c4188b0683f8050f87b5010000"
 					mask  "ffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffff00000000ffffffffffffffffffffffffff00000000"
 				}
@@ -97,7 +97,7 @@
 					type  "pattern"
 					sym   "_Z21RenderWireframeSphereRK6Vectorfii5Colorb"
 					lib   "client"
-					seg   ".text"
+					seg   "text"
 					seek  "558bec81ec18020000535657e8dff6ffff8b5d108b4514438bfb895d100faff8488945f88d0c9dfcffffff8945dc0fafc8894dfc8b0da04ad7108b01ff90880100008bf08975e885f674078b068bceff5008"
 					mask  "ffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffff00ffffffffffff00"
 				}
@@ -106,7 +106,7 @@
 			//		type "pattern"
 			//		sym  ""
 			//		lib  "engine"
-			//		seg  ".text"
+			//		seg  "text"
 			//		seek ""
 			//		mask ""
 			//	}
@@ -115,7 +115,7 @@
 					type  "pattern"
 					sym   "_Z12RenderSphereRK6Vectorfii5ColorP9IMaterial"
 					lib   "engine"
-					seg   ".text"
+					seg   "text"
 					seek  "538bdc83ec0883e4f083c404558b6b04896c24048bec81ec680200005657e81df7ffff8b0d7ccf67108b018b8088010000ffd08bf08975e085f67407"
 					mask  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
 				}
@@ -124,7 +124,7 @@
 					type "pattern"
 					sym  "_Z18RenderWireframeBoxRK6VectorRK6QAngleS1_S1_5Colorb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec5802000056e801edffff8b0d04f067108b01ff90880100008bf08975fc85f674078b068bceff5008a138f067108bce807d1c008b160f450534f0671053576a0050ff5224"
 					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
@@ -133,7 +133,7 @@
 					type "pattern"
 					sym  "_Z23RenderWireframeSweptBoxRK6VectorS1_RK6QAngleS1_S1_5Colorb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ecc40200008b0d08f06710578b01ff90880100008bf8897df085ff74078b078bcfff5008a138f067108bcf807d20008b170f450534f0671053566a0050ff5224"
 					mask "ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
@@ -142,7 +142,7 @@
 					type "pattern"
 					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5Colorbb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek ""
 					mask ""
 				}
@@ -151,7 +151,7 @@
 					type "pattern"
 					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5ColorP9IMaterialb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec7002000056e871feffff8b0d04f067108b01ff90880100008bf08975dc85f674078b068bceff50088b068bce53576a00ff751cff5024"
 					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
@@ -160,7 +160,7 @@
 			//		type "pattern"
 			//		sym  ""
 			//		lib  "engine"
-			//		seg  ".text"
+			//		seg  "text"
 			//		seek ""
 			//		mask ""
 			//	}
@@ -169,7 +169,7 @@
 			//		type "pattern"
 			//		sym  ""
 			//		lib  "engine"
-			//		seg  ".text"
+			//		seg  "text"
 			//		seek ""
 			//		mask ""
 			//	}
@@ -178,7 +178,7 @@
 					type "pattern"
 					sym  "_Z10RenderLineRK6VectorS1_5Colorb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ecf401000056e8b1f9ffff8b0d04f067108b01ff90880100008bf085f674078b068bceff5008a138f067108bce807d14008b160f450534f0671053576a0050ff5224"
 					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
@@ -187,7 +187,7 @@
 					type "pattern"
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5Colorb"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek ""
 					mask ""
 				}
@@ -196,7 +196,7 @@
 					type "pattern"
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5ColorP9IMaterial"
 					lib  "engine"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec0402000056e881f1ffff8b0d04f067108b018b8088010000ffd08bf085f674078b068bceff50088b068bce576a00ff7518ff5024"
 					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
@@ -205,7 +205,7 @@
 			//		type "pattern"
 			//		sym  ""
 			//		lib  "engine"
-			//		seg  ".text"
+			//		seg  "text"
 			//		seek ""
 			//		mask ""
 			//	}
@@ -214,7 +214,7 @@
 			//		type "pattern"
 			//		sym  "_Z24DrawScreenSpaceRectangleP9IMaterialiiiiffffiiPviif"
 			//		lib  "engine"
-			//		seg  ".text"
+			//		seg  "text"
 			//		seek ""
 			//		mask ""
 			//	}
@@ -278,7 +278,7 @@
 				{
 					type "pattern"
 					sym  "_ZN15CTFGameMovement15ProcessMovementEP12C_BasePlayerP9CMoveData"
-					seg  ".text"
+					seg  "text"
 					seek "558bec56578b7d088bf185ff746f538b5d0c85db7466e85586dcffc7868806000000000000"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff0000000000000000"
 					lib  "client"
@@ -297,7 +297,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec000c000056ff75108bf1ff750c8b06ff5050ff75208b068bceff751cff7518ff7514ff504cff75288d8500fcffffff7524680004000050"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 					lib  "vguimatsurface"
@@ -307,7 +307,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec83ec1c53568bf18b0d20d3cd1057e8da33e9ff84c00f84b6010000"
 					mask "ffffffffffffffffffffffff00000000ffff00000000ffffffffffffffff"
 					lib  "client"
@@ -317,7 +317,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec5c0100008d85a4feffff568b750868000100005650e8da021e006a2e56e8f9d1250083c41485c0751b6aff68000100008d85a4feffff"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffffffff"
 					lib  "engine"
@@ -327,7 +327,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec56ff75088bf1e802f0ffffc7463084842f108bc6c7068c842f10c74630d8842f10c7863c40000000000000"
 					mask "ffffffffffffffffffff00000000ffffff00000000ffffffff00000000ffffff00000000ffffffffffffffffffff"
 					lib  "engine"
@@ -336,7 +336,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec568bf18b4e34c7068c842f10c74630d8842f1085c974068b016a01ff108bcee8c9effffff6450801740956e8dda7130083c4048bc65e5dc20400"
 					mask "ffffffffffffffffffffff00000000ffffff00000000ffffffffffffffffffffffffff00000000ffffffffffffffff00000000ffffffffffffffffffff"
 					lib  "engine"
@@ -362,7 +362,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec81ec84000000538bd98b4d0c895df856578b7d0885c9751357b910cb1310e81aa3000033c984c00f95c141"
 					mask "ffffffffff00ffffffffffffffffffffff00ffffffffffffffffffffff00000000ff00000000ffffffffffffffff"
 					lib  "vguimatsurface"
@@ -376,7 +376,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec8b451483ec1485c00f84fb0000008b550c5733ff897df885d20f8ee90000008b4d1053568b750883c103"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 					lib  "vguimatsurface"
@@ -385,7 +385,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec83ec34538b5d14565785db0f84d20200008d04dd1300000083e0f0e8bd650600db45148d041b8bfc897dfc8945dc"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffffffffffffffff"
 					lib  "vguimatsurface"
@@ -426,7 +426,7 @@
 				{
 					type   "func ebpprologue unistr"
 					sym    "TODO"
-					seg    ".text"
+					seg    "text"
 					unistr "attacker_player"
 					// also: "patient"
 					lib    "client"
@@ -437,7 +437,7 @@
 				{
 					type   "func ebpprologue unistr"
 					sym    "TODO"
-					seg    ".text"
+					seg    "text"
 					unistr "DamagedPlayer"
 					lib    "client"
 				}
@@ -447,7 +447,7 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec56ff750c8bf1ff75088b06ff9098000000508bcee814ffffff5e5dc20800cc"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 					lib  "client"
@@ -458,11 +458,69 @@
 				{
 					type "pattern"
 					sym  "TODO"
-					seg  ".text"
+					seg  "text"
 					seek "558bec51568bf15780be5b010000007405e87aedffffff750c8d450eb9bccedc1050e8f982fdff0fb738b8ffff0000"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffff"
 					lib  "client"
 				}
+				
+				"[client] CBuildFactoryHelper::GetFactoryNames"
+				{
+					type "pattern"
+					sym  "_ZN4vgui19CBuildFactoryHelper15GetFactoryNamesER10CUtlVectorIPKc10CUtlMemoryIS3_iEE"
+					seg  "text"
+					seek "558bec568b750857c7460c000000008b3dd0fbdc1085ff7462538d9b000000008b5e0c8b470c8b4e048945088d43013bc1"
+					mask "ffffffffffffffffffffffffffffffffff00000000ffffff00ffffffffffffffffffffffffffffffffffffffffffffffff"
+					lib  "client"
+				}
+				
+				"[client] CBuildFactoryHelper::InstancePanel"
+				{
+					type "pattern"
+					sym  "_ZN4vgui19CBuildFactoryHelper13InstancePanelEPKc"
+					seg  "text"
+					seek "558bec568b35d0fbdc105785f674198b7d08ff760c57e8058dfbff83c40885c0740c8b3685f675ea5f33c05e5dc3"
+					mask "ffffffffffff00000000ffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffff"
+					lib  "client"
+				}
+				
+				"[client] GetClientModeNormal"
+				{
+					type "pattern"
+					sym  "_Z19GetClientModeNormalv"
+					seg  "text"
+					seek "a130d3d610a801751f83c801b998d2d610a330d3d610e855e2ffff68a0039810e839c73d0083c404b898d2d610c3"
+					mask "ff00000000ffffffffffffffff00000000ff00000000ff00000000ff00000000ff00000000ffffffff00000000ff"
+					lib  "client"
+				}
+				
+				"[client] CTFModeManager::LevelInit"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN14CTFModeManager9LevelInitEPKc"
+					seg    "text"
+					unistr "voice_steal"
+					lib    "client"
+				}
+				
+				"[client] vgui::Frame::Frame"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN4vgui5FrameC2EPNS_5PanelEPKcbb"
+					seg    "text"
+					unistr "#Frame_Untitled"
+					lib    "client"
+				}
+				
+			//	"[client] MySpewOutputFunc"
+			//	{
+			//		type "pattern"
+			//		sym  "_ZL16MySpewOutputFunc10SpewType_tPKc"
+			//		seg  "text"
+			//		seek ""
+			//		mask ""
+			//		lib  "materialsystem"
+			//	}
 			}
 		}
 	}

@@ -33,7 +33,14 @@ class ISoundEmitterSystemBase;
 class IMaterialSystem;
 
 namespace vgui {
+	class IVGui;
+	class IInput;
+	class IPanel;
 	class ISchemeManager;
+	class ISystem;
+	class ILocalize;
+	class IInputInternal;
+	
 	class ISurface;
 }
 class IMatSystemSurface;
@@ -61,6 +68,8 @@ namespace SourceMod {
 	class IExtensionManager;
 }
 
+class IClientMode;
+
 
 extern IVEngineServer *engine;
 extern IServerGameDLL *gamedll;
@@ -87,7 +96,13 @@ extern ISoundEmitterSystemBase *soundemitterbase;
 
 extern IMaterialSystem *g_pMaterialSystem;
 
+extern vgui::IVGui *g_pVGui;
+extern vgui::IInput *g_pVGuiInput;
+extern vgui::IPanel *g_pVGuiPanel;
 extern vgui::ISchemeManager *g_pVGuiSchemeManager;
+extern vgui::ISystem *g_pVGuiSystem;
+extern vgui::ILocalize *g_pVGuiLocalize;
+extern vgui::IInputInternal *g_pVGuiInputInternal;
 
 extern vgui::ISurface *g_pVGuiSurface;
 extern IMatSystemSurface *g_pMatSystemSurface;
@@ -110,6 +125,8 @@ extern IMDLCache *mdlcache;
 
 extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
+
+extern IClientMode *g_pClientMode;
 
 
 /* C++ standard library */
@@ -195,6 +212,10 @@ using namespace std::literals;
 #include <lz4.h>
 
 
+/* LodePNG */
+#include <lodepng.h>
+
+
 /* Capstone */
 #include <capstone.h>
 
@@ -278,7 +299,13 @@ class IVideoRecorder;
 #include <valve_minmax_off.h>
 #include <stringpool.h>
 #include <filesystem.h>
+#include <vgui/IVGui.h>
+#include <vgui/IInput.h>
+#include <vgui/IPanel.h>
 #include <vgui/IScheme.h>
+#include <vgui/ISystem.h>
+#include <vgui/ILocalize.h>
+#include <vgui/IInputInternal.h>
 #include <vgui/ISurface.h>
 #include <VGuiMatSurface/IMatSystemSurface.h>
 #include <IKeyValuesSystem.h>

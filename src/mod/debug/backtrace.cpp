@@ -24,7 +24,7 @@ namespace Mod_Debug_Backtrace
 		
 		void AddBacktrace(const char *lib, const char *pattern)
 		{
-			auto backtrace = new CFuncBacktrace(LibMgr::FromString(lib), pattern);
+			auto backtrace = new CFuncBacktrace(LibMgr::Lib_FromString(lib), pattern);
 			if (backtrace->Load()) {
 				backtrace->Enable();
 				this->m_Backtraces.emplace_back(backtrace);

@@ -11,11 +11,19 @@ namespace Mod_Bot_Medieval_NonMelee
 		0x75, 0x00,                               // +000C  jnz +0xXX
 	};
 	
-	struct IPatch_CTFBot_EquipRequiredWeapon : public IPatch
+	struct CPatch_CTFBot_EquipRequiredWeapon : public CPatch
 	{
-		IPatch_CTFBot_EquipRequiredWeapon() : IPatch(sizeof(s_Buf)) {}
+		CPatch_CTFBot_EquipRequiredWeapon() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFBot::EquipRequiredWeapon"; }
+		
+#if defined _LINUX
+		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override { return 0x0100; } // @ 0x00b0
+#elif defined _WINDOWS
+		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override { return 0x00c0; } // @ 0x0071
+#endif
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
@@ -41,24 +49,6 @@ namespace Mod_Bot_Medieval_NonMelee
 			return true;
 		}
 	};
-	
-#if defined _LINUX
-	
-	struct CPatch_CTFBot_EquipRequiredWeapon : public IPatch_CTFBot_EquipRequiredWeapon
-	{
-		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override { return 0x0100; } // @ 0x00b0
-	};
-	
-#elif defined _WINDOWS
-	
-	struct CPatch_CTFBot_EquipRequiredWeapon : public IPatch_CTFBot_EquipRequiredWeapon
-	{
-		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override { return 0x00c0; } // @ 0x0071
-	};
-	
-#endif
 	
 	
 	class CMod : public IMod

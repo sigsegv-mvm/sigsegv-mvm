@@ -16,9 +16,8 @@ class CBaseEntity : public IServerEntity
 {
 public:
 	/* inline */
-	edict_t *edict()       { return this->NetworkProp()->GetEdict(); }
 	edict_t *edict() const { return this->NetworkProp()->GetEdict(); }
-	int entindex();
+	int entindex() const;
 	const Vector& GetAbsOrigin() const;
 	const QAngle& GetAbsAngles() const;
 //	const Vector& GetAbsVelocity() const;
@@ -46,6 +45,9 @@ public:
 	model_t *GetModel() const                   { return const_cast<model_t *>(modelinfo->GetModel(this->GetModelIndex())); }
 	bool IsTransparent() const                  { return (this->m_nRenderMode != kRenderNormal); }
 	MoveType_t GetMoveType() const              { return (MoveType_t)(unsigned char)this->m_MoveType; }
+	CBaseEntity *GetMoveParent()                { return this->m_hMoveParent; }
+	CBaseEntity *FirstMoveChild()               { return this->m_hMoveChild; }
+	CBaseEntity *NextMovePeer()                 { return this->m_hMovePeer; }
 	
 	/* thunk */
 	void Remove()                                                                            {        ft_Remove                   (this); }
@@ -63,10 +65,15 @@ public:
 	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
 	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter         (this); }
 	bool IsCombatItem() const                                                                { return vt_IsCombatItem             (this); }
+	void SetModelIndex(int index)                                                            {        vt_SetModelIndex            (this, index); }
 	int GetModelIndex() const                                                                { return vt_GetModelIndex            (this); }
+	string_t GetModelName() const                                                            { return vt_GetModelName             (this); }
 	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer (this); }
 	bool ShouldCollide(int collisionGroup, int contentsMask) const                           { return vt_ShouldCollide            (this, collisionGroup, contentsMask); }
 	void DrawDebugGeometryOverlays()                                                         {        vt_DrawDebugGeometryOverlays(this); }
+	void ChangeTeam(int iTeamNum)                                                            {        vt_ChangeTeam               (this, iTeamNum); }
+	void SetModelIndexOverride(int index, int nValue)                                        {        vt_SetModelIndexOverride    (this, index, nValue); }
+	datamap_t *GetDataDescMap()                                                              { return vt_GetDataDescMap           (this); }
 	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
@@ -83,6 +90,7 @@ public:
 	DECL_SENDPROP(int, m_fFlags);
 	DECL_DATAMAP(int, m_nNextThinkTick);
 	DECL_SENDPROP(char, m_lifeState);
+	DECL_SENDPROP(int[4], m_nModelIndexOverrides);
 	
 private:
 	DECL_DATAMAP(CServerNetworkProperty, m_Network);
@@ -94,6 +102,9 @@ private:
 	DECL_DATAMAP(Vector,                 m_vecAbsVelocity);
 	DECL_DATAMAP(IPhysicsObject *,       m_pPhysicsObject);
 	DECL_DATAMAP(matrix3x4_t,            m_rgflCoordinateFrame);
+	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMoveChild);
+	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMovePeer);
+	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMoveParent);
 	
 	DECL_SENDPROP_RW(CCollisionProperty,   m_Collision);
 	DECL_SENDPROP   (int,                  m_iTeamNum);
@@ -122,10 +133,15 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> vt_GetVelocity;
 	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                    vt_WorldSpaceCenter;
 	static MemberVFuncThunk<const CBaseEntity *, bool>                             vt_IsCombatItem;
+	static MemberVFuncThunk<      CBaseEntity *, void, int>                        vt_SetModelIndex;
 	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
+	static MemberVFuncThunk<const CBaseEntity *, string_t>                         vt_GetModelName;
 	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>           vt_MyCombatCharacterPointer;
 	static MemberVFuncThunk<const CBaseEntity *, bool, int, int>                   vt_ShouldCollide;
 	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_DrawDebugGeometryOverlays;
+	static MemberVFuncThunk<      CBaseEntity *, void, int>                        vt_ChangeTeam;
+	static MemberVFuncThunk<      CBaseEntity *, void, int, int>                   vt_SetModelIndexOverride;
+	static MemberVFuncThunk<      CBaseEntity *, datamap_t *>                      vt_GetDataDescMap;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -137,12 +153,12 @@ inline CBaseEntity *GetContainingEntity(edict_t *pent)
 	return nullptr;
 }
 
-inline int ENTINDEX(edict_t *pEdict)
+inline int ENTINDEX(const edict_t *pEdict)
 {
-	return gamehelpers->IndexOfEdict(pEdict);
+	return gamehelpers->IndexOfEdict(const_cast<edict_t *>(pEdict));
 }
 
-inline int ENTINDEX(CBaseEntity *pEnt)
+inline int ENTINDEX(const CBaseEntity *pEnt)
 {
 	if (pEnt == nullptr) {
 		return 0;
@@ -171,7 +187,7 @@ inline CBaseEntity *UTIL_EntityByIndex(int entityIndex)
 }
 
 
-inline int CBaseEntity::entindex()
+inline int CBaseEntity::entindex() const
 {
 	return ENTINDEX(this->GetNetworkable()->GetEdict());
 }

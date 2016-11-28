@@ -3,7 +3,7 @@
 
 
 inline CreateInterfaceFn EngineFactory()     { return g_SMAPI->GetEngineFactory    (false); }
-inline CreateInterfaceFn PhysicsFactory()    { return g_SMAPI->GetPhysicsFactory   (false); }
+inline CreateInterfaceFn VPhysicsFactory()   { return g_SMAPI->GetPhysicsFactory   (false); }
 inline CreateInterfaceFn FileSystemFactory() { return g_SMAPI->GetFileSystemFactory(false); }
 inline CreateInterfaceFn ServerFactory()     { return g_SMAPI->GetServerFactory    (false); }
 

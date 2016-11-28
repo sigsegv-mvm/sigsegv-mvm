@@ -17,9 +17,9 @@ namespace Mod_Sniper_Charge_Uncap
 		0xf3, 0x0f, 0x59, 0x40, 0x10,                   // +0025  mulss xmm0,DWORD PTR [eax+0x10]
 	};
 	
-	struct CPatch_UncapChargeRate_Common : public IPatch
+	struct CPatch_UncapChargeRate_Common : public CPatch
 	{
-		CPatch_UncapChargeRate_Common() : IPatch(sizeof(s_Buf)) {}
+		CPatch_UncapChargeRate_Common() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
@@ -71,9 +71,9 @@ namespace Mod_Sniper_Charge_Uncap
 		0xf3, 0x0f, 0x10, 0x05, 0x00, 0x00, 0x00, 0x00, // +002A  movss xmm0,DWORD PTR [xxxxxxxx]
 	};
 	
-	struct CPatch_UncapChargeRate_Common : public IPatch
+	struct CPatch_UncapChargeRate_Common : public CPatch
 	{
-		CPatch_UncapChargeRate_Common() : IPatch(sizeof(s_Buf)) {}
+		CPatch_UncapChargeRate_Common() : CPatch(sizeof(s_Buf)) {}
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{

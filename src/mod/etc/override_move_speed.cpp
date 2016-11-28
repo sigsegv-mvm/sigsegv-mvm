@@ -20,9 +20,9 @@ namespace Mod_Etc_Override_Move_Speed
 		0xc7, 0x47, 0x3c, 0x00, 0x00, 0x02, 0x44, // +0000 mov dword ptr [edi+0x3c],520.0f
 	};
 	
-	struct CPatch_CTFGameMovement_ProcessMovement_Server : public IPatch
+	struct CPatch_CTFGameMovement_ProcessMovement_Server : public CPatch
 	{
-		CPatch_CTFGameMovement_ProcessMovement_Server() : IPatch(sizeof(s_Buf_Server)) {}
+		CPatch_CTFGameMovement_ProcessMovement_Server() : CPatch(sizeof(s_Buf_Server)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFGameMovement::ProcessMovement"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
@@ -50,9 +50,9 @@ namespace Mod_Etc_Override_Move_Speed
 		0xc7, 0x43, 0x3c, 0x00, 0x00, 0x02, 0x44, // +0000 mov dword ptr [ebx+0x3c],520.0f
 	};
 	
-	struct CPatch_CTFGameMovement_ProcessMovement_Client : public IPatch
+	struct CPatch_CTFGameMovement_ProcessMovement_Client : public CPatch
 	{
-		CPatch_CTFGameMovement_ProcessMovement_Client() : IPatch(sizeof(s_Buf_Client)) {}
+		CPatch_CTFGameMovement_ProcessMovement_Client() : CPatch(sizeof(s_Buf_Client)) {}
 		
 		virtual const char *GetFuncName() const override { return "[client] CTFGameMovement::ProcessMovement"; }
 		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }

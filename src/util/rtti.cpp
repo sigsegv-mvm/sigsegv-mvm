@@ -65,6 +65,8 @@ namespace RTTI
 						}
 					}
 				}
+				
+				return true;
 			}
 			);
 		}
@@ -93,8 +95,8 @@ namespace RTTI
 		// REV  282-305 ms
 		
 		using TDScanner  = CStringPrefixScanner<ScanDir::FORWARD, ScanResults::ALL, 0x1>;
-		using COLScanner = CTypeScanner<ScanDir::REVERSE, ScanResults::ALL, 0x4, const _TypeDescriptor *>;
-		using VTScanner  = CTypeScanner<ScanDir::FORWARD, ScanResults::ALL, 0x4, const __RTTI_CompleteObjectLocator *>;
+		using COLScanner = CAlignedTypeScanner <ScanDir::REVERSE, ScanResults::ALL, const _TypeDescriptor *>;
+		using VTScanner  = CAlignedTypeScanner <ScanDir::FORWARD, ScanResults::ALL, const __RTTI_CompleteObjectLocator *>;
 		
 		int n_total = 0;
 		int n_skip  = 0;
@@ -129,7 +131,7 @@ namespace RTTI
 		
 		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0, Library::CLIENT}) {
 			Prof::Begin();
-			CScan<TDScanner> scan1(CLibSegBounds(lib, ".data"), ".?AV");
+			CScan<TDScanner> scan1(CLibSegBounds(lib, Segment::DATA), ".?AV");
 			Prof::End("TD scan");
 			Prof::Begin();
 			for (auto match : scan1.Matches()) {
@@ -173,7 +175,7 @@ namespace RTTI
 				auto name = pair.first;
 				auto p_TD = pair.second;
 				
-				auto scanner = new COLScanner(CLibSegBounds(lib, ".rdata"), p_TD);
+				auto scanner = new COLScanner(CLibSegBounds(lib, Segment::RODATA), p_TD);
 				
 				scanners_COL.push_back(scanner);
 				scannermap_COL[scanner] = name;
@@ -215,7 +217,7 @@ namespace RTTI
 				auto name  = pair.first;
 				auto p_COL = pair.second;
 				
-				auto scanner = new VTScanner(CLibSegBounds(lib, ".rdata"), p_COL);
+				auto scanner = new VTScanner(CLibSegBounds(lib, Segment::RODATA), p_COL);
 				
 				scanners_VT.push_back(scanner);
 				scannermap_VT[scanner] = name;

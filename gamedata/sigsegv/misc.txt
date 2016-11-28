@@ -115,11 +115,12 @@
 				
 				"CCurrencyPack::ComeToRest"
 				{
-					type    "func datamap vthunk"
-					sym     "_ZN13CCurrencyPack10ComeToRestEv"
-					datamap "CItem::m_DataMap"
-					func    "CItemComeToRest"
-					vtable  ".?AVCCurrencyPack@@"
+					type      "func datamap vthunk"
+					sym       "_ZN13CCurrencyPack10ComeToRestEv"
+				//	classname "item_currencypack_custom"
+					datamap   "CItem::m_DataMap"
+					func      "CItemComeToRest"
+					vtable    ".?AVCCurrencyPack@@"
 				}
 				"CCurrencyPack::MyTouch"
 				{
@@ -182,7 +183,7 @@
 				{
 					type "pattern"
 					sym  "_ZN17CAttributeManager15AttribHookValueIiEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
-					seg  ".text"
+					seg  "text"
 					seek "558bec83ec248b0d8cc26a105333db895ddc895de08b4108895df0895df45785c0743e6894106f1068b8106f106890806c10683c1e92106a7768c8106f10535353538d4ddc5150"
 					mask "ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffffff00000000ffffffffffffffffff"
 				}
@@ -190,7 +191,7 @@
 				{
 					type "pattern"
 					sym  "_ZN17CAttributeManager15AttribHookValueIfEET_S1_PKcPK11CBaseEntityP10CUtlVectorIPS4_10CUtlMemoryIS8_iEEb"
-					seg  ".text"
+					seg  "text"
 					seek "558bec83ec288b0d8cc26a105333db895dd8895ddc8b4108895dec895df05685c0743e6894106f1068b8106f106890806c1068481e92106a7768c8106f10535353538d4dd85150"
 					mask "ffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffff00000000ff00000000ff00000000ff00000000ffffff00000000ffffffffffffffffff"
 				}
@@ -608,7 +609,7 @@
 				{
 					type  "pattern"
 					sym   "_ZN11IGameSystem3AddEPS_"
-					seg   ".text"
+					seg   "text"
 					seek  "558bec518b1514d58b108b0d0cd58b10568bf28d42013bc17e142bd1b908d58b104252e8d89c1c008b1514d58b10a108d58b1042891514d58b102bd64aa318d58b1085d27e1d8d0cb08d04950000000050518d410450e8055b4200a108d58b1083c40c8d04b08b750885c0740289306a0068b0de8f1068c4dd8f106a0056e81170420083c41485c074118d45fc8975fc50b91cd58b10e835981c005e8be55dc3"
 					mask  "ffffffffffff00000000ffff00000000ffffffffffffffffff00ffffff00000000ffffff00000000ffff00000000ff00000000ffffff00000000ffffffff00000000ffffff00ffffffffffffffffffffffffffffffffff00000000ff00000000ffffffffffffffffffffffff00ffffffffff00000000ff00000000ffffffff00000000ffffffffffff00ffffffffffffffff00000000ff00000000ffffffffff"
 				}
@@ -616,7 +617,7 @@
 				{
 					type "pattern"
 					sym  "_ZN11IGameSystem6RemoveEPS_"
-					seg  ".text"
+					seg  "text"
 					seek "558bec51568d4508b9b8148c1050e81dbb0a008b75086a00689020901068a41f90106a0056e84aed420083c41485c074118d45fc8975fc50b9cc148c10e8eeba0a005e8be55dc3"
 					mask "ffffffffffffffffff00000000ffff00000000ffffffffffff00000000ff00000000ffffffff00000000ffffffffffffffffffffffffffffff00000000ff00000000ffffffffff"
 				//	seek "558bec51568bf18d45fc50b908d58b108975fcc706387a6d10e8a29708006a0068b0de8f1068c4dd8f106a0056e8f271420083c41485c074118d45fc8975fc50b91cd58b10e8769708005e8be55dc3"
@@ -909,7 +910,7 @@
 				{
 					type "pattern"
 					sym  "_ZN17CGlobalEntityList21FindEntityByClassnameEP11CBaseEntityPKc"
-					seg  ".text"
+					seg  "text"
 					seek "558bec5356578bf98b4d0885c974158b01ff50088b3081e6ff0f00004603f68b34f7eb068bb70400010085f674318b5d0c8b3e85ff75106880a47010ff1574f26a1083c404eb11395f5c741c538bcfe8ac9ffaff84c075108b760c85f675d25f5e33c05b5dc208008bc75f5e5b5dc20800"
 					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
@@ -1036,7 +1037,7 @@
 //				{
 //					type "pattern"
 //					sym  "_ZN11CRConClient7SendCmdEPKc"
-//					seg  ".text"
+//					seg  "text"
 //					seek "558bec83ec30538bd956578d4b34e8dd86fdff85c07f336a018d7b5c578d4b34e84baf070085c079216a008bcf"
 //					mask "ffffffffffffffffffffffffffffff00000000ffffff00ffffffffffffffffffff00000000ffffff00ffffffff"
 //					lib  "engine"
@@ -1046,7 +1047,7 @@
 				{
 					type "pattern"
 					sym  "_ZN11CRConClient12SendResponseER10CUtlBufferb"
-					seg  ".text"
+					seg  "text"
 					seek "558bec807d0c00538bd9742f807b70007529e819e9ffff8d4b34e8118dfdff85c07e5c8b45088d8ba4000000ff701cff30e8ba0019005b5dc20800"
 					mask "ffffffffffffffffffffff00ffffffffff00ff00000000ffffffff00000000ffffff00ffffffffffffffffffffffffffffff00000000ffffffffff"
 					lib  "engine"
@@ -1055,7 +1056,7 @@
 				{
 					type "pattern"
 					sym  "_ZN11CRConClient13BuildResponseER10CUtlBuffer23ServerDataRequestType_tPKcS4_"
-					seg  ".text"
+					seg  "text"
 					seek "558bec568b7508578bf96a00f646150175098bcee867f31100eb0e682c652f1056e84a15190083c40c"
 					mask "ffffffffffffffffffffffffffffffffff00ffffff00000000ff00ff00000000ffff00000000ffffff"
 					lib  "engine"
@@ -1111,7 +1112,7 @@
 				{
 					type "pattern"
 					sym  "_Z20VProfRecord_Snapshotv"
-					seg  ".text"
+					seg  "text"
 					seek "a19cf3651083f801750ab9a0d96510e9dcfaffff83f8027517803dc4f3651000750e6a006affb9a0d96510e8c0f1ffffc3"
 					mask "ff00000000ffffffffffff00000000ff00000000ffffffffffffff00000000ffffffffffffffff00000000ff00000000ff"
 					lib  "engine"
@@ -1121,7 +1122,7 @@
 				{
 					type "pattern"
 					sym  "_Z23VProfRecord_StartOrStopv"
-					seg  ".text"
+					seg  "text"
 					seek "803d04913c100074288b0d60052f10ff810c10000083b90c10000001750c81c118100000ff1544062f10c60504913c1000803d05913c100074218b0d60052f10ff890c100000750c81c118100000ff1540062f10c60505913c1000c3"
 					mask "ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffff00000000ffff00000000ffff"
 					lib  "engine"
@@ -1166,7 +1167,7 @@
 				{
 					type "pattern"
 					sym  "_Z14V_vsnprintfRetPciPKcS_Pb"
-					seg  ".text"
+					seg  "text"
 					seek "558bec568b750c57ff75148b7d08ff75105657e8003601008b551883c41085d2741385c078083bc67d0433c9eb05b901000000880a85c078043bc67c07c64437ff008bc65f5e5dc3"
 					mask "ffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
@@ -1542,6 +1543,208 @@
 				{
 					type "sym"
 					sym  "_ZN19CTFSniperRifleDecap24SniperRifleChargeRateModEv"
+				}
+				
+				"MapEntity_ParseAllEntities"
+				{
+					type "sym"
+					sym  "_Z26MapEntity_ParseAllEntitiesPKcP16IMapEntityFilterb"
+				}
+				"MapEntity_ParseEntity"
+				{
+					type "sym"
+					sym  "_Z21MapEntity_ParseEntityRP11CBaseEntityPKcP16IMapEntityFilter"
+				}
+				"MapEntity_ParseToken"
+				{
+					type "sym"
+					sym  "_Z20MapEntity_ParseTokenPKcPc"
+				}
+				
+				"CTFBotProxy::CTFBotProxy [C1]"
+				{
+					type "sym"
+					sym  "_ZN11CTFBotProxyC1Ev"
+				}
+				
+				"CTFKnife::CanPerformBackstabAgainstTarget"
+				{
+					type "sym"
+					sym  "_ZN8CTFKnife31CanPerformBackstabAgainstTargetEP9CTFPlayer"
+				}
+				
+				"CTFKnife::IsBehindAndFacingTarget"
+				{
+					type "sym"
+					sym  "_ZN8CTFKnife23IsBehindAndFacingTargetEP9CTFPlayer"
+				}
+				
+				"CTFWeaponBaseMelee::DoSwingTrace"
+				{
+					type "sym"
+					sym  "_ZN18CTFWeaponBaseMelee12DoSwingTraceER10CGameTrace"
+				}
+				
+				"CTFGameRules::DropHalloweenSoulPack"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules21DropHalloweenSoulPackEiRK6VectorP11CBaseEntityi"
+				}
+				
+				"SVC_CmdKeyValues::Process"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN16SVC_CmdKeyValues7ProcessEv"
+					vtable ".?AVSVC_CmdKeyValues@@"
+					idx    "0x03"
+					lib    "engine"
+				}
+				
+				"CBaseTrigger::PassesTriggerFilters"
+				{
+					type "sym regex"
+					sym  ".*CBaseTrigger.*PassesTriggerFilters.*"
+				}
+				
+				"CL_TakeSnapshotAndSwap"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_Z22CL_TakeSnapshotAndSwapv"
+					unistr "CL_TakeSnapshotAndSwap"
+					lib    "engine"
+				}
+				
+				"CVideoMode_Common::TakeSnapshotTGA"
+				{
+					type   "func ebpprologue nonunistr knownvtidx"
+					sym    "_ZN17CVideoMode_Common15TakeSnapshotTGAEPKc"
+					str    "Couldn't write bitmap data snapshot to file %s.\n"
+					vtable ".?AVCVideoMode_Common@@"
+					idx    "0x18"
+					lib    "engine"
+				}
+				
+				"CBaseCombatWeapon::HasAmmo"
+				{
+					type "sym"
+					sym  "_ZN17CBaseCombatWeapon7HasAmmoEv"
+				}
+				
+				"CObjectSapper::IsValidRoboSapperTarget"
+				{
+					type "sym"
+					sym  "_ZN13CObjectSapper23IsValidRoboSapperTargetEP9CTFPlayer"
+				}
+				
+				"CObjectSapper::ApplyRoboSapper"
+				{
+					type "sym"
+					sym  "_ZN13CObjectSapper15ApplyRoboSapperEP9CTFPlayerfi"
+				}
+				
+				"CObjectSapper::ApplyRoboSapperEffects"
+				{
+					type "sym"
+					sym  "_ZN13CObjectSapper22ApplyRoboSapperEffectsEP9CTFPlayerf"
+				}
+				
+				"CTFSniperRifle::CreateSniperDot"
+				{
+					type "sym"
+					sym  "_ZN14CTFSniperRifle15CreateSniperDotEv"
+				}
+				
+				"CTFSniperRifle::CanFireCriticalShot"
+				{
+					type "sym"
+					sym  "_ZN14CTFSniperRifle19CanFireCriticalShotEb"
+				}
+				
+				"CTFWeaponBase::CanFireCriticalShot"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase19CanFireCriticalShotEb"
+				}
+				
+				"CTFProjectile_Arrow::StrikeTarget"
+				{
+					type "sym"
+					sym  "_ZN19CTFProjectile_Arrow12StrikeTargetEP13mstudiobbox_tP11CBaseEntity"
+				}
+				
+				"CTFGameRules::IsPVEModeControlled"
+				{
+					type "sym"
+					sym  "_ZNK12CTFGameRules19IsPVEModeControlledEP11CBaseEntity"
+				}
+				
+				"CBaseEntity::ChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity10ChangeTeamEi"
+				}
+				
+				"SendProxy_LengthTable"
+				{
+					type "sym"
+					sym  "_Z21SendProxy_LengthTablePK8SendPropPKvS3_P20CSendProxyRecipientsi"
+				}
+				
+				"CBaseEntity::SetModelIndexOverride"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity21SetModelIndexOverrideEii"
+				}
+				
+				"CBaseEntity::SetModelIndex"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity13SetModelIndexEi"
+				}
+				
+				"CBaseEntity::GetModelName"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity12GetModelNameEv"
+				}
+				
+				"Con_ColorPrint"
+				{
+					type "sym"
+					sym  "_Z15Con_ColorPrintfRK5ColorPKcz"
+					lib  "engine"
+				}
+				
+				"AllocPooledString"
+				{
+					type "sym"
+					sym  "_Z17AllocPooledStringPKc"
+				}
+				
+				"CEventQueue::AddEvent [EventQueuePrioritizedEvent_t *]"
+				{
+					type "sym"
+					sym  "_ZN11CEventQueue8AddEventEP28EventQueuePrioritizedEvent_t"
+				}
+				
+				"CEventQueue::ServiceEvents"
+				{
+					type "sym"
+					sym  "_ZN11CEventQueue13ServiceEventsEv"
+				}
+				
+				"CBaseEntity::GetDataDescMap"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN11CBaseEntity14GetDataDescMapEv"
+					vtable ".?AVCBaseEntity@@"
+					idx    "0x0b"
+				}
+				
+				"CUpgrades::UpgradeTouch"
+				{
+					type "sym"
+					sym  "_ZN9CUpgrades12UpgradeTouchEP11CBaseEntity"
 				}
 			}
 		}

@@ -41,10 +41,6 @@ struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
 
 #if defined _LINUX
 
-/* this is really an ugly ugly thing, but I don't have the patience to do it
- * in a more reliable way at the moment; plus I doubt the TF team has touched
- * CTFTankBoss a single time since Two Cities, so we're safe anyway */
-
 static constexpr uint8_t s_Buf_CTFTankBoss_m_pBodyInterface[] = {
 	0x55,                               // +0000  push ebp
 	0x89, 0xe5,                         // +0001  mov ebp,esp
@@ -54,10 +50,9 @@ static constexpr uint8_t s_Buf_CTFTankBoss_m_pBodyInterface[] = {
 	0xc3,                               // +000D  ret
 };
 
-template<typename T, ptrdiff_t ADJ>
-struct IExtract_CTFTankBoss_m_pBodyInterface : public IExtract<T>
+struct CExtract_CTFTankBoss_m_pBodyInterface : public IExtract<IBody **>
 {
-	IExtract_CTFTankBoss_m_pBodyInterface() : IExtract<T>(sizeof(s_Buf_CTFTankBoss_m_pBodyInterface)) {}
+	CExtract_CTFTankBoss_m_pBodyInterface() : IExtract<IBody **>(sizeof(s_Buf_CTFTankBoss_m_pBodyInterface)) {}
 	
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
@@ -72,20 +67,7 @@ struct IExtract_CTFTankBoss_m_pBodyInterface : public IExtract<T>
 	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
 	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0007 + 2; }
-	virtual T AdjustValue(T val) const override        { return reinterpret_cast<T>((uintptr_t)val + ADJ); }
 };
-
-struct CExtract_CTFTankBoss_m_hCurrentNode :
-	public IExtract_CTFTankBoss_m_pBodyInterface<CHandle<CPathTrack> *, 0x000c> {};
-
-struct CExtract_CTFTankBoss_m_NodeDists :
-	public IExtract_CTFTankBoss_m_pBodyInterface<CUtlVector<float> *, 0x0010> {};
-
-struct CExtract_CTFTankBoss_m_flTotalDistance :
-	public IExtract_CTFTankBoss_m_pBodyInterface<float *, 0x0024> {};
-
-struct CExtract_CTFTankBoss_m_iCurrentNode :
-	public IExtract_CTFTankBoss_m_pBodyInterface<int *, 0x0028> {};
 
 #elif defined _WINDOWS
 
@@ -168,6 +150,18 @@ MemberFuncThunk<const CUpgrades *, const char *, int> CUpgrades::ft_GetUpgradeAt
 GlobalThunk<CHandle<CUpgrades>> g_hUpgradeEntity("g_hUpgradeEntity");
 
 
+IMPL_DATAMAP(int,      CFuncNavPrerequisite, m_task);
+IMPL_DATAMAP(string_t, CFuncNavPrerequisite, m_taskEntityName);
+IMPL_DATAMAP(float,    CFuncNavPrerequisite, m_taskValue);
+IMPL_DATAMAP(bool,     CFuncNavPrerequisite, m_isDisabled);
+
+
+IMPL_REL_BEFORE(CUtlStringList, CFilterTFBotHasTag, m_TagList, m_iszTags);
+IMPL_DATAMAP   (string_t,       CFilterTFBotHasTag, m_iszTags);
+IMPL_DATAMAP   (bool,           CFilterTFBotHasTag, m_bRequireAllTags);
+IMPL_DATAMAP   (bool,           CFilterTFBotHasTag, m_bNegated);
+
+
 IMPL_SENDPROP(bool, CCurrencyPack, m_bDistributed, CCurrencyPack);
 IMPL_EXTRACT (int,  CCurrencyPack, m_nAmount, new CExtract_CCurrencyPack_m_nAmount());
 
@@ -178,10 +172,12 @@ GlobalThunk<CUtlVector<ICurrencyPackAutoList *>> ICurrencyPackAutoList::m_ICurre
 MemberVFuncThunk<CTFBaseBoss *, void> CTFBaseBoss::vt_UpdateCollisionBounds(TypeName<CTFBaseBoss>(), "CTFBaseBoss::UpdateCollisionBounds");
 
 
-IMPL_EXTRACT(CHandle<CPathTrack>, CTFTankBoss, m_hCurrentNode,    new CExtract_CTFTankBoss_m_hCurrentNode());
-IMPL_EXTRACT(CUtlVector<float>,   CTFTankBoss, m_NodeDists,       new CExtract_CTFTankBoss_m_NodeDists());
-IMPL_EXTRACT(float,               CTFTankBoss, m_flTotalDistance, new CExtract_CTFTankBoss_m_flTotalDistance());
-IMPL_EXTRACT(int,                 CTFTankBoss, m_iCurrentNode,    new CExtract_CTFTankBoss_m_iCurrentNode());
+IMPL_EXTRACT (IBody *,             CTFTankBoss, m_pBodyInterface,  new CExtract_CTFTankBoss_m_pBodyInterface());
+IMPL_RELATIVE(CHandle<CPathTrack>, CTFTankBoss, m_hCurrentNode,    m_pBodyInterface, 0x0c);
+IMPL_RELATIVE(CUtlVector<float>,   CTFTankBoss, m_NodeDists,       m_pBodyInterface, 0x10);
+IMPL_RELATIVE(float,               CTFTankBoss, m_flTotalDistance, m_pBodyInterface, 0x24);
+IMPL_RELATIVE(int,                 CTFTankBoss, m_iCurrentNode,    m_pBodyInterface, 0x28);
+IMPL_RELATIVE(int,                 CTFTankBoss, m_iModelIndex,     m_pBodyInterface, 0x44);
 
 
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");
@@ -193,3 +189,7 @@ GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters
 
 
 GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList("ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList");
+
+
+GlobalThunk<const char *[4]> s_TankModel    ("s_TankModel");
+GlobalThunk<const char *[4]> s_TankModelRome("s_TankModelRome");

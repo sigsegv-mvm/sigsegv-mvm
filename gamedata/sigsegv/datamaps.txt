@@ -55,6 +55,18 @@
 					sym   "_ZN12CFuncNavCost9m_DataMapE"
 					class "CFuncNavCost"
 				}
+				"CFuncNavPrerequisite::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN20CFuncNavPrerequisite9m_DataMapE"
+					class "CFuncNavPrerequisite"
+				}
+				"CFilterTFBotHasTag::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN18CFilterTFBotHasTag9m_DataMapE"
+					class "CFilterTFBotHasTag"
+				}
 			}
 		}
 	}

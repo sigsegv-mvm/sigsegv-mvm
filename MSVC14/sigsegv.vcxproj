@@ -68,12 +68,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalOptions>/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;SE_EPISODEONE=1;SE_DARKMESSIAH=2;SE_ORANGEBOX=3;SE_BLOODYGOODTIME=4;SE_EYE=5;SE_CSS=6;SE_ORANGEBOXVALVE=7;SE_LEFT4DEAD=8;SE_LEFT4DEAD2=9;SE_ALIENSWARM=10;SE_PORTAL2=11;SE_CSGO=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -87,6 +88,7 @@
       <ObjectFileName>$(IntDir)\%(Directory)\</ObjectFileName>
       <CallingConvention>
       </CallingConvention>
+      <DisableSpecificWarnings>4594</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -118,10 +120,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/MP /D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_BLOODYGOODTIME=4 /D SE_EYE=5 /D SE_CSS=6 /D SE_ORANGEBOXVALVE=7 /D SE_LEFT4DEAD=8 /D SE_LEFT4DEAD2=9 /D SE_ALIENSWARM=10 /D SE_PORTAL2=11 /D SE_CSGO=12</AdditionalOptions>
+      <AdditionalOptions>/MP</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\cccapstone\cppbindings;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;SE_EPISODEONE=1;SE_DARKMESSIAH=2;SE_ORANGEBOX=3;SE_BLOODYGOODTIME=4;SE_EYE=5;SE_CSS=6;SE_ORANGEBOXVALVE=7;SE_LEFT4DEAD=8;SE_LEFT4DEAD2=9;SE_ALIENSWARM=10;SE_PORTAL2=11;SE_CSGO=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -136,6 +138,7 @@
       <CallingConvention>
       </CallingConvention>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DisableSpecificWarnings>4594</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -173,6 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\libs\lodepng\lodepng.cpp" />
     <ClCompile Include="..\libs\lz4\lib\lz4.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -210,7 +214,8 @@
     <ClCompile Include="..\src\mod\cond\reprogrammed.cpp" />
     <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
     <ClCompile Include="..\src\mod\debug\client_player_track.cpp" />
-    <ClCompile Include="..\src\mod\debug\console_scramble.cpp" />
+    <ClCompile Include="..\src\mod\debug\console_scramble_v1.cpp" />
+    <ClCompile Include="..\src\mod\debug\console_scramble_v2.cpp" />
     <ClCompile Include="..\src\mod\debug\draw_cphyscollide.cpp" />
     <ClCompile Include="..\src\mod\debug\known_entities.cpp" />
     <ClCompile Include="..\src\mod\debug\list_competitive_convars.cpp" />
@@ -249,6 +254,8 @@
     <ClCompile Include="..\src\mod\util\overlay_enhancements.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_send.cpp" />
+    <ClCompile Include="..\src\mod\util\screenshot_png.cpp" />
+    <ClCompile Include="..\src\mod\util\serialize_spew.cpp" />
     <ClCompile Include="..\src\mod\util\vprof_recv.cpp" />
     <ClCompile Include="..\src\mod\util\vprof_remote.cpp" />
     <ClCompile Include="..\src\mod\util\vprof_send.cpp" />
@@ -290,12 +297,16 @@
     <ClCompile Include="..\src\util\rtti.cpp" />
     <ClCompile Include="..\src\util\socket_old.cpp" />
     <ClCompile Include="..\src\util\trace.cpp" />
+    <ClCompile Include="..\src\util\vgui.cpp" />
     <ClCompile Include="..\src\version.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\debug\flamethrower_impulse_101.cpp" />
-    <ClCompile Include="G:\SourceMod\sigsegv\src\mod\prof\mvm_shield_events.cpp" />
+    <ClCompile Include="..\src\mod\debug\flamethrower_impulse_101.cpp" />
+    <ClCompile Include="..\src\mod\prof\mvm_shield_events.cpp" />
+    <ClCompile Include="..\src\mod\vgui\test.cpp" />
+    <ClCompile Include="..\src\stub\vgui.cpp" />
+    <ClCompile Include="..\src\mod\visualize\conds.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />

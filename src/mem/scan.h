@@ -78,7 +78,7 @@ private:
 class CLibSegBounds : public IBounds
 {
 public:
-	CLibSegBounds(Library lib, const char *seg);
+	CLibSegBounds(Library lib, Segment seg);
 	
 	virtual const void *GetLowerBound() const override { return this->m_AddrLow; }
 	virtual const void *GetUpperBound() const override { return this->m_AddrHigh; }
@@ -155,29 +155,24 @@ inline bool CBasicScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 }
 
 
-template<ScanDir DIR, ScanResults RTYPE, int ALIGN, typename T>
-class CTypeScanner : public IScanner<DIR, RTYPE, ALIGN>
+template<ScanDir DIR, ScanResults RTYPE, typename T, int ALIGN = 1>
+class CTypeScanner : public CBasicScanner<DIR, RTYPE, ALIGN>
 {
 public:
 	CTypeScanner(const IBounds& bounds, const T& seek) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, sizeof(T)), m_Seek(seek) {}
-	
-	bool CheckOne(const void *where);
-	
-private:
-	const T m_Seek;
+		CBasicScanner<DIR, RTYPE, ALIGN>(bounds, reinterpret_cast<const void *>(&seek), sizeof(T)) {}
+	virtual ~CTypeScanner() {}
 };
 
-template<ScanDir DIR, ScanResults RTYPE, int ALIGN, typename T>
-inline bool CTypeScanner<DIR, RTYPE, ALIGN, T>::CheckOne(const void *where)
+
+template<ScanDir DIR, ScanResults RTYPE, typename T>
+class CAlignedTypeScanner : public CTypeScanner<DIR, RTYPE, T, sizeof(T)>
 {
-	if (*reinterpret_cast<const T *>(where) == this->m_Seek) {
-		this->AddMatch(where);
-		return true;
-	} else {
-		return false;
-	}
-}
+public:
+	CAlignedTypeScanner(const IBounds& bounds, const T& seek) :
+		CTypeScanner<DIR, RTYPE, T, sizeof(T)>(bounds, seek) {}
+	virtual ~CAlignedTypeScanner() {}
+};
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>

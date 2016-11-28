@@ -75,6 +75,30 @@ CTFBotSeekAndDestroy *CTFBotSeekAndDestroy::New(float duration)
 }
 
 
+static MemberFuncThunk<CTFBotFetchFlag *, void, bool> ft_CTFBotFetchFlag_ctor("CTFBotFetchFlag::CTFBotFetchFlag [C1]");
+CTFBotFetchFlag *CTFBotFetchFlag::New(bool give_up_when_done)
+{
+	// TODO: verify sizeof(CTFBotFetchFlag) in the game code at runtime
+	// TODO: verify that the addr for the ctor actually exists
+	
+	auto action = reinterpret_cast<CTFBotFetchFlag *>(::operator new(sizeof(CTFBotFetchFlag)));
+	ft_CTFBotFetchFlag_ctor(action, give_up_when_done);
+	return action;
+}
+
+
+static MemberFuncThunk<CTFBotPushToCapturePoint *, void, Action<CTFBot> *> ft_CTFBotPushToCapturePoint_ctor("CTFBotPushToCapturePoint::CTFBotPushToCapturePoint [C1]");
+CTFBotPushToCapturePoint *CTFBotPushToCapturePoint::New(Action<CTFBot> *done_action)
+{
+	// TODO: verify sizeof(CTFBotPushToCapturePoint) in the game code at runtime
+	// TODO: verify that the addr for the ctor actually exists
+	
+	auto action = reinterpret_cast<CTFBotPushToCapturePoint *>(::operator new(sizeof(CTFBotPushToCapturePoint)));
+	ft_CTFBotPushToCapturePoint_ctor(action, done_action);
+	return action;
+}
+
+
 static MemberFuncThunk<CTFBotMedicHeal *, void> ft_CTFBotMedicHeal_ctor("CTFBotMedicHeal::CTFBotMedicHeal [C1]");
 CTFBotMedicHeal *CTFBotMedicHeal::New()
 {

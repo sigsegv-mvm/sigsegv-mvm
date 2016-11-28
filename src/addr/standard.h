@@ -29,6 +29,16 @@ private:
 };
 
 
+class CAddr_Sym_Regex : public CAddr_Sym
+{
+public:
+	CAddr_Sym_Regex(const std::string& name, const std::string& sym) :
+		CAddr_Sym(name, sym) {}
+	
+	virtual bool FindAddrLinux(uintptr_t& addr) const override;
+};
+
+
 #if 0
 #define _ADDR_SYM(name, namestr, sym) \
 	class Addr_Base__##name : public IAddr_Sym \
@@ -264,6 +274,43 @@ private:
 };
 
 
+/* address finder for functions with these traits:
+ * 1. func body starts with "push ebp; mov ebp,esp"
+ * 2. func body contains a string reference which may not be unique
+ * 3. func is virtual and has a confidently known vtable index
+ */
+class IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx : public IAddr_Sym
+{
+public:
+	virtual bool FindAddrWin(uintptr_t& addr) const override;
+	
+protected:
+	virtual const char *GetStr() const = 0;
+	virtual const char *GetVTableName() const = 0;
+	virtual int GetVTableIndex() const = 0;
+};
+
+class CAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx : public IAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx
+{
+public:
+	CAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx(const std::string& name, const std::string& sym, const std::string& str, const std::string& vt_name, int vt_idx) :
+		m_strName(name), m_strSymbol(sym), m_strStr(str), m_strVTName(vt_name), m_iVTIndex(vt_idx) {}
+	
+	virtual const char *GetName() const override       { return this->m_strName.c_str(); }
+	virtual const char *GetSymbol() const override     { return this->m_strSymbol.c_str(); }
+	virtual const char *GetStr() const override        { return this->m_strStr.c_str(); }
+	virtual const char *GetVTableName() const override { return this->m_strVTName.c_str(); }
+	virtual int GetVTableIndex() const override        { return this->m_iVTIndex; }
+	
+private:
+	std::string m_strName;
+	std::string m_strSymbol;
+	std::string m_strStr;
+	std::string m_strVTName;
+	int m_iVTIndex;
+};
+
+
 class IAddr_Func_EBPPrologue_VProf : public IAddr_Sym
 {
 public:
@@ -410,6 +457,34 @@ private:
 	std::string m_strSegment;
 	std::string m_strPattern;
 	std::string m_strMask;
+};
+
+
+class IAddr_ConCommandBase : public IAddr
+{
+public:
+	virtual bool FindAddrLinux(uintptr_t& addr) const override;
+	virtual bool FindAddrWin(uintptr_t& addr) const override { return this->FindAddrLinux(addr); }
+	
+protected:
+	virtual const char *GetConName() const = 0;
+	virtual bool IsCommand() const = 0;
+};
+
+class CAddr_ConCommandBase : public IAddr_ConCommandBase
+{
+public:
+	CAddr_ConCommandBase(const std::string& name, const std::string& con_name, bool is_command) :
+		m_strName(name), m_strConName(con_name), m_bIsCommand(is_command) {}
+	
+	virtual const char *GetName() const override    { return this->m_strName.c_str(); }
+	virtual const char *GetConName() const override { return this->m_strConName.c_str(); }
+	virtual bool IsCommand() const override         { return this->m_bIsCommand; }
+	
+private:
+	std::string m_strName;
+	std::string m_strConName;
+	bool m_bIsCommand;
 };
 
 

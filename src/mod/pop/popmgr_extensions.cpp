@@ -103,11 +103,14 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		void Reset()
 		{
-			this->m_bGiantsDropRareSpells = false;
-			this->m_flSpellDropRateCommon = 1.00f;
-			this->m_flSpellDropRateGiant  = 1.00f;
-			this->m_bNoReanimators        = false;
-			this->m_bNoMvMDeathTune       = false;
+			this->m_bGiantsDropRareSpells   = false;
+			this->m_flSpellDropRateCommon   = 1.00f;
+			this->m_flSpellDropRateGiant    = 1.00f;
+			this->m_bNoReanimators          = false;
+			this->m_bNoMvMDeathTune         = false;
+			this->m_bSniperHideLasers       = false;
+			this->m_bSniperAllowHeadshots   = false;
+			this->m_bDisableUpgradeStations = false;
 			
 			this->m_MedievalMode.Reset();
 			this->m_SpellsEnabled.Reset();
@@ -126,6 +129,9 @@ namespace Mod_Pop_PopMgr_Extensions
 		float m_flSpellDropRateGiant;
 		bool m_bNoReanimators;
 		bool m_bNoMvMDeathTune;
+		bool m_bSniperHideLasers;
+		bool m_bSniperAllowHeadshots;
+		bool m_bDisableUpgradeStations;
 		
 		CPopOverride_MedievalMode  m_MedievalMode;
 		CPopOverride_ConVar<bool>  m_SpellsEnabled;
@@ -224,6 +230,70 @@ namespace Mod_Pop_PopMgr_Extensions
 		DETOUR_MEMBER_CALL(CBaseEntity_EmitSound)(soundname, soundtime, duration);
 	}
 	
+	DETOUR_DECL_MEMBER(void, CTFSniperRifle_CreateSniperDot)
+	{
+		auto rifle = reinterpret_cast<CTFSniperRifle *>(this);
+		
+		if (state.m_bSniperHideLasers && TFGameRules()->IsMannVsMachineMode()) {
+			CTFPlayer *owner = rifle->GetTFPlayerOwner();
+			if (owner != nullptr && owner->GetTeamNumber() == TF_TEAM_BLUE) {
+				return;
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(CTFSniperRifle_CreateSniperDot)();
+	}
+	
+	RefCount rc_CTFSniperRifle_CanFireCriticalShot;
+	DETOUR_DECL_MEMBER(bool, CTFSniperRifle_CanFireCriticalShot, bool bIsHeadshot)
+	{
+		SCOPED_INCREMENT(rc_CTFSniperRifle_CanFireCriticalShot);
+		return DETOUR_MEMBER_CALL(CTFSniperRifle_CanFireCriticalShot)(bIsHeadshot);
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CTFWeaponBase_CanFireCriticalShot, bool bIsHeadshot)
+	{
+		auto weapon = reinterpret_cast<CTFWeaponBase *>(this);
+		
+		if (state.m_bSniperAllowHeadshots && rc_CTFSniperRifle_CanFireCriticalShot > 0 && TFGameRules()->IsMannVsMachineMode()) {
+			CTFPlayer *owner = weapon->GetTFPlayerOwner();
+			if (owner != nullptr && owner->GetTeamNumber() == TF_TEAM_BLUE) {
+				return true;
+			}
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFWeaponBase_CanFireCriticalShot)(bIsHeadshot);
+	}
+	
+	RefCount rc_CTFProjectile_Arrow_StrikeTarget;
+	DETOUR_DECL_MEMBER(bool, CTFProjectile_Arrow_StrikeTarget, mstudiobbox_t *bbox, CBaseEntity *ent)
+	{
+		SCOPED_INCREMENT(rc_CTFProjectile_Arrow_StrikeTarget);
+		return DETOUR_MEMBER_CALL(CTFProjectile_Arrow_StrikeTarget)(bbox, ent);
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CTFGameRules_IsPVEModeControlled, CBaseEntity *ent)
+	{
+		if (state.m_bSniperAllowHeadshots && rc_CTFProjectile_Arrow_StrikeTarget > 0 && TFGameRules()->IsMannVsMachineMode()) {
+			return false;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFGameRules_IsPVEModeControlled)(ent);
+	}
+	
+	DETOUR_DECL_MEMBER(void, CUpgrades_UpgradeTouch, CBaseEntity *pOther)
+	{
+		if (state.m_bDisableUpgradeStations && TFGameRules()->IsMannVsMachineMode()) {
+			CTFPlayer *player = ToTFPlayer(pOther);
+			if (player != nullptr) {
+				gamehelpers->TextMsg(ENTINDEX(player), TEXTMSG_DEST_CENTER, "The Upgrade Station is disabled for this mission!");
+				return;
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(CUpgrades_UpgradeTouch)(pOther);
+	}
+	
 	
 	RefCount rc_CPopulationManager_Parse;
 	DETOUR_DECL_MEMBER(bool, CPopulationManager_Parse)
@@ -265,6 +335,12 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_bNoReanimators = subkey->GetBool();
 				} else if (V_stricmp(name, "NoMvMDeathTune") == 0) {
 					state.m_bNoMvMDeathTune = subkey->GetBool();
+				} else if (V_stricmp(name, "SniperHideLasers") == 0) {
+					state.m_bSniperHideLasers = subkey->GetBool();
+				} else if (V_stricmp(name, "SniperAllowHeadshots") == 0) {
+					state.m_bSniperAllowHeadshots = subkey->GetBool();
+				} else if (V_stricmp(name, "DisableUpgradeStations") == 0) {
+					state.m_bDisableUpgradeStations = subkey->GetBool();
 				} else if (V_stricmp(name, "MedievalMode") == 0) {
 					state.m_MedievalMode.Set(subkey->GetBool());
 				} else if (V_stricmp(name, "GrapplingHook") == 0) {
@@ -317,6 +393,12 @@ namespace Mod_Pop_PopMgr_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,         "CTFGameRules::IsUsingSpells");
 			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,             "CTFReviveMarker::Create");
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_EmitSound,              "CBaseEntity::EmitSound [const char *, float, float *]");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CreateSniperDot,     "CTFSniperRifle::CreateSniperDot");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CanFireCriticalShot, "CTFSniperRifle::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_CanFireCriticalShot,  "CTFWeaponBase::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Arrow_StrikeTarget,   "CTFProjectile_Arrow::StrikeTarget");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,   "CTFGameRules::IsPVEModeControlled");
+			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,             "CUpgrades::UpgradeTouch");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");

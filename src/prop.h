@@ -3,6 +3,23 @@
 
 
 #include "mem/extract.h"
+#include "util/rtti.h"
+
+// TOOD: move to common.h
+#include <server_class.h>
+#include <dt_utlvector_common.h>
+
+
+/* from src/public/dt_utlvector_send.cpp */
+struct CSendPropExtra_UtlVector
+{
+	SendTableProxyFn m_DataTableProxyFn;	// If it's a datatable, then this is the proxy they specified.
+	SendVarProxyFn m_ProxyFn;				// If it's a non-datatable, then this is the proxy they specified.
+	EnsureCapacityFn m_EnsureCapacityFn;
+	int m_ElementStride;					// Distance between each element in the array.
+	int m_Offset;							// # bytes from the parent structure to its utlvector.
+	int m_nMaxElements;						// For debugging...
+};
 
 
 namespace Prop
@@ -11,6 +28,14 @@ namespace Prop
 	
 	bool FindOffset(int& off, const char *obj, const char *var);
 	int FindOffsetAssert(const char *obj, const char *var);
+	
+//	const datamap_t *GetDataMapByClassname(const char *classname);
+//	const datamap_t *GetDataMapByRTTIName(const char *rtti_name);
+//	
+//	template<typename T> datamap_t *GetDataMapByRTTI()
+//	{
+//		return GetDataMapByRTTIName(TypeName<T>());
+//	}
 }
 
 
@@ -124,14 +149,75 @@ public:
 private:
 	virtual bool CalcOffset(int& off) const override
 	{
-		sm_sendprop_info_t info;
-		if (!gamehelpers->FindSendPropInfo(this->m_pszServerClass, this->GetSendPropMemberName(), &info)) {
-			Warning("CProp_SendProp: %s::%s FAIL: in FindSendPropInfo\n", this->GetObjectName(), this->GetMemberName());
+		ServerClass *sv_class = this->FindServerClass();
+		if (sv_class == nullptr) {
+			Warning("CProp_SendProp: %s::%s FAIL: can't find ServerClass \"%s\"\n", this->GetObjectName(), this->GetMemberName(), this->m_pszServerClass);
 			return false;
 		}
 		
-		off = info.prop->GetOffset();
+		if (!this->FindSendProp(off, sv_class->m_pTable)) {
+			Warning("CProp_SendProp: %s::%s FAIL: can't find SendProp \"%s\"\n", this->GetObjectName(), this->GetMemberName(), this->GetSendPropMemberName());
+			return false;
+		}
+		
 		return true;
+	}
+	
+	ServerClass *FindServerClass() const
+	{
+		for (ServerClass *sv_class = gamedll->GetAllServerClasses(); sv_class != nullptr; sv_class = sv_class->m_pNext) {
+			if (strcmp(sv_class->GetName(), this->m_pszServerClass) == 0) {
+				return sv_class;
+			}
+		}
+		
+		return nullptr;
+	}
+	
+	bool FindSendProp(int& off, SendTable *s_table) const
+	{
+		for (int i = 0; i < s_table->GetNumProps(); ++i) {
+			SendProp *s_prop = s_table->GetProp(i);
+			
+			if (s_prop->GetName() != nullptr && strcmp(s_prop->GetName(), this->GetSendPropMemberName()) == 0) {
+				if (!this->IsSendPropUtlVector(off, s_prop)) {
+					off = s_prop->GetOffset();
+				}
+				return true;
+			}
+			
+			if (s_prop->GetDataTable() != nullptr) {
+				if (this->FindSendProp(off, s_prop->GetDataTable())) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	bool IsSendPropUtlVector(int& off, SendProp *q_prop) const
+	{
+		SendTable *s_table = q_prop->GetDataTable();
+		if (s_table == nullptr) return false;
+		
+		auto SendProxy_LengthTable = reinterpret_cast<SendTableProxyFn>(AddrManager::GetAddr("SendProxy_LengthTable"));
+		assert(SendProxy_LengthTable != nullptr);
+		
+		for (int i = 0; i < s_table->GetNumProps(); ++i) {
+			SendProp *s_prop = s_table->GetProp(i);
+			
+			if (s_prop->GetName() != nullptr && strcmp(s_prop->GetName(), "lengthproxy") == 0 &&
+				s_prop->GetDataTable() != nullptr && s_prop->GetDataTableProxyFn() == SendProxy_LengthTable) {
+				auto extra = reinterpret_cast<const CSendPropExtra_UtlVector *>(s_prop->GetExtraData());
+				if (extra != nullptr) {
+					off = extra->m_Offset;
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	const char *GetSendPropMemberName() const
@@ -164,24 +250,39 @@ private:
 	virtual bool CalcOffset(int& off) const override
 	{
 		char str_DataMap[1024];
-		snprintf(str_DataMap, sizeof(str_DataMap), "%s::m_DataMap", this->GetObjectName());
+		V_sprintf_safe(str_DataMap, "%s::m_DataMap", this->GetObjectName());
 		
-		datamap_t *map = (datamap_t *)AddrManager::GetAddr(str_DataMap);
-		if (map == nullptr) {
+		auto datamap = (datamap_t *)AddrManager::GetAddr(str_DataMap);
+		if (datamap == nullptr) {
 			Warning("CProp_DataMap: %s::%s FAIL: no addr for %s\n", this->GetObjectName(), this->GetMemberName(), str_DataMap);
 			return false;
 		}
 		
 		sm_datatable_info_t info;
-		if (!gamehelpers->FindDataMapInfo(map, this->GetMemberName(), &info)) {
+		if (!gamehelpers->FindDataMapInfo(datamap, this->GetMemberName(), &info)) {
 			Warning("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
 			return false;
 		}
+		
+//		const datamap_t *datamap = Prop::GetDataMapByRTTIName(this->GetObjectName());
+//		if (datamap == nullptr) {
+//			Warning("CProp_DataMap: %s::%s FAIL: can't find datamap for class %s\n", this->GetObjectName(), this->GetMemberName(), this->GetObjectName());
+//			return false;
+//		}
+//		
+//		sm_datatable_info_t info;
+//		if (!gamehelpers->FindDataMapInfo(const_cast<datamap_t *>(datamap), this->GetMemberName(), &info)) {
+//			Warning("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
+//			return false;
+//		}
 		
 		off = GetTypeDescOffs(info.prop);
 		return true;
 	}
 };
+//#ifdef __GNUC__
+//#warning TODO: delete gamedata/sigsegv/datamaps.txt and remove from PackageScript and gameconf.cpp
+//#endif
 
 
 template<typename T>
@@ -368,7 +469,7 @@ public:
 	
 	/* indexing */
 	#ifdef __GNUC__
-	#warning TODO: ensure that operator[] returns reference types and that their constness is correct
+	//#warning TODO: ensure that operator[] returns reference types and that their constness is correct
 	#endif
 	template<typename A> auto operator[](const A& idx) const { return this->Get()[idx]; }
 	
@@ -382,7 +483,7 @@ public:
 	
 	/* begin() and end() passthru */
 	#ifdef __GNUC__
-	#warning TODO: ensure that begin() and end() return the right things based on constness
+	//#warning TODO: ensure that begin() and end() return the right things based on constness
 	#endif
 	auto begin() { return this->Get().begin(); }
 	auto end()   { return this->Get().end();   }

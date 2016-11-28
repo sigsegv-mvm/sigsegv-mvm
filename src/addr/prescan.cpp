@@ -9,7 +9,7 @@ void PreScan::DoScans()
 #if defined _WINDOWS
 	DevMsg("PreScan::DoScans\n");
 	
-//	s_WinRTTI_server = new CSingleScan(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, ".data"), 1, new CStringPrefixScanner(ScanResults::ALL, ".?AV"));
+//	s_WinRTTI_server = new CSingleScan(ScanDir::FORWARD, CLibSegBounds(Library::SERVER, Segment::DATA), 1, new CStringPrefixScanner(ScanResults::ALL, ".?AV"));
 //	
 //	for (auto match : s_WinRTTI_server->Matches()) {
 //		DevMsg("[PreScan] 0x%08x \"%s\"\n", (uintptr_t)match, (const char *)match);

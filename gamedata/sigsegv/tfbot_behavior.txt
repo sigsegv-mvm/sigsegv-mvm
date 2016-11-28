@@ -268,6 +268,11 @@
 					type "sym"
 					sym  "_ZN21CTFBotTacticalMonitor22InitialContainedActionEP6CTFBot"
 				}
+				"CTFBotTacticalMonitor::OnNavAreaChanged"
+				{
+					type "sym"
+					sym  "_ZN21CTFBotTacticalMonitor16OnNavAreaChangedEP6CTFBotP8CNavAreaS3_"
+				}
 				
 				"CTFBotSpyAttack::Update"
 				{
@@ -281,6 +286,11 @@
 					sym  "_ZN25CTFBotStickybombSentrygun6UpdateEP6CTFBotf"
 				}
 				
+				"CTFBotFetchFlag::CTFBotFetchFlag [C1]"
+				{
+					type "sym"
+					sym  "_ZN15CTFBotFetchFlagC1Eb"
+				}
 				"CTFBotFetchFlag::OnStart"
 				{
 					type "sym"
@@ -310,10 +320,21 @@
 					sym  "_ZN12CTFBotAttackC1Ev"
 				}
 				
+				"CTFBotPushToCapturePoint::CTFBotPushToCapturePoint [C1]"
+				{
+					type "sym"
+					sym  "_ZN24CTFBotPushToCapturePointC1EP6ActionI6CTFBotE"
+				}
 				"CTFBotPushToCapturePoint::Update"
 				{
 					type "sym"
 					sym  "_ZN24CTFBotPushToCapturePoint6UpdateEP6CTFBotf"
+				}
+				
+				"CTFBotDead::OnStart"
+				{
+					type "sym"
+					sym  "_ZN10CTFBotDead7OnStartEP6CTFBotP6ActionIS0_E"
 				}
 			}
 		}

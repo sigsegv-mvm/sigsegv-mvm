@@ -11,33 +11,105 @@ enum class Library : int
 	TIER0,
 	CLIENT,
 	VGUIMATSURFACE,
+	MATERIALSYSTEM,
+	SOUNDEMITTERSYSTEM,
+	DATACACHE,
+	VGUI,
+	VPHYSICS,
 };
 
 
-#if 0
 enum class Segment : int
 {
-	SEG_TEXT,
-	SEG_DATA,
-	SEG_RODATA,
-	SEG_BSS,
-};
-#endif
-
-
-struct SegInfo
-{
-	uintptr_t off;
-	uintptr_t len;
+	INVALID,
+	TEXT,
+	DATA,
+	RODATA,
+	BSS,
 };
 
 
-struct LibInfo
+class SegInfo
 {
-	uintptr_t baseaddr;
-	uintptr_t len;
+public:
+	SegInfo(uintptr_t offset, uintptr_t length) :
+		m_Offset(offset), m_Length(length) {}
 	
-	std::map<std::string, SegInfo> segs;
+	uintptr_t Offset() const { return this->m_Offset; }
+	uintptr_t Length() const { return this->m_Length; }
+	
+	uintptr_t AddrBegin() const { return this->m_LibBaseAddr + this->m_Offset; }
+	uintptr_t AddrEnd() const   { return this->m_LibBaseAddr + this->m_Offset + this->m_Length; }
+	
+	bool ContainsAddr(uintptr_t addr, uintptr_t len = 0) const
+	{
+		uintptr_t range_begin = addr;
+		uintptr_t range_end   = addr + len;
+		
+		return (range_begin >= this->AddrBegin()) && (range_end <= this->AddrEnd());
+	}
+	template<typename T> bool ContainsAddr(const T *addr, uintptr_t len = 0) const
+	{
+		return this->ContainsAddr((uintptr_t)addr, len);
+	}
+	
+private:
+	uintptr_t m_Offset;
+	uintptr_t m_Length;
+	
+	uintptr_t m_LibBaseAddr = 0x00000000;
+	
+	friend class LibMgr;
+};
+
+
+class LibInfo
+{
+public:
+	LibInfo(uintptr_t baseaddr, uintptr_t length) :
+		m_BaseAddr(baseaddr), m_Length(length) {}
+	
+	uintptr_t BaseAddr() const { return this->m_BaseAddr; }
+	uintptr_t Length() const   { return this->m_Length; }
+	
+	uintptr_t AddrBegin() const { return this->m_BaseAddr; }
+	uintptr_t AddrEnd() const   { return this->m_BaseAddr + this->m_Length; }
+	
+	const SegInfo& GetSeg(Segment seg_type) const
+	{
+		auto it = this->m_SegmentsByType.find(seg_type);
+		assert(it != this->m_SegmentsByType.end());
+		
+		return (*it).second;
+	}
+	const SegInfo& GetSeg(const char *seg_name) const
+	{
+		auto it = this->m_SegmentsByName.find(seg_name);
+		assert(it != this->m_SegmentsByName.end());
+		
+		return (*it).second;
+	}
+	
+	bool ContainsAddr(uintptr_t addr, uintptr_t len = 0) const
+	{
+		uintptr_t range_begin = addr;
+		uintptr_t range_end   = addr + len;
+		
+		return (range_begin >= this->AddrBegin()) && (range_end <= this->AddrEnd());
+	}
+	template<typename T> bool ContainsAddr(const T *addr, uintptr_t len = 0) const
+	{
+		return this->ContainsAddr((uintptr_t)addr, len);
+	}
+	
+private:
+	uintptr_t m_BaseAddr;
+	uintptr_t m_Length;
+	
+	std::map<Segment,     SegInfo> m_SegmentsByType;
+	std::map<std::string, SegInfo> m_SegmentsByName;
+	
+	friend class LibMgr;
 };
 
 
@@ -58,14 +130,25 @@ public:
 	static const LibInfo& GetInfo(Library lib);
 	
 	static void *FindSym(Library lib, const char *sym);
-	static std::tuple<bool, std::string, void *> FindSymRegex(Library lib, const char *pattern, std::regex::flag_type flags = std::regex::ECMAScript | std::regex::icase);
-	static void ForEachSym(Library lib, const std::function<void(Symbol *)>& functor);
+	static std::tuple<bool, std::string, void *> FindSymRegex(Library lib, const char *pattern);
+	
+	template<typename FUNCTOR>
+	static void ForEachSym(Library lib, FUNCTOR&& functor)
+	{
+		void *handle = s_LibHandles.at(lib);
+		assert(handle != nullptr);
+		g_MemUtils.ForEachSymbol(handle, functor);
+	}
 	
 	static Library WhichLibAtAddr(void *ptr);
 	
-	static Library FromString(const char *str);
-	static const char *ToString(Library lib);
-	static size_t MaxStringLen();
+	static Library Lib_FromString(const char *str);
+	static const char *Lib_ToString(Library lib);
+	static size_t Lib_MaxStringLen();
+	
+	static Segment Seg_FromString(const char *str);
+	static const char *Seg_ToString(Segment lib);
+	static size_t Seg_MaxStringLen();
 	
 private:
 	LibMgr() {}

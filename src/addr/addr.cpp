@@ -125,19 +125,19 @@ void AddrManager::CC_ListAddrs(const CCommand& cmd)
 	}
 	std::sort(addrs_sorted.begin(), addrs_sorted.end(), CompareAddrsForSorting);
 	
-	size_t max_libname_len = LibMgr::MaxStringLen();
+	size_t max_libname_len = LibMgr::Lib_MaxStringLen();
 	
 	MAT_SINGLE_THREAD_BLOCK {
 		for (auto addr : addrs_sorted) {
 			switch (addr->GetState()) {
 			case IAddr::State::INITIAL:
-				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), "INITIAL", addr->GetName());
+				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::Lib_ToString(addr->GetLibrary()), "INITIAL", addr->GetName());
 				break;
 			case IAddr::State::OK:
-				Msg("%-*s  %08x  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), (uintptr_t)addr->GetAddr(), addr->GetName());
+				Msg("%-*s  %08x  %s\n", max_libname_len, LibMgr::Lib_ToString(addr->GetLibrary()), (uintptr_t)addr->GetAddr(), addr->GetName());
 				break;
 			case IAddr::State::FAIL:
-				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::ToString(addr->GetLibrary()), "FAIL", addr->GetName());
+				Msg("%-*s  %-8s  %s\n", max_libname_len, LibMgr::Lib_ToString(addr->GetLibrary()), "FAIL", addr->GetName());
 				break;
 			}
 		}

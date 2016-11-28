@@ -3,19 +3,24 @@
 #include "mem/protect.h"
 
 
-bool IPatch::Init()
+bool CPatch::Init()
 {
 	this->m_pszFuncName = this->GetFuncName();
 	this->m_iFuncOffMin = this->GetFuncOffMin();
 	this->m_iFuncOffMax = this->GetFuncOffMax();
 	
 	if (this->Verbose()) {
-		DevMsg("IPatch::Init: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Init: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
 	}
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
 	if (this->m_pFuncAddr == nullptr) {
-		DevMsg("IPatch::Init: FAIL: no addr for \"%s\"\n", this->m_pszFuncName);
+		DevMsg("CPatch::Init: FAIL: no addr for \"%s\"\n", this->m_pszFuncName);
+		return false;
+	}
+	
+	if (!this->PostInit()) {
+		DevMsg("CPatch::Init: FAIL: \"%s\": PostInit returned false\n", this->m_pszFuncName);
 		return false;
 	}
 	
@@ -23,20 +28,20 @@ bool IPatch::Init()
 	this->m_MaskPatch.SetAll(0x00);
 	
 	if (!this->GetVerifyInfo(this->m_BufVerify, this->m_MaskVerify)) {
-		DevMsg("IPatch::Init: FAIL: \"%s\": GetVerifyInfo returned false\n", this->m_pszFuncName);
+		DevMsg("CPatch::Init: FAIL: \"%s\": GetVerifyInfo returned false\n", this->m_pszFuncName);
 		return false;
 	}
 	
 	this->m_BufPatch.CopyFrom(this->m_BufVerify);
 	if (!this->GetPatchInfo(this->m_BufPatch, this->m_MaskPatch)) {
-		DevMsg("IPatch::Init: FAIL: \"%s\": GetPatchInfo returned false\n", this->m_pszFuncName);
+		DevMsg("CPatch::Init: FAIL: \"%s\": GetPatchInfo returned false\n", this->m_pszFuncName);
 		return false;
 	}
 	
 	return true;
 }
 
-bool IPatch::Check()
+bool CPatch::Check()
 {
 	using PatchScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
 	
@@ -44,33 +49,35 @@ bool IPatch::Check()
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength + 1;
 	
 	if (this->Verbose()) {
-		DevMsg("IPatch::Check: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
-		DevMsg("IPatch::Check: func     %08x\n", (uintptr_t)this->m_pFuncAddr);
-		DevMsg("IPatch::Check: off_min      %04x\n", this->m_iFuncOffMin);
-		DevMsg("IPatch::Check: off_max      %04x\n", this->m_iFuncOffMax);
-		DevMsg("IPatch::Check: addr_min %08x\n", addr_min);
-		DevMsg("IPatch::Check: addr_max %08x\n", addr_max);
+		DevMsg("CPatch::Check: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Check: func     %08x\n", (uintptr_t)this->m_pFuncAddr);
+		DevMsg("CPatch::Check: off_min      %04x\n", this->m_iFuncOffMin);
+		DevMsg("CPatch::Check: off_max      %04x\n", this->m_iFuncOffMax);
+		DevMsg("CPatch::Check: addr_min %08x\n", addr_min);
+		DevMsg("CPatch::Check: addr_max %08x\n", addr_max);
 	}
 	
 	CScan<PatchScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufVerify, this->m_MaskVerify);
 	if (!scan.ExactlyOneMatch()) {
-		DevMsg("IPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
+		DevMsg("CPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
 		return false;
 	}
 	
 	this->m_bFoundOffset = true;
 	this->m_iFuncOffActual = (uintptr_t)scan.FirstMatch() - (uintptr_t)this->m_pFuncAddr;
 	
-	DevMsg("IPatch::Check: OK: \"%s\": actual offset +0x%04x\n", this->m_pszFuncName, this->m_iFuncOffActual);
+	DevMsg("CPatch::Check: OK: \"%s\": actual offset +0x%04x\n", this->m_pszFuncName, this->m_iFuncOffActual);
 	
 	return true;
 }
 
 
-void IPatch::Apply()
+void CPatch::Apply()
 {
+	if (this->VerifyOnly()) return;
+	
 	if (this->Verbose()) {
-		DevMsg("IPatch::Apply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Apply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
 	}
 	
 	if (this->m_bApplied) {
@@ -78,7 +85,7 @@ void IPatch::Apply()
 	}
 	
 	if (!this->m_bFoundOffset) {
-		DevWarning("IPatch::Apply: haven't found actual offset yet!\n");
+		DevWarning("CPatch::Apply: haven't found actual offset yet!\n");
 		return;
 	}
 	
@@ -100,10 +107,12 @@ void IPatch::Apply()
 	this->m_bApplied = true;
 }
 
-void IPatch::UnApply()
+void CPatch::UnApply()
 {
+	if (this->VerifyOnly()) return;
+	
 	if (this->Verbose()) {
-		DevMsg("IPatch::UnApply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::UnApply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
 	}
 	
 	if (!this->m_bApplied) {
@@ -111,7 +120,7 @@ void IPatch::UnApply()
 	}
 	
 	if (!this->m_bFoundOffset) {
-		DevWarning("IPatch::UnApply: haven't found actual offset yet!\n");
+		DevWarning("CPatch::UnApply: haven't found actual offset yet!\n");
 		return;
 	}
 	
@@ -132,13 +141,13 @@ void IPatch::UnApply()
 }
 
 
-uint32_t IPatch::GetActualOffset() const
+uint32_t CPatch::GetActualOffset() const
 {
 	if (!this->m_bFoundOffset) return -1;
 	return this->m_iFuncOffActual;
 }
 
-void *IPatch::GetActualLocation() const
+void *CPatch::GetActualLocation() const
 {
 	if (!this->m_bFoundOffset) return nullptr;
 	return (void *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);

@@ -2,7 +2,8 @@
 #include "stub/tfplayer.h"
 
 
-IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
+IMPL_SENDPROP(CHandle<CBaseCombatWeapon>,              CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
+IMPL_SENDPROP(CHandle<CBaseCombatWeapon>[MAX_WEAPONS], CBaseCombatCharacter, m_hMyWeapons,    CBaseCombatCharacter);
 
 MemberFuncThunk<CBaseCombatCharacter *, void>                                                                     CBaseCombatCharacter::ft_AddGlowEffect     ("CBaseCombatCharacter::AddGlowEffect");
 MemberFuncThunk<CBaseCombatCharacter *, void>                                                                     CBaseCombatCharacter::ft_RemoveGlowEffect  ("CBaseCombatCharacter::RemoveGlowEffect");
@@ -32,9 +33,10 @@ IMPL_DATAMAP(bool,         CBasePlayer, m_bDuckToggled);
 IMPL_DATAMAP(unsigned int, CBasePlayer, m_afPhysicsFlags);
 IMPL_DATAMAP(int,          CBasePlayer, m_vphysicsCollisionState);
 
-IMPL_SENDPROP(CPlayerLocalData, CBasePlayer, m_Local,      CBasePlayer);
-IMPL_SENDPROP(int,              CBasePlayer, m_nTickBase,  CBasePlayer);
-IMPL_SENDPROP(float,            CBasePlayer, m_flMaxspeed, CBasePlayer);
+IMPL_SENDPROP(CPlayerLocalData,                   CBasePlayer, m_Local,        CBasePlayer);
+IMPL_SENDPROP(int,                                CBasePlayer, m_nTickBase,    CBasePlayer);
+IMPL_SENDPROP(float,                              CBasePlayer, m_flMaxspeed,   CBasePlayer);
+IMPL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, CBasePlayer, m_hMyWearables, CBasePlayer);
 
 MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors   ("CBasePlayer::EyeVectors");
 MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID   ("CBasePlayer::GetSteamID");

@@ -11,33 +11,55 @@ class IPatch
 public:
 	virtual ~IPatch() {}
 	
-	virtual bool VerifyOnly() const { return false; }
+	virtual bool Verbose() const = 0;
+	virtual bool VerifyOnly() const = 0;
 	
-	bool Init();
-	bool Check();
+	virtual bool Init() = 0;
+	virtual bool Check() = 0;
 	
-	virtual void Apply();
-	virtual void UnApply();
+	virtual void Apply() = 0;
+	virtual void UnApply() = 0;
 	
-	virtual int GetLength() const final { return this->m_iLength; }
+protected:
+	IPatch() {}
+};
+
+
+class CPatch : public IPatch
+{
+public:
+	virtual ~CPatch() {}
+	
+	virtual bool Verbose() const override    { return false; }
+	virtual bool VerifyOnly() const override { return false; }
+	
+	virtual bool Init() override final;
+	virtual bool Check() override final;
+	
+	virtual void Apply() override final;
+	virtual void UnApply() override final;
+	
+	int GetLength() const { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
 	virtual uint32_t GetFuncOffMin() const = 0;
 	virtual uint32_t GetFuncOffMax() const = 0;
-	
-	virtual bool Verbose() const { return false; }
 	
 	uint32_t GetActualOffset() const;
 	void *GetActualLocation() const;
 	
 protected:
-	IPatch(int len) :
+	CPatch(int len) :
 		m_iLength(len),
 		m_BufVerify(len), m_BufPatch(len),
 		m_MaskVerify(len), m_MaskPatch(len),
 		m_BufRestore(len) {}
 	
+	virtual bool PostInit() { return true; }
+	
 	virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
+	
+	void *GetFuncAddr() const { return this->m_pFuncAddr; }
 	
 private:
 	const int m_iLength;
@@ -61,18 +83,15 @@ private:
 };
 
 
-class IVerify : public IPatch
+class CVerify : public CPatch
 {
 public:
-	virtual ~IVerify() {}
+	virtual ~CVerify() {}
 	
 	virtual bool VerifyOnly() const override final { return true; }
 	
-	virtual void Apply() override final {}
-	virtual void UnApply() override final {}
-	
 protected:
-	IVerify(int len) : IPatch(len) {}
+	CVerify(int len) : CPatch(len) {}
 	
 	virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override final { return true; }
 };

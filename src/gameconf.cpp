@@ -35,6 +35,7 @@ static const char *const configs[] = {
 	"sigsegv/misc",
 	"sigsegv/debugoverlay",
 	"sigsegv/client",
+	"sigsegv/convars",
 	nullptr,
 };
 
@@ -204,7 +205,7 @@ void CSigsegvGameConf::AddrEntry_Load_Common(IAddr *addr)
 	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
 	
 	if (kv.find("lib") != kv.end()) {
-		addr->SetLibrary(LibMgr::FromString(kv.at("lib").c_str()));
+		addr->SetLibrary(LibMgr::Lib_FromString(kv.at("lib").c_str()));
 	}
 }
 
@@ -224,6 +225,26 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Sym()
 	const auto& sym = kv.at("sym");
 	
 	auto a = new CAddr_Sym(name, sym);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_Sym_Regex()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym = kv.at("sym");
+	
+	auto a = new CAddr_Sym_Regex(name, sym);
 	this->AddrEntry_Load_Common(a);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
@@ -330,11 +351,11 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_DataMap_VThunk()
 	}
 	
 	const auto& sym     = kv.at("sym");
-	const auto& dm_name = kv.at("datamap");
+	const auto& datamap = kv.at("datamap");
 	const auto& f_name  = kv.at("func");
 	const auto& vtable  = kv.at("vtable");
 	
-	auto a = new CAddr_Func_DataMap_VThunk(name, sym, dm_name, f_name, vtable);
+	auto a = new CAddr_Func_DataMap_VThunk(name, sym, datamap, f_name, vtable);
 	this->AddrEntry_Load_Common(a);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
@@ -405,6 +426,29 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_UniqueStr_KnownVTIdx
 	return SMCResult_Continue;
 }
 
+SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_NonUniqueStr_KnownVTIdx()
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "sym", "str", "vtable", "idx" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& sym    = kv.at("sym");
+	const auto& str    = kv.at("str");
+	const auto& vtable = kv.at("vtable");
+	int idx            = stoi(kv.at("idx"), nullptr, 0);
+	
+	auto a = new CAddr_Func_EBPPrologue_NonUniqueStr_KnownVTIdx(name, sym, str, vtable, idx);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
+	return SMCResult_Continue;
+}
+
 SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf()
 {
 	const auto& name = this->m_AddrEntry_State.m_Name;
@@ -422,6 +466,26 @@ SMCResult CSigsegvGameConf::AddrEntry_Load_Func_EBPPrologue_VProf()
 	const auto& v_group = kv.at("v_group");
 	
 	auto a = new CAddr_Func_EBPPrologue_VProf(name, sym, v_name, v_group);
+	this->AddrEntry_Load_Common(a);
+	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
+	return SMCResult_Continue;
+}
+
+SMCResult CSigsegvGameConf::AddrEntry_Load_ConCommandBase(bool is_command)
+{
+	const auto& name = this->m_AddrEntry_State.m_Name;
+	const auto& kv = this->m_AddrEntry_State.m_KeyValues;
+	
+	for (const std::string& key : { "name" }) {
+		if (kv.find(key) == kv.end()) {
+			DevMsg("GameData error: addr \"%s\" lacks required key \"%s\"\n", name.c_str(), key.c_str());
+			return SMCResult_HaltFail;
+		}
+	}
+	
+	const auto& con_name = kv.at("name");
+	
+	auto a = new CAddr_ConCommandBase(name, con_name, is_command);
 	this->AddrEntry_Load_Common(a);
 	this->m_AddrPtrs.push_back(std::unique_ptr<IAddr>(a));
 	return SMCResult_Continue;
