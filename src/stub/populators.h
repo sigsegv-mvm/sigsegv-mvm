@@ -96,6 +96,12 @@ public:
 	string_t m_strClassIcon;
 	int m_iHealth;
 	float m_flScale;
+	float m_flAutoJumpMin;
+	float m_flAutoJumpMax;
+	CUtlString m_strName;
+	CUtlStringList m_TeleportWhere;
+	CTFBot::EventChangeAttributes_t m_DefaultAttrs;
+	CUtlVector<CTFBot::EventChangeAttributes_t> m_ECAttrs;
 };
 
 class CSquadSpawner : public IPopulationSpawner

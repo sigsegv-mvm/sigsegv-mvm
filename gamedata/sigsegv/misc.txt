@@ -1746,6 +1746,36 @@
 					type "sym"
 					sym  "_ZN9CUpgrades12UpgradeTouchEP11CBaseEntity"
 				}
+				
+				"CTFWeaponBase::GetShootSound"
+				{
+					type "sym"
+					sym  "_ZNK13CTFWeaponBase13GetShootSoundEi"
+				}
+				
+				"IBaseObjectAutoList::m_IBaseObjectAutoListAutoList"
+				{
+					type "sym"
+					sym  "_ZN19IBaseObjectAutoList29m_IBaseObjectAutoListAutoListE"
+				}
+				
+				"CTFBotHintEngineerNest::IsStaleNest"
+				{
+					type "sym"
+					sym  "_ZNK22CTFBotHintEngineerNest11IsStaleNestEv"
+				}
+				
+				"CTFBotHintEngineerNest::DetonateStaleNest"
+				{
+					type "sym"
+					sym  "_ZN22CTFBotHintEngineerNest17DetonateStaleNestEv"
+				}
+				
+				"CTFGameRules::BetweenRounds_Start"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules19BetweenRounds_StartEv"
+				}
 			}
 		}
 	}

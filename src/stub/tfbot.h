@@ -279,6 +279,7 @@ public:
 #endif
 	
 	DECL_EXTRACT(CUtlVector<CFmtStr>, m_Tags);
+	DECL_EXTRACT(AttributeType,       m_nBotAttrs);
 	
 private:
 	DECL_EXTRACT(MissionType,         m_nMission);

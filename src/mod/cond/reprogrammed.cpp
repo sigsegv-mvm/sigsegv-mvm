@@ -3,6 +3,7 @@
 #include "stub/tf_shareddefs.h"
 #include "stub/gamerules.h"
 #include "re/nextbot.h"
+#include "util/iterate.h"
 
 
 namespace Mod_Cond_Reprogrammed
@@ -20,8 +21,8 @@ namespace Mod_Cond_Reprogrammed
 		CPatch_CMissionPopulator_UpdateMission() : CPatch(sizeof(s_Buf_UpdateMission)) {}
 		
 		virtual const char *GetFuncName() const override { return "CMissionPopulator::UpdateMission"; }
-		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override { return 0x0200; } // @ 0x0100
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0200; } // @ 0x0100
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
@@ -60,8 +61,8 @@ namespace Mod_Cond_Reprogrammed
 		CPatch_CTFGameMovement_CheckStuck() : CPatch(sizeof(s_Buf_CheckStuck)) {}
 		
 		virtual const char *GetFuncName() const override { return "CTFGameMovement::CheckStuck"; }
-		virtual uint32_t GetFuncOffMin() const override { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override { return 0x00a0; } // @ 0x008a
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x00a0; } // @ 0x008a
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
@@ -104,8 +105,13 @@ namespace Mod_Cond_Reprogrammed
 	
 	void ChangeWeaponAndWearableTeam(CTFPlayer *player, int team)
 	{
-	//	DevMsg("ChangeWeaponAndWearableTeam (#%d \"%s\"): teamnum %d => %d\n",
-	//		ENTINDEX(player), player->GetPlayerName(), player->GetTeamNumber(), team);
+		DevMsg("ChangeWeaponAndWearableTeam (#%d \"%s\"): teamnum %d => %d\n",
+			ENTINDEX(player), player->GetPlayerName(), player->GetTeamNumber(), team);
+		
+		if (team != TF_TEAM_RED && team != TF_TEAM_BLUE) {
+			DevMsg("  requested a weapon/wearable change to non-TF teamnum %d; refusing to do that\n", team);
+			return;
+		}
 		
 		for (int i = player->WeaponCount() - 1; i >= 0; --i) {
 			CBaseCombatWeapon *weapon = player->GetWeapon(i);
@@ -114,14 +120,19 @@ namespace Mod_Cond_Reprogrammed
 			int pre_team = weapon->GetTeamNumber();
 			int pre_skin = weapon->m_nSkin;
 			
-			weapon->ChangeTeam(team);
+			if (pre_team == TF_TEAM_RED || pre_team == TF_TEAM_BLUE) {
+				weapon->ChangeTeam(team);
+			} else {
+				DevMsg("  weapon %d (#%d \"%s\"): refusing to call ChangeTeam\n",
+					i, ENTINDEX(weapon), weapon->GetClassname());
+			}
 			weapon->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
 			
 			int post_team = weapon->GetTeamNumber();
 			int post_skin = weapon->m_nSkin;
 			
-		//	DevMsg("  weapon %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
-		//		i, ENTINDEX(weapon), weapon->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+			DevMsg("  weapon %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+				i, ENTINDEX(weapon), weapon->GetClassname(), pre_team, pre_skin, post_team, post_skin);
 		}
 		
 		for (int i = player->GetNumWearables() - 1; i >= 0; --i) {
@@ -131,14 +142,19 @@ namespace Mod_Cond_Reprogrammed
 			int pre_team = wearable->GetTeamNumber();
 			int pre_skin = wearable->m_nSkin;
 			
-			wearable->ChangeTeam(team);
+			if (pre_team == TF_TEAM_RED || pre_team == TF_TEAM_BLUE) {
+				wearable->ChangeTeam(team);
+			} else {
+				DevMsg("  wearable %d (#%d \"%s\"): refusing to call ChangeTeam\n",
+					i, ENTINDEX(wearable), wearable->GetClassname());
+			}
 			wearable->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
 			
 			int post_team = wearable->GetTeamNumber();
 			int post_skin = wearable->m_nSkin;
 			
-		//	DevMsg("  wearable %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
-		//		i, ENTINDEX(wearable), wearable->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+			DevMsg("  wearable %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+				i, ENTINDEX(wearable), wearable->GetClassname(), pre_team, pre_skin, post_team, post_skin);
 		}
 	}
 	
@@ -151,7 +167,13 @@ namespace Mod_Cond_Reprogrammed
 			player->m_Shared->StunPlayer(5.0f, 0.65f, TF_STUNFLAG_NOSOUNDOREFFECT | TF_STUNFLAG_SLOWDOWN, nullptr);
 		}
 		
-		player->ForceChangeTeam(TF_TEAM_RED, false);
+		/* added this check to prevent problems */
+		if (player->GetTeamNumber() == TF_TEAM_BLUE) {
+			DevMsg("  currently on TF_TEAM_BLUE: calling ForceChangeTeam(TF_TEAM_RED)\n");
+			player->ForceChangeTeam(TF_TEAM_RED, false);
+		} else {
+			DevMsg("  currently on teamnum %d; not calling ForceChangeTeam\n", player->GetTeamNumber());
+		}
 		
 		/* ensure that all weapons and wearables have their colors updated */
 		if (cvar_hellmet.GetBool()) {
@@ -176,7 +198,13 @@ namespace Mod_Cond_Reprogrammed
 	{
 		DevMsg("OnRemoveReprogrammed(#%d \"%s\")\n", ENTINDEX(player), player->GetPlayerName());
 		
-		player->ForceChangeTeam(TF_TEAM_BLUE, false);
+		/* added this check to prevent problems */
+		if (player->GetTeamNumber() == TF_TEAM_RED) {
+			DevMsg("  currently on TF_TEAM_RED: calling ForceChangeTeam(TF_TEAM_BLUE)\n");
+			player->ForceChangeTeam(TF_TEAM_BLUE, false);
+		} else {
+			DevMsg("  currently on teamnum %d; not calling ForceChangeTeam\n", player->GetTeamNumber());
+		}
 		
 		/* ensure that all weapons and wearables have their colors updated;
 		 * we don't do this in the case of LIFE_DYING, however, because
@@ -209,22 +237,26 @@ namespace Mod_Cond_Reprogrammed
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_OnConditionAdded, ETFCond cond)
 	{
+		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
+		
 		if (cond == TF_COND_REPROGRAMMED) {
-			auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 			OnAddReprogrammed(shared->GetOuter());
-		} else {
-			DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionAdded)(cond);
+			return;
 		}
+		
+		DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionAdded)(cond);
 	}
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_OnConditionRemoved, ETFCond cond)
 	{
+		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
+		
 		if (cond == TF_COND_REPROGRAMMED) {
-			auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 			OnRemoveReprogrammed(shared->GetOuter());
-		} else {
-			DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionRemoved)(cond);
+			return;
 		}
+		
+		DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionRemoved)(cond);
 	}
 	
 	
@@ -275,6 +307,33 @@ namespace Mod_Cond_Reprogrammed
 	}
 	
 	
+	DETOUR_DECL_MEMBER(void, CTFGameRules_BetweenRounds_Start)
+	{
+		DETOUR_MEMBER_CALL(CTFGameRules_BetweenRounds_Start)();
+		
+		if (cvar_hellmet.GetBool() && TFGameRules()->IsMannVsMachineMode()) {
+		//	for (int i = 0; i < IBaseObjectAutoList::AutoList().Count(); ++i) {
+		//		auto obj = rtti_cast<CBaseObject *>(IBaseObjectAutoList::AutoList()[i]);
+		//		if (obj == nullptr) continue;
+		//		
+		//		CBaseEntity *owner = obj->GetOwnerEntity();
+		//		if (owner == nullptr) {
+		//			obj->DetonateObject();
+		//		}
+		//	}
+			
+			ForEachEntityByClassname("bot_hint_engineer_nest", [](CBaseEntity *ent){
+				auto nest = static_cast<CTFBotHintEngineerNest *>(ent);
+				
+				if (nest->IsStaleNest()) {
+					DevMsg("CTFGameRules::BetweenRounds_Start: Detonating stale engie nest #%d\n", ENTINDEX(nest));
+					nest->DetonateStaleNest();
+				}
+			});
+		}
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -291,6 +350,9 @@ namespace Mod_Cond_Reprogrammed
 			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_Update, "CTFBotMainAction::Update");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_FindPartnerTauntInitiator, "CTFPlayer::FindPartnerTauntInitiator");
+			
+			/* fix: make end-of-wave destroy buildings built by red-team engie bots */
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_BetweenRounds_Start, "CTFGameRules::BetweenRounds_Start");
 			
 			/* fix: make mission populators aware of red-team mission bots */
 			this->AddPatch(new CPatch_CMissionPopulator_UpdateMission());

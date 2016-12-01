@@ -88,15 +88,16 @@ namespace Mod_Pop_PopMgr_Extensions
 	struct PopState
 	{
 		PopState() :
-			m_SpellsEnabled  ("tf_spells_enabled"),
-			m_GrapplingHook  ("tf_grapplinghook_enable"),
-			m_RespecEnabled  ("tf_mvm_respec_enabled"),
-			m_RespecLimit    ("tf_mvm_respec_limit"),
-			m_BonusRatioHalf ("tf_mvm_currency_bonus_ratio_min"),
-			m_BonusRatioFull ("tf_mvm_currency_bonus_ratio_max"),
-			m_FixedBuybacks  ("tf_mvm_buybacks_method"),
-			m_BuybacksPerWave("tf_mvm_buybacks_per_wave"),
-			m_DeathPenalty   ("tf_mvm_death_penalty")
+			m_SpellsEnabled           ("tf_spells_enabled"),
+			m_GrapplingHook           ("tf_grapplinghook_enable"),
+			m_RespecEnabled           ("tf_mvm_respec_enabled"),
+			m_RespecLimit             ("tf_mvm_respec_limit"),
+			m_BonusRatioHalf          ("tf_mvm_currency_bonus_ratio_min"),
+			m_BonusRatioFull          ("tf_mvm_currency_bonus_ratio_max"),
+			m_FixedBuybacks           ("tf_mvm_buybacks_method"),
+			m_BuybacksPerWave         ("tf_mvm_buybacks_per_wave"),
+			m_DeathPenalty            ("tf_mvm_death_penalty"),
+			m_SentryBusterFriendlyFire("tf_bot_suicide_bomb_friendly_fire")
 		{
 			this->Reset();
 		}
@@ -112,16 +113,17 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_bSniperAllowHeadshots   = false;
 			this->m_bDisableUpgradeStations = false;
 			
-			this->m_MedievalMode.Reset();
-			this->m_SpellsEnabled.Reset();
-			this->m_GrapplingHook.Reset();
-			this->m_RespecEnabled.Reset();
-			this->m_RespecLimit.Reset();
-			this->m_BonusRatioHalf.Reset();
-			this->m_BonusRatioFull.Reset();
-			this->m_FixedBuybacks.Reset();
-			this->m_BuybacksPerWave.Reset();
-			this->m_DeathPenalty.Reset();
+			this->m_MedievalMode            .Reset();
+			this->m_SpellsEnabled           .Reset();
+			this->m_GrapplingHook           .Reset();
+			this->m_RespecEnabled           .Reset();
+			this->m_RespecLimit             .Reset();
+			this->m_BonusRatioHalf          .Reset();
+			this->m_BonusRatioFull          .Reset();
+			this->m_FixedBuybacks           .Reset();
+			this->m_BuybacksPerWave         .Reset();
+			this->m_DeathPenalty            .Reset();
+			this->m_SentryBusterFriendlyFire.Reset();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -143,6 +145,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar<bool>  m_FixedBuybacks;
 		CPopOverride_ConVar<int>   m_BuybacksPerWave;
 		CPopOverride_ConVar<int>   m_DeathPenalty;
+		CPopOverride_ConVar<bool>  m_SentryBusterFriendlyFire;
 	};
 	PopState state;
 	
@@ -359,6 +362,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_BuybacksPerWave.Set(subkey->GetInt());
 				} else if (V_stricmp(name, "DeathPenalty") == 0) {
 					state.m_DeathPenalty.Set(subkey->GetInt());
+				} else if (V_stricmp(name, "SentryBusterFriendlyFire") == 0) {
+					state.m_SentryBusterFriendlyFire.Set(subkey->GetBool());
 				} else {
 					del = false;
 				}

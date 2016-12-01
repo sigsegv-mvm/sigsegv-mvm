@@ -18,6 +18,7 @@ public:
 	
 	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement(this, pPlayer); }
 	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding (this, pBuilder); }
+//	void DetonateObject()                     {        vt_DetonateObject(this); }
 	
 	DECL_DATAMAP(int, m_nDefaultUpgradeLevel);
 	
@@ -29,8 +30,18 @@ private:
 	static MemberFuncThunk<CBaseObject *, void, float> ft_SetPlasmaDisabled;
 	static MemberFuncThunk<CBaseObject *, bool>        ft_HasSapper;
 	
-	static MemberVFuncThunk<CBaseObject *, void, CTFPlayer *  > vt_StartPlacement;
+	static MemberVFuncThunk<CBaseObject *, void, CTFPlayer *>   vt_StartPlacement;
 	static MemberVFuncThunk<CBaseObject *, bool, CBaseEntity *> vt_StartBuilding;
+//	static MemberVFuncThunk<CBaseObject *, void>                vt_DetonateObject;
+};
+
+
+class IBaseObjectAutoList
+{
+public:
+	static const CUtlVector<IBaseObjectAutoList *>& AutoList() { return m_IBaseObjectAutoListAutoList; }
+private:
+	static GlobalThunk<CUtlVector<IBaseObjectAutoList *>> m_IBaseObjectAutoListAutoList;
 };
 
 

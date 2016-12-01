@@ -44,7 +44,9 @@ static constexpr uint8_t s_Buf_CTFBot_m_nMission[] = {
 
 struct CExtract_CTFBot_m_nMission : public IExtract<CTFBot::MissionType *>
 {
-	CExtract_CTFBot_m_nMission() : IExtract<CTFBot::MissionType *>(sizeof(s_Buf_CTFBot_m_nMission)) {}
+	using T = CTFBot::MissionType *;
+	
+	CExtract_CTFBot_m_nMission() : IExtract<T>(sizeof(s_Buf_CTFBot_m_nMission)) {}
 	
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
 	{
@@ -109,6 +111,47 @@ struct CExtract_CTFBot_m_Tags : public IExtract<CUtlVector<CFmtStr> *>
 #endif
 
 
+#if defined _LINUX
+
+static constexpr uint8_t s_Buf_CTFBot_m_nBotAttrs[] = {
+	0xc7, 0x83, 0xb8, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // +0000  mov dword ptr [ebx+m_nMission],0x00000000
+	0xc7, 0x83, 0xd0, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // +000A  mov dword ptr [ebx+m_nBotAttrs],0x00000000
+	0x89, 0x5d, 0x08,                                           // +0014  mov [ebp+this],ebx
+	0x83, 0xc4, 0x14,                                           // +0017  add esp,0x14
+	0x5b,                                                       // +001A  pop ebx
+	0x5d,                                                       // +001B  pop ebp
+	0xe9,                                                       // +001C  jmp CTFBot::StopIdleSound
+};
+
+struct CExtract_CTFBot_m_nBotAttrs : public IExtract<CTFBot::AttributeType *>
+{
+	using T = CTFBot::AttributeType *;
+	
+	CExtract_CTFBot_m_nBotAttrs() : IExtract<T>(sizeof(s_Buf_CTFBot_m_nBotAttrs)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CTFBot_m_nBotAttrs);
+		
+		mask.SetRange(0x00 + 2, 4, 0x00);
+		mask.SetRange(0x0a + 2, 4, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFBot::ChangeTeam"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0080; }
+	virtual uint32_t GetExtractOffset() const override { return 0x000a + 2; }
+};
+
+#elif defined _WINDOWS
+
+// TODO
+
+#endif
+
+
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressFireButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressFireButton");
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseFireButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseFireButton");
 template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressAltFireButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressAltFireButton");
@@ -143,9 +186,10 @@ MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::
 MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, bool> CTFBot::SuspectedSpyInfo_t::ft_TestForRealizing    ("CTFBot::SuspectedSpyInfo_t::TestForRealizing");
 
 
-IMPL_EXTRACT(CTFBot::MissionType, CTFBot, m_nMission, new CExtract_CTFBot_m_nMission());
+IMPL_EXTRACT(CTFBot::MissionType,   CTFBot, m_nMission,  new CExtract_CTFBot_m_nMission());
 #if !defined _WINDOWS
-IMPL_EXTRACT(CUtlVector<CFmtStr>, CTFBot, m_Tags,     new CExtract_CTFBot_m_Tags());
+IMPL_EXTRACT(CUtlVector<CFmtStr>,   CTFBot, m_Tags,      new CExtract_CTFBot_m_Tags());
+IMPL_EXTRACT(CTFBot::AttributeType, CTFBot, m_nBotAttrs, new CExtract_CTFBot_m_nBotAttrs());
 #endif
 
 MemberFuncThunk<const CTFBot *, ILocomotion *                            > CTFBot::ft_GetLocomotionInterface      ("CTFBot::GetLocomotionInterface");

@@ -10,6 +10,61 @@
 
 namespace Mod_Pop_TFBot_Extensions
 {
+	constexpr uint8_t s_Buf_CTFWeaponBase_GetShootSound[] = {
+		0xe8, 0xf1, 0x51, 0x1a, 0x00,             // +0000  call CBaseEntity::GetTeamNumber
+		0x89, 0xc7,                               // +0005  mov edi,eax
+		0xa1, 0x1c, 0xc9, 0x5c, 0x01,             // +0007  mov eax,ds:g_pGameRules
+		0x85, 0xc0,                               // +000C  test eax,eax
+		0x74, 0x0e,                               // +000E  jz +0xXX
+		0x80, 0xb8, 0x66, 0x09, 0x00, 0x00, 0x00, // +0010  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x00
+		0x74, 0x05,                               // +0017  jz +0xXX
+		0x83, 0xff, 0x03,                         // +0019  cmp edi,3
+		0x74, 0x48,                               // +001C  jz +0xXX
+	};
+	
+	struct CPatch_CTFWeaponBase_GetShootSound : public CPatch
+	{
+		CPatch_CTFWeaponBase_GetShootSound() : CPatch(sizeof(s_Buf_CTFWeaponBase_GetShootSound)) {}
+		
+		virtual const char *GetFuncName() const override { return "CTFWeaponBase::GetShootSound"; }
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0100; } // @ +0x0043
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_CTFWeaponBase_GetShootSound);
+			
+			void *addr__g_pGameRules = AddrManager::GetAddr("g_pGameRules");
+			if (addr__g_pGameRules == nullptr) return false;
+			
+			int off__m_bPlayingMannVsMachine;
+			if (!Prop::FindOffset(off__m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
+			
+			buf.SetDword(0x07 + 1, (uint32_t)addr__g_pGameRules);
+			buf.SetDword(0x10 + 2, (uint32_t)off__m_bPlayingMannVsMachine);
+			
+			mask.SetRange(0x00 + 1, 0x4, 0x00);
+			mask.SetRange(0x0e + 1, 0x1, 0x00);
+			mask.SetRange(0x17 + 1, 0x1, 0x00);
+			mask.SetRange(0x1c + 1, 0x1, 0x00);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* remove the teamnum check */
+			buf [0x1c] = 0xeb;
+			mask[0x1c] = 0xff;
+			
+		//	buf .SetRange(0x19 + 0, 0x5, 0x90);
+		//	mask.SetRange(0x19 + 0, 0x5, 0xff);
+			
+			return true;
+		}
+	};
+	
+	
 	/* mobber AI, based on CTFBotAttackFlagDefenders */
 	class CTFBotMobber : public IHotplugAction
 	{
@@ -153,38 +208,84 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	
 	/* for keeping track of which spawner each bot came from */
-	CTFBotSpawner *bot_spawner_tracker[33];
-	CTFBotSpawner *GetSpawnerOfBot(const CTFBot *bot)
+//	CTFBotSpawner *bot_spawner_tracker[33];
+	std::map<CHandle<CTFBot>, CTFBotSpawner *> bot_spawner_map;
+	CTFBotSpawner *GetSpawnerOfBot(CHandle<CTFBot> bot)
 	{
-		int idx = ENTINDEX(bot);
-		if (idx == 0) return nullptr;
+	//	int idx = ENTINDEX(bot);
+	//	if (idx == 0) return nullptr;
+	//	
+	//	assert(idx > 0);
+	//	assert(idx < 33);
+	//	return bot_spawner_tracker[idx];
 		
-		assert(idx > 0);
-		assert(idx < 33);
-		return bot_spawner_tracker[idx];
-	}
-	void SetSpawnerOfBot(const CTFBot *bot, CTFBotSpawner *spawner)
-	{
-		int idx = ENTINDEX(bot);
-		if (idx == 0) return;
+		auto it = bot_spawner_map.find(bot);
+		if (it == bot_spawner_map.end()) return nullptr;
 		
-		assert(idx > 0);
-		assert(idx < 33);
-		bot_spawner_tracker[idx] = spawner;
+		return (*it).second;
 	}
-	void ClearTrackingForSpawner(CTFBotSpawner *spawner)
+	void SetSpawnerOfBot(CHandle<CTFBot> bot, CTFBotSpawner *spawner)
 	{
-		for (auto& elem : bot_spawner_tracker) {
-			if (elem == spawner) {
-				elem = nullptr;
+	//	int idx = ENTINDEX(bot);
+	//	if (idx == 0) return;
+	//	
+	//	assert(idx > 0);
+	//	assert(idx < 33);
+	//	bot_spawner_tracker[idx] = spawner;
+		
+		/* remove existing entry for this player index if it exists */
+		auto it = bot_spawner_map.find(bot);
+		if (it != bot_spawner_map.end()) {
+			bot_spawner_map.erase(it);
+		}
+		
+		bot_spawner_map.emplace(std::make_pair(bot, spawner));
+		
+	//	auto result = bot_spawner_map.emplace(std::make_pair(bot, spawner));
+	//	if (!result.second) {
+	//		Warning("SetSpawnerOfBot(#%d \"%s\" => %08x): spawner tracking entry already exists for this bot!\n",
+	//			ENTINDEX(bot), bot->GetPlayerName(), (uintptr_t)spawner);
+	//	}
+	}
+	void ClearTrackingForTFBot(CHandle<CTFBot> bot)
+	{
+		auto it = bot_spawner_map.find(bot);
+		if (it != bot_spawner_map.end()) {
+			DevMsg("ClearTrackingForTFBotSpawner: [bot: #%d \"%s\"] erased\n", ENTINDEX(bot), bot->GetPlayerName());
+		} else {
+			DevMsg("ClearTrackingForTFBotSpawner: [bot: #%d \"%s\"] not tracked\n", ENTINDEX(bot), bot->GetPlayerName());
+		}
+	}
+	void ClearTrackingForTFBotSpawner(CTFBotSpawner *spawner)
+	{
+	//	for (auto& elem : bot_spawner_tracker) {
+	//		if (elem == spawner) {
+	//			elem = nullptr;
+	//		}
+	//	}
+		
+		int n_erased = 0;
+		for (auto it = bot_spawner_map.begin(); it != bot_spawner_map.end(); ) {
+			if ((*it).second == spawner) {
+				++n_erased;
+				it = bot_spawner_map.erase(it);
+			} else {
+				++it;
 			}
 		}
+		
+		DevMsg("ClearTrackingForTFBotSpawner: [spawner: %08x] [n_erased: %d]\n", (uintptr_t)spawner, n_erased);
 	}
-	void ClearAllTracking()
+	void ClearTrackingForAllTFBotSpawners()
 	{
-		for (auto& elem : bot_spawner_tracker) {
-			elem = nullptr;
-		}
+	//	for (auto& elem : bot_spawner_tracker) {
+	//		elem = nullptr;
+	//	}
+		
+		int n_erased = bot_spawner_map.size();
+		bot_spawner_map.clear();
+		
+		DevMsg("ClearTrackingForAllTFBotSpawners: [n_erased: %d]\n", n_erased);
 	}
 	
 	
@@ -194,7 +295,7 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		DevMsg("CTFBotSpawner %08x: dtor0\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
-		ClearTrackingForSpawner(spawner);
+		ClearTrackingForTFBotSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor0)();
 	}
@@ -205,7 +306,7 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		DevMsg("CTFBotSpawner %08x: dtor2\n", (uintptr_t)spawner);
 		spawners.erase(spawner);
-		ClearTrackingForSpawner(spawner);
+		ClearTrackingForTFBotSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor2)();
 	}
@@ -340,6 +441,9 @@ namespace Mod_Pop_TFBot_Extensions
 				if (bot != nullptr) {
 					SetSpawnerOfBot(bot, spawner);
 					
+				//	auto nextbot = rtti_cast<INextBot *>(bot);
+				//	nextbot->GetIntentionInterface()->Reset();
+					
 				//	DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
 					for (auto addcond : data.addconds) {
 						if (addcond.delay == 0.0f) {
@@ -378,33 +482,44 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
 	{
-		ActionType action = Action_Default;
-		
 		CTFBotSpawner *spawner = GetSpawnerOfBot(actor);
 		if (spawner != nullptr) {
+			DevMsg("CTFBotSpawner: #%d \"%s\" => %08x\n",
+				ENTINDEX(actor), actor->GetPlayerName(), (uintptr_t)spawner);
 			auto it = spawners.find(spawner);
 			if (it != spawners.end()) {
+				DevMsg("CTFBotSpawner: #%d \"%s\" has SpawnerData\n",
+					ENTINDEX(actor), actor->GetPlayerName());
 				SpawnerData& data = (*it).second;
-				action = data.action;
+				
+				switch (data.action) {
+				case Action_FetchFlag:
+					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to FetchFlag\n",
+						ENTINDEX(actor), actor->GetPlayerName());
+					return CTFBotFetchFlag::New();
+				case Action_PushToCapturePoint:
+					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to PushToCapturePoint[-->FetchFlag]\n",
+						ENTINDEX(actor), actor->GetPlayerName());
+					return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
+				case Action_Mobber:
+					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to Mobber\n",
+						ENTINDEX(actor), actor->GetPlayerName());
+					return new CTFBotMobber();
+				}
+			} else {
+				DevMsg("CTFBotSpawner: #%d \"%s\" does not have SpawnerData\n",
+					ENTINDEX(actor), actor->GetPlayerName());
 			}
-		}
-		
-		switch (action) {
-		case Action_FetchFlag:
-			DevMsg("CTFBotSpawner: setting initial action of bot #%d to FetchFlag\n", ENTINDEX(actor));
-			return CTFBotFetchFlag::New();
-		case Action_PushToCapturePoint:
-			DevMsg("CTFBotSpawner: setting initial action of bot #%d to PushToCapturePoint[-->FetchFlag]\n", ENTINDEX(actor));
-			return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
-		case Action_Mobber:
-			DevMsg("CTFBotSpawner: setting initial action of bot #%d to Mobber\n", ENTINDEX(actor));
-			return new CTFBotMobber();
+		} else {
+			DevMsg("CTFBotSpawner: #%d \"%s\" => can't find spawner???\n",
+				ENTINDEX(actor), actor->GetPlayerName());
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
 	}
 	
 	
+#if 0
 	/* make engiebots that don't have any Action override always have Attributes
 	 * IgnoreFlag, so that we can safely remove the special-case class check in
 	 * CTFBot::GetFlagToFetch */
@@ -412,6 +527,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
+		bool should_force_attr_ignore_flag = false;
 		if (bot->IsPlayerClass(TF_CLASS_ENGINEER)) {
 			CTFBotSpawner *spawner = GetSpawnerOfBot(bot);
 			if (spawner != nullptr) {
@@ -421,8 +537,9 @@ namespace Mod_Pop_TFBot_Extensions
 					
 					if (data.action == Action_Default) {
 						DevMsg("CTFBot::OnEventChangeAttributes(engie #%d): adding Attributes IgnoreFlag\n", ENTINDEX(bot));
+						should_force_attr_ignore_flag = true;
 					//	const_cast<CTFBot::EventChangeAttributes_t *>(ecattr)->m_nBotAttrs |= CTFBot::ATTR_IGNORE_FLAG;
-						(int&)(ecattr->m_nBotAttrs) |= CTFBot::ATTR_IGNORE_FLAG;
+					//	(int&)(ecattr->m_nBotAttrs) |= CTFBot::ATTR_IGNORE_FLAG;
 					} else {
 						DevMsg("CTFBot::OnEventChangeAttributes(engie #%d): not adding Attributes IgnoreFlag due to Action override\n", ENTINDEX(bot));
 					}
@@ -430,24 +547,106 @@ namespace Mod_Pop_TFBot_Extensions
 			}
 		}
 		
-		DETOUR_MEMBER_CALL(CTFBot_OnEventChangeAttributes)(ecattr);
+		if (should_force_attr_ignore_flag) {
+			CTFBot::AttributeType attr_pre  = bot->m_nBotAttr;
+			DETOUR_MEMBER_CALL(CTFBot_OnEventChangeAttributes)(ecattr);
+			CTFBot::AttributeType attr_post = bot->m_nBotAttr;
+		} else {
+			DETOUR_MEMBER_CALL(CTFBot_OnEventChangeAttributes)(ecattr);
+		}
 	}
+#endif
+	
+	
+	#warning TODO: remove TFBotSpawner extension debug convars!
+	ConVar cvar_debug1("sig_pop_tfbot_extensions__fetchflag_debug1", "0", FCVAR_NOTIFY);
+	ConVar cvar_debug2("sig_pop_tfbot_extensions__fetchflag_debug2", "0", FCVAR_NOTIFY);
 	
 	
 	RefCount rc_CTFBot_GetFlagToFetch;
 	DETOUR_DECL_MEMBER(CCaptureFlag *, CTFBot_GetFlagToFetch)
 	{
 		SCOPED_INCREMENT(rc_CTFBot_GetFlagToFetch);
-		return DETOUR_MEMBER_CALL(CTFBot_GetFlagToFetch)();
+		auto result = DETOUR_MEMBER_CALL(CTFBot_GetFlagToFetch)();
+		if (cvar_debug2.GetBool()) {
+			auto bot = reinterpret_cast<CTFBot *>(this);
+			DevMsg("CTFBot::GetFlagToFetch([#%d \"%s\"]) = [#%d \"%s\"]\n",
+				ENTINDEX(bot), bot->GetPlayerName(),
+				(result != nullptr ? ENTINDEX(result) : 0),
+				(result != nullptr ? STRING(result->GetEntityName()) : "nullptr"));
+			DevMsg("    --> bot attributes: %08x\n", *(uint32_t *)((uintptr_t)bot + 0x24d0));
+		}
+		return result;
 	}
 	
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_IsPlayerClass, int iClass)
 	{
-		if (rc_CTFBot_GetFlagToFetch > 0 && iClass == TF_CLASS_ENGINEER) {
-			return false;
+	//	if (rc_CTFBot_GetFlagToFetch > 0 && iClass == TF_CLASS_ENGINEER) {
+	//		if (cvar_debug1.GetBool()) {
+	//			auto player = reinterpret_cast<CTFPlayer *>(this);
+	//			DevMsg("CTFPlayer::IsPlayerClass([#%d \"%s\"], TF_CLASS_ENGINEER): called from CTFBot::GetFlagToFetch, returning false.\n",
+	//				ENTINDEX(player), player->GetPlayerName());
+	//		}
+	//		return false;
+	//	}
+		
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		auto result = DETOUR_MEMBER_CALL(CTFPlayer_IsPlayerClass)(iClass);
+		
+		if (rc_CTFBot_GetFlagToFetch > 0 && result && iClass == TF_CLASS_ENGINEER && player->IsBot()) {
+			CTFBot *bot = ToTFBot(player);
+			if (bot != nullptr) {
+				CTFBotSpawner *spawner = GetSpawnerOfBot(bot);
+				if (spawner != nullptr) {
+					auto it = spawners.find(spawner);
+					if (it != spawners.end()) {
+						SpawnerData& data = (*it).second;
+						
+						if (data.action != Action_Default) {
+							return false;
+						}
+					}
+				}
+			}
 		}
 		
-		return DETOUR_MEMBER_CALL(CTFPlayer_IsPlayerClass)(iClass);
+		return result;
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTFBot_Event_Killed, const CTakeDamageInfo& info)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		ClearTrackingForTFBot(bot);
+		
+		DETOUR_MEMBER_CALL(CTFBot_Event_Killed)(info);
+	}
+	
+	DETOUR_DECL_MEMBER(void, CTFBot_ChangeTeam, int iTeamNum, bool bAutoTeam, bool bSilent)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		if (iTeamNum == TEAM_SPECTATOR) {
+			ClearTrackingForTFBot(bot);
+		}
+		
+		DETOUR_MEMBER_CALL(CTFBot_ChangeTeam)(iTeamNum, bAutoTeam, bSilent);
+	}
+	
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ForceChangeTeam, int iTeamNum, bool b1)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		if (iTeamNum == TEAM_SPECTATOR && player->IsBot()) {
+			CTFBot *bot = ToTFBot(player);
+			if (bot != nullptr) {
+				ClearTrackingForTFBot(bot);
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(CTFPlayer_ForceChangeTeam)(iTeamNum, b1);
 	}
 	
 	
@@ -480,10 +679,16 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFBot_OnEventChangeAttributes, "CTFBot::OnEventChangeAttributes");
+		//	MOD_ADD_DETOUR_MEMBER(CTFBot_OnEventChangeAttributes, "CTFBot::OnEventChangeAttributes");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,   "CTFBot::GetFlagToFetch");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass, "CTFPlayer::IsPlayerClass");
+			
+			this->AddPatch(new CPatch_CTFWeaponBase_GetShootSound());
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBot_Event_Killed,       "CTFBot::Event_Killed");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_ChangeTeam,         "CTFBot::ChangeTeam");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ForceChangeTeam, "CTFPlayer::ForceChangeTeam");
 			
 			// TEST! REMOVE ME!
 //			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetOverrideStepSound, "CTFPlayer::GetOverrideStepSound");
@@ -493,13 +698,13 @@ namespace Mod_Pop_TFBot_Extensions
 		virtual void OnUnload() override
 		{
 			spawners.clear();
-			ClearAllTracking();
+			ClearTrackingForAllTFBotSpawners();
 		}
 		
 		virtual void OnDisable() override
 		{
 			spawners.clear();
-			ClearAllTracking();
+			ClearTrackingForAllTFBotSpawners();
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }

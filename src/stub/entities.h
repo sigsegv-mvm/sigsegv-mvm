@@ -72,7 +72,14 @@ class CTFBotHintTeleporterExit : public CBaseTFBotHintEntity {};
 class CTFBotHintEngineerNest : public CBaseTFBotHintEntity
 {
 public:
+	bool IsStaleNest() const { return ft_IsStaleNest      (this); }
+	void DetonateStaleNest() {        ft_DetonateStaleNest(this); }
+	
 	DECL_SENDPROP(bool, m_bHasActiveTeleporter);
+	
+private:
+	static MemberFuncThunk<const CTFBotHintEngineerNest *, bool> ft_IsStaleNest;
+	static MemberFuncThunk<      CTFBotHintEngineerNest *, void> ft_DetonateStaleNest;
 };
 
 

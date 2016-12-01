@@ -132,6 +132,9 @@ IMPL_SENDPROP(short,                CTFReviveMarker, m_nRevives, CTFReviveMarker
 
 IMPL_SENDPROP(bool, CTFBotHintEngineerNest, m_bHasActiveTeleporter, CTFBotHintEngineerNest);
 
+MemberFuncThunk<const CTFBotHintEngineerNest *, bool> CTFBotHintEngineerNest::ft_IsStaleNest      ("CTFBotHintEngineerNest::IsStaleNest");
+MemberFuncThunk<      CTFBotHintEngineerNest *, void> CTFBotHintEngineerNest::ft_DetonateStaleNest("CTFBotHintEngineerNest::DetonateStaleNest");
+
 
 GlobalThunk<CUtlVector<ITFBotHintEntityAutoList *>> ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList("ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList");
 
