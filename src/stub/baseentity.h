@@ -5,6 +5,9 @@
 #include "link/link.h"
 #include "prop.h"
 
+// TODO: move to common.h
+#include <../server/variant_t.h>
+
 
 class CBaseCombatCharacter;
 
@@ -20,7 +23,7 @@ public:
 	int entindex() const;
 	const Vector& GetAbsOrigin() const;
 	const QAngle& GetAbsAngles() const;
-//	const Vector& GetAbsVelocity() const;
+	const Vector& GetAbsVelocity() const;
 	bool IsEFlagSet(int nEFlagMask) const;
 	const matrix3x4_t& EntityToWorldTransform() const;
 	
@@ -45,35 +48,48 @@ public:
 	model_t *GetModel() const                   { return const_cast<model_t *>(modelinfo->GetModel(this->GetModelIndex())); }
 	bool IsTransparent() const                  { return (this->m_nRenderMode != kRenderNormal); }
 	MoveType_t GetMoveType() const              { return (MoveType_t)(unsigned char)this->m_MoveType; }
+	MoveCollide_t GetMoveCollide() const        { return (MoveCollide_t)(unsigned char)this->m_MoveCollide; }
+	void SetMoveCollide(MoveCollide_t val)      { this->m_MoveCollide = val; }
 	CBaseEntity *GetMoveParent()                { return this->m_hMoveParent; }
 	CBaseEntity *FirstMoveChild()               { return this->m_hMoveChild; }
 	CBaseEntity *NextMovePeer()                 { return this->m_hMovePeer; }
+	const color32 GetRenderColor() const        { return this->m_clrRender; }
+	void SetRenderColorR(byte r)                { this->m_clrRender->r = r; }
+	void SetRenderColorG(byte g)                { this->m_clrRender->g = g; }
+	void SetRenderColorB(byte b)                { this->m_clrRender->b = b; }
+	void SetRenderColorA(byte a)                { this->m_clrRender->a = a; }
 	
 	/* thunk */
-	void Remove()                                                                            {        ft_Remove                   (this); }
-	void CalcAbsolutePosition()                                                              {        ft_CalcAbsolutePosition     (this); }
-	bool ClassMatches(const char *pszClassOrWildcard)                                        { return ft_ClassMatches             (this, pszClassOrWildcard); }
-	void SetAbsOrigin(const Vector& absOrigin)                                               {        ft_SetAbsOrigin             (this, absOrigin); }
-	void SetAbsAngles(const QAngle& absAngles)                                               {        ft_SetAbsAngles             (this, absAngles); }
-	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound                (this, soundname, soundtime, duration); }
-	float GetNextThink(const char *szContext)                                                { return ft_GetNextThink             (this, szContext); }
-	bool IsBSPModel() const                                                                  { return ft_IsBSPModel               (this); }
-	Vector EyePosition()                                                                     { return vt_EyePosition              (this); }
-	const QAngle& EyeAngles()                                                                { return vt_EyeAngles                (this); }
-	void SetOwnerEntity(CBaseEntity *pOwner)                                                 {        vt_SetOwnerEntity           (this, pOwner); }
-	void Spawn()                                                                             {        vt_Spawn                    (this); }
-	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)              {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
-	const Vector& WorldSpaceCenter() const                                                   { return vt_WorldSpaceCenter         (this); }
-	bool IsCombatItem() const                                                                { return vt_IsCombatItem             (this); }
-	void SetModelIndex(int index)                                                            {        vt_SetModelIndex            (this, index); }
-	int GetModelIndex() const                                                                { return vt_GetModelIndex            (this); }
-	string_t GetModelName() const                                                            { return vt_GetModelName             (this); }
-	CBaseCombatCharacter *MyCombatCharacterPointer()                                         { return vt_MyCombatCharacterPointer (this); }
-	bool ShouldCollide(int collisionGroup, int contentsMask) const                           { return vt_ShouldCollide            (this, collisionGroup, contentsMask); }
-	void DrawDebugGeometryOverlays()                                                         {        vt_DrawDebugGeometryOverlays(this); }
-	void ChangeTeam(int iTeamNum)                                                            {        vt_ChangeTeam               (this, iTeamNum); }
-	void SetModelIndexOverride(int index, int nValue)                                        {        vt_SetModelIndexOverride    (this, index, nValue); }
-	datamap_t *GetDataDescMap()                                                              { return vt_GetDataDescMap           (this); }
+	void Remove()                                                                                                           {        ft_Remove                   (this); }
+	void CalcAbsolutePosition()                                                                                             {        ft_CalcAbsolutePosition     (this); }
+	void CalcAbsoluteVelocity()                                                                                             {        ft_CalcAbsoluteVelocity     (this); }
+	bool ClassMatches(const char *pszClassOrWildcard)                                                                       { return ft_ClassMatches             (this, pszClassOrWildcard); }
+	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin             (this, absOrigin); }
+	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles             (this, absAngles); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound                (this, soundname, soundtime, duration); }
+	float GetNextThink(const char *szContext)                                                                               { return ft_GetNextThink             (this, szContext); }
+	bool IsBSPModel() const                                                                                                 { return ft_IsBSPModel               (this); }
+	void EntityText(int text_offset, const char *text, float duration, int r, int g, int b, int a)                          {        ft_EntityText               (this, text_offset, text, duration, r, g, b, a); }
+	int TakeDamage(const CTakeDamageInfo& info)                                                                             { return ft_TakeDamage               (this, info); }
+	void SetMoveType(MoveType_t val, MoveCollide_t moveCollide = MOVECOLLIDE_DEFAULT)                                       {        ft_SetMoveType              (this, val, moveCollide); }
+	Vector EyePosition()                                                                                                    { return vt_EyePosition              (this); }
+	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                (this); }
+	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity           (this, pOwner); }
+	void Spawn()                                                                                                            {        vt_Spawn                    (this); }
+	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)                                             {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
+	const Vector& WorldSpaceCenter() const                                                                                  { return vt_WorldSpaceCenter         (this); }
+	bool IsCombatItem() const                                                                                               { return vt_IsCombatItem             (this); }
+	void SetModelIndex(int index)                                                                                           {        vt_SetModelIndex            (this, index); }
+	int GetModelIndex() const                                                                                               { return vt_GetModelIndex            (this); }
+	string_t GetModelName() const                                                                                           { return vt_GetModelName             (this); }
+	CBaseCombatCharacter *MyCombatCharacterPointer()                                                                        { return vt_MyCombatCharacterPointer (this); }
+	bool ShouldCollide(int collisionGroup, int contentsMask) const                                                          { return vt_ShouldCollide            (this, collisionGroup, contentsMask); }
+	void DrawDebugGeometryOverlays()                                                                                        {        vt_DrawDebugGeometryOverlays(this); }
+	void ChangeTeam(int iTeamNum)                                                                                           {        vt_ChangeTeam               (this, iTeamNum); }
+	void SetModelIndexOverride(int index, int nValue)                                                                       {        vt_SetModelIndexOverride    (this, index, nValue); }
+	datamap_t *GetDataDescMap()                                                                                             { return vt_GetDataDescMap           (this); }
+	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
+	void SetModel(const char *szModelName)                                                                                  {        vt_SetModel                 (this, szModelName); }
 	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
@@ -115,33 +131,41 @@ private:
 	DECL_SENDPROP   (int,                  m_CollisionGroup);
 	DECL_SENDPROP   (unsigned char,        m_nRenderMode);
 	DECL_SENDPROP   (unsigned char,        m_MoveType);
+	DECL_SENDPROP   (unsigned char,        m_MoveCollide);
+	DECL_SENDPROP_RW(color32,              m_clrRender);
 	
-	static MemberFuncThunk<      CBaseEntity *, void>                               ft_Remove;
-	static MemberFuncThunk<      CBaseEntity *, void>                               ft_CalcAbsolutePosition;
-	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                 ft_ClassMatches;
-	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                ft_SetAbsOrigin;
-	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                ft_SetAbsAngles;
-	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *> ft_EmitSound;
-	static MemberFuncThunk<      CBaseEntity *, float, const char *>                ft_GetNextThink;
-	static MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *>      ft_EntityToWorldSpace;
-	static MemberFuncThunk<const CBaseEntity *, bool>                               ft_IsBSPModel;
+	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_Remove;
+	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsolutePosition;
+	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsoluteVelocity;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_ClassMatches;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                ft_SetAbsOrigin;
+	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                ft_SetAbsAngles;
+	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *>                 ft_EmitSound;
+	static MemberFuncThunk<      CBaseEntity *, float, const char *>                                ft_GetNextThink;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *>                      ft_EntityToWorldSpace;
+	static MemberFuncThunk<const CBaseEntity *, bool>                                               ft_IsBSPModel;
+	static MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, int, int> ft_EntityText;
+	static MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&>                        ft_TakeDamage;
+	static MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t>                    ft_SetMoveType;
 	
-	static MemberVFuncThunk<      CBaseEntity *, Vector>                           vt_EyePosition;
-	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                    vt_EyeAngles;
-	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>              vt_SetOwnerEntity;
-	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_Spawn;
-	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *> vt_GetVelocity;
-	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                    vt_WorldSpaceCenter;
-	static MemberVFuncThunk<const CBaseEntity *, bool>                             vt_IsCombatItem;
-	static MemberVFuncThunk<      CBaseEntity *, void, int>                        vt_SetModelIndex;
-	static MemberVFuncThunk<const CBaseEntity *, int>                              vt_GetModelIndex;
-	static MemberVFuncThunk<const CBaseEntity *, string_t>                         vt_GetModelName;
-	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>           vt_MyCombatCharacterPointer;
-	static MemberVFuncThunk<const CBaseEntity *, bool, int, int>                   vt_ShouldCollide;
-	static MemberVFuncThunk<      CBaseEntity *, void>                             vt_DrawDebugGeometryOverlays;
-	static MemberVFuncThunk<      CBaseEntity *, void, int>                        vt_ChangeTeam;
-	static MemberVFuncThunk<      CBaseEntity *, void, int, int>                   vt_SetModelIndexOverride;
-	static MemberVFuncThunk<      CBaseEntity *, datamap_t *>                      vt_GetDataDescMap;
+	static MemberVFuncThunk<      CBaseEntity *, Vector>                                                           vt_EyePosition;
+	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
+	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>                                              vt_SetOwnerEntity;
+	static MemberVFuncThunk<      CBaseEntity *, void>                                                             vt_Spawn;
+	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *>                                 vt_GetVelocity;
+	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                                                    vt_WorldSpaceCenter;
+	static MemberVFuncThunk<const CBaseEntity *, bool>                                                             vt_IsCombatItem;
+	static MemberVFuncThunk<      CBaseEntity *, void, int>                                                        vt_SetModelIndex;
+	static MemberVFuncThunk<const CBaseEntity *, int>                                                              vt_GetModelIndex;
+	static MemberVFuncThunk<const CBaseEntity *, string_t>                                                         vt_GetModelName;
+	static MemberVFuncThunk<      CBaseEntity *, CBaseCombatCharacter *>                                           vt_MyCombatCharacterPointer;
+	static MemberVFuncThunk<const CBaseEntity *, bool, int, int>                                                   vt_ShouldCollide;
+	static MemberVFuncThunk<      CBaseEntity *, void>                                                             vt_DrawDebugGeometryOverlays;
+	static MemberVFuncThunk<      CBaseEntity *, void, int>                                                        vt_ChangeTeam;
+	static MemberVFuncThunk<      CBaseEntity *, void, int, int>                                                   vt_SetModelIndexOverride;
+	static MemberVFuncThunk<      CBaseEntity *, datamap_t *>                                                      vt_GetDataDescMap;
+	static MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEntity *, variant_t, int> vt_AcceptInput;
+	static MemberVFuncThunk<      CBaseEntity *, void, const char *>                                               vt_SetModel;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)
@@ -208,15 +232,13 @@ inline const QAngle& CBaseEntity::GetAbsAngles() const
 	return this->m_angAbsRotation;
 }
 
-#if 0
 inline const Vector& CBaseEntity::GetAbsVelocity() const
 {
 	if (this->IsEFlagSet(EFL_DIRTY_ABSVELOCITY)) {
-		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
+		const_cast<CBaseEntity *>(this)->CalcAbsoluteVelocity();
 	}
 	return this->m_vecAbsVelocity;
 }
-#endif
 
 inline bool CBaseEntity::IsEFlagSet(int nEFlagMask) const
 {
@@ -243,7 +265,15 @@ inline void CBaseEntity::NetworkStateChanged(void *pVar)
 }
 
 
-CBaseEntity *CreateEntityByName(const char *className, int iForceEdictIndex = -1);
+inline CBaseEntity *CreateEntityByName(const char *szClassname)
+{
+	return servertools->CreateEntityByName(szClassname);
+}
+
+inline void DispatchSpawn(CBaseEntity *pEntity)
+{
+	return servertools->DispatchSpawn(pEntity);
+}
 
 
 #endif

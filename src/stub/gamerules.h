@@ -98,10 +98,14 @@ public:
 	int GetWinningTeam()               { return this->m_iWinningTeam; }
 	bool IsPlayerReady(int iIndex)     { return this->m_bPlayerReady[iIndex]; }
 	
+	void BroadcastSound(int iTeam, const char *sound, int iAdditionalSoundFlags = 0) { ft_BroadcastSound(this, iTeam, sound, iAdditionalSoundFlags); }
+	
 private:
 	DECL_SENDPROP(gamerules_roundstate_t, m_iRoundState);
 	DECL_SENDPROP(int,                    m_iWinningTeam);
 	DECL_SENDPROP(bool[33],               m_bPlayerReady);
+	
+	static MemberFuncThunk<CTeamplayRoundBasedRules *, void, int, const char *, int> ft_BroadcastSound;
 };
 
 class CTFGameRules : public CTeamplayRoundBasedRules

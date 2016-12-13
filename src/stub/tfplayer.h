@@ -199,6 +199,9 @@ public:
 	void GetConditionsBits(CBitVec<192>& bitvec)                                        {        ft_GetConditionsBits   (this, bitvec); }
 	float GetConditionDuration(ETFCond cond)                                            { return ft_GetConditionDuration(this, cond); }
 	CBaseEntity *GetConditionProvider(ETFCond cond)                                     { return ft_GetConditionProvider(this, cond); }
+	int GetDisguiseTeam() const                                                         { return ft_GetDisguiseTeam     (this); }
+	bool IsStealthed() const                                                            { return ft_IsStealthed         (this); }
+	float GetPercentInvisible() const                                                   { return ft_GetPercentInvisible (this); }
 	
 	DECL_SENDPROP(float, m_flEnergyDrinkMeter);
 	DECL_SENDPROP(float, m_flHypeMeter);
@@ -216,6 +219,9 @@ private:
 	static MemberFuncThunk<      CTFPlayerShared *, void, CBitVec<192>&                 > ft_GetConditionsBits;
 	static MemberFuncThunk<      CTFPlayerShared *, float, ETFCond                      > ft_GetConditionDuration;
 	static MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > ft_GetConditionProvider;
+	static MemberFuncThunk<const CTFPlayerShared *, int                                 > ft_GetDisguiseTeam;
+	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsStealthed;
+	static MemberFuncThunk<const CTFPlayerShared *, float                               > ft_GetPercentInvisible;
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
@@ -313,8 +319,12 @@ inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
 
 bool IsValidTFConditionNumber(int num);
 ETFCond ClampTFConditionNumber(int num);
+
 const char *GetTFConditionName(ETFCond cond);
 ETFCond GetTFConditionFromName(const char *name);
+
+
+int GetNumberOfLoadoutSlots();
 
 
 #endif

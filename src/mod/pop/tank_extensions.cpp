@@ -67,13 +67,13 @@ namespace Mod_Pop_Tank_Extensions
 			const char *name = subkey->GetName();
 			
 			bool del = true;
-			if (V_stricmp(name, "DisableSmokestack") == 0) {
+			if (FStrEq(name, "DisableSmokestack")) {
 			//	DevMsg("Got \"DisableSmokeStack\" = %d\n", subkey->GetBool());
 				spawners[spawner].disable_smokestack = subkey->GetBool();
-			} else if (V_stricmp(name, "Scale") == 0) {
+			} else if (FStrEq(name, "Scale")) {
 			//	DevMsg("Got \"Scale\" = %f\n", subkey->GetFloat());
 				spawners[spawner].scale = subkey->GetFloat();
-			} else if (V_stricmp(name, "ForceRomeVision") == 0) {
+			} else if (FStrEq(name, "ForceRomeVision")) {
 			//	DevMsg("Got \"ForceRomeVision\" = %d\n", subkey->GetBool());
 				spawners[spawner].force_romevision = subkey->GetBool();
 			} else {

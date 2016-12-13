@@ -1,8 +1,10 @@
 #include "mod.h"
 #include "stub/entities.h"
-#include "util/scope.h"
+#include "stub/projectiles.h"
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
+#include "util/iterate.h"
+#include "util/scope.h"
 #include "mod/pop/kv_conditional.h"
 
 
@@ -61,8 +63,20 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar(const char *name) :
 			m_pszConVarName(name) {}
 		
-		virtual T GetValue() override         { return ConVar_GetValue<T>(MyConVar()); }
-		virtual void SetValue(T val) override { MyConVar().SetValue(val); }
+		virtual T GetValue() override { return ConVar_GetValue<T>(MyConVar()); }
+		
+		virtual void SetValue(T val) override
+		{
+			/* set the ConVar value in a quiet manner despite FCVAR_NOTIFY */
+			if (MyConVar().IsFlagSet(FCVAR_NOTIFY)) {
+				int& flags = MyConVar().GetFlagsRef();
+				flags &= ~FCVAR_NOTIFY;
+				MyConVar().SetValue(val);
+				flags |= FCVAR_NOTIFY;
+			} else {
+				MyConVar().SetValue(val);
+			}
+		}
 		
 	private:
 		ConVarRef& MyConVar()
@@ -112,6 +126,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_bSniperHideLasers       = false;
 			this->m_bSniperAllowHeadshots   = false;
 			this->m_bDisableUpgradeStations = false;
+			this->m_flRemoveGrapplingHooks  = -1.0f;
 			
 			this->m_MedievalMode            .Reset();
 			this->m_SpellsEnabled           .Reset();
@@ -124,6 +139,8 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_BuybacksPerWave         .Reset();
 			this->m_DeathPenalty            .Reset();
 			this->m_SentryBusterFriendlyFire.Reset();
+			
+			this->m_DisableSounds.clear();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -134,6 +151,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		bool m_bSniperHideLasers;
 		bool m_bSniperAllowHeadshots;
 		bool m_bDisableUpgradeStations;
+		float m_flRemoveGrapplingHooks;
 		
 		CPopOverride_MedievalMode  m_MedievalMode;
 		CPopOverride_ConVar<bool>  m_SpellsEnabled;
@@ -146,6 +164,8 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar<int>   m_BuybacksPerWave;
 		CPopOverride_ConVar<int>   m_DeathPenalty;
 		CPopOverride_ConVar<bool>  m_SentryBusterFriendlyFire;
+		
+		std::vector<std::string> m_DisableSounds;
 	};
 	PopState state;
 	
@@ -297,6 +317,20 @@ namespace Mod_Pop_PopMgr_Extensions
 		DETOUR_MEMBER_CALL(CUpgrades_UpgradeTouch)(pOther);
 	}
 	
+	DETOUR_DECL_MEMBER(void, CTeamplayRoundBasedRules_BroadcastSound, int iTeam, const char *sound, int iAdditionalSoundFlags)
+	{
+		DevMsg("CTeamplayRoundBasedRules::BroadcastSound(%d, \"%s\", 0x%08x)\n", iTeam, sound, iAdditionalSoundFlags);
+		
+		for (const auto& str : state.m_DisableSounds) {
+			if (V_stricmp(sound, str.c_str()) == 0) {
+				DevMsg("Blocked sound \"%s\"\n", sound);
+				return;
+			}
+		}
+		
+		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_BroadcastSound)(iTeam, sound, iAdditionalSoundFlags);
+	}
+	
 	
 	RefCount rc_CPopulationManager_Parse;
 	DETOUR_DECL_MEMBER(bool, CPopulationManager_Parse)
@@ -326,44 +360,49 @@ namespace Mod_Pop_PopMgr_Extensions
 				const char *name = subkey->GetName();
 				
 				bool del = true;
-				if (V_stricmp(name, "BotsDropSpells") == 0) {
+				if (FStrEq(name, "BotsDropSpells")) {
 					state.m_SpellsEnabled.Set(subkey->GetBool());
-				} else if (V_stricmp(name, "GiantsDropRareSpells") == 0) {
+				} else if (FStrEq(name, "GiantsDropRareSpells")) {
 					state.m_bGiantsDropRareSpells = subkey->GetBool();
-				} else if (V_stricmp(name, "SpellDropRateCommon") == 0) {
+				} else if (FStrEq(name, "SpellDropRateCommon")) {
 					state.m_flSpellDropRateCommon = Clamp(subkey->GetFloat(), 0.0f, 1.0f);
-				} else if (V_stricmp(name, "SpellDropRateGiant") == 0) {
+				} else if (FStrEq(name, "SpellDropRateGiant")) {
 					state.m_flSpellDropRateGiant = Clamp(subkey->GetFloat(), 0.0f, 1.0f);
-				} else if (V_stricmp(name, "NoReanimators") == 0) {
+				} else if (FStrEq(name, "NoReanimators")) {
 					state.m_bNoReanimators = subkey->GetBool();
-				} else if (V_stricmp(name, "NoMvMDeathTune") == 0) {
+				} else if (FStrEq(name, "NoMvMDeathTune")) {
 					state.m_bNoMvMDeathTune = subkey->GetBool();
-				} else if (V_stricmp(name, "SniperHideLasers") == 0) {
+				} else if (FStrEq(name, "SniperHideLasers")) {
 					state.m_bSniperHideLasers = subkey->GetBool();
-				} else if (V_stricmp(name, "SniperAllowHeadshots") == 0) {
+				} else if (FStrEq(name, "SniperAllowHeadshots")) {
 					state.m_bSniperAllowHeadshots = subkey->GetBool();
-				} else if (V_stricmp(name, "DisableUpgradeStations") == 0) {
+				} else if (FStrEq(name, "DisableUpgradeStations")) {
 					state.m_bDisableUpgradeStations = subkey->GetBool();
-				} else if (V_stricmp(name, "MedievalMode") == 0) {
+				} else if (FStrEq(name, "RemoveGrapplingHooks")) {
+					state.m_flRemoveGrapplingHooks = subkey->GetFloat();
+				} else if (FStrEq(name, "MedievalMode")) {
 					state.m_MedievalMode.Set(subkey->GetBool());
-				} else if (V_stricmp(name, "GrapplingHook") == 0) {
+				} else if (FStrEq(name, "GrapplingHook")) {
 					state.m_GrapplingHook.Set(subkey->GetBool());
-				} else if (V_stricmp(name, "RespecEnabled") == 0) {
+				} else if (FStrEq(name, "RespecEnabled")) {
 					state.m_RespecEnabled.Set(subkey->GetBool());
-				} else if (V_stricmp(name, "RespecLimit") == 0) {
+				} else if (FStrEq(name, "RespecLimit")) {
 					state.m_RespecLimit.Set(subkey->GetInt());
-				} else if (V_stricmp(name, "BonusRatioHalf") == 0) {
+				} else if (FStrEq(name, "BonusRatioHalf")) {
 					state.m_BonusRatioHalf.Set(subkey->GetFloat());
-				} else if (V_stricmp(name, "BonusRatioFull") == 0) {
+				} else if (FStrEq(name, "BonusRatioFull")) {
 					state.m_BonusRatioFull.Set(subkey->GetFloat());
-				} else if (V_stricmp(name, "FixedBuybacks") == 0) {
+				} else if (FStrEq(name, "FixedBuybacks")) {
 					state.m_FixedBuybacks.Set(subkey->GetBool());
-				} else if (V_stricmp(name, "BuybacksPerWave") == 0) {
+				} else if (FStrEq(name, "BuybacksPerWave")) {
 					state.m_BuybacksPerWave.Set(subkey->GetInt());
-				} else if (V_stricmp(name, "DeathPenalty") == 0) {
+				} else if (FStrEq(name, "DeathPenalty")) {
 					state.m_DeathPenalty.Set(subkey->GetInt());
-				} else if (V_stricmp(name, "SentryBusterFriendlyFire") == 0) {
+				} else if (FStrEq(name, "SentryBusterFriendlyFire")) {
 					state.m_SentryBusterFriendlyFire.Set(subkey->GetBool());
+				} else if (FStrEq(name, "DisableSound")) {
+					DevMsg("Got DisableSound: \"%s\"\n", subkey->GetString());
+					state.m_DisableSounds.emplace_back(subkey->GetString());
 				} else {
 					del = false;
 				}
@@ -387,23 +426,24 @@ namespace Mod_Pop_PopMgr_Extensions
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
 		CMod() : IMod("Pop:PopMgr_Extensions")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_PlayerKilled,          "CTFGameRules::PlayerKilled");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ShouldDropSpellPickup, "CTFGameRules::ShouldDropSpellPickup");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup,       "CTFGameRules::DropSpellPickup");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,         "CTFGameRules::IsUsingSpells");
-			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,             "CTFReviveMarker::Create");
-			MOD_ADD_DETOUR_MEMBER(CBaseEntity_EmitSound,              "CBaseEntity::EmitSound [const char *, float, float *]");
-			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CreateSniperDot,     "CTFSniperRifle::CreateSniperDot");
-			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CanFireCriticalShot, "CTFSniperRifle::CanFireCriticalShot");
-			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_CanFireCriticalShot,  "CTFWeaponBase::CanFireCriticalShot");
-			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Arrow_StrikeTarget,   "CTFProjectile_Arrow::StrikeTarget");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,   "CTFGameRules::IsPVEModeControlled");
-			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,             "CUpgrades::UpgradeTouch");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_PlayerKilled,               "CTFGameRules::PlayerKilled");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ShouldDropSpellPickup,      "CTFGameRules::ShouldDropSpellPickup");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup,            "CTFGameRules::DropSpellPickup");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,              "CTFGameRules::IsUsingSpells");
+			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,                  "CTFReviveMarker::Create");
+			MOD_ADD_DETOUR_MEMBER(CBaseEntity_EmitSound,                   "CBaseEntity::EmitSound [const char *, float, float *]");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CreateSniperDot,          "CTFSniperRifle::CreateSniperDot");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CanFireCriticalShot,      "CTFSniperRifle::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_CanFireCriticalShot,       "CTFWeaponBase::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Arrow_StrikeTarget,        "CTFProjectile_Arrow::StrikeTarget");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,        "CTFGameRules::IsPVEModeControlled");
+			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,                  "CUpgrades::UpgradeTouch");
+			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_BroadcastSound, "CTeamplayRoundBasedRules::BroadcastSound");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");
@@ -417,6 +457,21 @@ namespace Mod_Pop_PopMgr_Extensions
 		virtual void OnDisable() override
 		{
 			state.Reset();
+		}
+		
+		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
+		
+		virtual void FrameUpdatePostEntityThink() override
+		{
+			if (state.m_flRemoveGrapplingHooks >= 0.0f) {
+				ForEachEntityByRTTI<CTFProjectile_GrapplingHook>([](CTFProjectile_GrapplingHook *proj){
+					float dt = gpGlobals->curtime - proj->m_flTimeInit;
+					if (dt > state.m_flRemoveGrapplingHooks) {
+						DevMsg("Removing tf_projectile_grapplinghook #%d (alive for %.3f seconds)\n", ENTINDEX(proj), dt);
+						proj->Remove();
+					}
+				});
+			}
 		}
 	};
 	CMod s_Mod;
@@ -439,4 +494,35 @@ namespace Mod_Pop_PopMgr_Extensions
 		}
 	};
 	CKVCond_PopMgr cond;
+	
+	
+//	// REMOVE ME
+//	#warning REMOVE ME
+//	CON_COMMAND(sig_test_stopsound, "")
+//	{
+//		if (args.ArgC() < 3) {
+//			Warning("Expected 2 parameters: sound, flags.\n");
+//			return;
+//		}
+//		
+//		int team = -1;
+//		const char *snd = args[1];
+//		int flags = std::stol(args[2], nullptr, 0);
+//		
+//		IGameEvent *event = gameeventmanager->CreateEvent("teamplay_broadcast_audio");
+//		if (event != nullptr) {
+//			event->SetInt   ("team",             team);
+//			event->SetString("sound",            snd);
+//			event->SetInt   ("additional_flags", flags);
+//			gameeventmanager->FireEvent(event);
+//			
+//			Msg("Fired event: teamplay_broadcast_audio\n"
+//				"- team:             %d\n"
+//				"- sound:            \"%s\"\n"
+//				"- additional_flags: 0x%08x\n",
+//				team, snd, flags);
+//		}
+//		
+//		// nope: kills all sounds
+//	}
 }

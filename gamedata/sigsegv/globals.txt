@@ -13,6 +13,12 @@
 		{
 			"addrs"
 			{
+				"gpGlobals"
+				{
+					type "sym"
+					sym  "gpGlobals"
+				}
+				
 				"debugoverlay"
 				{
 					type "sym"
@@ -99,6 +105,34 @@
 				{
 					type "sym"
 					sym  "_ZL15s_TankModelRome"
+				}
+				
+				"g_szRomePromoItems_Hat"
+				{
+					type "sym"
+					sym  "g_szRomePromoItems_Hat"
+				}
+				"g_szRomePromoItems_Misc"
+				{
+					type "sym"
+					sym  "g_szRomePromoItems_Misc"
+				}
+				
+				"g_szLoadoutStrings"
+				{
+					type "sym"
+					sym  "g_szLoadoutStrings"
+				}
+				"g_szLoadoutStringsForDisplay"
+				{
+					type "sym"
+					sym  "g_szLoadoutStringsForDisplay"
+				}
+				
+				"g_aWeaponNames"
+				{
+					type "sym"
+					sym  "g_aWeaponNames"
 				}
 			}
 		}

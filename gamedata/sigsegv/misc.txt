@@ -756,6 +756,12 @@
 					sym  "_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
 				}
 				
+				"CEconItemSchema::GetItemDefinitionByName"
+				{
+					type "sym"
+					sym  "_ZN15CEconItemSchema23GetItemDefinitionByNameEPKc"
+				}
+				
 				"CTFGameRules::CanUpgradeWithAttrib"
 				{
 					type "sym"
@@ -1686,8 +1692,11 @@
 				
 				"SendProxy_LengthTable"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_Z21SendProxy_LengthTablePK8SendPropPKvS3_P20CSendProxyRecipientsi"
+					seg  "text"
+					seek "558bec8b45088b404cff7014ff70108b4008ff750cffd08b451083c40c5dc3"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
 				
 				"CBaseEntity::SetModelIndexOverride"
@@ -1775,6 +1784,161 @@
 				{
 					type "sym"
 					sym  "_ZN12CTFGameRules19BetweenRounds_StartEv"
+				}
+				
+				"CBaseEntity::EntityText"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity10EntityTextEiPKcfiiii"
+				}
+				
+				"CBaseObject::InitializeMapPlacedObject"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject25InitializeMapPlacedObjectEv"
+				}
+				
+				"CBaseObject::FinishedBuilding"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject16FinishedBuildingEv"
+				}
+				
+				"CBaseObject::UpdateOnRemove"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject14UpdateOnRemoveEv"
+				}
+				
+				"CBaseCombatWeapon::Equip"
+				{
+					type "sym"
+					sym  "_ZN17CBaseCombatWeapon5EquipEP20CBaseCombatCharacter"
+				}
+				
+				"CBaseCombatWeapon::Drop"
+				{
+					type "sym"
+					sym  "_ZN17CBaseCombatWeapon4DropERK6Vector"
+				}
+				
+				"CTeamplayRoundBasedRules::BroadcastSound"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules14BroadcastSoundEiPKci"
+				}
+				
+				"tf_mvm_popfile"
+				{
+					type "sym"
+					sym  "_ZL14tf_mvm_popfileRK8CCommand"
+				}
+				
+				"CPopulationManager::ResetMap"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager8ResetMapEv"
+				}
+				
+				"CBaseEntity::AcceptInput"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity11AcceptInputEPKcPS_S2_9variant_ti"
+				}
+				
+				"CTeamplayRoundBasedRules::State_Enter"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules11State_EnterE22gamerules_roundstate_t"
+				}
+				
+				"CTeamplayRoundBasedRules::State_Leave"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules11State_LeaveEv"
+				}
+				
+				"GetWeaponId"
+				{
+					type "sym"
+					sym  "_Z11GetWeaponIdPKc"
+				}
+				"WeaponIdToAlias"
+				{
+					type "sym"
+					sym  "_Z15WeaponIdToAliasi"
+				}
+				
+				"CTFGameRules::ApplyOnDamageModifyRules"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules24ApplyOnDamageModifyRulesER15CTakeDamageInfoP11CBaseEntityb"
+				}
+				
+				"CTFWeaponBaseGun::FireRocket"
+				{
+					type "sym"
+					sym  "_ZN16CTFWeaponBaseGun10FireRocketEP9CTFPlayeri"
+				}
+				
+				"CBaseEntity::SetModel"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8SetModelEPKc"
+				}
+				
+				"CTFProjectile_Arrow::ArrowTouch"
+				{
+					type "sym"
+					sym  "_ZN19CTFProjectile_Arrow10ArrowTouchEP11CBaseEntity"
+				}
+				
+				"CTakeDamageInfo::CTakeDamageInfo [C1 | overload 5]"
+				{
+					type "sym"
+					sym  "_ZN15CTakeDamageInfoC1EP11CBaseEntityS1_S1_RK6VectorS4_fiiPS2_"
+				}
+				
+				"CTraceFilterSimple::CTraceFilterSimple [C1]"
+				{
+					type "sym"
+					sym  "_ZN18CTraceFilterSimpleC1EPK13IHandleEntityiPFbPS0_iE"
+				}
+				
+				"CBaseEntity::PerformCustomPhysics"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity20PerformCustomPhysicsEP6VectorS1_P6QAngleS3_"
+				}
+				
+				"CBaseEntity::SetMoveType"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity11SetMoveTypeE10MoveType_t13MoveCollide_t"
+				}
+				
+				"CTFProjectile_Rocket::Spawn"
+				{
+					type "sym"
+					sym  "_ZN20CTFProjectile_Rocket5SpawnEv"
+				}
+				
+				"CBaseEntity::CalcAbsoluteVelocity"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity20CalcAbsoluteVelocityEv"
+				}
+				
+				"CTFWeaponBase::ApplyOnHitAttributes"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase20ApplyOnHitAttributesEP11CBaseEntityP9CTFPlayerRK15CTakeDamageInfo"
+				}
+				
+				"CTFBaseRocket::GetOwnerPlayer"
+				{
+					type "sym"
+					sym  "_ZNK13CTFBaseRocket14GetOwnerPlayerEv"
 				}
 			}
 		}

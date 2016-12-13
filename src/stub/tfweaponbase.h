@@ -14,9 +14,11 @@ public:
 	
 	bool IsMeleeWeapon() const { return ft_IsMeleeWeapon(this); }
 	
-	int GetMaxClip1() const { return vt_GetMaxClip1(this); }
-	int GetMaxClip2() const { return vt_GetMaxClip2(this); }
-	bool HasAmmo()          { return vt_HasAmmo    (this); }
+	int GetMaxClip1() const                  { return vt_GetMaxClip1(this); }
+	int GetMaxClip2() const                  { return vt_GetMaxClip2(this); }
+	bool HasAmmo()                           { return vt_HasAmmo    (this); }
+	void Equip(CBaseCombatCharacter *pOwner) {        vt_Equip      (this, pOwner); }
+	void Drop(const Vector& vecVelocity)     {        vt_Drop       (this, vecVelocity); }
 	
 	DECL_SENDPROP(float, m_flNextPrimaryAttack);
 	DECL_SENDPROP(float, m_flNextSecondaryAttack);
@@ -32,9 +34,11 @@ private:
 	
 	static MemberFuncThunk<const CBaseCombatWeapon *, bool> ft_IsMeleeWeapon;
 	
-	static MemberVFuncThunk<const CBaseCombatWeapon *, int>  vt_GetMaxClip1;
-	static MemberVFuncThunk<const CBaseCombatWeapon *, int>  vt_GetMaxClip2;
-	static MemberVFuncThunk<      CBaseCombatWeapon *, bool> vt_HasAmmo;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, int>                          vt_GetMaxClip1;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, int>                          vt_GetMaxClip2;
+	static MemberVFuncThunk<      CBaseCombatWeapon *, bool>                         vt_HasAmmo;
+	static MemberVFuncThunk<      CBaseCombatWeapon *, void, CBaseCombatCharacter *> vt_Equip;
+	static MemberVFuncThunk<      CBaseCombatWeapon *, void, const Vector&>          vt_Drop;
 };
 
 class CTFWeaponBase : public CBaseCombatWeapon
@@ -55,6 +59,21 @@ private:
 };
 
 class CTFWeaponBaseGun : public CTFWeaponBase {};
+
+class CTFMinigun : public CTFWeaponBaseGun
+{
+public:
+	enum MinigunState_t : int
+	{
+		AC_STATE_IDLE        = 0,
+		AC_STATE_STARTFIRING = 1,
+		AC_STATE_FIRING      = 2,
+		AC_STATE_SPINNING    = 3,
+		AC_STATE_DRYFIRE     = 4,
+	};
+	
+	DECL_SENDPROP(MinigunState_t, m_iWeaponState);
+};
 
 class CTFSniperRifle : public CTFWeaponBaseGun {};
 
@@ -139,6 +158,10 @@ class CTFWeaponSapper : public CTFWeaponBuilder {};
 
 bool WeaponID_IsSniperRifle(int id);
 bool WeaponID_IsSniperRifleOrBow(int id);
+
+
+int GetWeaponId(const char *name);
+const char *WeaponIdToAlias(int weapon_id);
 
 
 #endif

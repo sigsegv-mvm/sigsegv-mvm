@@ -8,8 +8,9 @@ StaticFuncThunk<float, float, const char *, const CBaseEntity *, CUtlVector<CBas
 MemberVFuncThunk<CEconItemView *, int> CEconItemView::vt_GetItemDefIndex(TypeName<CEconItemView>(), "CEconItemView::GetItemDefIndex");
 
 
+MemberFuncThunk<CEconItemSchema *, CEconItemDefinition *, const char *>          CEconItemSchema::ft_GetItemDefinitionByName     ("CEconItemSchema::GetItemDefinitionByName");
 MemberFuncThunk<CEconItemSchema *, CEconItemAttributeDefinition *, const char *> CEconItemSchema::ft_GetAttributeDefinitionByName("CEconItemSchema::GetAttributeDefinitionByName");
 
 
-static StaticFuncThunk<CEconItemSchema *> ft_GetItemSchema("GetItemSchema");
-CEconItemSchema *GetItemSchema() { return ft_GetItemSchema(); }
+static StaticFuncThunk<CTFItemSchema *> ft_GetItemSchema("GetItemSchema");
+CTFItemSchema *GetItemSchema() { return ft_GetItemSchema(); }

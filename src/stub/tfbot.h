@@ -169,7 +169,7 @@ public:
 		CUtlString m_strName;                      // +0x00
 		DifficultyType m_iSkill;                   // +0x04
 		WeaponRestriction m_nWeaponRestrict;       // +0x08
-		uint32_t pad_0c; // TODO: 0x0c m_nMission, not parsed, defaults to 0
+		MissionType m_nMission;                    // +0x0c
 		uint32_t pad_10; // TODO: 0x10
 		AttributeType m_nBotAttrs;                 // +0x14
 		float m_flVisionRange;                     // +0x18
@@ -180,6 +180,7 @@ public:
 	};
 	SIZE_CHECK(EventChangeAttributes_t, 0x6c);
 	
+#if 0
 	/* custom */
 	class ExtraData
 	{
@@ -218,6 +219,7 @@ public:
 		int m_nSplitCurrencyPacks;
 	};
 	const ExtraData& Ext() const;
+#endif
 	
 #if 0
 	class ExtendedAttr

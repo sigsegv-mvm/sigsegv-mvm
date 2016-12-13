@@ -23,9 +23,11 @@ MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > C
 MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsInvulnerable      ("CTFPlayerShared::IsInvulnerable");
 MemberFuncThunk<      CTFPlayerShared *, void, float, float, int, CTFPlayer *> CTFPlayerShared::ft_StunPlayer          ("CTFPlayerShared::StunPlayer");
 MemberFuncThunk<      CTFPlayerShared *, void, CBitVec<192>&                 > CTFPlayerShared::ft_GetConditionsBits   ("CTFPlayerShared::GetConditionsBits");
-MemberFuncThunk<      CTFPlayerShared *, float, ETFCond                      > CTFPlayerShared::ft_GetConditionDuration("CTFPlayer::GetConditionDuration");
-MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > CTFPlayerShared::ft_GetConditionProvider("CTFPlayer::GetConditionProvider");
-
+MemberFuncThunk<      CTFPlayerShared *, float, ETFCond                      > CTFPlayerShared::ft_GetConditionDuration("CTFPlayerShared::GetConditionDuration");
+MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > CTFPlayerShared::ft_GetConditionProvider("CTFPlayerShared::GetConditionProvider");
+MemberFuncThunk<const CTFPlayerShared *, int                                 > CTFPlayerShared::ft_GetDisguiseTeam     ("CTFPlayerShared::GetDisguiseTeam");
+MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsStealthed         ("CTFPlayerShared::IsStealthed");
+MemberFuncThunk<const CTFPlayerShared *, float                               > CTFPlayerShared::ft_GetPercentInvisible ("CTFPlayerShared::GetPercentInvisible");
 
 IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
 IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);
@@ -94,6 +96,7 @@ static int GetNumberOfTFConds()
 	return iNumTFConds;
 }
 
+
 bool IsValidTFConditionNumber(int num)
 {
 	return (num >= 0 && num < GetNumberOfTFConds());
@@ -126,4 +129,32 @@ ETFCond GetTFConditionFromName(const char *name)
 	}
 	
 	return TF_COND_INVALID;
+}
+
+
+static GlobalThunk<const char *[]> g_szLoadoutStringsForDisplay("g_szLoadoutStringsForDisplay");
+
+int GetNumberOfLoadoutSlots()
+{
+	static int iNumLoadoutSlots =
+	[]{
+		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "GetNumberOfLoadoutSlots: in lambda\n");
+		
+		const SegInfo& info_seg_server_rodata = LibMgr::GetInfo(Library::SERVER).GetSeg(Segment::RODATA);
+		
+		constexpr char prefix[] = "#LoadoutSlot_";
+		
+		for (int i = 0; i < 64; ++i) {
+			const char *str = g_szLoadoutStringsForDisplay[i];
+			
+			if (str == nullptr || !info_seg_server_rodata.ContainsAddr(str, 1) || strncmp(str, prefix, strlen(prefix)) != 0) {
+				return i;
+			}
+		}
+		
+		assert(false);
+		return 0;
+	}();
+	
+	return iNumLoadoutSlots;
 }

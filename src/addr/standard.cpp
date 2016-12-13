@@ -484,10 +484,13 @@ bool IAddr_ConCommandBase::FindAddrLinux(uintptr_t& addr) const
 	const char *name = this->GetConName();
 	bool is_command  = this->IsCommand();
 	
+#if defined __GNUC__
 	#warning FINISH THIS!
 	#warning FINISH THIS!
 	#warning FINISH THIS!
 	#warning FINISH THIS!
 	#warning FINISH THIS!
 	#warning FINISH THIS!
+#endif
+	return false;
 }

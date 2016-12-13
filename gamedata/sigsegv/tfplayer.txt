@@ -367,6 +367,21 @@
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared20GetConditionProviderE7ETFCond"
 				}
+				"CTFPlayerShared::GetDisguiseTeam"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared15GetDisguiseTeamEv"
+				}
+				"CTFPlayerShared::IsStealthed"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared11IsStealthedEv"
+				}
+				"CTFPlayerShared::GetPercentInvisible"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared19GetPercentInvisibleEv"
+				}
 				
 				"CTFPlayerClassShared::SetCustomModel"
 				{

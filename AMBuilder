@@ -172,6 +172,10 @@ sourceFiles = [
   'src/mod/debug/rage.cpp',
   'src/mod/debug/ctfbotproxy.cpp',
   'src/mod/debug/sentrybuster_mannhattan.cpp',
+  'src/mod/debug/teleportwhere.cpp',
+  'src/mod/debug/owners.cpp',
+  'src/mod/debug/conds.cpp',
+  'src/mod/debug/minigun_state.cpp',
 #  'src/mod/debug/scheme_load.cpp',
 #  'src/mod/debug/override_step_sound.cpp',
   'src/mod/demo/stringtable_limit.cpp',
@@ -183,6 +187,7 @@ sourceFiles = [
   'src/mod/etc/instant_scaling.cpp',
   'src/mod/etc/mm_spoof.cpp',
   'src/mod/etc/melee_ignore_teammates.cpp',
+  'src/mod/etc/heat_seeking_rockets.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
   'src/mod/mvm/explosive_headshot_on_everything.cpp',
@@ -194,6 +199,9 @@ sourceFiles = [
   'src/mod/mvm/gib_improvements.cpp',
   'src/mod/mvm/no_halloween_souls.cpp',
   'src/mod/mvm/robosapper_override.cpp',
+  'src/mod/mvm/building_destruction_prevention.cpp',
+  'src/mod/mvm/jumptowave_unrepeat.cpp',
+#  'src/mod/mvm/romevision_disable.cpp',
   'src/mod/perf/flame_breakable_collision.cpp',
   'src/mod/perf/medigun_shield_damage_events.cpp',
   'src/mod/perf/medigun_shield_damage_interval.cpp',
@@ -205,9 +213,10 @@ sourceFiles = [
   'src/mod/pop/nested_complex_spawners.cpp',
   'src/mod/pop/popmgr_extensions.cpp',
   'src/mod/pop/tfbot_extensions.cpp',
+#  'src/mod/pop/tfbot_extensions__action_enhancements.cpp', # temporarily reverted for Hell-met!
   'src/mod/pop/wave_extensions.cpp',
   'src/mod/pop/tank_extensions.cpp',
-#  'src/mod/pop/ecattr_extensions.cpp',
+  'src/mod/pop/ecattr_extensions.cpp',
   'src/mod/prof/flame_breakable_collision.cpp',
   'src/mod/prof/attr_munge.cpp',
   'src/mod/prof/debug_overlay.cpp',
@@ -266,6 +275,7 @@ sourceFiles = [
   'src/mod/visualize/ammo_counts.cpp',
   'src/mod/visualize/backstab.cpp',
   'src/mod/visualize/conds.cpp',
+  'src/mod/visualize/engie_nests.cpp',
 ]
 
 ###############

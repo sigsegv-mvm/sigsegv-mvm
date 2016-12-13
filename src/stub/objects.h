@@ -16,11 +16,15 @@ public:
 	void SetPlasmaDisabled(float duration) {        ft_SetPlasmaDisabled(this, duration); }
 	bool HasSapper()                       { return ft_HasSapper(this); }
 	
-	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement(this, pPlayer); }
-	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding (this, pBuilder); }
-//	void DetonateObject()                     {        vt_DetonateObject(this); }
+	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement           (this, pPlayer); }
+	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding            (this, pBuilder); }
+//	void DetonateObject()                     {        vt_DetonateObject           (this); }
+	void InitializeMapPlacedObject()          {        vt_InitializeMapPlacedObject(this); }
+	void FinishedBuilding()                   {        vt_FinishedBuilding         (this); }
 	
 	DECL_DATAMAP(int, m_nDefaultUpgradeLevel);
+	
+	DECL_SENDPROP(int,                m_iUpgradeLevel);
 	
 private:
 	DECL_SENDPROP(int,                m_iObjectType);
@@ -33,6 +37,8 @@ private:
 	static MemberVFuncThunk<CBaseObject *, void, CTFPlayer *>   vt_StartPlacement;
 	static MemberVFuncThunk<CBaseObject *, bool, CBaseEntity *> vt_StartBuilding;
 //	static MemberVFuncThunk<CBaseObject *, void>                vt_DetonateObject;
+	static MemberVFuncThunk<CBaseObject *, void>                vt_InitializeMapPlacedObject;
+	static MemberVFuncThunk<CBaseObject *, void>                vt_FinishedBuilding;
 };
 
 

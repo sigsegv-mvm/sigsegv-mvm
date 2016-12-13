@@ -59,6 +59,34 @@ inline bool FStrEq(const char *sz1, const char *sz2)
 
 
 #if 0
+class CEntitySphereQuery
+{
+public:
+	CEntitySphereQuery(const Vector& center, float radius, int flagMask = 0)
+	{
+		this->m_listCount = UTIL_EntitiesInSphere(this->m_pList, MAX_SPHERE_QUERY, center, radius, flagMask);
+	}
+	
+	CBaseEntity *GetCurrentEntity()
+	{
+		if (this->m_listIndex >= this->m_listCount) return nullptr;
+		
+		return this->m_pList[this->m_listIndex];
+	}
+	
+	void NextEntity() { ++this->m_listIndex; }
+	
+private:
+	constexpr size_t MAX_SPHERE_QUERY = 512;
+	
+	int m_listIndex = 0;
+	int m_listCount;
+	CBaseEntity *m_pList[MAX_SPHERE_QUERY];
+}
+#endif
+
+
+#if 0
 /* allow using CHandle<T> as the key type in std::unordered_map */
 namespace std
 {

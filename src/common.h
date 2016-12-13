@@ -281,7 +281,8 @@ class IVideoRecorder;
 #include <iclientnetworkable.h>
 #include <utldict.h>
 #include <mp_shareddefs.h>
-#include <materialsystem/imaterialsystem.h>
+//#include <materialsystem/imaterialsystem.h>
+#include "sdk2013/imaterialsystem_V081.h"
 #include <materialsystem/imaterial.h>
 #include <particle_parse.h>
 #include <SoundEmitterSystem/isoundemittersystembase.h>

@@ -3,16 +3,19 @@
 
 IMPL_DATAMAP (int,                CBaseObject, m_nDefaultUpgradeLevel);
 
-IMPL_SENDPROP(int,                CBaseObject, m_iObjectType, CBaseObject);
-IMPL_SENDPROP(int,                CBaseObject, m_iObjectMode, CBaseObject);
-IMPL_SENDPROP(CHandle<CTFPlayer>, CBaseObject, m_hBuilder,    CBaseObject);
+IMPL_SENDPROP(int,                CBaseObject, m_iUpgradeLevel, CBaseObject);
+IMPL_SENDPROP(int,                CBaseObject, m_iObjectType,   CBaseObject);
+IMPL_SENDPROP(int,                CBaseObject, m_iObjectMode,   CBaseObject);
+IMPL_SENDPROP(CHandle<CTFPlayer>, CBaseObject, m_hBuilder,      CBaseObject);
 
 MemberFuncThunk<CBaseObject *, void, float> CBaseObject::ft_SetPlasmaDisabled("CBaseObject::SetPlasmaDisabled");
 MemberFuncThunk<CBaseObject *, bool>        CBaseObject::ft_HasSapper        ("CBaseObject::HasSapper");
 
-MemberVFuncThunk<CBaseObject *, void, CTFPlayer *>   CBaseObject::vt_StartPlacement(TypeName<CBaseObject>(), "CBaseObject::StartPlacement");
-MemberVFuncThunk<CBaseObject *, bool, CBaseEntity *> CBaseObject::vt_StartBuilding (TypeName<CBaseObject>(), "CBaseObject::StartBuilding");
+MemberVFuncThunk<CBaseObject *, void, CTFPlayer *>   CBaseObject::vt_StartPlacement           (TypeName<CBaseObject>(), "CBaseObject::StartPlacement");
+MemberVFuncThunk<CBaseObject *, bool, CBaseEntity *> CBaseObject::vt_StartBuilding            (TypeName<CBaseObject>(), "CBaseObject::StartBuilding");
 //MemberVFuncThunk<CBaseObject *, void>                CBaseObject::vt_DetonateObject(TypeName<CBaseObject>(), "CBaseObject::DetonateObject");
+MemberVFuncThunk<CBaseObject *, void>                CBaseObject::vt_InitializeMapPlacedObject(TypeName<CBaseObject>(), "CBaseObject::InitializeMapPlacedObject");
+MemberVFuncThunk<CBaseObject *, void>                CBaseObject::vt_FinishedBuilding         (TypeName<CBaseObject>(), "CBaseObject::FinishedBuilding");
 
 
 GlobalThunk<CUtlVector<IBaseObjectAutoList *>> IBaseObjectAutoList::m_IBaseObjectAutoListAutoList("IBaseObjectAutoList::m_IBaseObjectAutoListAutoList");

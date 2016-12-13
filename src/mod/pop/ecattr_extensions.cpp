@@ -3,13 +3,29 @@
 #include "stub/tfbot.h"
 
 
+// update data with every call to:
+// - CTFBot::OnEventChangeAttributes
+//   (verify that this does get called even for the initial default set of settings when spawning)
+
+// clear data with every call to:
+// - CTFBot::~CTFBot (D0+D2)
+// - CTFBot::Event_Killed
+// - CTFBot::ChangeTeam(TEAM_SPECTATOR)
+// - CTFBot::ForceChangeTeam(TEAM_SPECTATOR)
+
+// we probably want maps of:
+// - CHandle<CTFBot> -> their CTFBotSpawner of origin
+// - CHandle<CTFBot> -> their current EventChangeAttributes_t * (in their CTFBotSpawner of origin)
+
+
+#if 0
 namespace Mod_Pop_ECAttr_Extensions
 {
 	/* maps ECAttr instances -> extra data instances */
-	std::map<CTFBot::EventChangeAttributes *, CTFBot::ExtraData> extdata;
+	std::map<CTFBot::EventChangeAttributes_t *, CTFBot::ExtraData> extdata;
 	
 	/* maps CTFBot instances -> their current ECAttr instance */
-	std::map<int, CTFBot::EventChangeAttributes *> ecattr_map;
+	std::map<int, CTFBot::EventChangeAttributes_t *> ecattr_map;
 	
 #if 0
 	/* maps CTFBot instances -> their current ECAttr name */
@@ -94,3 +110,4 @@ namespace Mod_Pop_ECAttr_Extensions
 	};
 	CKVCond_ECAttr cond;
 }
+#endif

@@ -43,17 +43,50 @@ private:
 };
 
 
+class CEconItemDefinition
+{
+public:
+	uint32_t vtable;
+	KeyValues *m_pKV;
+	short m_iItemDefIndex;
+	bool m_bEnabled;
+	byte m_iMinILevel;
+	byte m_iMaxILevel;
+	byte m_iItemQuality;
+	byte m_iForcedItemQuality;
+	byte m_iItemRarity;
+	short m_iDefaultDropQuantity;
+	byte m_iItemSeries;
+	// ...
+};
+class CTFItemDefinition : public CEconItemDefinition {};
+
+
+class CEconItemSystem
+{
+public:
+	// TODO
+	
+private:
+	// TODO
+};
+class CTFItemSystem : public CEconItemSystem {};
+
+
 class CEconItemSchema
 {
 public:
+	CEconItemDefinition *GetItemDefinitionByName(const char *name)               { return ft_GetItemDefinitionByName     (this, name); }
 	CEconItemAttributeDefinition *GetAttributeDefinitionByName(const char *name) { return ft_GetAttributeDefinitionByName(this, name); }
 	
 private:
+	static MemberFuncThunk<CEconItemSchema *, CEconItemDefinition *, const char *>          ft_GetItemDefinitionByName;
 	static MemberFuncThunk<CEconItemSchema *, CEconItemAttributeDefinition *, const char *> ft_GetAttributeDefinitionByName;
 };
+class CTFItemSchema : public CEconItemSchema {};
 
 
-CEconItemSchema *GetItemSchema();
+CTFItemSchema *GetItemSchema();
 
 
 #endif

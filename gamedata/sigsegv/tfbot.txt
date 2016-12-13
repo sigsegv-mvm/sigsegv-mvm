@@ -287,6 +287,12 @@
 					sym  "_ZN6CTFBot9ShouldGibERK15CTakeDamageInfo"
 				}
 				
+				"CTFBot::DrawDebugTextOverlays"
+				{
+					type "sym"
+					sym  "_ZN6CTFBot21DrawDebugTextOverlaysEv"
+				}
+				
 				"CTFBotPathCost::operator()"
 				{
 					type "sym"

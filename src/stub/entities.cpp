@@ -35,6 +35,17 @@ struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
 #elif defined _WINDOWS
 
 // TODO
+struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
+{
+	CExtract_CCurrencyPack_m_nAmount() : IExtract<int *>(0) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
+	
+	virtual const char *GetFuncName() const override   { return "CCurrencyPack::SetAmount"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
+	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
+};
 
 #endif
 
@@ -72,6 +83,17 @@ struct CExtract_CTFTankBoss_m_pBodyInterface : public IExtract<IBody **>
 #elif defined _WINDOWS
 
 // TODO
+struct CExtract_CTFTankBoss_m_pBodyInterface : public IExtract<IBody **>
+{
+	CExtract_CTFTankBoss_m_pBodyInterface() : IExtract<IBody **>(0) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
+	
+	virtual const char *GetFuncName() const override   { return "CTFTankBoss::GetBodyInterface"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
+	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
+};
 
 #endif
 
@@ -113,6 +135,19 @@ struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMa
 #elif defined _WINDOWS
 
 // TODO
+struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMap<int, CTeamControlPoint *> *>
+{
+	using T = CUtlMap<int, CTeamControlPoint *> *;
+	
+	CExtract_CTeamControlPointMaster_m_ControlPoints() : IExtract<T>(0) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
+	
+	virtual const char *GetFuncName() const override   { return "CTeamControlPointMaster::PointLastContestedAt"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
+	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
+};
 
 #endif
 
@@ -196,3 +231,6 @@ GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> ITFFlameEntityAutoList::m_ITFF
 
 GlobalThunk<const char *[4]> s_TankModel    ("s_TankModel");
 GlobalThunk<const char *[4]> s_TankModelRome("s_TankModelRome");
+
+GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Hat ("g_szRomePromoItems_Hat");
+GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Misc("g_szRomePromoItems_Misc");

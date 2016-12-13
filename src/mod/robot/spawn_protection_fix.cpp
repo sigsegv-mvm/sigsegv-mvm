@@ -20,6 +20,10 @@ namespace Mod_Robot_Spawn_Protection_Fix
 			return;
 		}
 		
+	//	#warning REMOVE THIS DEBUG MESSAGE!
+	//	DevMsg("[SpawnProtect] rc == %d; nCond == %d; flDuration %c= 0.5f; pProvider %c= nullptr\n",
+	//		rc_CTFBotMainAction_Update, (int)nCond, (flDuration == 0.5f ? '=' : '!'), (pProvider == nullptr ? '=' : '!'));
+		
 		DETOUR_MEMBER_CALL(CTFPlayerShared_AddCond)(nCond, flDuration, pProvider);
 	}
 	
@@ -29,6 +33,7 @@ namespace Mod_Robot_Spawn_Protection_Fix
 	public:
 		CMod() : IMod("Robot:Spawn_Protection_Fix")
 		{
+			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_Update, "CTFBotMainAction::Update");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_AddCond, "CTFPlayerShared::AddCond");
 		}
 	};

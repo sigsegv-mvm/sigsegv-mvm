@@ -30,7 +30,12 @@ class CTFBaseProjectile : public CBaseProjectile {};
 class CTFBaseRocket  : public CBaseProjectile
 {
 public:
+	CBasePlayer *GetOwnerPlayer() const { return ft_GetOwnerPlayer(this); }
+	
 	DECL_SENDPROP(Vector, m_vInitialVelocity);
+	
+private:
+	static MemberFuncThunk<const CTFBaseRocket *, CBasePlayer *> ft_GetOwnerPlayer;
 };
 
 class CTFFlameRocket : public CTFBaseRocket {};
@@ -42,7 +47,12 @@ class CTFProjectile_SentryRocket : public CTFProjectile_Rocket {};
 class CTFProjectile_Flare : public CTFBaseRocket {};
 class CTFProjectile_EnergyBall : public CTFBaseRocket {};
 
-class CTFProjectile_Arrow : public CTFBaseRocket {};
+class CTFProjectile_Arrow : public CTFBaseRocket
+{
+public:
+	DECL_EXTRACT(float, m_flTimeInit);
+};
+
 class CTFProjectile_HealingBolt : public CTFProjectile_Arrow {};
 class CTFProjectile_GrapplingHook : public CTFProjectile_Arrow {};
 

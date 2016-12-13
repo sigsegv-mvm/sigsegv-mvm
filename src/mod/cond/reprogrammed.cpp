@@ -3,6 +3,7 @@
 #include "stub/tf_shareddefs.h"
 #include "stub/gamerules.h"
 #include "re/nextbot.h"
+#include "util/backtrace.h"
 #include "util/iterate.h"
 
 
@@ -97,6 +98,60 @@ namespace Mod_Cond_Reprogrammed
 		static FPtr_IsBot s_CBasePlayer_IsBot;
 	};
 	FPtr_IsBot CPatch_CTFGameMovement_CheckStuck::s_CBasePlayer_IsBot = &CBasePlayer::IsBot;
+	
+	
+#if 0
+	constexpr uint8_t s_Buf_GetShootSound[] = {
+		0xe8, 0xf1, 0x51, 0x1a, 0x00,             // +0000  call CBaseEntity::GetTeamNumber
+		0x89, 0xc7,                               // +0005  mov edi,eax
+		0xa1, 0x1c, 0xc9, 0x5c, 0x01,             // +0007  mov eax,ds:g_pGameRules
+		0x85, 0xc0,                               // +000C  test eax,eax
+		0x74, 0x0e,                               // +000E  jz +0xXX
+		0x80, 0xb8, 0x66, 0x09, 0x00, 0x00, 0x00, // +0010  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x00
+		0x74, 0x05,                               // +0017  jz +0xXX
+		0x83, 0xff, 0x03,                         // +0019  cmp edi,3
+		0x74, 0x48,                               // +001C  jz +0xXX
+	};
+	
+	struct CPatch_CTFWeaponBase_GetShootSound : public CPatch
+	{
+		CPatch_CTFWeaponBase_GetShootSound() : CPatch(sizeof(s_Buf_GetShootSound)) {}
+		
+		virtual const char *GetFuncName() const override { return "CTFWeaponBase::GetShootSound"; }
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0100; } // @ +0x0043
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_GetShootSound);
+			
+			void *addr__g_pGameRules = AddrManager::GetAddr("g_pGameRules");
+			if (addr__g_pGameRules == nullptr) return false;
+			
+			int off__m_bPlayingMannVsMachine;
+			if (!Prop::FindOffset(off__m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
+			
+			buf.SetDword(0x07 + 1, (uint32_t)addr__g_pGameRules);
+			buf.SetDword(0x10 + 2, (uint32_t)off__m_bPlayingMannVsMachine);
+			
+			mask.SetRange(0x00 + 1, 0x4, 0x00);
+			mask.SetRange(0x0e + 1, 0x1, 0x00);
+			mask.SetRange(0x17 + 1, 0x1, 0x00);
+			mask.SetRange(0x1c + 1, 0x1, 0x00);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* make the jump for checking IsMiniBoss occur regardless of teamnum */
+			buf [0x1c] = 0xeb;
+			mask[0x1c] = 0xff;
+			
+			return true;
+		}
+	};
+#endif
 	
 	
 	ConVar cvar_hellmet("sig_cond_reprogrammed_hellmet", "1", FCVAR_NOTIFY,
@@ -334,6 +389,26 @@ namespace Mod_Cond_Reprogrammed
 	}
 	
 	
+#if 0
+	DETOUR_DECL_MEMBER(const char *, CTFWeaponBase_GetShootSound, int iIndex)
+	{
+		auto weapon = reinterpret_cast<CTFWeaponBase *>(this);
+		
+		auto result = DETOUR_MEMBER_CALL(CTFWeaponBase_GetShootSound)(iIndex);
+		
+		DevMsg("CTFWeaponBase::GetShootSound(#%d, classname \"%s\", teamnum %d, index %d): \"%s\"\n",
+			ENTINDEX(weapon), weapon->GetClassname(), weapon->GetTeamNumber(), iIndex, result);
+		
+		if (strcmp(weapon->GetClassname(), "tf_weapon_minigun") == 0 ||
+			strcmp(weapon->GetClassname(), "tf_weapon_rocketlauncher") == 0) {
+			BACKTRACE();
+		}
+		
+		return result;
+	}
+#endif
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -359,6 +434,10 @@ namespace Mod_Cond_Reprogrammed
 			
 			/* fix: make tf_resolve_stuck_players apply to all bots in MvM, rather than blu-team players */
 			this->AddPatch(new CPatch_CTFGameMovement_CheckStuck());
+			
+		//	/* fix: make giant weapon sounds apply to miniboss players on any team */
+		//	this->AddPatch(new CPatch_CTFWeaponBase_GetShootSound());
+			// ^^^ unreliable, since weapons are predicted client-side
 		}
 	};
 	CMod s_Mod;

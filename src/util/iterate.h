@@ -37,6 +37,7 @@ inline void ForEachEntity(const FUNCTOR& func)
 	}
 }
 
+
 template<typename FUNCTOR>
 inline void ForEachEntityByClassname(const char *classname, const FUNCTOR& func)
 {
@@ -119,6 +120,32 @@ inline void ForEachTFBot(const FUNCTOR& func)
 	}
 }
 #endif
+
+
+template<typename FUNCTOR>
+struct PartitionEnumerator : public IPartitionEnumerator
+{
+	PartitionEnumerator(const FUNCTOR& func) : m_Func(func) {}
+	
+	virtual IterationRetval_t EnumElement(IHandleEntity *pHandleEntity) override
+	{
+		CBaseEntity *pEntity = EntityFromEntityHandle(pHandleEntity);
+		
+		switch (CALL_FUNCTOR(CBaseEntity *)(m_Func, pEntity)) {
+		case true:  return ITERATION_CONTINUE;
+		case false: return ITERATION_STOP;
+		}
+	}
+	
+	const FUNCTOR& m_Func;
+};
+
+template<typename FUNCTOR>
+inline void ForEachEntityInSphere(const Vector& center, float radius, const FUNCTOR& func)
+{
+	PartitionEnumerator<FUNCTOR> enumerator(func);
+	partition->EnumerateElementsInSphere(PARTITION_ENGINE_NON_STATIC_EDICTS, center, radius, false, &enumerator);
+}
 
 
 #undef CALL_FUNCTOR

@@ -120,6 +120,11 @@
 					type "sym"
 					sym  "_ZN5CWave5ParseEP9KeyValues"
 				}
+				"CWave::ActiveWaveUpdate"
+				{
+					type "sym"
+					sym  "_ZN5CWave16ActiveWaveUpdateEv"
+				}
 				"CWave::~CWave [D0]"
 				{
 					type "sym"

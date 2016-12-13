@@ -7,8 +7,7 @@ inline bool DemangleName(const char *mangled, std::string& result)
 #if defined _WINDOWS
 	result = mangled;
 	return true;
-#endif
-	
+#else
 	constexpr int options = DMGL_GNU_V3 | DMGL_TYPES | DMGL_ANSI | DMGL_PARAMS;
 	char *demangled = cplus_demangle(mangled, options);
 	
@@ -20,6 +19,7 @@ inline bool DemangleName(const char *mangled, std::string& result)
 		result = mangled;
 		return false;
 	}
+#endif
 }
 
 
@@ -28,8 +28,7 @@ inline bool DemangleTypeName(const char *mangled, std::string& result)
 #if defined _WINDOWS
 	result = mangled;
 	return true;
-#endif
-	
+#else
 	char *prefixed = new char[strlen(mangled) + 1 + 4];
 	strcpy(prefixed, "_ZTS");
 	strcat(prefixed, mangled);
@@ -53,6 +52,7 @@ inline bool DemangleTypeName(const char *mangled, std::string& result)
 		result = mangled;
 		return false;
 	}
+#endif
 }
 
 

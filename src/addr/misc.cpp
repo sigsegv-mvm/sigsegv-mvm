@@ -939,7 +939,9 @@ public:
 			return false;
 		}
 		
+#if defined __GNUC__
 		#warning TODO TODO TODO
+#endif
 		
 		/*
 		Disassembler dasm;
@@ -956,6 +958,8 @@ public:
 		
 		for ()*/
 		
+		// REMOVE ME
+		return false;
 	}
 };
 static CAddr_TGAWriter_WriteToBuffer addr_TGAWriter_WriteToBuffer;

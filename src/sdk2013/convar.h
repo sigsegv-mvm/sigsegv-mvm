@@ -390,6 +390,8 @@ private:
 	// Used internally by OneTimeInit to initialize.
 	virtual void				Init();
 	int GetFlags() { return m_pParent->m_nFlags; }
+
+	int& GetFlagsRef() { return m_pParent->m_nFlags; } // non-standard!
 private:
 
 	// This either points to "this" or it points to the original declaration of a ConVar.
@@ -487,6 +489,7 @@ public:
 
 	const char *GetDefault() const;
 
+	int& GetFlagsRef() { return m_pConVarState->GetFlagsRef(); } // non-standard!
 private:
 	// High-speed method to read convar data
 	IConVar *m_pConVar;

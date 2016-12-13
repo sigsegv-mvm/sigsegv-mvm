@@ -23,6 +23,8 @@ public:
 	void CopyFrom(const ByteBuf& that);
 	void CopyFrom(const uint8_t *arr);
 	
+	void Dump() const;
+	
 	int GetSize() const { return this->m_iSize; }
 	
 	const uint8_t *GetBufPtr() const { return this->m_Buf; }
@@ -109,6 +111,22 @@ inline void ByteBuf::CopyFrom(const ByteBuf& that)
 inline void ByteBuf::CopyFrom(const uint8_t *arr)
 {
 	memcpy(this->m_Buf, arr, this->m_iSize);
+}
+
+
+inline void ByteBuf::Dump() const
+{
+	DevMsg("       __00_01_02_03__04_05_06_07__08_09_0A_0B__0C_0D_0E_0F__\n");
+	
+	for (int i = 0; i < this->GetSize(); i += 16) {
+		std::string line = CFmtStrN<16>("+0x%04X", i).Get();
+		
+		for (int j = i; j < this->GetSize() && j < i + 16; ++j) {
+			line += CFmtStrN<16>("%*s%02X", ((j % 4 == 0) ? 2 : 1), "", this->m_Buf[j]).Get();
+		}
+		
+		DevMsg("%s\n", line.c_str());
+	}
 }
 
 

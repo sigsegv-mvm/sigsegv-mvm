@@ -10,6 +10,10 @@
 
 class CPointEntity : public CBaseEntity {};
 
+
+class CAmbientGeneric : public CPointEntity {};
+
+
 class CPathTrack : public CPointEntity
 {
 public:
@@ -267,6 +271,9 @@ private:
 
 extern GlobalThunk<const char *[4]> s_TankModel;
 extern GlobalThunk<const char *[4]> s_TankModelRome;
+
+extern GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Hat;
+extern GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Misc;
 
 
 // 20151007a

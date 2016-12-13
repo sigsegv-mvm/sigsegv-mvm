@@ -2,14 +2,40 @@
 #include "stub/populators.h"
 #include "mod/pop/kv_conditional.h"
 #include "stub/usermessages_sv.h"
+#include "stub/entities.h"
+#include "stub/objects.h"
+#include "stub/gamerules.h"
 #include "util/scope.h"
+#include "util/iterate.h"
+
+// TODO: move to common.h
+#include <soundflags.h>
 
 
 namespace Mod_Pop_Wave_Extensions
 {
+	struct SentryGunInfo
+	{
+		bool use_hint = true;
+		std::vector<CHandle<CTFBotHintSentrygun>> hints;
+		Vector origin;
+		QAngle angles;
+		
+		int teamnum = TF_TEAM_BLUE;
+		float delay = 0.0f;
+		int level   = -1;
+		
+		bool spawned = false;
+	};
+	
 	struct WaveData
 	{
 		std::vector<std::string> explanation;
+		std::vector<SentryGunInfo> sentryguns;
+		
+		IntervalTimer t_wavestart;
+		
+		std::string sound_loop;
 	};
 	
 	
@@ -37,6 +63,21 @@ namespace Mod_Pop_Wave_Extensions
 	}
 	
 	
+	bool FindSentryHint(const char *name, std::vector<CHandle<CTFBotHintSentrygun>>& hints)
+	{
+		ForEachEntityByClassname("bot_hint_sentrygun", [&](CBaseEntity *ent){
+			if (FStrEq(STRING(ent->GetEntityName()), name)) {
+				auto hint = rtti_cast<CTFBotHintSentrygun *>(ent);
+				if (hint != nullptr) {
+					hints.emplace_back(hint);
+				}
+			}
+		});
+		
+		return !hints.empty();
+	}
+	
+	
 	void Parse_Explanation(CWave *wave, KeyValues *kv)
 	{
 		waves[wave].explanation.clear();
@@ -44,6 +85,68 @@ namespace Mod_Pop_Wave_Extensions
 		FOR_EACH_SUBKEY(kv, subkey) {
 			waves[wave].explanation.emplace_back(subkey->GetString());
 		}
+	}
+	
+	
+	void Parse_SentryGun(CWave *wave, KeyValues *kv)
+	{
+		SentryGunInfo info;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "HintName")) {
+				if (!FindSentryHint(subkey->GetString(), info.hints)) {
+					Warning("Could not find a bot_hint_sentrygun entity named \"%s\".\n", subkey->GetString());
+					return;
+				}
+			} else if (FStrEq(name, "TeamNum")) {
+				info.teamnum = Clamp(subkey->GetInt(), 2, 3);
+			//	DevMsg("TeamNum \"%s\" --> %d\n", subkey->GetString(), info.teamnum);
+			} else if (FStrEq(name, "Delay")) {
+				info.delay = Max(0.0f, subkey->GetFloat());
+			//	DevMsg("Delay \"%s\" --> %.1f\n", subkey->GetString(), info.delay);
+			} else if (FStrEq(name, "Level")) {
+				info.level = Clamp(subkey->GetInt(), 1, 3);
+			//	DevMsg("Level \"%s\" --> %d\n", subkey->GetString(), info.level);
+			} else if (FStrEq(name, "Position")) {
+				FOR_EACH_SUBKEY(subkey, subsub) {
+					const char *name = subsub->GetName();
+					float value      = subsub->GetFloat();
+					
+					if (FStrEq(name, "X")) {
+						info.origin.x = value;
+					} else if (FStrEq(name, "Y")) {
+						info.origin.y = value;
+					} else if (FStrEq(name, "Z")) {
+						info.origin.z = value;
+					} else if (FStrEq(name, "Pitch")) {
+						info.angles.x = value;
+					} else if (FStrEq(name, "Yaw")) {
+						info.angles.y = value;
+					} else if (FStrEq(name, "Roll")) {
+						info.angles.z = value;
+					} else {
+						Warning("Unknown key \'%s\' in SentryGun Position sub-block.\n", name);
+					}
+				}
+				info.use_hint = false;
+			} else {
+				Warning("Unknown key \'%s\' in SentryGun block.\n", name);
+			}
+		}
+		
+		if (info.use_hint && info.hints.empty()) {
+			Warning("Missing HintName key or Position block in SentryGun block.\n");
+			return;
+		}
+		if (info.level == -1) {
+			Warning("Missing Level key in SentryGun block.\n");
+			return;
+		}
+		
+		DevMsg("Wave %08x: add SentryGun\n", (uintptr_t)wave);
+		waves[wave].sentryguns.push_back(info);
 	}
 	
 	
@@ -58,8 +161,12 @@ namespace Mod_Pop_Wave_Extensions
 			const char *name = subkey->GetName();
 			
 			bool del = true;
-			if (V_stricmp(name, "Explanation") == 0) {
+			if (FStrEq(name, "Explanation")) {
 				Parse_Explanation(wave, subkey);
+			} else if (FStrEq(name, "SentryGun")) {
+				Parse_SentryGun(wave, subkey);
+			} else if (FStrEq(name, "SoundLoop")) {
+				waves[wave].sound_loop = subkey->GetString();
 			} else {
 				del = false;
 			}
@@ -178,6 +285,7 @@ namespace Mod_Pop_Wave_Extensions
 		}
 	}
 	
+	
 	RefCount rc_JumpToWave;
 	DETOUR_DECL_MEMBER(void, CPopulationManager_JumpToWave, unsigned int wave, float f1)
 	{
@@ -204,6 +312,145 @@ namespace Mod_Pop_Wave_Extensions
 	}
 	
 	
+	void SpawnSentryGun(const Vector& origin, const QAngle& angles, int teamnum, int level)
+	{
+		auto sentry = rtti_cast<CObjectSentrygun *>(CreateEntityByName("obj_sentrygun"));
+		if (sentry == nullptr) {
+			Warning("SpawnSentryGun: CreateEntityByName(\"obj_sentrygun\") failed\n");
+			return;
+		}
+		
+	//	DevMsg("[%8.3f] SpawnSentryGun: [hint #%d \"%s\"] [teamnum %d] [level %d]\n",
+	//		gpGlobals->curtime, ENTINDEX(sg_info.hint), STRING(sg_info.hint->GetEntityName()), sg_info.teamnum, sg_info.level);
+		
+		sentry->SetAbsOrigin(origin);
+		sentry->SetAbsAngles(angles);
+		
+		sentry->Spawn();
+		
+		sentry->ChangeTeam(teamnum);
+		sentry->m_nDefaultUpgradeLevel = level - 1;
+		
+		sentry->InitializeMapPlacedObject();
+		
+		DevMsg("SpawnSentryGun: %08x, level %d, health %d, maxhealth %d\n",
+			(uintptr_t)sentry, level, sentry->GetHealth(), sentry->GetMaxHealth());
+	}
+	
+	void SpawnSentryGuns(SentryGunInfo& sg_info)
+	{
+		sg_info.spawned = true;
+		
+		if (sg_info.use_hint && sg_info.hints.empty()) {
+			Warning("SpawnSentryGuns: sg_info.hints.empty()\n");
+			return;
+		}
+		
+		if (sg_info.use_hint) {
+			for (const auto& hint : sg_info.hints) {
+				SpawnSentryGun(hint->GetAbsOrigin(), hint->GetAbsAngles(), sg_info.teamnum, sg_info.level);
+			}
+		} else {
+			SpawnSentryGun(sg_info.origin, sg_info.angles, sg_info.teamnum, sg_info.level);
+		}
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CWave_ActiveWaveUpdate)
+	{
+		DETOUR_MEMBER_CALL(CWave_ActiveWaveUpdate)();
+		
+		auto wave = reinterpret_cast<CWave *>(this);
+		
+		auto it = waves.find(wave);
+		if (it != waves.end()) {
+			WaveData& data = (*it).second;
+			
+			if (!data.t_wavestart.HasStarted()) {
+				data.t_wavestart.Start();
+			}
+			
+			for (auto& sg_info : data.sentryguns) {
+				if (!sg_info.spawned && !data.t_wavestart.IsLessThen(sg_info.delay)) {
+					SpawnSentryGuns(sg_info);
+				}
+			}
+		}
+	}
+	
+	
+	std::string soundloop_active;
+	
+	
+	void StopSoundLoop()
+	{
+		ConColorMsg(Color(0xff, 0x00, 0x00, 0xff), "[SoundLoop] StopSoundLoop \"%s\"\n", soundloop_active.c_str());
+		
+		TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, soundloop_active.c_str(), SND_STOP);
+		
+		soundloop_active.clear();
+	}
+	
+	void StartSoundLoop(const std::string& filename)
+	{
+		if (!soundloop_active.empty()) {
+			StopSoundLoop();
+		}
+		
+		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[SoundLoop] StartSoundLoop \"%s\"\n", filename.c_str());
+		
+		TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, filename.c_str(), SND_NOFLAGS);
+		
+		soundloop_active = filename;
+	}
+	
+	
+	const char *GetRoundStateName(gamerules_roundstate_t state)
+	{
+		switch (state) {
+		case GR_STATE_INIT:         return "INIT";
+		case GR_STATE_PREGAME:      return "PREGAME";
+		case GR_STATE_STARTGAME:    return "STARTGAME";
+		case GR_STATE_PREROUND:     return "PREROUND";
+		case GR_STATE_RND_RUNNING:  return "RND_RUNNING";
+		case GR_STATE_TEAM_WIN:     return "TEAM_WIN";
+		case GR_STATE_RESTART:      return "RESTART";
+		case GR_STATE_STALEMATE:    return "STALEMATE";
+		case GR_STATE_GAME_OVER:    return "GAME_OVER";
+		case GR_STATE_BONUS:        return "BONUS";
+		case GR_STATE_BETWEEN_RNDS: return "BETWEEN_RNDS";
+		default:                    return "???";
+		}
+	}
+	
+	
+	DETOUR_DECL_MEMBER(void, CTeamplayRoundBasedRules_State_Enter, gamerules_roundstate_t newState)
+	{
+		auto oldState = TeamplayRoundBasedRules()->State_Get();
+		
+		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff),
+			"[SoundLoop] CTeamplayRoundBasedRules: %s -> %s\n",
+			GetRoundStateName(oldState), GetRoundStateName(newState));
+		
+		if (oldState != GR_STATE_RND_RUNNING && newState == GR_STATE_RND_RUNNING) {
+			if (TFGameRules()->IsMannVsMachineMode()) {
+				auto it = waves.find(g_pPopulationManager->GetCurrentWave());
+				if (it != waves.end()) {
+					WaveData& data = (*it).second;
+					
+					if (!data.sound_loop.empty()) {
+						StartSoundLoop(data.sound_loop);
+					}
+				}
+			}
+		} else if (oldState == GR_STATE_RND_RUNNING && newState != GR_STATE_RND_RUNNING) {
+			StopSoundLoop();
+		}
+		
+		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_State_Enter)(newState);
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -217,16 +464,22 @@ namespace Mod_Pop_Wave_Extensions
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_JumpToWave,          "CPopulationManager::JumpToWave");
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_WaveEnd,             "CPopulationManager::WaveEnd");
 			MOD_ADD_DETOUR_MEMBER(CMannVsMachineStats_RoundEvent_WaveEnd, "CMannVsMachineStats::RoundEvent_WaveEnd");
+			
+			MOD_ADD_DETOUR_MEMBER(CWave_ActiveWaveUpdate, "CWave::ActiveWaveUpdate");
+			
+			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
 		}
 		
 		virtual void OnUnload() override
 		{
 			waves.clear();
+			StopSoundLoop();
 		}
 		
 		virtual void OnDisable() override
 		{
 			waves.clear();
+			StopSoundLoop();
 		}
 	};
 	CMod s_Mod;
@@ -250,3 +503,19 @@ namespace Mod_Pop_Wave_Extensions
 	};
 	CKVCond_Wave cond;
 }
+
+
+/* wave explanation TODO:
+
+each time a wave starts, reset some tracking info
+- keep track of which steam IDs have seen the explanation and which haven't
+
+if a new player connects, and the wave has an explanation, and they haven't seen it,
+then show it *just* to them, a few seconds after they pick a class
+
+
+
+
+
+
+*/
