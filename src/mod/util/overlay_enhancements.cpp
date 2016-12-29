@@ -2,10 +2,6 @@
 #include "stub/cdebugoverlay.h"
 #include "util/scope.h"
 
-// TODO: move these to common.h
-#include <overlaytext.h>
-#include <tier2/meshutils.h>
-
 
 enum OverlayType_t
 {

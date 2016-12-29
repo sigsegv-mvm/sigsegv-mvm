@@ -5,9 +5,6 @@
 #include "link/link.h"
 #include "prop.h"
 
-// TODO: move to common.h
-#include <../server/variant_t.h>
-
 
 class CBaseCombatCharacter;
 
@@ -72,6 +69,7 @@ public:
 	void EntityText(int text_offset, const char *text, float duration, int r, int g, int b, int a)                          {        ft_EntityText               (this, text_offset, text, duration, r, g, b, a); }
 	int TakeDamage(const CTakeDamageInfo& info)                                                                             { return ft_TakeDamage               (this, info); }
 	void SetMoveType(MoveType_t val, MoveCollide_t moveCollide = MOVECOLLIDE_DEFAULT)                                       {        ft_SetMoveType              (this, val, moveCollide); }
+	model_t *GetModel()                                                                                                     { return ft_GetModel                 (this); }
 	Vector EyePosition()                                                                                                    { return vt_EyePosition              (this); }
 	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity           (this, pOwner); }
@@ -91,6 +89,11 @@ public:
 	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
 	void SetModel(const char *szModelName)                                                                                  {        vt_SetModel                 (this, szModelName); }
 	
+	/* static */
+	static int PrecacheModel(const char *name, bool bPreload = true)     { return ft_PrecacheModel      (name, bPreload); }
+	static bool PrecacheSound(const char *name)                          { return ft_PrecacheSound      (name); }
+	static HSOUNDSCRIPTHANDLE PrecacheScriptSound(const char *soundname) { return ft_PrecacheScriptSound(soundname); }
+	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
 	bool IsPlayer() const;
@@ -103,9 +106,9 @@ public:
 	DECL_DATAMAP(int, m_debugOverlays);
 	
 	/* TODO: make me private again! */
-	DECL_SENDPROP(int, m_fFlags);
-	DECL_DATAMAP(int, m_nNextThinkTick);
-	DECL_SENDPROP(char, m_lifeState);
+	DECL_SENDPROP(int,    m_fFlags);
+	DECL_DATAMAP(int,     m_nNextThinkTick);
+	DECL_SENDPROP(char,   m_lifeState);
 	DECL_SENDPROP(int[4], m_nModelIndexOverrides);
 	
 private:
@@ -147,6 +150,7 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, int, int> ft_EntityText;
 	static MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&>                        ft_TakeDamage;
 	static MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t>                    ft_SetMoveType;
+	static MemberFuncThunk<      CBaseEntity *, model_t *>                                          ft_GetModel;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                                                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
@@ -166,6 +170,10 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, datamap_t *>                                                      vt_GetDataDescMap;
 	static MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEntity *, variant_t, int> vt_AcceptInput;
 	static MemberVFuncThunk<      CBaseEntity *, void, const char *>                                               vt_SetModel;
+	
+	static StaticFuncThunk<int, const char *, bool>          ft_PrecacheModel;
+	static StaticFuncThunk<bool, const char *>               ft_PrecacheSound;
+	static StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *> ft_PrecacheScriptSound;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

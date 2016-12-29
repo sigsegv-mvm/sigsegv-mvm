@@ -46,6 +46,7 @@ MemberFuncThunk<const CBaseEntity *, bool                                       
 MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, int, int> CBaseEntity::ft_EntityText          ("CBaseEntity::EntityText");
 MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&                       > CBaseEntity::ft_TakeDamage          ("CBaseEntity::TakeDamage");
 MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t                   > CBaseEntity::ft_SetMoveType         ("CBaseEntity::SetMoveType");
+MemberFuncThunk<      CBaseEntity *, model_t *                                         > CBaseEntity::ft_GetModel            ("CBaseEntity::GetModel");
 
 MemberVFuncThunk<      CBaseEntity *, Vector                                                          > CBaseEntity::vt_EyePosition              (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
 MemberVFuncThunk<      CBaseEntity *, const QAngle&                                                   > CBaseEntity::vt_EyeAngles                (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
@@ -65,6 +66,10 @@ MemberVFuncThunk<      CBaseEntity *, void, int, int                            
 MemberVFuncThunk<      CBaseEntity *, datamap_t *                                                     > CBaseEntity::vt_GetDataDescMap           (TypeName<CBaseEntity>(), "CBaseEntity::GetDataDescMap");
 MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEntity *, variant_t, int> CBaseEntity::vt_AcceptInput              (TypeName<CBaseEntity>(), "CBaseEntity::AcceptInput");
 MemberVFuncThunk<      CBaseEntity *, void, const char *                                              > CBaseEntity::vt_SetModel                 (TypeName<CBaseEntity>(), "CBaseEntity::SetModel");
+
+StaticFuncThunk<int, const char *, bool>          CBaseEntity::ft_PrecacheModel      ("CBaseEntity::PrecacheModel");
+StaticFuncThunk<bool, const char *>               CBaseEntity::ft_PrecacheSound      ("CBaseEntity::PrecacheSound");
+StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *> CBaseEntity::ft_PrecacheScriptSound("CBaseEntity::PrecacheScriptSound");
 
 
 bool CBaseEntity::IsPlayer() const

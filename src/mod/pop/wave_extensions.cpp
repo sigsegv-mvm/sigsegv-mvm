@@ -8,9 +8,6 @@
 #include "util/scope.h"
 #include "util/iterate.h"
 
-// TODO: move to common.h
-#include <soundflags.h>
-
 
 namespace Mod_Pop_Wave_Extensions
 {
@@ -32,10 +29,9 @@ namespace Mod_Pop_Wave_Extensions
 	{
 		std::vector<std::string> explanation;
 		std::vector<SentryGunInfo> sentryguns;
+		std::vector<std::string> sound_loops;
 		
 		IntervalTimer t_wavestart;
-		
-		std::string sound_loop;
 	};
 	
 	
@@ -86,7 +82,6 @@ namespace Mod_Pop_Wave_Extensions
 			waves[wave].explanation.emplace_back(subkey->GetString());
 		}
 	}
-	
 	
 	void Parse_SentryGun(CWave *wave, KeyValues *kv)
 	{
@@ -149,6 +144,23 @@ namespace Mod_Pop_Wave_Extensions
 		waves[wave].sentryguns.push_back(info);
 	}
 	
+	void Parse_SoundLoop(CWave *wave, KeyValues *kv)
+	{
+		if (!waves[wave].sound_loops.empty()) {
+			Warning("Multiple \'SoundLoop\' blocks found in the same Wave!\n");
+			return;
+		}
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "SoundFile")) {
+				waves[wave].sound_loops.push_back(subkey->GetString());
+			} else {
+				Warning("Unknown key \'%s\' in SoundLoop block.\n", name);
+			}
+		}
+	}
 	
 	DETOUR_DECL_MEMBER(bool, CWave_Parse, KeyValues *kv)
 	{
@@ -166,7 +178,7 @@ namespace Mod_Pop_Wave_Extensions
 			} else if (FStrEq(name, "SentryGun")) {
 				Parse_SentryGun(wave, subkey);
 			} else if (FStrEq(name, "SoundLoop")) {
-				waves[wave].sound_loop = subkey->GetString();
+				Parse_SoundLoop(wave, subkey);
 			} else {
 				del = false;
 			}
@@ -386,7 +398,9 @@ namespace Mod_Pop_Wave_Extensions
 	{
 		ConColorMsg(Color(0xff, 0x00, 0x00, 0xff), "[SoundLoop] StopSoundLoop \"%s\"\n", soundloop_active.c_str());
 		
-		TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, soundloop_active.c_str(), SND_STOP);
+		if (TFGameRules() != nullptr) {
+			TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, soundloop_active.c_str(), SND_STOP);
+		}
 		
 		soundloop_active.clear();
 	}
@@ -399,9 +413,11 @@ namespace Mod_Pop_Wave_Extensions
 		
 		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[SoundLoop] StartSoundLoop \"%s\"\n", filename.c_str());
 		
-		TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, filename.c_str(), SND_NOFLAGS);
-		
-		soundloop_active = filename;
+		/* if filename is explicitly "", then don't play anything */
+		if (TFGameRules() != nullptr && filename != "") {
+			TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, filename.c_str(), SND_NOFLAGS);
+			soundloop_active = filename;
+		}
 	}
 	
 	
@@ -438,8 +454,9 @@ namespace Mod_Pop_Wave_Extensions
 				if (it != waves.end()) {
 					WaveData& data = (*it).second;
 					
-					if (!data.sound_loop.empty()) {
-						StartSoundLoop(data.sound_loop);
+					if (!data.sound_loops.empty()) {
+						std::string sound_loop = *select_random(data.sound_loops);
+						StartSoundLoop(sound_loop);
 					}
 				}
 			}

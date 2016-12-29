@@ -138,7 +138,7 @@ namespace Mod_Debug_UseItem_Broken
 			"TF_WEAPON_CHARGED_SMG",
 		};
 		
-		if (id >= 0 && id < countof(names)) {
+		if (id >= 0 && (size_t)id < countof(names)) {
 			return names[id];
 		} else {
 			return "???";

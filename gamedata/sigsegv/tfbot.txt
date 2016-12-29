@@ -13,6 +13,17 @@
 		{
 			"addrs"
 			{
+				"CTFBot::~CTFBot [D0]"
+				{
+					type "sym"
+					sym  "_ZN6CTFBotD0Ev"
+				}
+				"CTFBot::~CTFBot [D2]"
+				{
+					type "sym"
+					sym  "_ZN6CTFBotD2Ev"
+				}
+				
 				"CTFBot::GetLocomotionInterface"
 				{
 					type "sym"

@@ -7,6 +7,63 @@
 #if defined __cplusplus
 
 
+#define PRAGMA(str) _Pragma(#str)
+
+#if defined __GNUC__
+	#define WARN_RESTORE() PRAGMA(GCC diagnostic pop)
+#elif defined __clang__
+	#define WARN_RESTORE() PRAGMA(clang diagnostic pop)
+#else
+	#define WARN_RESTORE()
+#endif
+
+#if defined __GNUC__
+	#define WARN_IGNORE(x) PRAGMA(GCC diagnostic push) PRAGMA(GCC diagnostic ignored x)
+#elif defined __clang__
+	#define WARN_IGNORE(x) PRAGMA(clang diagnostic push) PRAGMA(clang diagnostic ignored x)
+#else
+	#define WARN_IGNORE(x)
+#endif
+
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__SIGN_COMPARE() WARN_IGNORE("-Wsign-compare")
+#else
+	#define WARN_IGNORE__SIGN_COMPARE()
+#endif
+
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__ADDRESS() WARN_IGNORE("-Waddress")
+#else
+	#define WARN_IGNORE__ADDRESS()
+#endif
+
+#if defined __GNUC__
+	#define WARN_IGNORE__NONNULL_COMPARE() WARN_IGNORE("-Wnonnull-compare")
+#else
+	#define WARN_IGNORE__NONNULL_COMPARE()
+#endif
+
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__REORDER() WARN_IGNORE("-Wreorder")
+#else
+	#define WARN_IGNORE__REORDER()
+#endif
+
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__CONVERSION_NULL() WARN_IGNORE("-Wconversion-null")
+#else
+	#define WARN_IGNORE__CONVERSION_NULL()
+#endif
+
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__NULL_DEREFERENCE() WARN_IGNORE("-Wnull-dereference")
+#else
+	#define WARN_IGNORE__NULL_DEREFERENCE()
+#endif
+
+
+
+
 class IVEngineServer;
 class IServerGameDLL;
 class IFileSystem;
@@ -138,6 +195,7 @@ extern IClientMode *g_pClientMode;
 #include <memory>
 #include <mutex>
 #include <numeric>
+#include <random>
 #include <regex>
 #include <string>
 #include <thread>
@@ -234,20 +292,26 @@ class IVideoRecorder;
 #define RAD_TELEMETRY_DISABLED
 #undef   NO_STRING_T
 #undef WEAK_STRING_T
-#include <Color.h>
+#include <basetypes.h>
+WARN_IGNORE__ADDRESS()
+#include <dbg.h>
+WARN_RESTORE()
+#include "sdk2013/Color.h"
 #include <string_t.h>
 #include <annotations.h>
-#include <basetypes.h>
 #include <mathlib/vector.h>
 #include <utlmemory.h>
 #include <utlstring.h>
 #include <utlvector.h>
+WARN_IGNORE__REORDER()
 #include <utlrbtree.h>
+WARN_RESTORE()
 #include <utlmap.h>
+WARN_IGNORE__SIGN_COMPARE()
 #include <utlbuffer.h>
+WARN_RESTORE()
 #include <shareddefs.h>
 #include <icvar.h>
-#include <dbg.h>
 #include "sdk2013/convar.h"
 #include <fmtstr.h>
 #include <KeyValues.h>
@@ -257,7 +321,11 @@ class IVideoRecorder;
 #include <takedamageinfo.h>
 #include <iserverunknown.h>
 #include <iserverentity.h>
+WARN_IGNORE__ADDRESS()
+WARN_IGNORE__NONNULL_COMPARE()
 #include <edict.h>
+WARN_RESTORE()
+WARN_RESTORE()
 #include <IEngineTrace.h>
 #include <IStaticPropMgr.h>
 #include <ivdebugoverlay.h>
@@ -267,6 +335,7 @@ class IVideoRecorder;
 #include <usercmd.h>
 #include <npcevent.h>
 #include <dt_send.h>
+#include "sdk2013/bitbuf.h"
 #include <eiface.h>
 #include <ispatialpartition.h>
 #include <random.h>
@@ -281,6 +350,9 @@ class IVideoRecorder;
 #include <iclientnetworkable.h>
 #include <utldict.h>
 #include <mp_shareddefs.h>
+WARN_IGNORE__REORDER()
+#include <bitmap/imageformat.h>
+WARN_RESTORE()
 //#include <materialsystem/imaterialsystem.h>
 #include "sdk2013/imaterialsystem_V081.h"
 #include <materialsystem/imaterial.h>
@@ -289,13 +361,21 @@ class IVideoRecorder;
 #include <IEngineSound.h>
 #include <igamesystem.h>
 #include <vphysics_interface.h>
+WARN_IGNORE__REORDER()
+#include <istudiorender.h>
+WARN_RESTORE()
 #include <ivmodelrender.h>
 #include <vcollide_parse.h>
 #include <steam/steamclientpublic.h>
 #include <netadr.h>
+WARN_IGNORE__NULL_DEREFERENCE()
+#include <iclientrenderable.h>
+WARN_RESTORE()
 #include <toolframework/ienginetool.h>
 #include <toolframework/itoolentity.h>
+WARN_IGNORE__REORDER()
 #include <vprof.h>
+WARN_RESTORE()
 #include <networkstringtabledefs.h>
 #include <valve_minmax_off.h>
 #include <stringpool.h>
@@ -316,11 +396,35 @@ class IVideoRecorder;
 #include <iserver.h>
 #include <iclient.h>
 #include <datacache/imdlcache.h>
+WARN_IGNORE__SIGN_COMPARE()
+WARN_IGNORE__REORDER()
 #include <materialsystem/imesh.h>
+WARN_RESTORE()
+WARN_RESTORE()
 #include <../server/iplayerinfo.h>
+#include <icliententity.h>
+#include <client_class.h>
+#include <../server/iscorer.h>
+#include <../client/iclientmode.h>
+WARN_IGNORE__CONVERSION_NULL()
+#include <vgui_controls/Frame.h>
+WARN_RESTORE()
+#include <soundflags.h>
+#include <overlaytext.h>
+#include <tier2/meshutils.h>
+#include <server_class.h>
+#include <dt_utlvector_common.h>
+WARN_IGNORE__REORDER()
+#include <../server/variant_t.h>
+WARN_RESTORE()
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>
+
+// can't include game/shared/particle_property.h because it tries to include "particles_new.h" which is in game/client
+// so we'll just put what we need here... sigh
+#define INVALID_PARTICLE_ATTACHMENT -1
+
 
 
 /* AMTL */
@@ -334,16 +438,13 @@ class IVideoRecorder;
 #include <compat_wrappers.h>
 #include <ISDKTools.h>
 #include "sm/MemoryUtils.h"
+#include <../extensions/sdktools/util.h>
 
 //extern SourceMod::ISDKTools *g_pSDKTools;
 
 
 /* this extension */
 #include <smsdk_ext.h>
-
-
-//#define bf_write old_bf_write
-//#define bf_read old_bf_read
 
 
 /* dammit Valve, why do you have to do stupid shit like redefining offsetof?

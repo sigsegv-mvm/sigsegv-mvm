@@ -131,9 +131,10 @@ struct PartitionEnumerator : public IPartitionEnumerator
 	{
 		CBaseEntity *pEntity = EntityFromEntityHandle(pHandleEntity);
 		
-		switch (CALL_FUNCTOR(CBaseEntity *)(m_Func, pEntity)) {
-		case true:  return ITERATION_CONTINUE;
-		case false: return ITERATION_STOP;
+		if (CALL_FUNCTOR(CBaseEntity *)(m_Func, pEntity)) {
+			return ITERATION_CONTINUE;
+		} else {
+			return ITERATION_STOP;
 		}
 	}
 	

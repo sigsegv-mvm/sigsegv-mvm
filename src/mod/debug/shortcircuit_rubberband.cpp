@@ -39,7 +39,7 @@ namespace Mod_Debug_ShortCircuit_RubberBand
 		
 		ClientMsg(fmt2, std::forward<ARGS>(args)...);
 		
-		delete fmt2;
+		delete[] fmt2;
 	}
 	
 	

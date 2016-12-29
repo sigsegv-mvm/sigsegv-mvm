@@ -2,11 +2,6 @@
 #define _INCLUDE_SIGSEGV_MOD_DEBUG_MELEE_TRACE_STUBS_H_
 
 
-template<typename T> void _CallAttribHookRef(T& value, const char *pszClass, const CBaseEntity *pEntity) { value = CAttributeManager::AttribHookValue<T>(value, pszClass, pEntity); }
-#define CALL_ATTRIB_HOOK_INT(value, name) _CallAttribHookRef<int>(value, #name, this)
-#define CALL_ATTRIB_HOOK_FLOAT(value, name) _CallAttribHookRef<float>(value, #name, this)
-
-
 //-----------------------------------------------------------------------------
 // class CFlaggedEntitiesEnum
 //-----------------------------------------------------------------------------

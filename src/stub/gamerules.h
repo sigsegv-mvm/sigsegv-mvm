@@ -140,11 +140,19 @@ inline void CGameRulesProxy::NotifyNetworkStateChanged()
 
 
 extern GlobalThunk<CGameRules *> g_pGameRules;
-inline CGameRules                *GameRules()               { return g_pGameRules; }
-inline CMultiplayRules           *MultiplayRules()          { return reinterpret_cast<CMultiplayRules *>(GameRules()); }
-inline CTeamplayRules            *TeamplayGameRules()       { return reinterpret_cast<CTeamplayRules *>(GameRules()); }
-inline CTeamplayRoundBasedRules  *TeamplayRoundBasedRules() { return reinterpret_cast<CTeamplayRoundBasedRules *>(GameRules()); }
-inline CTFGameRules              *TFGameRules()             { return reinterpret_cast<CTFGameRules *>(GameRules()); }
+inline CGameRules *GameRules()
+{
+	CGameRules *gamerules = g_pGameRules;
+	if (gamerules == nullptr) {
+		Warning("Warning: GameRules() == nullptr!\n");
+	}
+	return gamerules;
+}
+
+inline CMultiplayRules          *MultiplayRules()          { return reinterpret_cast<CMultiplayRules          *>(GameRules()); }
+inline CTeamplayRules           *TeamplayGameRules()       { return reinterpret_cast<CTeamplayRules           *>(GameRules()); }
+inline CTeamplayRoundBasedRules *TeamplayRoundBasedRules() { return reinterpret_cast<CTeamplayRoundBasedRules *>(GameRules()); }
+inline CTFGameRules             *TFGameRules()             { return reinterpret_cast<CTFGameRules             *>(GameRules()); }
 
 
 #endif

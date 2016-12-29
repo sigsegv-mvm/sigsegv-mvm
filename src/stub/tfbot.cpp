@@ -152,33 +152,34 @@ struct CExtract_CTFBot_m_nBotAttrs : public IExtract<CTFBot::AttributeType *>
 #endif
 
 
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressFireButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseFireButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressAltFireButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressAltFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseAltFireButton(    TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseAltFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressMeleeButton(        TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressMeleeButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseMeleeButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseMeleeButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressSpecialFireButton(  TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressSpecialFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseSpecialFireButton(TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseSpecialFireButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressUseButton(          TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressUseButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseUseButton(        TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseUseButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressReloadButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressReloadButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseReloadButton(     TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseReloadButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressForwardButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressForwardButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseForwardButton(    TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseForwardButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressBackwardButton(     TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressBackwardButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseBackwardButton(   TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseBackwardButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressLeftButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressLeftButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseLeftButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseLeftButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressRightButton(        TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressRightButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseRightButton(      TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseRightButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressJumpButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressJumpButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseJumpButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseJumpButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressCrouchButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressCrouchButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseCrouchButton(     TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseCrouchButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > NextBotPlayer<CTFPlayer>::vt_PressWalkButton(         TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::PressWalkButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > NextBotPlayer<CTFPlayer>::vt_ReleaseWalkButton(       TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::ReleaseWalkButton");
-template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float, float> NextBotPlayer<CTFPlayer>::vt_SetButtonScale(          TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::SetButtonScale");
+#define NEXTBOTPLAYER_GETVFT(NAME, ...) template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__>& NextBotPlayer<CTFPlayer>::GetVFT_##NAME() { static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__> vft(TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::" #NAME); return vft; }
+NEXTBOTPLAYER_GETVFT(PressFireButton,          void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseFireButton,        void              );
+NEXTBOTPLAYER_GETVFT(PressAltFireButton,       void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseAltFireButton,     void              );
+NEXTBOTPLAYER_GETVFT(PressMeleeButton,         void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseMeleeButton,       void              );
+NEXTBOTPLAYER_GETVFT(PressSpecialFireButton,   void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseSpecialFireButton, void              );
+NEXTBOTPLAYER_GETVFT(PressUseButton,           void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseUseButton,         void              );
+NEXTBOTPLAYER_GETVFT(PressReloadButton,        void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseReloadButton,      void              );
+NEXTBOTPLAYER_GETVFT(PressForwardButton,       void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseForwardButton,     void              );
+NEXTBOTPLAYER_GETVFT(PressBackwardButton,      void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseBackwardButton,    void              );
+NEXTBOTPLAYER_GETVFT(PressLeftButton,          void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseLeftButton,        void              );
+NEXTBOTPLAYER_GETVFT(PressRightButton,         void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseRightButton,       void              );
+NEXTBOTPLAYER_GETVFT(PressJumpButton,          void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseJumpButton,        void              );
+NEXTBOTPLAYER_GETVFT(PressCrouchButton,        void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseCrouchButton,      void              );
+NEXTBOTPLAYER_GETVFT(PressWalkButton,          void, float       );
+NEXTBOTPLAYER_GETVFT(ReleaseWalkButton,        void              );
+NEXTBOTPLAYER_GETVFT(SetButtonScale,           void, float, float);
 
 
 MemberFuncThunk<CTFBot::SuspectedSpyInfo_t *, void> CTFBot::SuspectedSpyInfo_t::ft_Suspect             ("CTFBot::SuspectedSpyInfo_t::Suspect");

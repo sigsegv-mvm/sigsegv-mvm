@@ -1940,6 +1940,131 @@
 					type "sym"
 					sym  "_ZNK13CTFBaseRocket14GetOwnerPlayerEv"
 				}
+				
+				"CBaseEntity::PrecacheScriptSound"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity19PrecacheScriptSoundEPKc"
+				}
+				
+				"PointInRespawnRoom"
+				{
+					type "sym"
+					sym  "_Z18PointInRespawnRoomP11CBaseEntityRK6Vector"
+				}
+				
+				"CBaseAnimating::SetBodygroup"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating12SetBodygroupEii"
+				}
+				"CBaseAnimating::GetBodygroup"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating12GetBodygroupEi"
+				}
+				"CBaseAnimating::GetBodygroupName"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating16GetBodygroupNameEi"
+				}
+				"CBaseAnimating::FindBodygroupByName"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating19FindBodygroupByNameEPKc"
+				}
+				"CBaseAnimating::GetBodygroupCount"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating17GetBodygroupCountEi"
+				}
+				"CBaseAnimating::GetNumBodyGroups"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating16GetNumBodyGroupsEv"
+				}
+				
+				"CBaseCombatWeapon::GetViewModel"
+				{
+					type "sym"
+					sym  "_ZNK17CBaseCombatWeapon12GetViewModelEi"
+				}
+				"CBaseCombatWeapon::GetWorldModel"
+				{
+					type "sym"
+					sym  "_ZNK17CBaseCombatWeapon13GetWorldModelEv"
+				}
+				
+				"CBaseEntity::GetModel"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8GetModelEv"
+				}
+				
+				"CBasePlayer::GetViewModel"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer12GetViewModelEib"
+				}
+				
+				"CBaseEntity::PrecacheModel"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity13PrecacheModelEPKcb"
+				}
+				"CBaseEntity::PrecacheSound"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity13PrecacheSoundEPKc"
+				}
+				
+				"CEconItemDefinition::BInitFromKV"
+				{
+					type "sym"
+					sym  "_ZN19CEconItemDefinition11BInitFromKVEP9KeyValuesP10CUtlVectorI10CUtlString10CUtlMemoryIS3_iEE"
+				}
+				
+				"CheckValveSignature"
+				{
+					type "sym"
+					sym  "_Z19CheckValveSignaturePKvjS0_j"
+				}
+				
+				"CTFBottle::SwitchBodyGroups"
+				{
+					type "sym"
+					sym  "_ZN9CTFBottle16SwitchBodyGroupsEv"
+				}
+				
+				"CTFWeaponBase::GetViewModel"
+				{
+					type "sym"
+					sym  "_ZNK13CTFWeaponBase12GetViewModelEi"
+				}
+				
+				"CBaseCombatWeapon::SetViewModel"
+				{
+					type "sym"
+					sym  "_ZN17CBaseCombatWeapon12SetViewModelEv"
+				}
+				
+				"CTFAmmoPack::Create"
+				{
+					type "sym"
+					sym  "_ZN11CTFAmmoPack6CreateERK6VectorRK6QAngleP11CBaseEntityPKc"
+				}
+				
+				"CTFDroppedWeapon::Create"
+				{
+					type "sym"
+					sym  "_ZN16CTFDroppedWeapon6CreateEP9CTFPlayerRK6VectorRK6QAnglePKcPK13CEconItemView"
+				}
+				
+				"CTFFlameThrower::GetMuzzlePosHelper"
+				{
+					type "sym"
+					sym  "_ZN15CTFFlameThrower18GetMuzzlePosHelperEb"
+				}
 			}
 		}
 	}

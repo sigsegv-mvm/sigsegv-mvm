@@ -2,6 +2,7 @@
 #include "stub/tfbot.h"
 #include "stub/tf_shareddefs.h"
 #include "stub/gamerules.h"
+#include "stub/tfbot_behavior.h"
 #include "re/nextbot.h"
 #include "util/backtrace.h"
 #include "util/iterate.h"
@@ -164,7 +165,7 @@ namespace Mod_Cond_Reprogrammed
 			ENTINDEX(player), player->GetPlayerName(), player->GetTeamNumber(), team);
 		
 		if (team != TF_TEAM_RED && team != TF_TEAM_BLUE) {
-			DevMsg("  requested a weapon/wearable change to non-TF teamnum %d; refusing to do that\n", team);
+		//	DevMsg("  requested a weapon/wearable change to non-TF teamnum %d; refusing to do that\n", team);
 			return;
 		}
 		
@@ -178,16 +179,16 @@ namespace Mod_Cond_Reprogrammed
 			if (pre_team == TF_TEAM_RED || pre_team == TF_TEAM_BLUE) {
 				weapon->ChangeTeam(team);
 			} else {
-				DevMsg("  weapon %d (#%d \"%s\"): refusing to call ChangeTeam\n",
-					i, ENTINDEX(weapon), weapon->GetClassname());
+		//		DevMsg("  weapon %d (#%d \"%s\"): refusing to call ChangeTeam\n",
+		//			i, ENTINDEX(weapon), weapon->GetClassname());
 			}
 			weapon->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
 			
 			int post_team = weapon->GetTeamNumber();
 			int post_skin = weapon->m_nSkin;
 			
-			DevMsg("  weapon %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
-				i, ENTINDEX(weapon), weapon->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+		//	DevMsg("  weapon %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+		//		i, ENTINDEX(weapon), weapon->GetClassname(), pre_team, pre_skin, post_team, post_skin);
 		}
 		
 		for (int i = player->GetNumWearables() - 1; i >= 0; --i) {
@@ -200,16 +201,16 @@ namespace Mod_Cond_Reprogrammed
 			if (pre_team == TF_TEAM_RED || pre_team == TF_TEAM_BLUE) {
 				wearable->ChangeTeam(team);
 			} else {
-				DevMsg("  wearable %d (#%d \"%s\"): refusing to call ChangeTeam\n",
-					i, ENTINDEX(wearable), wearable->GetClassname());
+		//		DevMsg("  wearable %d (#%d \"%s\"): refusing to call ChangeTeam\n",
+		//			i, ENTINDEX(wearable), wearable->GetClassname());
 			}
 			wearable->m_nSkin = (team == TF_TEAM_BLUE ? 1 : 0);
 			
 			int post_team = wearable->GetTeamNumber();
 			int post_skin = wearable->m_nSkin;
 			
-			DevMsg("  wearable %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
-				i, ENTINDEX(wearable), wearable->GetClassname(), pre_team, pre_skin, post_team, post_skin);
+		//	DevMsg("  wearable %d (#%d \"%s\"): [Team:%d Skin:%d] => [Team:%d Skin:%d]\n",
+		//		i, ENTINDEX(wearable), wearable->GetClassname(), pre_team, pre_skin, post_team, post_skin);
 		}
 	}
 	
@@ -389,6 +390,31 @@ namespace Mod_Cond_Reprogrammed
 	}
 	
 	
+	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMedicHeal_Update, CTFBot *actor, float dt)
+	{
+		auto result = DETOUR_MEMBER_CALL(CTFBotMedicHeal_Update)(actor, dt);
+		
+		if (cvar_hellmet.GetBool() && actor->GetTeamNumber() != TF_TEAM_BLUE && TFGameRules()->IsMannVsMachineMode()) {
+			bool is_changeto_fetchflag =
+				(result.transition == ActionTransition::CHANGE_TO &&
+				strcmp(result.reason, "Everyone is gone! Going for the flag") == 0 &&
+				strcmp(result.action->GetName(), "FetchFlag") == 0);
+			
+			if (is_changeto_fetchflag) {
+				DevMsg("CTFBotMedicHeal::Update: Preventing CHANGE_TO transition to CTFBotFetchFlag for medic bot #%d\n", ENTINDEX(actor));
+				
+				delete result.action;
+				
+				result.transition = ActionTransition::SUSPEND_FOR;
+				result.action     = CTFBotMedicRetreat::New();
+				result.reason     = "Retreating to find another patient to heal";
+			}
+		}
+		
+		return result;
+	}
+	
+	
 #if 0
 	DETOUR_DECL_MEMBER(const char *, CTFWeaponBase_GetShootSound, int iIndex)
 	{
@@ -428,6 +454,9 @@ namespace Mod_Cond_Reprogrammed
 			
 			/* fix: make end-of-wave destroy buildings built by red-team engie bots */
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_BetweenRounds_Start, "CTFGameRules::BetweenRounds_Start");
+			
+			/* fix: make medic bots on red team in MvM mode handle "everyone is gone" less stupidly */
+			MOD_ADD_DETOUR_MEMBER(CTFBotMedicHeal_Update, "CTFBotMedicHeal::Update");
 			
 			/* fix: make mission populators aware of red-team mission bots */
 			this->AddPatch(new CPatch_CMissionPopulator_UpdateMission());

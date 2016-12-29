@@ -32,62 +32,62 @@ template<typename T>
 class NextBotPlayer : public T
 {
 public:
-	void PressFireButton(float duration = -1.0f)        { vt_PressFireButton         (this, duration);      }
-	void ReleaseFireButton()                            { vt_ReleaseFireButton       (this);                }
-	void PressAltFireButton(float duration = -1.0f)     { vt_PressAltFireButton      (this, duration);      }
-	void ReleaseAltFireButton()                         { vt_ReleaseAltFireButton    (this);                }
-	void PressMeleeButton(float duration = -1.0f)       { vt_PressMeleeButton        (this, duration);      }
-	void ReleaseMeleeButton()                           { vt_ReleaseMeleeButton      (this);                }
-	void PressSpecialFireButton(float duration = -1.0f) { vt_PressSpecialFireButton  (this, duration);      }
-	void ReleaseSpecialFireButton()                     { vt_ReleaseSpecialFireButton(this);                }
-	void PressUseButton(float duration = -1.0f)         { vt_PressUseButton          (this, duration);      }
-	void ReleaseUseButton()                             { vt_ReleaseUseButton        (this);                }
-	void PressReloadButton(float duration = -1.0f)      { vt_PressReloadButton       (this, duration);      }
-	void ReleaseReloadButton()                          { vt_ReleaseReloadButton     (this);                }
-	void PressForwardButton(float duration = -1.0f)     { vt_PressForwardButton      (this, duration);      }
-	void ReleaseForwardButton()                         { vt_ReleaseForwardButton    (this);                }
-	void PressBackwardButton(float duration = -1.0f)    { vt_PressBackwardButton     (this, duration);      }
-	void ReleaseBackwardButton()                        { vt_ReleaseBackwardButton   (this);                }
-	void PressLeftButton(float duration = -1.0f)        { vt_PressLeftButton         (this, duration);      }
-	void ReleaseLeftButton()                            { vt_ReleaseLeftButton       (this);                }
-	void PressRightButton(float duration = -1.0f)       { vt_PressRightButton        (this, duration);      }
-	void ReleaseRightButton()                           { vt_ReleaseRightButton      (this);                }
-	void PressJumpButton(float duration = -1.0f)        { vt_PressJumpButton         (this, duration);      }
-	void ReleaseJumpButton()                            { vt_ReleaseJumpButton       (this);                }
-	void PressCrouchButton(float duration = -1.0f)      { vt_PressCrouchButton       (this, duration);      }
-	void ReleaseCrouchButton()                          { vt_ReleaseCrouchButton     (this);                }
-	void PressWalkButton(float duration = -1.0f)        { vt_PressWalkButton         (this, duration);      }
-	void ReleaseWalkButton()                            { vt_ReleaseWalkButton       (this);                }
-	void SetButtonScale(float forward, float side)      { vt_SetButtonScale          (this, forward, side); }
+	void PressFireButton(float duration = -1.0f)        { GetVFT_PressFireButton         ()(this, duration);      }
+	void ReleaseFireButton()                            { GetVFT_ReleaseFireButton       ()(this);                }
+	void PressAltFireButton(float duration = -1.0f)     { GetVFT_PressAltFireButton      ()(this, duration);      }
+	void ReleaseAltFireButton()                         { GetVFT_ReleaseAltFireButton    ()(this);                }
+	void PressMeleeButton(float duration = -1.0f)       { GetVFT_PressMeleeButton        ()(this, duration);      }
+	void ReleaseMeleeButton()                           { GetVFT_ReleaseMeleeButton      ()(this);                }
+	void PressSpecialFireButton(float duration = -1.0f) { GetVFT_PressSpecialFireButton  ()(this, duration);      }
+	void ReleaseSpecialFireButton()                     { GetVFT_ReleaseSpecialFireButton()(this);                }
+	void PressUseButton(float duration = -1.0f)         { GetVFT_PressUseButton          ()(this, duration);      }
+	void ReleaseUseButton()                             { GetVFT_ReleaseUseButton        ()(this);                }
+	void PressReloadButton(float duration = -1.0f)      { GetVFT_PressReloadButton       ()(this, duration);      }
+	void ReleaseReloadButton()                          { GetVFT_ReleaseReloadButton     ()(this);                }
+	void PressForwardButton(float duration = -1.0f)     { GetVFT_PressForwardButton      ()(this, duration);      }
+	void ReleaseForwardButton()                         { GetVFT_ReleaseForwardButton    ()(this);                }
+	void PressBackwardButton(float duration = -1.0f)    { GetVFT_PressBackwardButton     ()(this, duration);      }
+	void ReleaseBackwardButton()                        { GetVFT_ReleaseBackwardButton   ()(this);                }
+	void PressLeftButton(float duration = -1.0f)        { GetVFT_PressLeftButton         ()(this, duration);      }
+	void ReleaseLeftButton()                            { GetVFT_ReleaseLeftButton       ()(this);                }
+	void PressRightButton(float duration = -1.0f)       { GetVFT_PressRightButton        ()(this, duration);      }
+	void ReleaseRightButton()                           { GetVFT_ReleaseRightButton      ()(this);                }
+	void PressJumpButton(float duration = -1.0f)        { GetVFT_PressJumpButton         ()(this, duration);      }
+	void ReleaseJumpButton()                            { GetVFT_ReleaseJumpButton       ()(this);                }
+	void PressCrouchButton(float duration = -1.0f)      { GetVFT_PressCrouchButton       ()(this, duration);      }
+	void ReleaseCrouchButton()                          { GetVFT_ReleaseCrouchButton     ()(this);                }
+	void PressWalkButton(float duration = -1.0f)        { GetVFT_PressWalkButton         ()(this, duration);      }
+	void ReleaseWalkButton()                            { GetVFT_ReleaseWalkButton       ()(this);                }
+	void SetButtonScale(float forward, float side)      { GetVFT_SetButtonScale          ()(this, forward, side); }
 	
 private:
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressAltFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseAltFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressMeleeButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseMeleeButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressSpecialFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseSpecialFireButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressUseButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseUseButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressReloadButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseReloadButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressForwardButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseForwardButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressBackwardButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseBackwardButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressLeftButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseLeftButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressRightButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseRightButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressJumpButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseJumpButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressCrouchButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseCrouchButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float       > vt_PressWalkButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void              > vt_ReleaseWalkButton;
-	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, void, float, float> vt_SetButtonScale;
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressAltFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseAltFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressMeleeButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseMeleeButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressSpecialFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseSpecialFireButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressUseButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseUseButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressReloadButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseReloadButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressForwardButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseForwardButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressBackwardButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseBackwardButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressLeftButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseLeftButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressRightButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseRightButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressJumpButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseJumpButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressCrouchButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseCrouchButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float       >& GetVFT_PressWalkButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void              >& GetVFT_ReleaseWalkButton();
+	static MemberVFuncThunk<NextBotPlayer<T> *, void, float, float>& GetVFT_SetButtonScale();
 };
 
 class CTFBot : public NextBotPlayer<CTFPlayer>

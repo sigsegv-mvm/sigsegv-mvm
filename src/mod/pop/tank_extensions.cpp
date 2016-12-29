@@ -98,6 +98,69 @@ namespace Mod_Pop_Tank_Extensions
 	}
 	
 	
+	void ForceRomeVisionModels(CTFTankBoss *tank)
+	{
+		auto l_print_model_array = [](auto& array, const char *name){
+			DevMsg("\n");
+			for (size_t i = 0; i < countof(array); ++i) {
+				DevMsg("  %s[%d]: \"%s\"\n", name, i, array[i]);
+			}
+			DevMsg("\n");
+			for (size_t i = 0; i < countof(array); ++i) {
+				DevMsg("  modelinfo->GetModelIndex(%s[%d]): %d\n", name, i, modelinfo->GetModelIndex(array[i]));
+			}
+		};
+		
+		auto l_print_overrides = [](CBaseEntity *ent, const char *prefix){
+			DevMsg("\n");
+			for (int i = 0; i < MAX_VISION_MODES; ++i) {
+				DevMsg("  %s m_nModelIndexOverrides[%d]: %d \"%s\"\n", prefix, i, ent->m_nModelIndexOverrides[i], modelinfo->GetModelName(modelinfo->GetModel(ent->m_nModelIndexOverrides[i])));
+			}
+		};
+		
+		auto l_copy_rome_to_all_overrides = [](CBaseEntity *ent){
+			for (int i = 0; i < MAX_VISION_MODES; ++i) {
+				if (i == VISION_MODE_ROME) continue;
+				ent->SetModelIndexOverride(i, ent->m_nModelIndexOverrides[VISION_MODE_ROME]);
+			}
+		};
+		
+	//	DevMsg("\n");
+	//	DevMsg("  tank->m_iModelIndex: %d\n", (int)tank->m_iModelIndex);
+		
+	//	l_print_model_array(s_TankModel    .GetRef(), "s_TankModel");
+	//	l_print_model_array(s_TankModelRome.GetRef(), "s_TankModelRome");
+		
+		l_print_overrides(tank, "[BEFORE]");
+		
+		// primary method
+		for (int i = 0; i < MAX_VISION_MODES; ++i) {
+			tank->SetModelIndexOverride(i, modelinfo->GetModelIndex(s_TankModelRome[tank->m_iModelIndex]));
+		}
+		// alternative method (probably less reliable than the one above)
+	//	l_copy_rome_to_all_overrides(tank);
+		
+		l_print_overrides(tank, "[AFTER] ");
+		
+		
+		for (CBaseEntity *child = tank->FirstMoveChild(); child != nullptr; child = child->NextMovePeer()) {
+			if (!child->ClassMatches("prop_dynamic")) continue;
+			
+			DevMsg("\n");
+			DevMsg("  child [classname \"%s\"] [model \"%s\"]\n", child->GetClassname(), STRING(child->GetModelName()));
+			
+			l_print_overrides(child, "[BEFORE]");
+			
+			for (int i = 0; i < MAX_VISION_MODES; ++i) {
+				if (i == VISION_MODE_ROME) continue;
+				child->SetModelIndexOverride(i, child->m_nModelIndexOverrides[VISION_MODE_ROME]);
+			}
+			
+			l_print_overrides(child, "[AFTER] ");
+		}
+	}
+	
+	
 	RefCount rc_CTankSpawner_Spawn;
 	CTankSpawner *current_spawner = nullptr;
 	DETOUR_DECL_MEMBER(int, CTankSpawner_Spawn, const Vector& where, CUtlVector<CHandle<CBaseEntity>> *ents)
@@ -132,46 +195,7 @@ namespace Mod_Pop_Tank_Extensions
 						}
 						
 						if (data.force_romevision) {
-						//	DevMsg("  tank->m_iModelIndex: %d\n", (int)tank->m_iModelIndex);
-							
-						//	DevMsg("  s_TankModel[0]: \"%s\"\n", s_TankModel[0]);
-						//	DevMsg("  s_TankModel[1]: \"%s\"\n", s_TankModel[1]);
-						//	DevMsg("  s_TankModel[2]: \"%s\"\n", s_TankModel[2]);
-						//	DevMsg("  s_TankModel[3]: \"%s\"\n", s_TankModel[3]);
-							
-						//	DevMsg("  s_TankModelRome[0]: \"%s\"\n", s_TankModelRome[0]);
-						//	DevMsg("  s_TankModelRome[1]: \"%s\"\n", s_TankModelRome[1]);
-						//	DevMsg("  s_TankModelRome[2]: \"%s\"\n", s_TankModelRome[2]);
-						//	DevMsg("  s_TankModelRome[3]: \"%s\"\n", s_TankModelRome[3]);
-							
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModel[0]): %d\n", modelinfo->GetModelIndex(s_TankModel[0]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModel[1]): %d\n", modelinfo->GetModelIndex(s_TankModel[1]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModel[2]): %d\n", modelinfo->GetModelIndex(s_TankModel[2]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModel[3]): %d\n", modelinfo->GetModelIndex(s_TankModel[3]));
-							
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModelRome[0]): %d\n", modelinfo->GetModelIndex(s_TankModelRome[0]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModelRome[1]): %d\n", modelinfo->GetModelIndex(s_TankModelRome[1]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModelRome[2]): %d\n", modelinfo->GetModelIndex(s_TankModelRome[2]));
-						//	DevMsg("  modelinfo->GetModelIndex(s_TankModelRome[3]): %d\n", modelinfo->GetModelIndex(s_TankModelRome[3]));
-							
-						//	DevMsg("  [BEFORE] m_nModelIndexOverrides[0]: %d \"%s\"\n", tank->m_nModelIndexOverrides[0], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[0])));
-						//	DevMsg("  [BEFORE] m_nModelIndexOverrides[1]: %d \"%s\"\n", tank->m_nModelIndexOverrides[1], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[1])));
-						//	DevMsg("  [BEFORE] m_nModelIndexOverrides[2]: %d \"%s\"\n", tank->m_nModelIndexOverrides[2], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[2])));
-						//	DevMsg("  [BEFORE] m_nModelIndexOverrides[3]: %d \"%s\"\n", tank->m_nModelIndexOverrides[3], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[3])));
-							
-							tank->SetModelIndexOverride(0, modelinfo->GetModelIndex(s_TankModelRome[tank->m_iModelIndex]));
-							
-						//	DevMsg("  [AFTER]  m_nModelIndexOverrides[0]: %d \"%s\"\n", tank->m_nModelIndexOverrides[0], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[0])));
-						//	DevMsg("  [AFTER]  m_nModelIndexOverrides[1]: %d \"%s\"\n", tank->m_nModelIndexOverrides[1], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[1])));
-						//	DevMsg("  [AFTER]  m_nModelIndexOverrides[2]: %d \"%s\"\n", tank->m_nModelIndexOverrides[2], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[2])));
-						//	DevMsg("  [AFTER]  m_nModelIndexOverrides[3]: %d \"%s\"\n", tank->m_nModelIndexOverrides[3], modelinfo->GetModelName(modelinfo->GetModel(tank->m_nModelIndexOverrides[3])));
-							
-							for (CBaseEntity *child = tank->FirstMoveChild(); child != nullptr; child = child->NextMovePeer()) {
-							//	DevMsg("  child [classname \"%s\"] [model \"%s\"]\n", child->GetClassname(), STRING(child->GetModelName()));
-								if (!child->ClassMatches("prop_dynamic")) continue;
-								
-								child->SetModelIndexOverride(0, child->m_nModelIndexOverrides[3]);
-							}
+							ForceRomeVisionModels(tank);
 						}
 					}
 				}
@@ -215,9 +239,9 @@ namespace Mod_Pop_Tank_Extensions
 			//	DevMsg("SetModelIndexOverride(%d, %d) for ent #%d \"%s\" \"%s\"\n", index, nValue, ENTINDEX(ent), ent->GetClassname(), STRING(ent->GetModelName()));
 				
 				if (ent == tank) {
-					if (index == 3) {
-						DETOUR_MEMBER_CALL(CBaseEntity_SetModelIndexOverride)(0, nValue);
-						DETOUR_MEMBER_CALL(CBaseEntity_SetModelIndexOverride)(3, nValue);
+					if (index == VISION_MODE_ROME) {
+						DETOUR_MEMBER_CALL(CBaseEntity_SetModelIndexOverride)(VISION_MODE_NONE, nValue);
+						DETOUR_MEMBER_CALL(CBaseEntity_SetModelIndexOverride)(VISION_MODE_ROME, nValue);
 					}
 					return;
 				}

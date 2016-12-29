@@ -41,6 +41,7 @@ IMPL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, CBasePlayer, m_hMyWearables, C
 MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors   ("CBasePlayer::EyeVectors");
 MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID   ("CBasePlayer::GetSteamID");
 MemberFuncThunk<CBasePlayer *, void, const char *>                 CBasePlayer::ft_SetPlayerName("CBasePlayer::SetPlayerName");
+MemberFuncThunk<CBasePlayer *, CBaseViewModel *, int, bool>        CBasePlayer::ft_GetViewModel ("CBasePlayer::GetViewModel");
 
 MemberVFuncThunk<const CBasePlayer *, bool>             CBasePlayer::vt_IsBot               (TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
 MemberVFuncThunk<      CBasePlayer *, void, bool, bool> CBasePlayer::vt_CommitSuicide       (TypeName<CBasePlayer>(), "CBasePlayer::CommitSuicide");

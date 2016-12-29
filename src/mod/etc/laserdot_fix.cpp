@@ -1,10 +1,6 @@
 #include "mod.h"
 #include "util/rtti.h"
 
-// TODO: move these to common.h
-#include <icliententity.h>
-#include <client_class.h>
-
 
 class C_SniperDot {};
 

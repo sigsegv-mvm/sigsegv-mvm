@@ -5,10 +5,6 @@
 #include "mem/extract.h"
 #include "util/rtti.h"
 
-// TOOD: move to common.h
-#include <server_class.h>
-#include <dt_utlvector_common.h>
-
 
 /* from src/public/dt_utlvector_send.cpp */
 struct CSendPropExtra_UtlVector

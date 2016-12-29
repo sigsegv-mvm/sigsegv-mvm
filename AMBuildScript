@@ -159,111 +159,102 @@ class ExtensionConfig(object):
     ]
 
   def configure_gcc(self, cxx):
-    cxx.defines += [
-#      'stricmp=strcasecmp',
-#      '_stricmp=strcasecmp',
-#      '_snprintf=snprintf',
-#      '_vsnprintf=vsnprintf',
-      'HAVE_STDINT_H',
-      'GNUC',
-    ]
-    cxx.cflags += [
-#      '-pipe',
-      '-fno-strict-aliasing',
-      '-Wall',
-#      '-Werror',
-      '-Wno-unused',
-      '-Wno-switch',
-      '-Wno-array-bounds',
-      '-msse',
-      '-m32',
-      '-fvisibility=hidden',
-      '-fno-diagnostics-show-caret',
-      '-fdiagnostics-color=always',
-      '-fno-omit-frame-pointer',
-#      '-masm=intel',
-      '-maccumulate-outgoing-args',
-#      '-Q',
-      '-Winvalid-pch',
-      '-rdynamic',
-      '-gsplit-dwarf',
-      '-pthread',
-      '-Wno-unknown-pragmas',
-      
-      '-Wno-sign-compare',    # for tier1/utlbuffer.h
-      '-Wno-address',         # for tier0/dbg.h
-      '-Wno-nonnull-compare', # for tier0/dbg.h
-      
-      # the STB_GNU_UNIQUE 'feature' prevents dlclose from functioning
-      '-fno-gnu-unique',
-      
-#      '-Wa,--compress-debug-sections=zlib',
-    ]
-    cxx.cxxflags += [
-      '-std=c++14',
-      '-fno-exceptions',
-#      '-fno-threadsafe-statics',
-#      '-Wno-non-virtual-dtor',
-#      '-Wno-overloaded-virtual',
-      '-fvisibility-inlines-hidden',
-      '-Wno-invalid-offsetof',
-#      '-fabi-version=0',
-#      '-fabi-compat-version=2', # GCC 4.6.1
-      '-Wabi',
-      
-      '-Wno-reorder', # for tier1/utlrbtree.h
-    ]
-    cxx.linkflags += [
-      '-m32',
-      '-pthread',
-      '-fuse-ld=gold',
-      '-fno-use-linker-plugin',
-      '-Wl,--no-undefined',
-      '-Wl,--threads', # crashy
-      '-Wl,--wrap,__assert_fail',
-      
-#      '-Wa,--compress-debug-sections=zlib',
-#      '-Wl,--compress-debug-sections=zlib',
-    ]
-#    if builder.options.opt != '1':
-#      cxx.linkflags += ['-Wl,-Ur'] # incremental link
-    
-    if builder.options.debug == '1':
-      if builder.options.opt == '1':
-        cxx.cflags += [
-          '-gdwarf-4',
-          '-g1'
-        ]
-      else:
-        cxx.cflags += [
-          '-gdwarf-4',
-          '-g2',
-          '-fvar-tracking-assignments',
-        ]
-    
-    if builder.options.opt == '1':
-      cxx.cflags += [
-        '-Os',
-      ]
-      cxx.linkflags += [
-        '-Wl,-O2',
-        '-Wl,--gc-sections',
-      ]
-    else:
-      cxx.cflags += [
-        '-Og',
-      ]
-      cxx.linkflags += [
-        '-Wl,-O0',
-        '-Wl,--no-gc-sections',
-        
-        # we could have incremental linking but I guess ambuild just likes to delete the old library file, sigh
-#        '-Wl,--incremental',
-#        '-Wl,--incremental-base,sigsegv.ext.2.tf2.so.old',
-      ]
-    
-    have_gcc = ('gcc' in cxx.version.vendor_name)
+    have_gcc   = ('gcc'   in cxx.version.vendor_name)
     have_clang = ('clang' in cxx.version.vendor_name)
+    
+    ############################################################################
+    # PREPROCESSOR #############################################################
+    ############################################################################
+#   cxx.defines += ['stricmp=strcasecmp']
+#   cxx.defines += ['_stricmp=strcasecmp']
+#   cxx.defines += ['_snprintf=snprintf']
+#   cxx.defines += ['_vsnprintf=vsnprintf']
+    cxx.defines += ['HAVE_STDINT_H']
+    cxx.defines += ['GNUC']
+    
+    ############################################################################
+    # C & C++ COMPILER #########################################################
+    ############################################################################
+#   cxx.cflags += ['-pipe']
+    cxx.cflags += ['-fno-strict-aliasing']
+    cxx.cflags += ['-Wall']
+#   cxx.cflags += ['-Werror']
+    cxx.cflags += ['-Wno-unused']
+    cxx.cflags += ['-Wno-switch']
+    cxx.cflags += ['-Wno-array-bounds']
+    cxx.cflags += ['-msse']
+    cxx.cflags += ['-m32']
+    cxx.cflags += ['-fvisibility=hidden']
+    cxx.cflags += ['-fdiagnostics-color=always']
+    cxx.cflags += ['-fno-omit-frame-pointer']
+#   cxx.cflags += ['-masm=intel']
+#   cxx.cflags += ['-Q']
+    cxx.cflags += ['-Winvalid-pch']
+    cxx.cflags += ['-gsplit-dwarf']
+    cxx.cflags += ['-pthread']
+#   cxx.cflags += ['-Wa,--compress-debug-sections=zlib']
+    cxx.cflags += ['-Wno-unknown-pragmas']
+    
+    ############################################################################
+    # C++ COMPILER #############################################################
+    ############################################################################
+    cxx.cxxflags += ['-std=c++14']
+    cxx.cxxflags += ['-fno-exceptions']
+#   cxx.cxxflags += ['-fno-threadsafe-statics']
+#   cxx.cxxflags += ['-Wno-non-virtual-dtor']
+    cxx.cxxflags += ['-fvisibility-inlines-hidden']
+    cxx.cxxflags += ['-Wno-invalid-offsetof']
+    cxx.cxxflags += ['-Wabi']
+#   cxx.cxxflags += ['-fabi-version=0']
+#   cxx.cxxflags += ['-fabi-compat-version=2'] # GCC 4.6.1
+    
+    ############################################################################
+    # LINKER ###################################################################
+    ############################################################################
+    cxx.linkflags += ['-m32']
+    cxx.linkflags += ['-pthread']
+    cxx.linkflags += ['-fuse-ld=gold']
+    cxx.linkflags += ['-fno-use-linker-plugin'] # ?????
+    cxx.linkflags += ['-Wl,--no-undefined']
+    cxx.linkflags += ['-Wl,--threads'] # crashy
+    cxx.linkflags += ['-Wl,--wrap,__assert_fail']
+    cxx.linkflags += ['-Wl,--export-dynamic']
+#   cxx.linkflags += ['-Wa,--compress-debug-sections=zlib']
+#   cxx.linkflags += ['-Wl,--compress-debug-sections=zlib']
+#   if builder.options.opt != '1':
+#     cxx.linkflags += ['-Wl,-Ur'] # incremental link
+    
+    ############################################################################
+    # DEBUG ####################################################################
+    ############################################################################
+    if builder.options.debug == '1':
+      cxx.cflags += ['-gdwarf-4']
+      if builder.options.opt == 1:
+        cxx.cflags += ['-g1']
+        if have_gcc:
+          cxx.cflags += ['-fvar-tracking-assignments']
+      else:
+        cxx.cflags += ['-g2']
+    
+    ############################################################################
+    # OPTIMIZE #################################################################
+    ############################################################################
+    if builder.options.opt == '1':
+      cxx.cflags    += ['-Os']
+      cxx.linkflags += ['-Wl,-O2']
+      cxx.linkflags += ['-Wl,--gc-sections']
+    else:
+      if have_gcc or cxx.version >= 'clang-4.0':
+        cxx.cflags += ['-Og']
+      else:
+        cxx.cflags += ['-O1']
+      cxx.linkflags += ['-Wl,-O0']
+      cxx.linkflags += ['-Wl,--no-gc-sections']
+#     cxx.linkflags += ['-Wl,--incremental']
+#     cxx.linkflags += ['-Wl,--incremental-base,sigsegv.ext.2.tf2.so.old']
+    
+    
+    ####### TODO: cleanup everything below this point!
     if cxx.version >= 'clang-3.6':
       cxx.cxxflags += ['-Wno-inconsistent-missing-override']
     if have_clang or (cxx.version >= 'gcc-4.6'):
@@ -272,17 +263,27 @@ class ExtensionConfig(object):
       cxx.cxxflags += ['-Wno-delete-non-virtual-dtor']
     if cxx.version >= 'gcc-4.8':
       cxx.cflags += ['-Wno-unused-result']
-
+    
     if have_clang:
+      cxx.cxxflags += ['-Wno-overloaded-virtual']
       cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
       if cxx.version >= 'apple-clang-5.1' or cxx.version >= 'clang-3.4':
         cxx.cxxflags += ['-Wno-deprecated-register']
       else:
         cxx.cxxflags += ['-Wno-deprecated']
       cxx.cflags += ['-Wno-sometimes-uninitialized']
-
+      cxx.cflags += ['-Wno-expansion-to-defined']
+      cxx.cxxflags += ['-Wno-dynamic-class-memaccess']
+    
     if have_gcc:
-      cxx.cflags += ['-mfpmath=sse']
+      cxx.cflags += [
+        '-mfpmath=sse',
+        '-fno-diagnostics-show-caret',
+        '-maccumulate-outgoing-args',
+        
+        # the STB_GNU_UNIQUE 'feature' prevents dlclose from functioning
+        '-fno-gnu-unique',
+      ]
 
   def configure_msvc(self, cxx):
     if builder.options.debug == '1':

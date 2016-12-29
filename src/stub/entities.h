@@ -24,7 +24,12 @@ private:
 };
 
 
+class CTFDroppedWeapon : public CBaseAnimating {};
+
+
 class CItem : public CBaseAnimating {};
+
+class CTFAmmoPack : public CItem {};
 
 class CTFPowerup : public CItem
 {
@@ -247,6 +252,10 @@ class CTeamControlPoint : public CBaseAnimating
 public:
 	
 };
+
+
+class CFuncRespawnRoom : public CBaseTrigger {};
+bool PointInRespawnRoom(CBaseEntity *ent, const Vector& vec);
 
 
 class CTeamControlPointMaster : public CBaseEntity

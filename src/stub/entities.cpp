@@ -221,6 +221,10 @@ IMPL_RELATIVE(int,                 CTFTankBoss, m_iModelIndex,     m_pBodyInterf
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");
 
 
+static StaticFuncThunk<bool, CBaseEntity *, const Vector&> ft_PointInRespawnRoom("PointInRespawnRoom");
+bool PointInRespawnRoom(CBaseEntity *ent, const Vector& vec) { return ft_PointInRespawnRoom(ent, vec); }
+
+
 IMPL_EXTRACT(CTeamControlPointMaster::ControlPointMap, CTeamControlPointMaster, m_ControlPoints, new CExtract_CTeamControlPointMaster_m_ControlPoints());
 
 GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters("g_hControlPointMasters");

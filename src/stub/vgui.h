@@ -4,9 +4,6 @@
 
 #include "link/link.h"
 
-#include <../client/iclientmode.h>
-#include <vgui_controls/Frame.h>
-
 
 //namespace vgui
 //{

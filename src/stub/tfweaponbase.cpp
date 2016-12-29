@@ -13,12 +13,14 @@ IMPL_SENDPROP(CHandle<CBaseCombatCharacter>, CBaseCombatWeapon, m_hOwner,       
 
 MemberFuncThunk<const CBaseCombatWeapon *, bool> CBaseCombatWeapon::ft_IsMeleeWeapon("CBaseCombatWeapon::IsMeleeWeapon");
 
-MemberVFuncThunk<const CBaseCombatWeapon *, int>                          CBaseCombatWeapon::vt_GetMaxClip1(TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetMaxClip1");
-MemberVFuncThunk<const CBaseCombatWeapon *, int>                          CBaseCombatWeapon::vt_GetMaxClip2(TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetMaxClip2");
-MemberVFuncThunk<      CBaseCombatWeapon *, bool>                         CBaseCombatWeapon::vt_HasAmmo    (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::HasAmmo");
-MemberVFuncThunk<      CBaseCombatWeapon *, void, CBaseCombatCharacter *> CBaseCombatWeapon::vt_Equip      (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::Equip");
-MemberVFuncThunk<      CBaseCombatWeapon *, void, const Vector&>          CBaseCombatWeapon::vt_Drop       (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::Drop");
-
+MemberVFuncThunk<const CBaseCombatWeapon *, int>                          CBaseCombatWeapon::vt_GetMaxClip1  (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetMaxClip1");
+MemberVFuncThunk<const CBaseCombatWeapon *, int>                          CBaseCombatWeapon::vt_GetMaxClip2  (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetMaxClip2");
+MemberVFuncThunk<      CBaseCombatWeapon *, bool>                         CBaseCombatWeapon::vt_HasAmmo      (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::HasAmmo");
+MemberVFuncThunk<      CBaseCombatWeapon *, void, CBaseCombatCharacter *> CBaseCombatWeapon::vt_Equip        (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::Equip");
+MemberVFuncThunk<      CBaseCombatWeapon *, void, const Vector&>          CBaseCombatWeapon::vt_Drop         (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::Drop");
+MemberVFuncThunk<const CBaseCombatWeapon *, const char *, int>            CBaseCombatWeapon::vt_GetViewModel (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetViewModel");
+MemberVFuncThunk<const CBaseCombatWeapon *, const char *>                 CBaseCombatWeapon::vt_GetWorldModel(TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetWorldModel");
+MemberVFuncThunk<      CBaseCombatWeapon *, void>                         CBaseCombatWeapon::vt_SetViewModel (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::SetViewModel");
 
 IMPL_SENDPROP(float, CTFWeaponBase, m_flLastFireTime,       CTFWeaponBase);
 IMPL_SENDPROP(float, CTFWeaponBase, m_flEffectBarRegenTime, CTFWeaponBase);
@@ -42,10 +44,21 @@ MemberFuncThunk<CTFKnife *, bool, CTFPlayer *> CTFKnife::ft_CanPerformBackstabAg
 MemberFuncThunk<CTFKnife *, bool, CTFPlayer *> CTFKnife::ft_IsBehindAndFacingTarget        ("CTFKnife::IsBehindAndFacingTarget");
 
 
+IMPL_SENDPROP(bool, CTFBottle, m_bBroken, CTFBottle);
+
+
 IMPL_SENDPROP(CHandle<CTFWearableRobotArm>, CTFRobotArm, m_hRobotArm, CTFRobotArm);
 
 
 IMPL_SENDPROP(CHandle<CBaseEntity>, CWeaponMedigun, m_hHealingTarget, CWeaponMedigun);
+
+
+MemberFuncThunk<CTFFlameThrower *, Vector, bool> CTFFlameThrower::ft_GetMuzzlePosHelper("CTFFlameThrower::GetMuzzlePosHelper");
+
+
+IMPL_SENDPROP(int,                        CBaseViewModel, m_nViewModelIndex, CBaseViewModel);
+IMPL_SENDPROP(CHandle<CBaseEntity>,       CBaseViewModel, m_hOwner,          CBaseViewModel);
+IMPL_SENDPROP(CHandle<CBaseCombatWeapon>, CBaseViewModel, m_hWeapon,         CBaseViewModel);
 
 
 static StaticFuncThunk<bool, int> ft_WeaponID_IsSniperRifle("WeaponID_IsSniperRifle");

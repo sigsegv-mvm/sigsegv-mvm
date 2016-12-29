@@ -194,11 +194,13 @@ namespace Mod_Debug_Suicide_Bomber
 	
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMissionSuicideBomber_OnStart, CTFBot *actor, Action<CTFBot> *action)
 	{
+		auto me = reinterpret_cast<CTFBotMissionSuicideBomber *>(this);
+		
 		DevMsg("\n[OnStart] <== %s\n", (action != nullptr ? action->GetName() : "NULL"));
 		auto result = DETOUR_MEMBER_CALL(CTFBotMissionSuicideBomber_OnStart)(actor, action);
 		
-		if (this != nullptr && actor != nullptr) {
-			DrawOverlays(reinterpret_cast<CTFBotMissionSuicideBomber *>(this), actor);
+		if (me != nullptr && actor != nullptr) {
+			DrawOverlays(me, actor);
 		}
 		
 		DevMsg("  %s\n", ActionResult_ToString(result));
@@ -208,13 +210,15 @@ namespace Mod_Debug_Suicide_Bomber
 	RefCount rc_CTFBotMissionSuicideBomber_Update;
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMissionSuicideBomber_Update, CTFBot *actor, float dt)
 	{
+		auto me = reinterpret_cast<CTFBotMissionSuicideBomber *>(this);
+		
 		SCOPED_INCREMENT(rc_CTFBotMissionSuicideBomber_Update);
 		
 		DevMsg("\n[Update]\n");
 		auto result = DETOUR_MEMBER_CALL(CTFBotMissionSuicideBomber_Update)(actor, dt);
 		
-		if (this != nullptr && actor != nullptr) {
-			DrawOverlays(reinterpret_cast<CTFBotMissionSuicideBomber *>(this), actor);
+		if (me != nullptr && actor != nullptr) {
+			DrawOverlays(me, actor);
 		}
 		
 		DevMsg("  %s\n", ActionResult_ToString(result));

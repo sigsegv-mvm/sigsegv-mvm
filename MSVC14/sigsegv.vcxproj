@@ -91,7 +91,7 @@
       <DisableSpecificWarnings>4594</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\capstone\msvc\Release\capstone.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +141,7 @@
       <DisableSpecificWarnings>4594</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\distorm\distorm.lib;..\libs\capstone\msvc\Release\capstone.lib;..\libs\udis86\BuildVS2010\Build\Lib\x86\libudis86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(HL2SDKOBVALVE)\lib\public\tier0.lib;$(HL2SDKOBVALVE)\lib\public\tier1.lib;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib;$(HL2SDKOBVALVE)\lib\public\mathlib.lib;legacy_stdio_definitions.lib;dbghelp.lib;ws2_32.lib;..\libs\capstone\msvc\Release\capstone.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -278,6 +278,7 @@
     <ClCompile Include="..\src\stub\baseplayer.cpp" />
     <ClCompile Include="..\src\stub\cdebugoverlay.cpp" />
     <ClCompile Include="..\src\stub\econ.cpp" />
+    <ClCompile Include="..\src\stub\entities.cpp" />
     <ClCompile Include="..\src\stub\gamerules.cpp" />
     <ClCompile Include="..\src\stub\igamesystem.cpp" />
     <ClCompile Include="..\src\stub\misc.cpp" />

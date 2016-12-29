@@ -58,6 +58,27 @@ inline bool FStrEq(const char *sz1, const char *sz2)
 }
 
 
+/* return an iterator to a random element in an STL container
+ * based on: http://stackoverflow.com/a/16421677 */
+template<typename Iterator>
+Iterator select_random(Iterator begin, Iterator end)
+{
+	static std::random_device r_dev;
+	static std::mt19937 r_engine(r_dev());
+	
+	std::uniform_int_distribution<> r_dist(0, std::distance(begin, end) - 1);
+	
+	std::advance(begin, r_dist(r_engine));
+	return begin;
+}
+
+template<typename Container>
+auto select_random(const Container& container)
+{
+	return select_random(begin(container), end(container));
+}
+
+
 #if 0
 class CEntitySphereQuery
 {

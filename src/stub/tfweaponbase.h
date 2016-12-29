@@ -14,11 +14,14 @@ public:
 	
 	bool IsMeleeWeapon() const { return ft_IsMeleeWeapon(this); }
 	
-	int GetMaxClip1() const                  { return vt_GetMaxClip1(this); }
-	int GetMaxClip2() const                  { return vt_GetMaxClip2(this); }
-	bool HasAmmo()                           { return vt_HasAmmo    (this); }
-	void Equip(CBaseCombatCharacter *pOwner) {        vt_Equip      (this, pOwner); }
-	void Drop(const Vector& vecVelocity)     {        vt_Drop       (this, vecVelocity); }
+	int GetMaxClip1() const                                { return vt_GetMaxClip1  (this); }
+	int GetMaxClip2() const                                { return vt_GetMaxClip2  (this); }
+	bool HasAmmo()                                         { return vt_HasAmmo      (this); }
+	void Equip(CBaseCombatCharacter *pOwner)               {        vt_Equip        (this, pOwner); }
+	void Drop(const Vector& vecVelocity)                   {        vt_Drop         (this, vecVelocity); }
+	const char *GetViewModel(int viewmodelindex = 0) const { return vt_GetViewModel (this, viewmodelindex); }
+	const char *GetWorldModel() const                      { return vt_GetWorldModel(this); }
+	void SetViewModel()                                    {        vt_SetViewModel (this); }
 	
 	DECL_SENDPROP(float, m_flNextPrimaryAttack);
 	DECL_SENDPROP(float, m_flNextSecondaryAttack);
@@ -39,6 +42,9 @@ private:
 	static MemberVFuncThunk<      CBaseCombatWeapon *, bool>                         vt_HasAmmo;
 	static MemberVFuncThunk<      CBaseCombatWeapon *, void, CBaseCombatCharacter *> vt_Equip;
 	static MemberVFuncThunk<      CBaseCombatWeapon *, void, const Vector&>          vt_Drop;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, const char *, int>            vt_GetViewModel;
+	static MemberVFuncThunk<const CBaseCombatWeapon *, const char *>                 vt_GetWorldModel;
+	static MemberVFuncThunk<      CBaseCombatWeapon *, void>                         vt_SetViewModel;
 };
 
 class CTFWeaponBase : public CBaseCombatWeapon
@@ -111,6 +117,12 @@ private:
 	static MemberFuncThunk<CTFKnife *, bool, CTFPlayer *> ft_IsBehindAndFacingTarget;
 };
 
+class CTFBottle : public CTFWeaponBaseMelee
+{
+public:
+	DECL_SENDPROP(bool, m_bBroken);
+};
+
 class CTFBonesaw : public CTFWeaponBaseMelee {};
 
 class CTFWrench : public CTFWeaponBaseMelee {};
@@ -150,10 +162,32 @@ private:
 	DECL_SENDPROP(CHandle<CBaseEntity>, m_hHealingTarget);
 };
 
-class CTFFlameThrower : public CTFWeaponBaseGun {};
+class CTFFlameThrower : public CTFWeaponBaseGun
+{
+public:
+	Vector GetVisualMuzzlePos() { return ft_GetMuzzlePosHelper(this, true);  }
+	Vector GetFlameOriginPos()  { return ft_GetMuzzlePosHelper(this, false); }
+	
+private:
+	static MemberFuncThunk<CTFFlameThrower *, Vector, bool> ft_GetMuzzlePosHelper;
+};
 
 class CTFWeaponBuilder : public CTFWeaponBase {};
 class CTFWeaponSapper : public CTFWeaponBuilder {};
+
+
+class CBaseViewModel : public CBaseAnimating
+{
+public:
+	CBaseCombatWeapon *GetWeapon() const { return this->m_hWeapon; }
+	
+private:
+	DECL_SENDPROP(int,                        m_nViewModelIndex);
+	DECL_SENDPROP(CHandle<CBaseEntity>,       m_hOwner);
+	DECL_SENDPROP(CHandle<CBaseCombatWeapon>, m_hWeapon);
+};
+
+class CTFViewModel : public CBaseViewModel {};
 
 
 bool WeaponID_IsSniperRifle(int id);

@@ -8,6 +8,7 @@
 class CNavArea;
 class CBaseCombatWeapon;
 class CEconWearable;
+class CBaseViewModel;
 
 
 class CBaseCombatCharacter : public CBaseFlex
@@ -91,6 +92,7 @@ public:
 	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors   (this, pForward, pRight, pUp); }
 	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID   (this, pID); }
 	void SetPlayerName(const char *name)                                               {        ft_SetPlayerName(this, name); }
+	CBaseViewModel *GetViewModel(int viewmodelindex = 0, bool bObserverOK = true)      { return ft_GetViewModel (this, viewmodelindex, bObserverOK); }
 	
 	bool IsBot() const                                             { return vt_IsBot               (this); }
 	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide       (this, bExplode, bForce); }
@@ -116,6 +118,7 @@ private:
 	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;
 	static MemberFuncThunk<CBasePlayer *, void, const char *>                 ft_SetPlayerName;
+	static MemberFuncThunk<CBasePlayer *, CBaseViewModel *, int, bool>        ft_GetViewModel;
 	
 	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
 	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;

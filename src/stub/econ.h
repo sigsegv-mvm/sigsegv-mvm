@@ -20,6 +20,12 @@ template<> inline int CAttributeManager::AttribHookValue<int>(int value, const c
 template<> inline float CAttributeManager::AttribHookValue<float>(float value, const char *attr, const CBaseEntity *ent, CUtlVector<CBaseEntity *> *vec, bool b1)
 { return CAttributeManager::ft_AttribHookValue_float(value, attr, ent, vec, b1); }
 
+template<typename T> void _CallAttribHookRef(T& value, const char *pszClass, const CBaseEntity *pEntity) { value = CAttributeManager::AttribHookValue<T>(value, pszClass, pEntity); }
+#define CALL_ATTRIB_HOOK_INT(value, name)                 _CallAttribHookRef<int>  (value, #name, this)
+#define CALL_ATTRIB_HOOK_INT_ON_OTHER(ent, value, name)   _CallAttribHookRef<int>  (value, #name, ent )
+#define CALL_ATTRIB_HOOK_FLOAT(value, name)               _CallAttribHookRef<float>(value, #name, this)
+#define CALL_ATTRIB_HOOK_FLOAT_ON_OTHER(ent, value, name) _CallAttribHookRef<float>(value, #name, ent )
+
 
 class CEconItemView
 {

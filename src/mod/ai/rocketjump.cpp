@@ -178,7 +178,7 @@ namespace Mod_AI_RocketJump
 		
 		Vector vecDown(0.0f, 0.0f, -1.0f);
 		
-		constexpr float tolerance = cos(5_deg);
+		static float tolerance = cos(5_deg);
 		bool is_aiming_down	= (DotProduct(vecEyes, vecDown) >= tolerance);
 		
 		if (is_aiming_down) {

@@ -62,7 +62,7 @@ namespace Mod_Robot_Building_Stomp
 				}
 				
 				if (cvar_contact_nodamage.GetBool()) {
-					DevMsg("Preventing damage due to giant-robot-vs-building instant stomp from CTFBotMainAction::OnContact\n");
+				//	DevMsg("Preventing damage due to giant-robot-vs-building instant stomp from CTFBotMainAction::OnContact\n");
 					return 0;
 				}
 			}
@@ -73,7 +73,7 @@ namespace Mod_Robot_Building_Stomp
 				}
 				
 				if (cvar_stuck_nodamage.GetBool()) {
-					DevMsg("Preventing damage due to robot-vs-building delayed stomp from CTFBotMainAction::OnStuck\n");
+				//	DevMsg("Preventing damage due to robot-vs-building delayed stomp from CTFBotMainAction::OnStuck\n");
 					return 0;
 				}
 			}

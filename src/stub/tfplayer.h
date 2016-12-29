@@ -191,6 +191,10 @@ public:
 	
 	CTFPlayer *GetOuter();
 	
+	int GetState() const           { return this->m_nPlayerState; }
+	void SetState(int nState)      { this->m_nPlayerState = nState; }
+	bool InState(int nState) const { return (this->m_nPlayerState == nState); }
+	
 	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond             (this, cond, duration, provider); }
 	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond          (this, cond, b1); }
 	bool InCond(ETFCond cond) const                                                     { return ft_InCond              (this, cond); }
@@ -208,9 +212,12 @@ public:
 	DECL_SENDPROP(float, m_flChargeMeter);
 	DECL_SENDPROP(float, m_flRageMeter);
 	DECL_SENDPROP(bool,  m_bRageDraining);
+	DECL_SENDPROP(int,   m_iCritMult);
 	DECL_SENDPROP(bool,  m_bInUpgradeZone);
 	
 private:
+	DECL_SENDPROP(int,   m_nPlayerState);
+	
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > ft_AddCond;
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > ft_RemoveCond;
 	static MemberFuncThunk<const CTFPlayerShared *, bool, ETFCond                       > ft_InCond;
@@ -231,6 +238,7 @@ public:
 	const CTFPlayerClass *GetPlayerClass() const { return &m_PlayerClass; }
 	
 	bool IsPlayerClass(int iClass) const;
+	int StateGet() const    { return this->m_Shared->GetState(); }
 	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
 	int GetCurrency() const { return this->m_nCurrency; }
 	

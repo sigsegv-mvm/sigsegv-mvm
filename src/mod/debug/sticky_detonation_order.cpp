@@ -18,7 +18,7 @@ namespace Mod_Debug_Sticky_Detonation_Order
 		
 		ClientMsg(fmt2, std::forward<ARGS>(args)...);
 		
-		delete fmt2;
+		delete[] fmt2;
 	}
 	
 	

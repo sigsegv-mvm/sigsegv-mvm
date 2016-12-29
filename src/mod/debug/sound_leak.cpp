@@ -95,7 +95,7 @@ namespace Mod_Debug_Sound_Leak
 		
 		auto result = DETOUR_MEMBER_CALL(IMemAlloc_Alloc)(nSize);
 		
-		if (mem_tracking && rc_Alloc <= 1 && nSize >= cvar_minimum.GetInt()) {
+		if (mem_tracking && rc_Alloc <= 1 && nSize >= (size_t)cvar_minimum.GetInt()) {
 			if (mems.find(result) == mems.end()) {
 				LOGMEM("[%12.7f] Alloc   %7u @ 0x%08x\n", Plat_FloatTime(), nSize, (uintptr_t)result);
 				mems[result] = nSize;
@@ -120,7 +120,7 @@ namespace Mod_Debug_Sound_Leak
 		
 		auto result = DETOUR_MEMBER_CALL(IMemAlloc_Realloc)(pMem, nSize);
 		
-		if (mem_tracking && rc_Realloc <= 1 && nSize >= cvar_minimum.GetInt()) {
+		if (mem_tracking && rc_Realloc <= 1 && nSize >= (size_t)cvar_minimum.GetInt()) {
 			auto it = mems.find(pMem);
 			if (it != mems.end()) {
 				mems.erase(it);

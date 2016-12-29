@@ -383,6 +383,9 @@
     <ClCompile Include="..\libs\lodepng\lodepng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\stub\entities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h">

@@ -141,6 +141,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_SentryBusterFriendlyFire.Reset();
 			
 			this->m_DisableSounds.clear();
+			this->m_ItemWhitelist.clear();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -166,6 +167,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar<bool>  m_SentryBusterFriendlyFire;
 		
 		std::vector<std::string> m_DisableSounds;
+		std::vector<std::string> m_ItemWhitelist;
 	};
 	PopState state;
 	
@@ -319,18 +321,60 @@ namespace Mod_Pop_PopMgr_Extensions
 	
 	DETOUR_DECL_MEMBER(void, CTeamplayRoundBasedRules_BroadcastSound, int iTeam, const char *sound, int iAdditionalSoundFlags)
 	{
-		DevMsg("CTeamplayRoundBasedRules::BroadcastSound(%d, \"%s\", 0x%08x)\n", iTeam, sound, iAdditionalSoundFlags);
-		
-		for (const auto& str : state.m_DisableSounds) {
-			if (V_stricmp(sound, str.c_str()) == 0) {
-				DevMsg("Blocked sound \"%s\"\n", sound);
-				return;
+		if (TFGameRules()->IsMannVsMachineMode()) {
+		//	DevMsg("CTeamplayRoundBasedRules::BroadcastSound(%d, \"%s\", 0x%08x)\n", iTeam, sound, iAdditionalSoundFlags);
+			
+			for (const auto& str : state.m_DisableSounds) {
+				if (V_stricmp(sound, str.c_str()) == 0) {
+					DevMsg("Blocked sound \"%s\"\n", sound);
+					return;
+				}
 			}
 		}
 		
 		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_BroadcastSound)(iTeam, sound, iAdditionalSoundFlags);
 	}
 	
+	
+	RefCount rc_CTFPlayer_GiveDefaultItems;
+	DETOUR_DECL_MEMBER(void, CTFPlayer_GiveDefaultItems)
+	{
+		SCOPED_INCREMENT(rc_CTFPlayer_GiveDefaultItems);
+		DETOUR_MEMBER_CALL(CTFPlayer_GiveDefaultItems)();
+	}
+	
+	DETOUR_DECL_MEMBER(CBaseEntity *, CTFPlayer_GiveNamedItem, const char *classname, int i1, const CEconItemView *item_view, bool b1)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		if (TFGameRules()->IsMannVsMachineMode() && !state.m_ItemWhitelist.empty() && player->GetTeamNumber() == TF_TEAM_RED) {
+			bool allowed = false;
+			
+			for (const auto& str : state.m_ItemWhitelist) {
+				if (FStrEq(classname, str.c_str())) {
+					allowed = true;
+					break;
+				}
+			}
+			
+			if (!allowed) {
+			//	DevMsg("[%s] GiveNamedItem(\"%s\"): denied\n", player->GetPlayerName(), classname);
+				return nullptr;
+			}
+		}
+		
+	//	DevMsg("[%s] GiveNamedItem(\"%s\"): provisionally allowed\n", player->GetPlayerName(), classname);
+		return DETOUR_MEMBER_CALL(CTFPlayer_GiveNamedItem)(classname, i1, item_view, b1);
+	}
+	
+	
+	void Parse_ItemWhitelist(KeyValues *kv)
+	{
+		FOR_EACH_SUBKEY(kv, subkey) {
+			DevMsg("ItemWhitelist: add \"%s\"\n", subkey->GetString());
+			state.m_ItemWhitelist.emplace_back(subkey->GetString());
+		}
+	}
 	
 	RefCount rc_CPopulationManager_Parse;
 	DETOUR_DECL_MEMBER(bool, CPopulationManager_Parse)
@@ -403,6 +447,19 @@ namespace Mod_Pop_PopMgr_Extensions
 				} else if (FStrEq(name, "DisableSound")) {
 					DevMsg("Got DisableSound: \"%s\"\n", subkey->GetString());
 					state.m_DisableSounds.emplace_back(subkey->GetString());
+				} else if (FStrEq(name, "ItemWhitelist")) {
+					Parse_ItemWhitelist(subkey);
+				} else if (FStrEq(name, "PrecacheScriptSound"))  { CBaseEntity::PrecacheScriptSound (subkey->GetString());
+				} else if (FStrEq(name, "PrecacheSound"))        { enginesound->PrecacheSound       (subkey->GetString(), false);
+				} else if (FStrEq(name, "PrecacheModel"))        { engine     ->PrecacheModel       (subkey->GetString(), false);
+				} else if (FStrEq(name, "PrecacheSentenceFile")) { engine     ->PrecacheSentenceFile(subkey->GetString(), false);
+				} else if (FStrEq(name, "PrecacheDecal"))        { engine     ->PrecacheDecal       (subkey->GetString(), false);
+				} else if (FStrEq(name, "PrecacheGeneric"))      { engine     ->PrecacheGeneric     (subkey->GetString(), false);
+				} else if (FStrEq(name, "PreloadSound"))         { enginesound->PrecacheSound       (subkey->GetString(), true);
+				} else if (FStrEq(name, "PreloadModel"))         { engine     ->PrecacheModel       (subkey->GetString(), true);
+				} else if (FStrEq(name, "PreloadSentenceFile"))  { engine     ->PrecacheSentenceFile(subkey->GetString(), true);
+				} else if (FStrEq(name, "PreloadDecal"))         { engine     ->PrecacheDecal       (subkey->GetString(), true);
+				} else if (FStrEq(name, "PreloadGeneric"))       { engine     ->PrecacheGeneric     (subkey->GetString(), true);
 				} else {
 					del = false;
 				}
@@ -444,6 +501,8 @@ namespace Mod_Pop_PopMgr_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,        "CTFGameRules::IsPVEModeControlled");
 			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,                  "CUpgrades::UpgradeTouch");
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_BroadcastSound, "CTeamplayRoundBasedRules::BroadcastSound");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveDefaultItems,              "CTFPlayer::GiveDefaultItems");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveNamedItem,                 "CTFPlayer::GiveNamedItem");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");

@@ -10,11 +10,13 @@ IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszCustomModel, CTFPlayer);
 MemberFuncThunk<CTFPlayerClassShared *, void, const char *, bool> CTFPlayerClassShared::ft_SetCustomModel("CTFPlayerClassShared::SetCustomModel");
 
 
+IMPL_SENDPROP(int,   CTFPlayerShared, m_nPlayerState,       CTFPlayer);
 IMPL_SENDPROP(float, CTFPlayerShared, m_flEnergyDrinkMeter, CTFPlayer);
 IMPL_SENDPROP(float, CTFPlayerShared, m_flHypeMeter,        CTFPlayer);
 IMPL_SENDPROP(float, CTFPlayerShared, m_flChargeMeter,      CTFPlayer);
 IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,        CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,      CTFPlayer);
+IMPL_SENDPROP(int,   CTFPlayerShared, m_iCritMult,          CTFPlayer);
 IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone,     CTFPlayer);
 
 MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond             ("CTFPlayerShared::AddCond");
@@ -28,6 +30,7 @@ MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > C
 MemberFuncThunk<const CTFPlayerShared *, int                                 > CTFPlayerShared::ft_GetDisguiseTeam     ("CTFPlayerShared::GetDisguiseTeam");
 MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsStealthed         ("CTFPlayerShared::IsStealthed");
 MemberFuncThunk<const CTFPlayerShared *, float                               > CTFPlayerShared::ft_GetPercentInvisible ("CTFPlayerShared::GetPercentInvisible");
+
 
 IMPL_SENDPROP(CTFPlayerShared, CTFPlayer, m_Shared,      CTFPlayer);
 IMPL_SENDPROP(CTFPlayerClass,  CTFPlayer, m_PlayerClass, CTFPlayer);

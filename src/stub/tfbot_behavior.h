@@ -7,6 +7,12 @@
 #include "stub/tfbot.h"
 
 
+/* fix undefined-reference linker errors related to ActionStub */
+inline INextBotEventResponder::~INextBotEventResponder() {}
+inline IContextualQuery::~IContextualQuery() {}
+template<typename T> Action<T>::~Action() {}
+
+
 class ActionStub : public Action<CTFBot>
 {
 public:
@@ -123,6 +129,21 @@ private:
 	uint8_t pad_4840[0x1c];      // +0x4840
 };
 SIZE_CHECK(CTFBotSniperLurk, 0x485c);
+
+
+class CTFBotMedicRetreat : public ActionStub
+{
+public:
+	static CTFBotMedicRetreat *New();
+	
+protected:
+	CTFBotMedicRetreat() = default;
+	
+private:
+	PathFollower m_PathFollower;        // +0x0034
+	CountdownTimer m_ctLookForPatients; // +0x4808
+};
+SIZE_CHECK(CTFBotMedicRetreat, 0x4814);
 
 
 class CTFBotSpyInfiltrate : public ActionStub

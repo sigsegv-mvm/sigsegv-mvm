@@ -203,7 +203,11 @@ namespace Mod_Visualize_Projectile_Trail
 	
 	Color GetTrailColor_Random(CBaseProjectile *proj)
 	{
+		
+		
+		
 		// TODO
+		return Color();
 	}
 	
 	

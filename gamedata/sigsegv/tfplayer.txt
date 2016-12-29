@@ -307,6 +307,47 @@
 					sym  "_ZN9CTFPlayer13ClientCommandERK8CCommand"
 				}
 				
+				"CTFPlayer::StateEnter"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10StateEnterEi"
+				}
+				"CTFPlayer::StateLeave"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10StateLeaveEv"
+				}
+				
+				"CTFPlayer::GiveNamedItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13GiveNamedItemEPKciPK13CEconItemViewb"
+				}
+				
+				"CTFPlayer::GiveDefaultItems"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16GiveDefaultItemsEv"
+				}
+				
+				"CTFPlayer::DropAmmoPack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12DropAmmoPackERK15CTakeDamageInfobb"
+				}
+				
+				"CTFPlayer::OnKilledOther_Effects"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21OnKilledOther_EffectsEP11CBaseEntityRK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::TakeHealth"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10TakeHealthEfi"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

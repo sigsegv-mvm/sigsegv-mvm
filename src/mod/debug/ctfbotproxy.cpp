@@ -147,7 +147,7 @@ namespace Mod_Debug_CTFBotProxy
 			buf[pos++] = '\n';
 			buf[pos++] = '\0';
 			
-			Msg(buf);
+			Msg("%s", buf);
 		} while (!done);
 	}
 	

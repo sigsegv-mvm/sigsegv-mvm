@@ -8,6 +8,10 @@
 #endif
 
 
+/* fix an undefined-reference linker error */
+//template<typename T> Action<T>::~Action() {}
+
+
 #if 0
 constexpr uint8_t buf_CTFBotSeekAndDestroy[] = {
 	0xc7, 0x04, 0x24, 0x28, 0x48, 0x00, 0x00,       // +0000  mov dword ptr [esp],0x4828
@@ -107,6 +111,22 @@ CTFBotMedicHeal *CTFBotMedicHeal::New()
 	
 	auto action = reinterpret_cast<CTFBotMedicHeal *>(::operator new(sizeof(CTFBotMedicHeal)));
 	ft_CTFBotMedicHeal_ctor(action);
+	return action;
+}
+
+
+CTFBotMedicRetreat *CTFBotMedicRetreat::New()
+{
+	// TODO: verify sizeof(CTFBotMedicRetreat) in the game code at runtime
+	// TODO: verify that the addr for the vtable actually exists
+	
+	auto action = new CTFBotMedicRetreat();
+	
+	/* overwrite vtable pointers */
+	auto vt = RTTI::GetVTable<CTFBotMedicRetreat>();
+	*(uint32_t *)((uintptr_t)action + 0x0000) = (uintptr_t)vt;
+	*(uint32_t *)((uintptr_t)action + 0x0004) = FindAdditionalVTable<CTFBotMedicRetreat>(vt, -0x4);
+	
 	return action;
 }
 

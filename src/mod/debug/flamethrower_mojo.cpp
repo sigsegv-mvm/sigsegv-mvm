@@ -293,21 +293,21 @@ namespace Mod_Debug_Flamethrower_Mojo
 		//	NDebugOverlay::Cross3D(flame->WorldSpaceCenter(), 3.0f, 0xff, 0xff, 0xff, false, cvar_dead_flame_duration.GetFloat());
 			
 			stats_dist.push_back(dist);
-			while (stats_dist.size() > cvar_stats_qty.GetInt()) {
+			while (stats_dist.size() > (size_t)cvar_stats_qty.GetInt()) {
 				stats_dist.pop_front();
 			}
 			
 			stats_thinks_total.push_back(info.num_thinks + info.missed_thinks);
-			while (stats_thinks_total.size() > cvar_stats_qty.GetInt()) {
+			while (stats_thinks_total.size() > (size_t)cvar_stats_qty.GetInt()) {
 				stats_thinks_total.pop_front();
 			}
 			stats_thinks_missed.push_back(info.missed_thinks);
-			while (stats_thinks_missed.size() > cvar_stats_qty.GetInt()) {
+			while (stats_thinks_missed.size() > (size_t)cvar_stats_qty.GetInt()) {
 				stats_thinks_missed.pop_front();
 			}
 			
 			stats_hit.push_back(info.hit_an_entity);
-		//	while (stats_hit.size() > cvar_stats_qty.GetInt()) {
+		//	while (stats_hit.size() > (size_t)cvar_stats_qty.GetInt()) {
 		//		stats_hit.pop_front();
 		//	}
 			

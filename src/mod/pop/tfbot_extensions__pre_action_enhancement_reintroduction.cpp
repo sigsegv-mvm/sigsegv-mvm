@@ -2,7 +2,6 @@
 #include "stub/tfplayer.h"
 #include "stub/populators.h"
 #include "stub/projectiles.h"
-#include "stub/gamerules.h"
 #include "util/scope.h"
 #include "mod/pop/kv_conditional.h"
 #include "re/nextbot.h"
@@ -103,22 +102,12 @@ namespace Mod_Pop_TFBot_Extensions
 		float min_dot_product       = -0.25f;
 	};
 	
-	enum ActionType
-	{
-		ACTION_Default,
-		
-		// built-in
-		ACTION_FetchFlag,
-		ACTION_PushToCapturePoint,
-		
-		// custom
-		ACTION_Mobber,
-	};
-	
 	struct SpawnerData
 	{
 		std::vector<AddCond> addconds;
 		std::vector<AddCond> dmgappliesconds;
+		
+		bool action_mobber = false;
 		
 		std::map<int, float> weapon_resists;
 		
@@ -134,18 +123,17 @@ namespace Mod_Pop_TFBot_Extensions
 		float ring_of_fire = -1.0f;
 		
 		HomingRockets homing_rockets;
-		
-		ActionType action = ACTION_Default;
-		
-#ifdef ENABLE_BROKEN_STUFF
-		bool drop_weapon = false;
-#endif
 	};
 	
 	
 	std::map<CTFBotSpawner *, SpawnerData> spawners;
 	
 	std::map<CHandle<CTFBot>, CTFBotSpawner *> spawner_of_bot;
+	
+	
+	/* this is really dodgy... should probably do this with the ECAttr
+	 * extension system, provided we ever finish that contraption */
+	std::vector<CHandle<CTFBot>> action_override_mobber;
 	
 	
 	struct DelayedAddCond
@@ -180,14 +168,6 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
-	void ClearAllData()
-	{
-		spawners.clear();
-		spawner_of_bot.clear();
-		delayed_addconds.clear();
-	}
-	
-	
 	void RemoveSpawner(CTFBotSpawner *spawner)
 	{
 		for (auto it = spawner_of_bot.begin(); it != spawner_of_bot.end(); ) {
@@ -206,7 +186,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
-	//	DevMsg("CTFBotSpawner %08x: dtor0, clearing data\n", (uintptr_t)spawner);
+		DevMsg("CTFBotSpawner %08x: dtor0, clearing data\n", (uintptr_t)spawner);
 		RemoveSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor0)();
@@ -216,7 +196,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
 		
-	//	DevMsg("CTFBotSpawner %08x: dtor2, clearing data\n", (uintptr_t)spawner);
+		DevMsg("CTFBotSpawner %08x: dtor2, clearing data\n", (uintptr_t)spawner);
 		RemoveSpawner(spawner);
 		
 		DETOUR_MEMBER_CALL(CTFBotSpawner_dtor2)();
@@ -239,6 +219,14 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		spawner_of_bot.erase(bot);
 		
+		for (auto it = action_override_mobber.begin(); it != action_override_mobber.end(); ) {
+			if (*it == bot) {
+				it = action_override_mobber.erase(it);
+			} else {
+				++it;
+			}
+		}
+		
 		for (auto it = delayed_addconds.begin(); it != delayed_addconds.end(); ) {
 			if ((*it).bot == bot) {
 				it = delayed_addconds.erase(it);
@@ -253,7 +241,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
-	//	DevMsg("CTFBot %08x: dtor0, clearing data\n", (uintptr_t)bot);
+		DevMsg("CTFBot %08x: dtor0, clearing data\n", (uintptr_t)bot);
 		ClearDataForBot(bot);
 		
 		DETOUR_MEMBER_CALL(CTFBot_dtor0)();
@@ -263,7 +251,7 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
-	//	DevMsg("CTFBot %08x: dtor2, clearing data\n", (uintptr_t)bot);
+		DevMsg("CTFBot %08x: dtor2, clearing data\n", (uintptr_t)bot);
 		ClearDataForBot(bot);
 		
 		DETOUR_MEMBER_CALL(CTFBot_dtor2)();
@@ -274,12 +262,10 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto player = reinterpret_cast<CTFPlayer *>(this);
 		
-		if (nState == TF_STATE_WELCOME || nState == TF_STATE_OBSERVER) {
-			CTFBot *bot = ToTFBot(player);
-			if (bot != nullptr) {
-			//	DevMsg("Bot #%d [\"%s\"]: StateEnter %s, clearing data\n", ENTINDEX(bot), bot->GetPlayerName(), GetStateName(nState));
-				ClearDataForBot(bot);
-			}
+		CTFBot *bot = ToTFBot(player);
+		if (bot != nullptr) {
+			DevMsg("Bot #%d [\"%s\"]: StateEnter %s, clearing data\n", ENTINDEX(bot), bot->GetPlayerName(), GetStateName(nState));
+			ClearDataForBot(bot);
 		}
 		
 		DETOUR_MEMBER_CALL(CTFPlayer_StateEnter)(nState);
@@ -289,12 +275,10 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto player = reinterpret_cast<CTFPlayer *>(this);
 		
-		if (player->StateGet() == TF_STATE_WELCOME || player->StateGet() == TF_STATE_OBSERVER) {
-			CTFBot *bot = ToTFBot(player);
-			if (bot != nullptr) {
-			//	DevMsg("Bot #%d [\"%s\"]: StateLeave %s, clearing data\n", ENTINDEX(bot), bot->GetPlayerName(), GetStateName(bot->StateGet()));
-				ClearDataForBot(bot);
-			}
+		CTFBot *bot = ToTFBot(player);
+		if (bot != nullptr) {
+			DevMsg("Bot #%d [\"%s\"]: StateLeave %s, clearing data\n", ENTINDEX(bot), bot->GetPlayerName(), GetStateName(bot->StateGet()));
+			ClearDataForBot(bot);
 		}
 		
 		DETOUR_MEMBER_CALL(CTFPlayer_StateLeave)();
@@ -385,14 +369,8 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		const char *value = kv->GetString();
 		
-		if (FStrEq(value, "Default")) {
-			spawners[spawner].action = ACTION_Default;
-		} else if (FStrEq(value, "FetchFlag")) {
-			spawners[spawner].action = ACTION_FetchFlag;
-		} else if (FStrEq(value, "PushToCapturePoint")) {
-			spawners[spawner].action = ACTION_PushToCapturePoint;
-		} else if (FStrEq(value, "Mobber")) {
-			spawners[spawner].action = ACTION_Mobber;
+		if (FStrEq(value, "Mobber")) {
+			spawners[spawner].action_mobber = true;
 		} else {
 			Warning("Unknown value \'%s\' for TFBot Action.\n", value);
 		}
@@ -537,10 +515,6 @@ namespace Mod_Pop_TFBot_Extensions
 				spawners[spawner].rocket_custom_particle = subkey->GetString();
 			} else if (FStrEq(name, "RingOfFire")) {
 				spawners[spawner].ring_of_fire = subkey->GetFloat();
-#ifdef ENABLE_BROKEN_STUFF
-			} else if (FStrEq(name, "DropWeapon")) {
-				spawners[spawner].drop_weapon = subkey->GetBool();
-#endif
 			} else {
 				del = false;
 			}
@@ -609,6 +583,10 @@ namespace Mod_Pop_TFBot_Extensions
 						}
 					}
 					
+					if (data.action_mobber) {
+						action_override_mobber.push_back(bot);
+					}
+					
 					if (!data.use_custom_model.empty()) {
 						DevMsg("CTFBotSpawner %08x: applying UseCustomModel(\"%s\") on bot #%d\n", (uintptr_t)spawner, data.use_custom_model.c_str(), ENTINDEX(bot));
 						
@@ -673,94 +651,22 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
 	{
-		CTFBotSpawner *spawner = spawner_of_bot[actor];
-		if (spawner != nullptr) {
-		//	DevMsg("CTFBotSpawner: #%d \"%s\" => %08x\n", ENTINDEX(actor), actor->GetPlayerName(), (uintptr_t)spawner);
-			auto it = spawners.find(spawner);
-			if (it != spawners.end()) {
-			//	DevMsg("CTFBotSpawner: #%d \"%s\" has SpawnerData\n", ENTINDEX(actor), actor->GetPlayerName());
-				SpawnerData& data = (*it).second;
-				
-				switch (data.action) {
-				
-				case ACTION_Default:
-					break;
-				
-				case ACTION_FetchFlag:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to FetchFlag\n", ENTINDEX(actor), actor->GetPlayerName());
-					return CTFBotFetchFlag::New();
-				
-				case ACTION_PushToCapturePoint:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to PushToCapturePoint[-->FetchFlag]\n", ENTINDEX(actor), actor->GetPlayerName());
-					return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
-				
-				case ACTION_Mobber:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to Mobber\n", ENTINDEX(actor), actor->GetPlayerName());
-					return new CTFBotMobber();
-				
-				}
+		bool override_mobber = false;
+		
+		for (auto it = action_override_mobber.begin(); it != action_override_mobber.end(); ) {
+			if (*it == actor) {
+				it = action_override_mobber.erase(it);
+				override_mobber = true;
 			} else {
-			//	DevMsg("CTFBotSpawner: #%d \"%s\" does not have SpawnerData\n", ENTINDEX(actor), actor->GetPlayerName());
+				++it;
 			}
-		} else {
-		//	DevMsg("CTFBotSpawner: #%d \"%s\" => can't find spawner???\n", ENTINDEX(actor), actor->GetPlayerName());
+		}
+		
+		if (override_mobber) {
+			return new CTFBotMobber();
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
-	}
-	
-	
-	RefCount rc_CTFBot_GetFlagToFetch;
-	DETOUR_DECL_MEMBER(CCaptureFlag *, CTFBot_GetFlagToFetch)
-	{
-		auto bot = reinterpret_cast<CTFBot *>(this);
-		
-		SCOPED_INCREMENT(rc_CTFBot_GetFlagToFetch);
-		auto result = DETOUR_MEMBER_CALL(CTFBot_GetFlagToFetch)();
-		
-	//	DevMsg("CTFBot::GetFlagToFetch([#%d \"%s\"]) = [#%d \"%s\"]\n",
-	//		ENTINDEX(bot), bot->GetPlayerName(),
-	//		(result != nullptr ? ENTINDEX(result) : 0),
-	//		(result != nullptr ? STRING(result->GetEntityName()) : "nullptr"));
-	//	DevMsg("    --> bot attributes: %08x\n", bot->m_nBotAttrs);
-		
-		return result;
-	}
-	
-	DETOUR_DECL_MEMBER(bool, CTFPlayer_IsPlayerClass, int iClass)
-	{
-		auto player = reinterpret_cast<CTFPlayer *>(this);
-		
-	//	if (rc_CTFBot_GetFlagToFetch > 0 && iClass == TF_CLASS_ENGINEER) {
-	//		DevMsg("CTFPlayer::IsPlayerClass([#%d \"%s\"], TF_CLASS_ENGINEER): called from CTFBot::GetFlagToFetch, returning false.\n", ENTINDEX(player), player->GetPlayerName());
-	//		return false;
-	//	}
-		
-		auto result = DETOUR_MEMBER_CALL(CTFPlayer_IsPlayerClass)(iClass);
-		
-		if (rc_CTFBot_GetFlagToFetch > 0 && result && iClass == TF_CLASS_ENGINEER) {
-			CTFBot *bot = ToTFBot(player);
-			if (bot != nullptr) {
-				CTFBotSpawner *spawner = spawner_of_bot[bot];
-				if (spawner != nullptr) {
-					auto it = spawners.find(spawner);
-					if (it != spawners.end()) {
-						SpawnerData& data = (*it).second;
-						
-						/* disable the implicit "Attributes IgnoreFlag" thing
-						 * given to engineer bots if they have one of our Action
-						 * overrides enabled (the pop author can explicitly give
-						 * the engie bot "Attributes IgnoreFlag" if they want,
-						 * of course) */
-						if (data.action != ACTION_Default) {
-							return false;
-						}
-					}
-				}
-			}
-		}
-		
-		return result;
 	}
 	
 	
@@ -1087,74 +993,6 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
-#ifdef ENABLE_BROKEN_STUFF
-	DETOUR_DECL_MEMBER(bool, CTFPlayer_ShouldDropAmmoPack)
-	{
-		auto player = reinterpret_cast<CTFPlayer *>(this);
-		
-		CTFBot *bot = ToTFBot(player);
-		if (bot != nullptr) {
-			CTFBotSpawner *spawner = spawner_of_bot[bot];
-			if (spawner != nullptr) {
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					if (data.drop_weapon) {
-					//	DevMsg("ShouldDropAmmoPack[%s]: yep\n", player->GetPlayerName());
-						return true;
-				//	} else {
-				//		DevMsg("ShouldDropAmmoPack[%s]: nope\n", player->GetPlayerName());
-					}
-			//	} else {
-			//		DevMsg("ShouldDropAmmoPack[%s]: can't find data for bot spawner\n", player->GetPlayerName());
-				}
-		//	} else {
-		//		DevMsg("ShouldDropAmmoPack[%s]: can't find spawner of bot\n", player->GetPlayerName());
-			}
-	//	} else {
-	//		DevMsg("ShouldDropAmmoPack[%s]: not a TFBot\n", player->GetPlayerName());
-		}
-		
-		return DETOUR_MEMBER_CALL(CTFPlayer_ShouldDropAmmoPack)();
-	}
-	
-	RefCount rc_CTFPlayer_DropAmmoPack;
-	DETOUR_DECL_MEMBER(void, CTFPlayer_DropAmmoPack, const CTakeDamageInfo& info, bool b1, bool b2)
-	{
-		SCOPED_INCREMENT(rc_CTFPlayer_DropAmmoPack);
-		DETOUR_MEMBER_CALL(CTFPlayer_DropAmmoPack)(info, b1, b2);
-	}
-	
-	DETOUR_DECL_STATIC(CTFAmmoPack *, CTFAmmoPack_Create, const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity *pOwner, const char *pszModelName)
-	{
-		// basically re-implementing the logic we bypassed in CTFPlayer::ShouldDropAmmoPack
-		// but in such a way that we only affect the actual ammo packs, not dropped weapons
-		// (and actually we use GetTeamNumber rather than IsBot)
-		if (rc_CTFPlayer_DropAmmoPack > 0 && TFGameRules()->IsMannVsMachineMode() && (pOwner == nullptr || pOwner->GetTeamNumber() == TF_TEAM_BLUE)) {
-			return nullptr;
-		}
-		
-		return DETOUR_STATIC_CALL(CTFAmmoPack_Create)(vecOrigin, vecAngles, pOwner, pszModelName);
-	}
-	
-	DETOUR_DECL_STATIC(CTFDroppedWeapon *, CTFDroppedWeapon_Create, const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity *pOwner, const char *pszModelName, const CEconItemView *pItemView)
-	{
-		// this is really ugly... we temporarily override m_bPlayingMannVsMachine
-		// because the alternative would be to make a patch
-		
-		bool is_mvm_mode = TFGameRules()->IsMannVsMachineMode();
-		TFGameRules()->m_bPlayingMannVsMachine = false;
-		
-		auto result = DETOUR_STATIC_CALL(CTFDroppedWeapon_Create)(vecOrigin, vecAngles, pOwner, pszModelName, pItemView);
-		
-		TFGameRules()->m_bPlayingMannVsMachine = is_mvm_mode;
-		
-		return result;
-	}
-#endif
-	
-	
 	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
@@ -1175,9 +1013,6 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,   "CTFBot::GetFlagToFetch");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass, "CTFPlayer::IsPlayerClass");
-			
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ApplyOnDamageModifyRules, "CTFGameRules::ApplyOnDamageModifyRules");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFWeaponBaseGun_FireRocket, "CTFWeaponBaseGun::FireRocket");
@@ -1187,13 +1022,6 @@ namespace Mod_Pop_TFBot_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Rocket_Spawn,       "CTFProjectile_Rocket::Spawn");
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PerformCustomPhysics, "CBaseEntity::PerformCustomPhysics");
 			
-#ifdef ENABLE_BROKEN_STUFF
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ShouldDropAmmoPack, "CTFPlayer::ShouldDropAmmoPack");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_DropAmmoPack,       "CTFPlayer::DropAmmoPack");
-			MOD_ADD_DETOUR_STATIC(CTFDroppedWeapon_Create,      "CTFDroppedWeapon::Create");
-			MOD_ADD_DETOUR_STATIC(CTFAmmoPack_Create,           "CTFAmmoPack::Create");
-#endif
-			
 			// TEST! REMOVE ME!
 //			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetOverrideStepSound, "CTFPlayer::GetOverrideStepSound");
 //			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GetSceneSoundToken,   "CTFPlayer::GetSceneSoundToken");
@@ -1201,12 +1029,18 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		virtual void OnUnload() override
 		{
-			ClearAllData();
+			spawners.clear();
+			spawner_of_bot.clear();
+			action_override_mobber.clear();
+			delayed_addconds.clear();
 		}
 		
 		virtual void OnDisable() override
 		{
-			ClearAllData();
+			spawners.clear();
+			spawner_of_bot.clear();
+			action_override_mobber.clear();
+			delayed_addconds.clear();
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }

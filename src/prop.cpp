@@ -3,9 +3,6 @@
 #include "util/misc.h"
 #include "util/demangle.h"
 
-// TODO: move this to common.h
-#include <../extensions/sdktools/util.h>
-
 
 void CC_ListProps(const CCommand& cmd)
 {
