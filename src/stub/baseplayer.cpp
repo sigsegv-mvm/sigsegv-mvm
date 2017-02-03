@@ -12,13 +12,14 @@ MemberFuncThunk<CBaseCombatCharacter *, bool, const CBaseEntity *, CBaseCombatCh
 MemberFuncThunk<CBaseCombatCharacter *, bool, CBaseCombatCharacter *, CBaseCombatCharacter::FieldOfViewCheckType> CBaseCombatCharacter::ft_IsAbleToSee_bcc   ("CBaseCombatCharacter::IsAbleToSee [CBaseCombatCharacter *]");
 MemberFuncThunk<CBaseCombatCharacter *, void, int>                                                                CBaseCombatCharacter::ft_SetBloodColor     ("CBaseCombatCharacter::SetBloodColor");
 
-MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       CBaseCombatCharacter::vt_Weapon_GetSlot    (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_GetSlot");
-MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      CBaseCombatCharacter::vt_Weapon_CanSwitchTo(TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_CanSwitchTo");
-MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> CBaseCombatCharacter::vt_Weapon_Switch     (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_Switch");
-MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     CBaseCombatCharacter::vt_GetLastKnownArea  (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetLastKnownArea");
-MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            CBaseCombatCharacter::vt_GiveAmmo          (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GiveAmmo");
-MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       CBaseCombatCharacter::vt_GetAmmoCount      (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetAmmoCount");
-MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   CBaseCombatCharacter::vt_ShouldGib         (TypeName<CTFPlayer>(),            "CTFPlayer::ShouldGib");
+MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       CBaseCombatCharacter::vt_Weapon_GetSlot     (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_GetSlot");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      CBaseCombatCharacter::vt_Weapon_CanSwitchTo (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_CanSwitchTo");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> CBaseCombatCharacter::vt_Weapon_Switch      (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::Weapon_Switch");
+MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     CBaseCombatCharacter::vt_GetLastKnownArea   (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetLastKnownArea");
+MemberVFuncThunk<      CBaseCombatCharacter *, void>                           CBaseCombatCharacter::vt_UpdateLastKnownArea(TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::UpdateLastKnownArea");
+MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            CBaseCombatCharacter::vt_GiveAmmo           (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GiveAmmo");
+MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       CBaseCombatCharacter::vt_GetAmmoCount       (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetAmmoCount");
+MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   CBaseCombatCharacter::vt_ShouldGib          (TypeName<CTFPlayer>(),            "CTFPlayer::ShouldGib");
 
 
 //IMPL_SENDPROP(bool,  CPlayerLocalData, m_bDucked,        CBasePlayer);
@@ -33,15 +34,21 @@ IMPL_DATAMAP(bool,         CBasePlayer, m_bDuckToggled);
 IMPL_DATAMAP(unsigned int, CBasePlayer, m_afPhysicsFlags);
 IMPL_DATAMAP(int,          CBasePlayer, m_vphysicsCollisionState);
 
-IMPL_SENDPROP(CPlayerLocalData,                   CBasePlayer, m_Local,        CBasePlayer);
-IMPL_SENDPROP(int,                                CBasePlayer, m_nTickBase,    CBasePlayer);
-IMPL_SENDPROP(float,                              CBasePlayer, m_flMaxspeed,   CBasePlayer);
-IMPL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, CBasePlayer, m_hMyWearables, CBasePlayer);
+IMPL_SENDPROP(float,                              CBasePlayer, m_flDeathTime,   CBasePlayer);
+IMPL_SENDPROP(int,                                CBasePlayer, m_iObserverMode, CBasePlayer);
+IMPL_SENDPROP(CPlayerLocalData,                   CBasePlayer, m_Local,         CBasePlayer);
+IMPL_SENDPROP(int,                                CBasePlayer, m_nTickBase,     CBasePlayer);
+IMPL_SENDPROP(float,                              CBasePlayer, m_flMaxspeed,    CBasePlayer);
+IMPL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, CBasePlayer, m_hMyWearables,  CBasePlayer);
 
-MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors   ("CBasePlayer::EyeVectors");
-MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID   ("CBasePlayer::GetSteamID");
-MemberFuncThunk<CBasePlayer *, void, const char *>                 CBasePlayer::ft_SetPlayerName("CBasePlayer::SetPlayerName");
-MemberFuncThunk<CBasePlayer *, CBaseViewModel *, int, bool>        CBasePlayer::ft_GetViewModel ("CBasePlayer::GetViewModel");
+MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> CBasePlayer::ft_EyeVectors    ("CBasePlayer::EyeVectors");
+MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   CBasePlayer::ft_GetSteamID    ("CBasePlayer::GetSteamID");
+MemberFuncThunk<CBasePlayer *, void, const char *>                 CBasePlayer::ft_SetPlayerName ("CBasePlayer::SetPlayerName");
+MemberFuncThunk<CBasePlayer *, CBaseViewModel *, int, bool>        CBasePlayer::ft_GetViewModel  ("CBasePlayer::GetViewModel");
+MemberFuncThunk<CBasePlayer *, void, int>                          CBasePlayer::ft_DisableButtons("CBasePlayer::DisableButtons");
+MemberFuncThunk<CBasePlayer *, void, int>                          CBasePlayer::ft_EnableButtons ("CBasePlayer::EnableButtons");
+MemberFuncThunk<CBasePlayer *, void, int>                          CBasePlayer::ft_ForceButtons  ("CBasePlayer::ForceButtons");
+MemberFuncThunk<CBasePlayer *, void, int>                          CBasePlayer::ft_UnforceButtons("CBasePlayer::UnforceButtons");
 
 MemberVFuncThunk<const CBasePlayer *, bool>             CBasePlayer::vt_IsBot               (TypeName<CBasePlayer>(), "CBasePlayer::IsBot");
 MemberVFuncThunk<      CBasePlayer *, void, bool, bool> CBasePlayer::vt_CommitSuicide       (TypeName<CBasePlayer>(), "CBasePlayer::CommitSuicide");

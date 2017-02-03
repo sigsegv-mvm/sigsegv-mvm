@@ -41,7 +41,7 @@ namespace Mod_MvM_FriendlyFire
 		auto player = reinterpret_cast<CTFPlayer *>(this);
 		
 		/* a bit hacky: turn on lag compensation for EVERYTHING for FF mode */
-		if (TFGameRules()->IsMannVsMachineMode() && player->GetTeamNumber() == TF_TEAM_RED && InMvMFriendlyFireTime()) {
+		if (cvar_lagcompensate.GetBool() && TFGameRules()->IsMannVsMachineMode() && player->GetTeamNumber() == TF_TEAM_RED && InMvMFriendlyFireTime()) {
 			return true;
 		}
 		

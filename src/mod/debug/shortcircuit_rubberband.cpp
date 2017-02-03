@@ -24,20 +24,20 @@ namespace Mod_Debug_ShortCircuit_RubberBand
 	int last_tick = -1;
 	
 	template<typename... ARGS>
-	void ClientMsgTick(const char *fmt, ARGS... args)
+	void ClientMsgAllTick(const char *fmt, ARGS... args)
 	{
 		if (!cvar_spew.GetBool()) return;
 		
 		if (last_tick != gpGlobals->tickcount) {
 			last_tick = gpGlobals->tickcount;
-			ClientMsg("-------------\n");
+			ClientMsgAll("-------------\n");
 		}
 		
 		size_t fmt2_len = strlen(fmt) + 20;
 		char *fmt2 = new char[fmt2_len];
 		snprintf(fmt2, fmt2_len, "[tick %6d] %s", gpGlobals->tickcount, fmt);
 		
-		ClientMsg(fmt2, std::forward<ARGS>(args)...);
+		ClientMsgAll(fmt2, std::forward<ARGS>(args)...);
 		
 		delete[] fmt2;
 	}
@@ -48,14 +48,14 @@ namespace Mod_Debug_ShortCircuit_RubberBand
 	DETOUR_DECL_MEMBER(void, CLagCompensationManager_StartLagCompensation, CBasePlayer *player, CUserCmd *cmd)
 	{
 //		lagcomp_currentplayer = player;
-		ClientMsgTick("- lagcompensation->StartLagCompensation\n");
+		ClientMsgAllTick("- lagcompensation->StartLagCompensation\n");
 		DETOUR_MEMBER_CALL(CLagCompensationManager_StartLagCompensation)(player, cmd);
 	}
 	
 	DETOUR_DECL_MEMBER(void, CLagCompensationManager_FinishLagCompensation, CBasePlayer *player)
 	{
 		DETOUR_MEMBER_CALL(CLagCompensationManager_FinishLagCompensation)(player);
-		ClientMsgTick("- lagcompensation->FinishLagCompensation\n");
+		ClientMsgAllTick("- lagcompensation->FinishLagCompensation\n");
 //		lagcomp_currentplayer = nullptr;
 	}
 	
@@ -65,15 +65,15 @@ namespace Mod_Debug_ShortCircuit_RubberBand
 	
 	DETOUR_DECL_MEMBER(bool, CTFMechanicalArm_ShockAttack)
 	{
-		ClientMsgTick("CTFMechanicalArm::ShockAttack BEGIN\n");
+		ClientMsgAllTick("CTFMechanicalArm::ShockAttack BEGIN\n");
 		auto result = DETOUR_MEMBER_CALL(CTFMechanicalArm_ShockAttack)();
-		ClientMsgTick("CTFMechanicalArm::ShockAttack END\n");
+		ClientMsgAllTick("CTFMechanicalArm::ShockAttack END\n");
 		
 		if (lagcompensation->IsCurrentlyDoingLagCompensation()) {
-			ClientMsgTick(">> BUG: still in lag compensation after CTFMechanicalArm::ShockAttack!\n");
+			ClientMsgAllTick(">> BUG: still in lag compensation after CTFMechanicalArm::ShockAttack!\n");
 			
 			if (cvar_fix.GetBool()) {
-				ClientMsgTick(">> FIX: resolving this by calling lagcompensation->FinishLagCompensation.\n");
+				ClientMsgAllTick(">> FIX: resolving this by calling lagcompensation->FinishLagCompensation.\n");
 				lagcompensation->FinishLagCompensation(nullptr);
 			}
 		}

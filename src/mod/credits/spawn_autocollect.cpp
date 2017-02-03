@@ -1,31 +1,34 @@
 #include "mod.h"
-#include "re/nextbot.h"
+#include "stub/nav.h"
+#include "stub/entities.h"
+#include "stub/gamerules.h"
+#include "stub/tf_objective_resource.h"
 #include "util/scope.h"
 
 
 namespace Mod_Credits_Spawn_AutoCollect
 {
-	RefCount rc_CCurrencyPack_ComeToRest;
 	DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest)
 	{
-		SCOPED_INCREMENT(rc_CCurrencyPack_ComeToRest);
-		return DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
-	}
-	
-	DETOUR_DECL_MEMBER(CNavArea *, CNavMesh_GetNavArea, const Vector& v1, float f1)
-	{
-		CNavArea *area = DETOUR_MEMBER_CALL(CNavMesh_GetNavArea)(v1, f1);
+		auto pack = reinterpret_cast<CCurrencyPack *>(this);
 		
-		if (area != nullptr && rc_CCurrencyPack_ComeToRest > 0) {
-			TFNavAttributeType attr = reinterpret_cast<CTFNavArea *>(area)->GetTFAttributes();
-			
-			if ((attr & BLUE_SPAWN_ROOM) != 0) {
-				DevMsg("CCurrencyPack landed in BLUE_SPAWN_ROOM area; auto-collecting\n");
-				return nullptr;
+		DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
+		
+		if (!pack->IsMarkedForDeletion() && !pack->IsBeingPulled() && !pack->IsDistributed()) {
+			auto area = reinterpret_cast<CTFNavArea *>(TheNavMesh->GetNavArea(pack->GetAbsOrigin()));
+			if (area != nullptr && area->HasTFAttributes(BLUE_SPAWN_ROOM)) {
+				DevMsg("Non-distributed CCurrencyPack (#%d / $%d) landed in BLUE_SPAWN_ROOM area; distributing now.\n",
+					ENTINDEX(pack), pack->GetAmount());
+				
+				pack->SetDistributed(true);
+				
+				TFGameRules()->DistributeCurrencyAmount(pack->GetAmount(), nullptr, true, false, false);
+				TFObjectiveResource()->m_nMvMWorldMoney -= pack->GetAmount();
+				
+				StopParticleEffects(pack);
+				DispatchParticleEffect("mvm_cash_embers_red", PATTACH_ABSORIGIN_FOLLOW, pack);
 			}
 		}
-		
-		return area;
 	}
 	
 	
@@ -35,7 +38,6 @@ namespace Mod_Credits_Spawn_AutoCollect
 		CMod() : IMod("Credits:Spawn_AutoCollect")
 		{
 			MOD_ADD_DETOUR_MEMBER(CCurrencyPack_ComeToRest, "CCurrencyPack::ComeToRest");
-			MOD_ADD_DETOUR_MEMBER(CNavMesh_GetNavArea,      "CNavMesh::GetNavArea [vec]");
 		}
 	};
 	CMod s_Mod;

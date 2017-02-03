@@ -72,19 +72,19 @@ namespace Mod_Debug_Medigun_Speed
 				
 				if (PlayerMatchesFilter(player)) {
 					if (spOld.TeamFortress_CalculateMaxSpeed != spNew.TeamFortress_CalculateMaxSpeed) {
-						ClientMsg("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
+						ClientMsgAll("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
 							gpGlobals->curtime, player->GetPlayerName(), "TeamFortress_CalculateMaxSpeed",
 							spOld.TeamFortress_CalculateMaxSpeed, spNew.TeamFortress_CalculateMaxSpeed);
 					}
 					
 					if (spOld.MaxSpeed != spNew.MaxSpeed) {
-						ClientMsg("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
+						ClientMsgAll("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
 							gpGlobals->curtime, player->GetPlayerName(), "MaxSpeed",
 							spOld.MaxSpeed, spNew.MaxSpeed);
 					}
 					
 					if (spOld.GetPlayerMaxSpeed != spNew.GetPlayerMaxSpeed) {
-						ClientMsg("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
+						ClientMsgAll("[%8.3f] %s: %30s: %6.1f -> %6.1f\n",
 							gpGlobals->curtime, player->GetPlayerName(), "GetPlayerMaxSpeed",
 							spOld.GetPlayerMaxSpeed, spNew.GetPlayerMaxSpeed);
 					}

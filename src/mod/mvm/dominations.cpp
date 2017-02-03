@@ -2,6 +2,11 @@
 #include "prop.h"
 
 
+// the nemesis particles don't show up on the client side for some reason
+// from investigating, C_TFPlayer::ShouldShowNemesisIcon returns false
+// and the specific part that fails in there is the call to CTFPlayerShared::IsPlayerDominated
+
+
 namespace Mod_MvM_Dominations
 {
 	constexpr uint8_t s_Buf[] = {

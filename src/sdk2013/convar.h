@@ -101,6 +101,7 @@ class ConCommandBase
 	friend class CCvar;
 	friend class ConVar;
 	friend class ConCommand;
+	friend class ConVarRef;
 	friend void ConVar_Register( int nCVarFlag, IConCommandBaseAccessor *pAccessor );
 	friend void ConVar_PublishToVXConsole();
 
@@ -261,6 +262,7 @@ inline const char *CCommand::operator[]( int nIndex ) const
 class ConCommand : public ConCommandBase
 {
 friend class CCvar;
+friend class ConVarRef;
 
 public:
 	typedef ConCommandBase BaseClass;
@@ -390,8 +392,6 @@ private:
 	// Used internally by OneTimeInit to initialize.
 	virtual void				Init();
 	int GetFlags() { return m_pParent->m_nFlags; }
-
-	int& GetFlagsRef() { return m_pParent->m_nFlags; } // non-standard!
 private:
 
 	// This either points to "this" or it points to the original declaration of a ConVar.
@@ -489,7 +489,11 @@ public:
 
 	const char *GetDefault() const;
 
-	int& GetFlagsRef() { return m_pConVarState->GetFlagsRef(); } // non-standard!
+	// sigsegv: non-standard stuff added by me
+	int&  Ref_Flags()  const { return m_pConVarState->m_pParent->m_nFlags;  }
+	bool& Ref_HasMin() const { return m_pConVarState->m_pParent->m_bHasMin; }
+	bool& Ref_HasMax() const { return m_pConVarState->m_pParent->m_bHasMax; }
+
 private:
 	// High-speed method to read convar data
 	IConVar *m_pConVar;

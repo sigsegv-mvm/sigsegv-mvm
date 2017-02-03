@@ -48,7 +48,7 @@ namespace Mod_Debug_MedigunShield_Obstruction
 		auto loco = reinterpret_cast<ILocomotion *>(this);
 		auto bot = rtti_cast<CTFBot *>(loco->GetBot());
 		if (bot != nullptr) {
-			ClientMsg("ILocomotion::TraceHull(bot #%d)\n",
+			ClientMsgAll("ILocomotion::TraceHull(bot #%d)\n",
 				ENTINDEX(bot));
 	//			"  start [ %+7.1f %+7.1f %+7.1f ]\n"
 	//			"  end   [ %+7.1f %+7.1f %+7.1f ]\n"
@@ -82,13 +82,13 @@ namespace Mod_Debug_MedigunShield_Obstruction
 		if (rc_ILocomotion_TraceHull > 0) {
 			auto shield = rtti_cast<CTFMedigunShield *>(pEntity);
 			if (shield != nullptr) {
-				ClientMsg("  NextBotTraversableTraceFilter::ShouldHitEntity: %5s for CTFMedigunShield #%d on team %d\n",
+				ClientMsgAll("  NextBotTraversableTraceFilter::ShouldHitEntity: %5s for CTFMedigunShield #%d on team %d\n",
 					(result ? "TRUE" : "FALSE"),
 					ENTINDEX(shield),
 					shield->GetTeamNumber());
 				
 				if (result && cvar_override_trace.GetBool()) {
-					ClientMsg("    [!!] overriding ShouldHitEntity result to FALSE\n");
+					ClientMsgAll("    [!!] overriding ShouldHitEntity result to FALSE\n");
 					return false;
 				}
 			}
@@ -109,14 +109,14 @@ namespace Mod_Debug_MedigunShield_Obstruction
 			auto loco = reinterpret_cast<ILocomotion *>(this);
 			auto bot = rtti_cast<CTFBot *>(loco->GetBot());
 			if (bot != nullptr) {
-				ClientMsg("CTFBotLocomotion::IsEntityTraversable(bot #%d): %5s for CTFMedigunShield #%d on team %d\n",
+				ClientMsgAll("CTFBotLocomotion::IsEntityTraversable(bot #%d): %5s for CTFMedigunShield #%d on team %d\n",
 					ENTINDEX(bot),
 					(result ? "TRUE" : "FALSE"),
 					ENTINDEX(shield),
 					shield->GetTeamNumber());
 				
 				if (!result && cvar_override_traversable.GetBool()) {
-					ClientMsg("  [!!] overriding IsEntityTraversable result to TRUE\n");
+					ClientMsgAll("  [!!] overriding IsEntityTraversable result to TRUE\n");
 					return true;
 				}
 				

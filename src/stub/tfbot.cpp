@@ -152,7 +152,14 @@ struct CExtract_CTFBot_m_nBotAttrs : public IExtract<CTFBot::AttributeType *>
 #endif
 
 
-#define NEXTBOTPLAYER_GETVFT(NAME, ...) template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__>& NextBotPlayer<CTFPlayer>::GetVFT_##NAME() { static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__> vft(TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::" #NAME); return vft; }
+// the line below is broken; it once worked but then stopped working for some reason
+//#define NEXTBOTPLAYER_GETVFT(NAME, ...) template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__>& NextBotPlayer<CTFPlayer>::GetVFT_##NAME() { static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__> vft(TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::" #NAME); return vft; }
+
+/* we have to do this nonsense due to restrictions on having static data members
+ * in _specialized_ class templates */
+#define NEXTBOTPLAYER_GETVFT(NAME, ...) \
+	static MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__> NextBotPlayer_CTFPlayer_##NAME(TypeName<NextBotPlayer<CTFPlayer>>(), "NextBotPlayer<CTFPlayer>::" #NAME); \
+	template<> MemberVFuncThunk<NextBotPlayer<CTFPlayer> *, __VA_ARGS__>& NextBotPlayer<CTFPlayer>::GetVFT_##NAME() { return NextBotPlayer_CTFPlayer_##NAME; }
 NEXTBOTPLAYER_GETVFT(PressFireButton,          void, float       );
 NEXTBOTPLAYER_GETVFT(ReleaseFireButton,        void              );
 NEXTBOTPLAYER_GETVFT(PressAltFireButton,       void, float       );

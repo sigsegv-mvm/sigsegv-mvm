@@ -2,7 +2,6 @@
 #define _INCLUDE_SIGSEGV_STUB_TFWEAPONBASE_H_
 
 
-#include "stub/misc.h"
 #include "stub/tfplayer.h"
 #include "stub/entities.h"
 

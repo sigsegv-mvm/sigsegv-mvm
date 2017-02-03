@@ -56,6 +56,8 @@ namespace Mod_Util_Overlay_Send
 {
 	ConVar cvar_mtu("sig_util_overlay_send_mtu", "65000", FCVAR_NOTIFY,
 		"The maximum size of UDP packets to send through the firehose");
+	ConVar cvar_delay("sig_util_overlay_send_delay", "0", FCVAR_NOTIFY,
+		"The number of server ticks to delay sending overlay packets to the client");
 	
 	
 	class OverlaySend
@@ -63,8 +65,8 @@ namespace Mod_Util_Overlay_Send
 	public:
 		struct Message
 		{
-			Message(size_t bits, const uint8_t *src) :
-				bits(bits)
+			Message(size_t bits, const uint8_t *src, int delay) :
+				bits(bits), delay(delay)
 			{
 				this->ptr = new uint8_t[BitByte(bits)];
 				memcpy(this->ptr, src, BitByte(bits));
@@ -81,6 +83,7 @@ namespace Mod_Util_Overlay_Send
 			
 			size_t bits;
 			uint8_t *ptr = nullptr;
+			int delay;
 		};
 		
 		bf_write *Begin()
@@ -100,19 +103,26 @@ namespace Mod_Util_Overlay_Send
 			this->m_bInProgress = false;
 			
 			int bits = this->m_Writer.GetNumBitsWritten();
-			this->m_Queue.emplace_back(bits, this->m_TempBuf.data());
+			this->m_Queue.emplace_back(bits, this->m_TempBuf.data(), cvar_delay.GetInt());
 		}
 		
 		void SendAll()
 		{
 			this->InitPacket();
 			
-			for (const auto& msg : this->m_Queue) {
-				this->SendOne(msg);
+			for (auto it = this->m_Queue.begin(); it != this->m_Queue.end(); ) {
+				auto& msg = *it;
+				
+				if (msg.delay > 0) {
+					--msg.delay;
+					++it;
+				} else {
+					this->SendOne(msg);
+					it = this->m_Queue.erase(it);
+				}
 			}
 			
 			this->Flush();
-			this->m_Queue.clear();
 		}
 		
 		void Flush()

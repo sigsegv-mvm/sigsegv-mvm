@@ -98,7 +98,10 @@ public:
 	int GetWinningTeam()               { return this->m_iWinningTeam; }
 	bool IsPlayerReady(int iIndex)     { return this->m_bPlayerReady[iIndex]; }
 	
-	void BroadcastSound(int iTeam, const char *sound, int iAdditionalSoundFlags = 0) { ft_BroadcastSound(this, iTeam, sound, iAdditionalSoundFlags); }
+	void BroadcastSound(int iTeam, const char *sound, int iAdditionalSoundFlags = 0) {        ft_BroadcastSound(this, iTeam, sound, iAdditionalSoundFlags); }
+	float GetMinTimeWhenPlayerMaySpawn(CBasePlayer *pPlayer)                         { return ft_GetMinTimeWhenPlayerMaySpawn(this, pPlayer); }
+	
+	float GetNextRespawnWave(int iTeam, CBasePlayer *pPlayer) { return vt_GetNextRespawnWave(this, iTeam, pPlayer); }
 	
 private:
 	DECL_SENDPROP(gamerules_roundstate_t, m_iRoundState);
@@ -106,6 +109,9 @@ private:
 	DECL_SENDPROP(bool[33],               m_bPlayerReady);
 	
 	static MemberFuncThunk<CTeamplayRoundBasedRules *, void, int, const char *, int> ft_BroadcastSound;
+	static MemberFuncThunk<CTeamplayRoundBasedRules *, float, CBasePlayer *>         ft_GetMinTimeWhenPlayerMaySpawn;
+	
+	static MemberVFuncThunk<CTeamplayRoundBasedRules *, float, int, CBasePlayer *> vt_GetNextRespawnWave;
 };
 
 class CTFGameRules : public CTeamplayRoundBasedRules
@@ -118,6 +124,7 @@ public:
 	int GetUpgradeTier(int index)                                                                                { return ft_GetUpgradeTier                     (this, index); }
 	bool IsUpgradeTierEnabled(CTFPlayer *player, int slot, int tier)                                             { return ft_IsUpgradeTierEnabled               (this, player, slot, tier); }
 	void PlayerReadyStatus_UpdatePlayerState(CTFPlayer *player, bool state)                                      { return ft_PlayerReadyStatus_UpdatePlayerState(this, player, state); }
+	void DistributeCurrencyAmount(int amount, CTFPlayer *player, bool b1, bool b2, bool b3)                      {        ft_DistributeCurrencyAmount           (this, amount, player, b1, b2, b3); }
 	
 	DECL_SENDPROP(bool, m_bPlayingMedieval);
 	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
@@ -128,6 +135,7 @@ private:
 	static MemberFuncThunk<CTFGameRules *, int, int>                                                         ft_GetUpgradeTier;
 	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, int>                                      ft_IsUpgradeTierEnabled;
 	static MemberFuncThunk<CTFGameRules *, void, CTFPlayer *, bool>                                          ft_PlayerReadyStatus_UpdatePlayerState;
+	static MemberFuncThunk<CTFGameRules *, void, int, CTFPlayer *, bool, bool, bool>                         ft_DistributeCurrencyAmount;
 };
 
 

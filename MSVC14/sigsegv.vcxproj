@@ -211,7 +211,6 @@
     <ClCompile Include="..\src\mod\bot\medieval_nonmelee.cpp" />
     <ClCompile Include="..\src\mod\bot\multiclass_weapon.cpp" />
     <ClCompile Include="..\src\mod\canteen\share_recall_canteen.cpp" />
-    <ClCompile Include="..\src\mod\cond\reprogrammed.cpp" />
     <ClCompile Include="..\src\mod\debug\client_desync.cpp" />
     <ClCompile Include="..\src\mod\debug\client_player_track.cpp" />
     <ClCompile Include="..\src\mod\debug\console_scramble_v1.cpp" />
@@ -240,6 +239,7 @@
     <ClCompile Include="..\src\mod\prof\attr_munge.cpp" />
     <ClCompile Include="..\src\mod\prof\debug_overlay.cpp" />
     <ClCompile Include="..\src\mod\prof\flame_breakable_collision.cpp" />
+    <ClCompile Include="..\src\mod\prof\tier2_renderutils.cpp" />
     <ClCompile Include="..\src\mod\robot\no_canteens.cpp" />
     <ClCompile Include="..\src\mod\robot\standable_heads.cpp" />
     <ClCompile Include="..\src\mod\robot\ticklish.cpp" />
@@ -285,10 +285,12 @@
     <ClCompile Include="..\src\stub\objects.cpp" />
     <ClCompile Include="..\src\stub\particles.cpp" />
     <ClCompile Include="..\src\stub\projectiles.cpp" />
+    <ClCompile Include="..\src\stub\strings.cpp" />
     <ClCompile Include="..\src\stub\tfbot.cpp" />
     <ClCompile Include="..\src\stub\tfplayer.cpp" />
     <ClCompile Include="..\src\stub\tfweaponbase.cpp" />
     <ClCompile Include="..\src\stub\tf_objective_resource.cpp" />
+    <ClCompile Include="..\src\stub\trace.cpp" />
     <ClCompile Include="..\src\stub\usermessages.cpp" />
     <ClCompile Include="..\src\util\backtrace.cpp" />
     <ClCompile Include="..\src\util\firehose_base.cpp" />

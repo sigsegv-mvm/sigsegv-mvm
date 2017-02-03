@@ -66,11 +66,16 @@ protected:
 	CTFBotFetchFlag() = delete;
 	
 private:
-	bool m_bGiveUpWhenDone;           // +0x0032
-	PathFollower m_PathFollower;      // +0x0034
-	CountdownTimer m_ctRecomputePath; // +0x4808
+	                                  //     GCC |    MSVC
+	bool m_bGiveUpWhenDone;           // +0x0032 | +0x0034
+	PathFollower m_PathFollower;      // +0x0034 | +0x0038
+	CountdownTimer m_ctRecomputePath; // +0x4808 | +0x480c
 };
+#if defined _MSC_VER
+SIZE_CHECK(CTFBotFetchFlag, 0x4818);
+#else
 SIZE_CHECK(CTFBotFetchFlag, 0x4814);
+#endif
 
 
 class CTFBotPushToCapturePoint : public ActionStub

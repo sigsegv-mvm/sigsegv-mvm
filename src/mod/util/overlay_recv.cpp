@@ -1038,7 +1038,7 @@ namespace Mod_Util_Overlay_Recv
 		for (auto it = queued_packets.begin(); it != queued_packets.end(); ) {
 			const auto& packet = *it;
 			
-			if (packet.tick < enginetools->ClientTick()) {
+			if (packet.tick <= enginetools->ClientTick()) {
 				ProcessPacket(packet);
 				it = queued_packets.erase(it);
 			} else {

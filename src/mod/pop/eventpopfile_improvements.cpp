@@ -38,7 +38,7 @@ namespace Mod_Pop_EventPopfile_Improvements
 		constexpr int HOLIDAY_HALLOWEEN = 2;
 		
 		ConVarRef tf_forced_holiday("tf_forced_holiday");
-		if (TFObjectiveResource()->GetMvMEventPopfileType() != 0) {
+		if (TFObjectiveResource()->m_nMvMEventPopfileType != 0u) {
 			tf_forced_holiday.SetValue(HOLIDAY_HALLOWEEN);
 		} else {
 			tf_forced_holiday.SetValue(HOLIDAY_NOHOLIDAY);

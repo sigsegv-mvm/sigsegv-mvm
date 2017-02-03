@@ -1729,6 +1729,21 @@
 					type "sym"
 					sym  "_Z17AllocPooledStringPKc"
 				}
+				"AllocPooledString_StaticConstantStringPointer"
+				{
+					type "sym"
+					sym  "_Z45AllocPooledString_StaticConstantStringPointerPKc"
+				}
+				"FindPooledString"
+				{
+					type "sym"
+					sym  "_Z16FindPooledStringPKc"
+				}
+				"GameStringSystem"
+				{
+					type "sym"
+					sym  "_Z16GameStringSystemv"
+				}
 				
 				"CEventQueue::AddEvent [EventQueuePrioritizedEvent_t *]"
 				{
@@ -2064,6 +2079,132 @@
 				{
 					type "sym"
 					sym  "_ZN15CTFFlameThrower18GetMuzzlePosHelperEb"
+				}
+				
+				"CTeamplayRoundBasedRules::GetMinTimeWhenPlayerMaySpawn"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules28GetMinTimeWhenPlayerMaySpawnEP11CBasePlayer"
+				}
+				
+				"CTeamplayRoundBasedRules::GetNextRespawnWave"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules18GetNextRespawnWaveEiP11CBasePlayer"
+				}
+				
+				"CMultiplayerAnimState::OnNewModel"
+				{
+					type "sym"
+					sym  "_ZN21CMultiPlayerAnimState10OnNewModelEv"
+				}
+				
+				"CTFGameRules::GetTeamAssignmentOverride"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules25GetTeamAssignmentOverrideEP9CTFPlayerib"
+				}
+				
+				"CollectPlayers<CTFBot>"
+				{
+					type "sym"
+					sym  "_Z14CollectPlayersI6CTFBotEiP10CUtlVectorIPT_10CUtlMemoryIS3_iEEibb"
+				}
+				
+				"CBaseAnimating::ResetSequenceInfo"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating17ResetSequenceInfoEv"
+				}
+				
+				"CBaseAnimating::ResetSequence"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating13ResetSequenceEi"
+				}
+				
+				"CTFWearable::CanEquip"
+				{
+					type "sym"
+					sym  "_ZN11CTFWearable8CanEquipEP11CBaseEntity"
+				}
+				
+				"CStudioHdr::GetNumPoseParameters"
+				{
+					type "sym"
+					sym  "_ZNK10CStudioHdr20GetNumPoseParametersEv"
+				}
+				
+				"CStudioHdr::pPoseParameter"
+				{
+					type "sym"
+					sym  "_ZN10CStudioHdr14pPoseParameterEi"
+				}
+				
+				"CBaseAnimating::GetModelPtr"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating11GetModelPtrEv"
+				}
+				
+				"CBaseAnimating::LookupPoseParameter"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating19LookupPoseParameterEP10CStudioHdrPKc"
+				}
+				
+				"CBasePlayer::DisableButtons"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer14DisableButtonsEi"
+				}
+				
+				"CBasePlayer::EnableButtons"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer13EnableButtonsEi"
+				}
+				
+				"CBasePlayer::ForceButtons"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer12ForceButtonsEi"
+				}
+				
+				"CBasePlayer::UnforceButtons"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer14UnforceButtonsEi"
+				}
+				
+				"CBaseEntity::NameMatchesComplex"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity18NameMatchesComplexEPKc"
+				}
+				
+				"CTFGameRules::ClientCommandKeyValues"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules22ClientCommandKeyValuesEP7edict_tP9KeyValues"
+				}
+				
+				"CPlayerMove::StartCommand"
+				{
+					type "sym"
+					sym  "_ZN11CPlayerMove12StartCommandEP11CBasePlayerP8CUserCmd"
+				}
+				
+				"CBaseCombatCharacter::UpdateLastKnownArea"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter19UpdateLastKnownAreaEv"
+				}
+				
+				"CTFGameRules::DistributeCurrencyAmount"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules24DistributeCurrencyAmountEiP9CTFPlayerbbb"
 				}
 			}
 		}

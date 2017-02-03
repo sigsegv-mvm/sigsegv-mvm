@@ -29,10 +29,26 @@ private:
 class CTFObjectiveResource : public CBaseTeamObjectiveResource
 {
 public:
-	int GetMvMEventPopfileType() const { return this->m_nMvMEventPopfileType; }
-	
-private:
-	DECL_SENDPROP(int, m_nMvMEventPopfileType);
+	DECL_SENDPROP(unsigned int,     m_nMannVsMachineMaxWaveCount);
+	DECL_SENDPROP(unsigned int,     m_nMannVsMachineWaveCount);
+	DECL_SENDPROP(unsigned int,     m_nMannVsMachineWaveEnemyCount);
+	DECL_SENDPROP(unsigned int,     m_nMvMWorldMoney);
+	DECL_SENDPROP(float,            m_flMannVsMachineNextWaveTime);
+	DECL_SENDPROP(bool,             m_bMannVsMachineBetweenWaves);
+	DECL_SENDPROP(int[12],          m_nMannVsMachineWaveClassCounts);
+	DECL_SENDPROP(int[12],          m_nMannVsMachineWaveClassCounts2);
+	DECL_SENDPROP(string_t[12],     m_iszMannVsMachineWaveClassNames);
+	DECL_SENDPROP(string_t[12],     m_iszMannVsMachineWaveClassNames2);
+	DECL_SENDPROP(unsigned int[12], m_nMannVsMachineWaveClassFlags);
+	DECL_SENDPROP(unsigned int[12], m_nMannVsMachineWaveClassFlags2);
+	DECL_SENDPROP(bool[12],         m_bMannVsMachineWaveClassActive);
+	DECL_SENDPROP(bool[12],         m_bMannVsMachineWaveClassActive2);
+	DECL_SENDPROP(unsigned int,     m_nFlagCarrierUpgradeLevel);
+	DECL_SENDPROP(float,            m_flMvMBaseBombUpgradeTime);
+	DECL_SENDPROP(float,            m_flMvMNextBombUpgradeTime);
+	DECL_SENDPROP(int,              m_iChallengeIndex);
+	DECL_SENDPROP(string_t,         m_iszMvMPopfileName);
+	DECL_SENDPROP(unsigned int,     m_nMvMEventPopfileType);
 };
 
 

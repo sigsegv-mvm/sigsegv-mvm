@@ -107,6 +107,11 @@
 					sym  "_ZN6CTFBot26ShouldFireCompressionBlastEv"
 				}
 				
+				"CTFBot::GetEventChangeAttributes"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot24GetEventChangeAttributesEPKc"
+				}
 				"CTFBot::OnEventChangeAttributes"
 				{
 					type "sym"
@@ -139,7 +144,7 @@
 				"CTFBot::ChangeTeam"
 				{
 					type "sym"
-					sym  "_ZN6CTFBot10ChangeTeamEibb"
+					sym  "_ZN6CTFBot10ChangeTeamEibbb"
 				}
 				
 				"CTFBot::IsSuspectedSpy"
@@ -172,6 +177,12 @@
 				{
 					type "sym"
 					sym  "_ZN6CTFBot9ForgetSpyEP9CTFPlayer"
+				}
+				
+				"CTFBot::GetFlagCaptureZone"
+				{
+					type "sym"
+					sym  "_ZNK6CTFBot18GetFlagCaptureZoneEv"
 				}
 				
 				"CTFBot::CTFBotIntention::Update"

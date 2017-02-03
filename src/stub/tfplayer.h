@@ -9,6 +9,7 @@
 class CBaseObject;
 class CTFWeaponBase;
 class CTFPlayer;
+class CTFItem;
 enum ETFFlagType {};
 
 
@@ -129,7 +130,7 @@ enum ETFCond
 	TF_COND_RUNE_REGEN                       =  92,
 	TF_COND_RUNE_RESIST                      =  93,
 	TF_COND_RUNE_VAMPIRE                     =  94,
-	TF_COND_RUNE_WARLOCK                     =  95,
+	TF_COND_RUNE_REFLECT                     =  95,
 	TF_COND_RUNE_PRECISION                   =  96,
 	TF_COND_RUNE_AGILITY                     =  97,
 	TF_COND_GRAPPLINGHOOK                    =  98,
@@ -159,6 +160,17 @@ enum ETFCond
 };
 
 
+class CMultiplayerAnimState
+{
+public:
+	void OnNewModel() { ft_OnNewModel(this); }
+	
+private:
+	static MemberFuncThunk<CMultiplayerAnimState *, void> ft_OnNewModel;
+};
+class CTFPlayerAnimState : public CMultiplayerAnimState {};
+
+
 class CTFPlayerClassShared
 {
 public:
@@ -170,7 +182,7 @@ public:
 	bool IsClass(int iClass) const { return (this->m_iClass == iClass); }
 	
 	int GetClassIndex() const { return this->m_iClass; }
-	void SetCustomModel(const char *s1, bool b1) { ft_SetCustomModel(this, s1, b1); }
+	void SetCustomModel(const char *pszModelPath, bool bUseClassAnimations = true) { ft_SetCustomModel(this, pszModelPath, bUseClassAnimations); }
 	// TODO: accessor for m_iszClassIcon
 	// TODO: accessor for m_iszCustomModel
 	
@@ -207,6 +219,7 @@ public:
 	bool IsStealthed() const                                                            { return ft_IsStealthed         (this); }
 	float GetPercentInvisible() const                                                   { return ft_GetPercentInvisible (this); }
 	
+	DECL_SENDPROP(float, m_flCloakMeter);
 	DECL_SENDPROP(float, m_flEnergyDrinkMeter);
 	DECL_SENDPROP(float, m_flHypeMeter);
 	DECL_SENDPROP(float, m_flChargeMeter);
@@ -214,6 +227,7 @@ public:
 	DECL_SENDPROP(bool,  m_bRageDraining);
 	DECL_SENDPROP(int,   m_iCritMult);
 	DECL_SENDPROP(bool,  m_bInUpgradeZone);
+	DECL_SENDPROP(float, m_flStealthNoAttackExpire);
 	
 private:
 	DECL_SENDPROP(int,   m_nPlayerState);
@@ -238,9 +252,10 @@ public:
 	const CTFPlayerClass *GetPlayerClass() const { return &m_PlayerClass; }
 	
 	bool IsPlayerClass(int iClass) const;
-	int StateGet() const    { return this->m_Shared->GetState(); }
-	bool IsMiniBoss() const { return this->m_bIsMiniBoss; }
-	int GetCurrency() const { return this->m_nCurrency; }
+	int StateGet() const        { return this->m_Shared->GetState(); }
+	bool IsMiniBoss() const     { return this->m_bIsMiniBoss; }
+	int GetCurrency() const     { return this->m_nCurrency; }
+	void SetMiniBoss(bool boss) { this->m_bIsMiniBoss = boss; }
 	
 	CTFWeaponBase *GetActiveTFWeapon() const;
 	
@@ -249,33 +264,50 @@ public:
 	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag                    (this, p1, i1); }
 	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam                   (this, team); }
 	float MedicGetChargeLevel(CTFWeaponBase **medigun = nullptr) { return ft_MedicGetChargeLevel           (this, medigun); }
-	float TeamFortress_CalculateMaxSpeed() const                 { return ft_TeamFortress_CalculateMaxSpeed(this); }
+	float TeamFortress_CalculateMaxSpeed(bool b1 = false)        { return ft_TeamFortress_CalculateMaxSpeed(this, b1); }
 	void UpdateModel()                                           {        ft_UpdateModel                   (this); }
 	CTFWeaponBase *Weapon_OwnsThisID(int id) const               { return ft_Weapon_OwnsThisID             (this, id); }
 	CBaseObject *GetObjectOfType(int iType, int iMode)           { return ft_GetObjectOfType               (this, iType, iMode); }
 	int GetMaxAmmo(int iAmmoIndex, int iClassNumber = -1)        { return ft_GetMaxAmmo                    (this, iAmmoIndex, iClassNumber); }
 	
+	void HandleCommand_JoinTeam(const char *pTeamName)                   { ft_HandleCommand_JoinTeam        (this, pTeamName); }
+	void HandleCommand_JoinTeam_NoMenus(const char *pTeamName)           { ft_HandleCommand_JoinTeam_NoMenus(this, pTeamName); }
+	void HandleCommand_JoinClass(const char *pClassName, bool b1 = true) { ft_HandleCommand_JoinClass       (this, pClassName, b1); }
+	
+	void AddCustomAttribute(const char *s1, float f1, float f2) { ft_AddCustomAttribute       (this, s1, f1, f2); }
+	void RemoveCustomAttribute(const char *s1)                  { ft_RemoveCustomAttribute    (this, s1); }
+	void RemoveAllCustomAttributes()                            { ft_RemoveAllCustomAttributes(this); }
+	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
 	
-	DECL_SENDPROP_RW(CTFPlayerShared, m_Shared);
+	DECL_SENDPROP_RW(CTFPlayerShared,      m_Shared);
+	DECL_SENDPROP   (float,                m_flLastDamageTime);
+	DECL_SENDPROP   (CHandle<CTFItem>,     m_hItem);
+	DECL_RELATIVE   (CTFPlayerAnimState *, m_PlayerAnimState);
 	
 private:
 	DECL_SENDPROP_RW(CTFPlayerClass, m_PlayerClass);
 	DECL_SENDPROP   (bool,           m_bIsMiniBoss);
 	DECL_SENDPROP   (int,            m_nCurrency);
 	
-	static MemberFuncThunk<      CTFPlayer *, void, int, bool         > ft_ForceChangeTeam;
-	static MemberFuncThunk<      CTFPlayer *, void, int, int          > ft_StartBuildingObjectOfType;
-	static MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int> ft_HasTheFlag;
-	static MemberFuncThunk<      CTFPlayer *, int, int                > ft_GetAutoTeam;
-	static MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase ** > ft_MedicGetChargeLevel;
-	static MemberFuncThunk<const CTFPlayer *, float                   > ft_TeamFortress_CalculateMaxSpeed;
-	static MemberFuncThunk<      CTFPlayer *, void                    > ft_UpdateModel;
-	static MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int    > ft_Weapon_OwnsThisID;
-	static MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int > ft_GetObjectOfType;
-	static MemberFuncThunk<      CTFPlayer *, int, int, int           > ft_GetMaxAmmo;
-//	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int     > ft_Taunt;
+	static MemberFuncThunk<      CTFPlayer *, void, int, bool                 > ft_ForceChangeTeam;
+	static MemberFuncThunk<      CTFPlayer *, void, int, int                  > ft_StartBuildingObjectOfType;
+	static MemberFuncThunk<const CTFPlayer *, bool, ETFFlagType *, int        > ft_HasTheFlag;
+	static MemberFuncThunk<      CTFPlayer *, int, int                        > ft_GetAutoTeam;
+	static MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase **         > ft_MedicGetChargeLevel;
+	static MemberFuncThunk<      CTFPlayer *, float, bool                     > ft_TeamFortress_CalculateMaxSpeed;
+	static MemberFuncThunk<      CTFPlayer *, void                            > ft_UpdateModel;
+	static MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int            > ft_Weapon_OwnsThisID;
+	static MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int         > ft_GetObjectOfType;
+	static MemberFuncThunk<      CTFPlayer *, int, int, int                   > ft_GetMaxAmmo;
+	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_HandleCommand_JoinTeam;
+	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_HandleCommand_JoinTeam_NoMenus;
+	static MemberFuncThunk<      CTFPlayer *, void, const char *, bool        > ft_HandleCommand_JoinClass;
+	static MemberFuncThunk<      CTFPlayer *, void, const char *, float, float> ft_AddCustomAttribute;
+	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_RemoveCustomAttribute;
+	static MemberFuncThunk<      CTFPlayer *, void                            > ft_RemoveAllCustomAttributes;
+//	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int             > ft_Taunt;
 };
 
 class CTFPlayerSharedUtils

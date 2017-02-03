@@ -2,6 +2,7 @@
 #include "mod/pop/kv_conditional.h"
 #include "stub/entities.h"
 #include "stub/populators.h"
+#include "stub/strings.h"
 #include "util/scope.h"
 
 

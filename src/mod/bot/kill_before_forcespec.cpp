@@ -49,7 +49,7 @@ namespace Mod_Bot_Kill_Before_ForceSpec
 	// CTFGameRules::FireGameEvent
 	// CSquadSpawner::Spawn
 	// this one causes bad things to happen when wave failure occurs
-	DETOUR_DECL_MEMBER(void, CTFBot_ChangeTeam, int iTeamNum, bool bAutoTeam, bool bSilent)
+	DETOUR_DECL_MEMBER(void, CTFBot_ChangeTeam, int iTeamNum, bool bAutoTeam, bool bSilent, bool b3)
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		if (iTeamNum == TEAM_SPECTATOR && bot->GetTeamNumber() != TEAM_SPECTATOR && bot->IsAlive()) {
@@ -57,7 +57,7 @@ namespace Mod_Bot_Kill_Before_ForceSpec
 			return;
 		}
 		
-		DETOUR_MEMBER_CALL(CTFBot_ChangeTeam)(iTeamNum, bAutoTeam, bSilent);
+		DETOUR_MEMBER_CALL(CTFBot_ChangeTeam)(iTeamNum, bAutoTeam, bSilent, b3);
 	}
 	
 	

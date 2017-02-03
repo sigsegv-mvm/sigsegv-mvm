@@ -33,4 +33,8 @@ extern StaticFuncThunk<const char *, const char *, int> TranslateWeaponEntForCla
 #endif
 
 
+// TODO: move to common.h
+#include <gamestringpool.h>
+
+
 #endif

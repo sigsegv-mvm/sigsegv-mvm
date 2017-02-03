@@ -36,6 +36,7 @@ IMPL_SENDPROP(color32,              CBaseEntity, m_clrRender,            CBaseEn
 MemberFuncThunk<      CBaseEntity *, void                                              > CBaseEntity::ft_Remove              ("CBaseEntity::Remove");
 MemberFuncThunk<      CBaseEntity *, void                                              > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
 MemberFuncThunk<      CBaseEntity *, void                                              > CBaseEntity::ft_CalcAbsoluteVelocity("CBaseEntity::CalcAbsoluteVelocity");
+MemberFuncThunk<      CBaseEntity *, bool, const char *                                > CBaseEntity::ft_NameMatchesComplex  ("CBaseEntity::NameMatchesComplex");
 MemberFuncThunk<      CBaseEntity *, bool, const char *                                > CBaseEntity::ft_ClassMatches        ("CBaseEntity::ClassMatches");
 MemberFuncThunk<      CBaseEntity *, void, const Vector&                               > CBaseEntity::ft_SetAbsOrigin        ("CBaseEntity::SetAbsOrigin");
 MemberFuncThunk<      CBaseEntity *, void, const QAngle&                               > CBaseEntity::ft_SetAbsAngles        ("CBaseEntity::SetAbsAngles");

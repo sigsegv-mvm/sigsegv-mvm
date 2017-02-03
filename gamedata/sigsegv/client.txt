@@ -125,8 +125,8 @@
 					sym  "_Z18RenderWireframeBoxRK6VectorRK6QAngleS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ec5802000056e801edffff8b0d04f067108b01ff90880100008bf08975fc85f674078b068bceff5008a138f067108bce807d1c008b160f450534f0671053576a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec81ec5802000056e801edffff8b0df4f369108b01ff90900100008bf08975fc85f674078b068bceff5008a12cf469108bce807d1c008b160f450528f4691053576a0050ff5224"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
 				"[client] RenderWireframeSweptBox"
 				{
@@ -134,17 +134,17 @@
 					sym  "_Z23RenderWireframeSweptBoxRK6VectorS1_RK6QAngleS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ecc40200008b0d08f06710578b01ff90880100008bf8897df085ff74078b078bcfff5008a138f067108bcf807d20008b170f450534f0671053566a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec81ecc40200008b0df8f36910578b01ff90900100008bf8897df085ff74078b078bcfff5008a12cf469108bcf807d20008b170f450528f4691053566a0050ff5224"
+					mask "ffffffffffffffffffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
-				"[client] RenderBox" // low priority
+				"[client] RenderBox"
 				{
 					type "pattern"
 					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5Colorbb"
 					lib  "engine"
 					seg  "text"
-					seek ""
-					mask ""
+					seek "558bec518b45188bc8ff7520c1e9088845fc884dfd8bc8c1e818c1e910807d1c008845ffa1b43468100f4505b034681050884dfeff75fcff7514ff7510ff750cff7508e848fbffff83c41c8be55dc3"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffff00000000ffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffff"
 				}
 				"[client] RenderBox [material]"
 				{
@@ -152,8 +152,8 @@
 					sym  "_Z9RenderBoxRK6VectorRK6QAngleS1_S1_5ColorP9IMaterialb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ec7002000056e871feffff8b0d04f067108b01ff90880100008bf08975dc85f674078b068bceff50088b068bce53576a00ff751cff5024"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					seek "558bec81ec7002000056e871feffff8b0df4f369108b01ff90900100008bf08975dc85f674078b068bceff50088b068bce53576a00ff751cff5024"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffff00ffffffffffffffffffffffffffffff"
 				}
 			//	"[client] RenderAxes [vec]"
 			//	{
@@ -180,25 +180,25 @@
 					lib  "engine"
 					seg  "text"
 					seek "558bec81ecf401000056e8b1f9ffff8b0d04f067108b01ff90880100008bf085f674078b068bceff5008a138f067108bce807d14008b160f450534f0671053576a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
-				"[client] RenderTriangle" // low priority
+				"[client] RenderTriangle"
 				{
 					type "pattern"
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek ""
-					mask ""
+					seek "558bec81ecc40200008b0d78346810578b01ff90900100008bf8897df085ff74078b078bcfff5008a1ac3468108bcf807d20008b170f4505a834681053566a0050ff5224"
+					mask "ffffffffff00000000ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
-				"[client] RenderTriangle [material]"
+				"[client] RenderTriangle [material]" // FIX WINDOWS
 				{
 					type "pattern"
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5ColorP9IMaterial"
 					lib  "engine"
 					seg  "text"
 					seek "558bec81ec0402000056e881f1ffff8b0d04f067108b018b8088010000ffd08bf085f674078b068bceff50088b068bce576a00ff7518ff5024"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
 			//	"[client] RenderQuad"
 			//	{
@@ -245,6 +245,15 @@
 //					build "3341818"
 //					lib   "engine"
 //				}
+				"[client] GenerateBoxVertices"
+				{
+					type "pattern"
+					sym  "_ZL19GenerateBoxVerticesRK6VectorRK6QAngleS1_S1_PS_"
+					lib  "engine"
+					seg  "text"
+					seek "558bec83ec405356578d45c050ff750ce8cb24feff8b4d1883c4088b7d1433db83c108894dfc8b4510f6c3017406f30f1007eb04f30f1000f30f1145f0f6c3027407f30f104704eb05"
+					mask "ffffffffff00ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+				}
 				
 				"[client] C_BaseEntity::VPhysicsUpdate"
 				{
@@ -521,6 +530,33 @@
 			//		mask ""
 			//		lib  "materialsystem"
 			//	}
+				
+				"[client] CParticleProperty::Create [int]"
+				{
+					type  "fixed"
+					sym   "TODO"
+					addr  "0x32d030"
+					build "3780793"
+					lib   "client"
+				}
+				
+				"[client] C_TFPlayer::AddOverheadEffect"
+				{
+					type  "fixed"
+					sym   "TODO"
+					addr  "0x4e5fe0"
+					build "3780793"
+					lib   "client"
+				}
+				
+				"[client] C_TFPlayer::ShouldShowNemesisIcon"
+				{
+					type  "fixed"
+					sym   "TODO"
+					addr  "0x4f6f30"
+					build "3780793"
+					lib   "client"
+				}
 			}
 		}
 	}

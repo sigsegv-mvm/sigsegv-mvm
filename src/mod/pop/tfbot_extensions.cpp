@@ -764,6 +764,28 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	DETOUR_DECL_MEMBER(CCaptureZone *, CTFBot_GetFlagCaptureZone)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		/* make Action PushToCapturePoint work on red MvM bots such that they
+		 * will push to the bomb hatch */
+		if (TFGameRules()->IsMannVsMachineMode() && bot->GetTeamNumber() != TF_TEAM_BLUE) {
+			/* same as normal code, except we don't do the teamnum check */
+			for (auto elem : ICaptureZoneAutoList::AutoList()) {
+				auto zone = rtti_cast<CCaptureZone *>(elem);
+				if (zone == nullptr) continue;
+				
+				return zone;
+			}
+			
+			return nullptr;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFBot_GetFlagCaptureZone)();
+	}
+	
+	
 	DETOUR_DECL_MEMBER(int, CTFGameRules_ApplyOnDamageModifyRules, CTakeDamageInfo& info, CBaseEntity *pVictim, bool b1)
 	{
 		auto pTFBot = ToTFBot(pVictim);
@@ -1177,6 +1199,8 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,   "CTFBot::GetFlagToFetch");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass, "CTFPlayer::IsPlayerClass");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagCaptureZone, "CTFBot::GetFlagCaptureZone");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ApplyOnDamageModifyRules, "CTFGameRules::ApplyOnDamageModifyRules");
 			

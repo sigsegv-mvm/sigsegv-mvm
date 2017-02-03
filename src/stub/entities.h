@@ -217,12 +217,18 @@ public:
 class CCurrencyPack : public CTFPowerup
 {
 public:
-	bool IsDistributed() const { return this->m_bDistributed; }
-	int GetAmount() const      { return this->m_nAmount; }
+	bool HasBeenTouched() const { return this->m_bTouched; }
+	bool IsBeingPulled() const  { return this->m_bPulled; }
+	bool IsDistributed() const  { return this->m_bDistributed; }
+	int GetAmount() const       { return this->m_nAmount; }
+	
+	void SetDistributed(bool val) { this->m_bDistributed = val; }
 	
 private:
-	DECL_SENDPROP(bool, m_bDistributed);
-	DECL_EXTRACT (int,  m_nAmount);
+	DECL_RELATIVE   (bool, m_bTouched);
+	DECL_RELATIVE   (bool, m_bPulled);
+	DECL_SENDPROP_RW(bool, m_bDistributed);
+	DECL_EXTRACT    (int,  m_nAmount);
 };
 
 
@@ -267,6 +273,17 @@ public:
 extern GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters;
 
 
+class CTFTeamSpawn : public CPointEntity
+{
+public:
+	DECL_DATAMAP(bool,     m_bDisabled);
+	DECL_DATAMAP(int,      m_nSpawnMode);
+	DECL_DATAMAP(string_t, m_iszControlPointName);
+	DECL_DATAMAP(string_t, m_iszRoundBlueSpawn);
+	DECL_DATAMAP(string_t, m_iszRoundRedSpawn);
+};
+
+
 class CTFFlameEntity : public CBaseEntity {};
 
 class ITFFlameEntityAutoList
@@ -276,13 +293,6 @@ public:
 private:
 	static GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> m_ITFFlameEntityAutoListAutoList;
 };
-
-
-extern GlobalThunk<const char *[4]> s_TankModel;
-extern GlobalThunk<const char *[4]> s_TankModelRome;
-
-extern GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Hat;
-extern GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Misc;
 
 
 // 20151007a

@@ -3,6 +3,7 @@
 #include "stub/projectiles.h"
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
+#include "stub/misc.h"
 #include "util/iterate.h"
 #include "util/scope.h"
 #include "mod/pop/kv_conditional.h"
@@ -67,15 +68,25 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		virtual void SetValue(T val) override
 		{
-			/* set the ConVar value in a quiet manner despite FCVAR_NOTIFY */
-			if (MyConVar().IsFlagSet(FCVAR_NOTIFY)) {
-				int& flags = MyConVar().GetFlagsRef();
-				flags &= ~FCVAR_NOTIFY;
-				MyConVar().SetValue(val);
-				flags |= FCVAR_NOTIFY;
-			} else {
-				MyConVar().SetValue(val);
-			}
+			/* set the ConVar value in a manner that circumvents:
+			 * - FCVAR_NOTIFY notifications
+			 * - minimum value limits
+			 * - maximum value limits
+			 */
+			
+			int old_flags   = MyConVar().Ref_Flags();
+			bool old_hasmin = MyConVar().Ref_HasMin();
+			bool old_hasmax = MyConVar().Ref_HasMax();
+			
+			MyConVar().Ref_Flags() &= ~FCVAR_NOTIFY;
+			MyConVar().Ref_HasMin() = false;
+			MyConVar().Ref_HasMax() = false;
+			
+			MyConVar().SetValue(val);
+			
+			MyConVar().Ref_Flags()  = old_flags;
+			MyConVar().Ref_HasMin() = old_hasmin;
+			MyConVar().Ref_HasMax() = old_hasmax;
 		}
 		
 	private:
@@ -111,7 +122,11 @@ namespace Mod_Pop_PopMgr_Extensions
 			m_FixedBuybacks           ("tf_mvm_buybacks_method"),
 			m_BuybacksPerWave         ("tf_mvm_buybacks_per_wave"),
 			m_DeathPenalty            ("tf_mvm_death_penalty"),
-			m_SentryBusterFriendlyFire("tf_bot_suicide_bomb_friendly_fire")
+			m_SentryBusterFriendlyFire("tf_bot_suicide_bomb_friendly_fire"),
+			m_BotPushaway             ("tf_avoidteammates_pushaway"),
+			m_AllowJoinTeamBlue       ("sig_mvm_jointeam_blue_allow"),
+			m_AllowJoinTeamBlueMax    ("sig_mvm_jointeam_blue_allow_max"),
+			m_EnableDominations       ("sig_mvm_dominations")
 		{
 			this->Reset();
 		}
@@ -139,9 +154,21 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_BuybacksPerWave         .Reset();
 			this->m_DeathPenalty            .Reset();
 			this->m_SentryBusterFriendlyFire.Reset();
+			this->m_BotPushaway             .Reset();
+			
+			this->m_AllowJoinTeamBlue   .Reset();
+			this->m_AllowJoinTeamBlueMax.Reset();
+			this->m_EnableDominations   .Reset();
 			
 			this->m_DisableSounds.clear();
 			this->m_ItemWhitelist.clear();
+			
+			for (CTFTeamSpawn *spawn : this->m_ExtraSpawnPoints) {
+				if (spawn != nullptr) {
+					spawn->Remove();
+				}
+			}
+			this->m_ExtraSpawnPoints.clear();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -165,9 +192,16 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar<int>   m_BuybacksPerWave;
 		CPopOverride_ConVar<int>   m_DeathPenalty;
 		CPopOverride_ConVar<bool>  m_SentryBusterFriendlyFire;
+		CPopOverride_ConVar<bool>  m_BotPushaway;
+		
+		CPopOverride_ConVar<bool>  m_AllowJoinTeamBlue;
+		CPopOverride_ConVar<int>   m_AllowJoinTeamBlueMax;
+		CPopOverride_ConVar<bool>  m_EnableDominations;
 		
 		std::vector<std::string> m_DisableSounds;
 		std::vector<std::string> m_ItemWhitelist;
+		
+		std::vector<CHandle<CTFTeamSpawn>> m_ExtraSpawnPoints;
 	};
 	PopState state;
 	
@@ -376,6 +410,78 @@ namespace Mod_Pop_PopMgr_Extensions
 		}
 	}
 	
+	void Parse_ExtraSpawnPoint(KeyValues *kv)
+	{
+		const char *name = nullptr; // required
+		int teamnum = TEAM_INVALID; // required
+		Vector origin;              // required
+		
+		bool got_x = false;
+		bool got_y = false;
+		bool got_z = false;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			if (FStrEq(subkey->GetName(), "Name")) {
+				name = subkey->GetString();
+			} else if (FStrEq(subkey->GetName(), "TeamNum")) {
+				teamnum = Clamp(subkey->GetInt(), (int)TF_TEAM_RED, (int)TF_TEAM_BLUE);
+			} else if (FStrEq(subkey->GetName(), "X")) {
+				origin.x = subkey->GetFloat(); got_x = true;
+			} else if (FStrEq(subkey->GetName(), "Y")) {
+				origin.y = subkey->GetFloat(); got_y = true;
+			} else if (FStrEq(subkey->GetName(), "Z")) {
+				origin.z = subkey->GetFloat(); got_z = true;
+			} else {
+				Warning("Unknown key \'%s\' in ExtraSpawnPoint block.\n", subkey->GetName());
+			}
+		}
+		
+		bool fail = false;
+		if (name == nullptr) {
+			Warning("Missing Name key in ExtraSpawnPoint block.\n");
+			fail = true;
+		}
+		if (teamnum == TEAM_INVALID) {
+			Warning("Missing TeamNum key in ExtraSpawnPoint block.\n");
+			fail = true;
+		}
+		if (!got_x) {
+			Warning("Missing X key in ExtraSpawnPoint block.\n");
+			fail = true;
+		}
+		if (!got_y) {
+			Warning("Missing Y key in ExtraSpawnPoint block.\n");
+			fail = true;
+		}
+		if (!got_z) {
+			Warning("Missing Z key in ExtraSpawnPoint block.\n");
+			fail = true;
+		}
+		if (fail) return;
+		
+		// Is it actually OK that we're spawning this stuff during parsing...?
+		
+		CTFTeamSpawn *spawnpoint = rtti_cast<CTFTeamSpawn *>(CreateEntityByName("info_player_teamspawn"));
+		if (spawnpoint == nullptr) {
+			Warning("Parse_ExtraSpawnPoint: CreateEntityByName(\"info_player_teamspawn\") failed\n");
+			return;
+		}
+		
+		spawnpoint->SetName(AllocPooledString(name));
+		spawnpoint->SetAbsOrigin(origin);
+		spawnpoint->SetAbsAngles(vec3_angle);
+		
+		spawnpoint->Spawn();
+		
+		spawnpoint->ChangeTeam(teamnum);
+		
+		state.m_ExtraSpawnPoints.emplace_back(spawnpoint);
+		
+		DevMsg("Parse_ExtraSpawnPoint: #%d, %08x, name \"%s\", teamnum %d, origin [ % 7.1f % 7.1f % 7.1f ], angles [ % 7.1f % 7.1f % 7.1f ]\n",
+			ENTINDEX(spawnpoint), (uintptr_t)spawnpoint, STRING(spawnpoint->GetEntityName()), spawnpoint->GetTeamNumber(),
+			VectorExpand(spawnpoint->GetAbsOrigin()), VectorExpand(spawnpoint->GetAbsAngles()));
+	}
+	
 	RefCount rc_CPopulationManager_Parse;
 	DETOUR_DECL_MEMBER(bool, CPopulationManager_Parse)
 	{
@@ -444,11 +550,21 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_DeathPenalty.Set(subkey->GetInt());
 				} else if (FStrEq(name, "SentryBusterFriendlyFire")) {
 					state.m_SentryBusterFriendlyFire.Set(subkey->GetBool());
+				} else if (FStrEq(name, "BotPushaway")) {
+					state.m_BotPushaway.Set(subkey->GetBool());
+				} else if (FStrEq(name, "AllowJoinTeamBlue")) {
+					state.m_AllowJoinTeamBlue.Set(subkey->GetBool());
+				} else if (FStrEq(name, "AllowJoinTeamBlueMax")) {
+					state.m_AllowJoinTeamBlueMax.Set(subkey->GetInt());
+				} else if (FStrEq(name, "EnableDominations")) {
+					state.m_EnableDominations.Set(subkey->GetBool());
 				} else if (FStrEq(name, "DisableSound")) {
 					DevMsg("Got DisableSound: \"%s\"\n", subkey->GetString());
 					state.m_DisableSounds.emplace_back(subkey->GetString());
 				} else if (FStrEq(name, "ItemWhitelist")) {
 					Parse_ItemWhitelist(subkey);
+				} else if (FStrEq(name, "ExtraSpawnPoint")) {
+					Parse_ExtraSpawnPoint(subkey);
 				} else if (FStrEq(name, "PrecacheScriptSound"))  { CBaseEntity::PrecacheScriptSound (subkey->GetString());
 				} else if (FStrEq(name, "PrecacheSound"))        { enginesound->PrecacheSound       (subkey->GetString(), false);
 				} else if (FStrEq(name, "PrecacheModel"))        { engine     ->PrecacheModel       (subkey->GetString(), false);

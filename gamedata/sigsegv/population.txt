@@ -109,6 +109,21 @@
 					type "sym"
 					sym  "_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
 				}
+				"CMissionPopulator::UpdateMissionDestroySentries"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulator28UpdateMissionDestroySentriesEv"
+				}
+				"CMissionPopulator::~CMissionPopulator [D0]"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulatorD0Ev"
+				}
+				"CMissionPopulator::~CMissionPopulator [D2]"
+				{
+					type "sym"
+					sym  "_ZN17CMissionPopulatorD2Ev"
+				}
 				
 				"CWave::AddClassType"
 				{

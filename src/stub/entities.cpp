@@ -200,8 +200,10 @@ IMPL_DATAMAP   (bool,           CFilterTFBotHasTag, m_bRequireAllTags);
 IMPL_DATAMAP   (bool,           CFilterTFBotHasTag, m_bNegated);
 
 
-IMPL_SENDPROP(bool, CCurrencyPack, m_bDistributed, CCurrencyPack);
-IMPL_EXTRACT (int,  CCurrencyPack, m_nAmount, new CExtract_CCurrencyPack_m_nAmount());
+IMPL_REL_BEFORE(bool, CCurrencyPack, m_bTouched,     m_bPulled);      // 20151007a
+IMPL_REL_BEFORE(bool, CCurrencyPack, m_bPulled,      m_bDistributed); // 20151007a
+IMPL_SENDPROP  (bool, CCurrencyPack, m_bDistributed, CCurrencyPack);
+IMPL_EXTRACT   (int,  CCurrencyPack, m_nAmount, new CExtract_CCurrencyPack_m_nAmount());
 
 
 GlobalThunk<CUtlVector<ICurrencyPackAutoList *>> ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList("ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList");
@@ -230,11 +232,11 @@ IMPL_EXTRACT(CTeamControlPointMaster::ControlPointMap, CTeamControlPointMaster, 
 GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters("g_hControlPointMasters");
 
 
+IMPL_DATAMAP(bool,     CTFTeamSpawn, m_bDisabled);
+IMPL_DATAMAP(int,      CTFTeamSpawn, m_nSpawnMode);
+IMPL_DATAMAP(string_t, CTFTeamSpawn, m_iszControlPointName);
+IMPL_DATAMAP(string_t, CTFTeamSpawn, m_iszRoundBlueSpawn);
+IMPL_DATAMAP(string_t, CTFTeamSpawn, m_iszRoundRedSpawn);
+
+
 GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList("ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList");
-
-
-GlobalThunk<const char *[4]> s_TankModel    ("s_TankModel");
-GlobalThunk<const char *[4]> s_TankModelRome("s_TankModelRome");
-
-GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Hat ("g_szRomePromoItems_Hat");
-GlobalThunk<const char[0x104][10]> g_szRomePromoItems_Misc("g_szRomePromoItems_Misc");

@@ -25,7 +25,7 @@ namespace Mod_Debug_Rage
 		
 		CTFPlayer *player = shared->GetOuter();
 		
-		ClientMsg("RAGE: +%6.2f [%6.2f -> %6.2f] %s\n",
+		ClientMsgAll("RAGE: +%6.2f [%6.2f -> %6.2f] %s\n",
 			delta, rage_pre, rage_post, player->GetPlayerName());
 	}
 	

@@ -21,8 +21,8 @@ class Color
 public:
 	// sigsegv: make ctors constexpr so we can actually declare these damn
 	// things as constexpr in code elsewhere!
-	constexpr Color()                                      : _color{ 0x00, 0x00, 0x00, 0x00 } {}
-	constexpr Color(int _r, int _g, int _b, int _a = 0x00) : _color{   _r,   _g,   _b,   _a } {}
+	constexpr Color() : Color(0x00, 0x00, 0x00) {}
+	constexpr Color(int _r, int _g, int _b, int _a = 0x00) : _color{ (unsigned char)_r, (unsigned char)_g, (unsigned char)_b, (unsigned char)_a } {}
 	
 	// set the color
 	// r - red component (0-255)

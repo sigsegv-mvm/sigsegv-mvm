@@ -20,6 +20,8 @@ builder.options.add_option('--sm-path', type=str, dest='sm_path', default=None, 
 builder.options.add_option('--enable-debug', action='store_const', const='1', dest='debug', help='Enable debugging symbols')
 builder.options.add_option('--enable-optimize', action='store_const', const='1', dest='opt', help='Enable optimization')
 builder.options.add_option('--enable-experimental', action='store_const', const='1', dest='experimental', help='Enable experimental/incomplete features')
+builder.options.add_option('--exclude-mods-debug', action='store_const', const='1', dest='exclude_mods_debug', help='Don\'t compile any mods in the Debug group')
+builder.options.add_option('--exclude-mods-visualize', action='store_const', const='1', dest='exclude_mods_visualize', help='Don\'t compile any mods in the Visualize group')
 builder.options.add_option('-s', '--sdks', default='all', dest='sdks', help='Build against specified SDKs; valid args are "all", "present", or comma-delimited list of engine names (default: %default)')
 
 builder.Configure()

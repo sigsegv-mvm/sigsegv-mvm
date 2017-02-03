@@ -336,6 +336,17 @@
 					type "sym"
 					sym  "_ZN10CTFBotDead7OnStartEP6CTFBotP6ActionIS0_E"
 				}
+				
+				"CTFBotUseItem::CTFBotUseItem [C1]"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotUseItemC1EP13CTFWeaponBase"
+				}
+				"CTFBotUseItem::~CTFBotUseItem [D2]"
+				{
+					type "sym"
+					sym  "_ZN13CTFBotUseItemD2Ev"
+				}
 			}
 		}
 	}

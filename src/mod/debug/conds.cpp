@@ -10,7 +10,7 @@ namespace Mod_Debug_Conds
 		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 		auto player = shared->GetOuter();
 		
-		ClientMsg("[CondDebug] #%d \"%s\" +++ %d %s\n", ENTINDEX(player), player->GetPlayerName(), (int)cond, GetTFConditionName(cond));
+		ClientMsgAll("[CondDebug] #%d \"%s\" +++ %d %s\n", ENTINDEX(player), player->GetPlayerName(), (int)cond, GetTFConditionName(cond));
 		
 		DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionAdded)(cond);
 	}
@@ -20,7 +20,7 @@ namespace Mod_Debug_Conds
 		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 		auto player = shared->GetOuter();
 		
-		ClientMsg("[CondDebug] #%d \"%s\" --- %d %s\n", ENTINDEX(player), player->GetPlayerName(), (int)cond, GetTFConditionName(cond));
+		ClientMsgAll("[CondDebug] #%d \"%s\" --- %d %s\n", ENTINDEX(player), player->GetPlayerName(), (int)cond, GetTFConditionName(cond));
 		
 		DETOUR_MEMBER_CALL(CTFPlayerShared_OnConditionRemoved)(cond);
 	}

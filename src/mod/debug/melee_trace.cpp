@@ -4,9 +4,8 @@
 #include "stub/tfweaponbase.h"
 #include "stub/tf_shareddefs.h"
 #include "stub/objects.h"
-
-
-#include "mod/debug/melee_trace_stubs.h"
+#include "stub/trace.h"
+#include "stub/misc.h"
 
 
 namespace Mod_Debug_Melee_Trace

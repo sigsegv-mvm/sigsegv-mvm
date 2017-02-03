@@ -14,10 +14,7 @@ StaticFuncThunk<void, const Vector&, trace_t&, const Vector&, const Vector&, CBa
 
 #if 0
 StaticFuncThunk<const char *, const char *, int> TranslateWeaponEntForClass("TranslateWeaponEntForClass");
-//const char *TranslateWeaponEntForClass(const char *name, int classnum)
-//{
-//	return ft_TranslateWeaponEntForClass(name, classnum);
-//}
+//const char *TranslateWeaponEntForClass(const char *name, int classnum) { return ft_TranslateWeaponEntForClass(name, classnum); }
 #endif
 
 
@@ -33,3 +30,23 @@ CTraceFilterSimple::CTraceFilterSimple(const IHandleEntity *passedict, int colli
 {
 	ft_CTraceFilterSimple_ctor(this, passedict, collisionGroup, pExtraShouldHitFunc);
 }
+
+
+static MemberFuncThunk<const CStudioHdr *, int> ft_CStudioHdr_GetNumPoseParameters("CStudioHdr::GetNumPoseParameters");
+int CStudioHdr::GetNumPoseParameters() const { return ft_CStudioHdr_GetNumPoseParameters(this); }
+
+static MemberFuncThunk<CStudioHdr *, const mstudioposeparamdesc_t&, int> ft_CStudioHdr_pPoseParameter("CStudioHdr::pPoseParameter");
+const mstudioposeparamdesc_t& CStudioHdr::pPoseParameter(int i) { return ft_CStudioHdr_pPoseParameter(this, i); }
+
+
+static StaticFuncThunk<string_t, const char *> ft_AllocPooledString("AllocPooledString");
+string_t AllocPooledString(const char *pszValue) { return ft_AllocPooledString(pszValue); }
+
+static StaticFuncThunk<string_t, const char *> ft_AllocPooledString_StaticConstantStringPointer("AllocPooledString_StaticConstantStringPointer");
+string_t AllocPooledString_StaticConstantStringPointer(const char *pszGlobalConstValue) { return ft_AllocPooledString_StaticConstantStringPointer(pszGlobalConstValue); }
+
+static StaticFuncThunk<string_t, const char *> ft_FindPooledString("FindPooledString");
+string_t FindPooledString(const char *pszValue) { return ft_FindPooledString(pszValue); }
+
+static StaticFuncThunk<IGameSystem *> ft_GameStringSystem("GameStringSystem");
+IGameSystem *GameStringSystem() { return ft_GameStringSystem(); }

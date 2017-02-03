@@ -69,6 +69,7 @@ class ExtensionConfig(object):
     self.generated_headers = None
     self.mms_root = None
     self.sm_root = None
+    self.exclude = []
 
   @property
   def tag(self):
@@ -126,6 +127,11 @@ class ExtensionConfig(object):
     self.mms_root = Normalize(self.mms_root)
 
   def configure(self):
+    if builder.options.exclude_mods_debug:
+      self.exclude += ['mods_debug']
+    if builder.options.exclude_mods_visualize:
+      self.exclude += ['mods_visualize']
+    
     cxx = builder.DetectCxx()
 
     if cxx.like('gcc'):

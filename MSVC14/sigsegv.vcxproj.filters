@@ -230,9 +230,6 @@
     <ClCompile Include="..\src\mod\canteen\share_recall_canteen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mod\cond\reprogrammed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mod\debug\known_entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -384,6 +381,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stub\entities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stub\trace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mod\prof\tier2_renderutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stub\strings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

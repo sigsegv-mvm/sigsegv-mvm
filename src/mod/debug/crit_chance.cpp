@@ -10,7 +10,7 @@ namespace Mod_Debug_Crit_Chance
 //		
 //	}
 	
-	// TODO: use ClientMsg to print out the following info:
+	// TODO: use ClientMsgAll to print out the following info:
 	
 	// - int   CTFPlayerShared::m_iCritMult
 	// - float CTFPlayerShared::GetCritMult()
@@ -19,7 +19,7 @@ namespace Mod_Debug_Crit_Chance
 	// - int   CBaseCombatWeapon::n_nCritChecks
 	// - int   CBaseCombatWeapon::m_nCritSeedRequests
 	
-	// void ClientMsg(const char *fmt, ARGS... args)
+	// void ClientMsgAll(const char *fmt, ARGS... args)
 	
 	
 	class CMod : public IMod

@@ -111,6 +111,11 @@
 					type "sym"
 					sym  "_ZN9CTFPlayer22HandleCommand_JoinTeamEPKc"
 				}
+				"CTFPlayer::HandleCommand_JoinTeam_NoMenus"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer30HandleCommand_JoinTeam_NoMenusEPKc"
+				}
 				"CTFPlayer::IsReadyToPlay"
 				{
 					type "sym"
@@ -200,7 +205,7 @@
 				"CTFPlayer::TeamFortress_CalculateMaxSpeed"
 				{
 					type "sym"
-					sym  "_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEv"
+					sym  "_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
 				}
 				
 				"CTFPlayer::OnTakeDamage"
@@ -348,6 +353,34 @@
 					sym  "_ZN9CTFPlayer10TakeHealthEfi"
 				}
 				
+				"CTFPlayer::AddCustomAttribute"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18AddCustomAttributeEPKcff"
+				}
+				"CTFPlayer::RemoveCustomAttribute"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21RemoveCustomAttributeEPKc"
+				}
+				"CTFPlayer::RemoveAllCustomAttributes"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25RemoveAllCustomAttributesEv"
+				}
+				
+				"CTFPlayer::OnNavAreaChanged"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16OnNavAreaChangedEP8CNavAreaS1_"
+				}
+				
+				"CTFPlayer::EndPurchasableUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22EndPurchasableUpgradesEv"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -434,6 +467,17 @@
 				{
 					type "sym"
 					sym  "_ZN20CTFPlayerSharedUtils28GetEconItemViewByLoadoutSlotEP9CTFPlayeriPP11CEconEntity"
+				}
+				
+				"CTFPlayerMove::StartCommand"
+				{
+					type "sym"
+					sym  "_ZN13CTFPlayerMove12StartCommandEP11CBasePlayerP8CUserCmd"
+				}
+				"CTFPlayerMove::SetupMove"
+				{
+					type "sym"
+					sym  "_ZN13CTFPlayerMove9SetupMoveEP11CBasePlayerP8CUserCmdP11IMoveHelperP9CMoveData"
 				}
 				
 			//	"GetTFConditionName"

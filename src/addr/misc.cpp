@@ -331,6 +331,7 @@ static CAddr_IGameEventManager2 addr_IGameEventManager2_FireEventClientSide("Fir
 #endif
 
 
+#if 0
 static CAddr_Func_KnownVTIdx addr_CTFBotUseItem_D2("CTFBotUseItem::~CTFBotUseItem [D2]", "<nosym>", ".?AVCTFBotUseItem@@", 0x00);
 class CAddr_CTFBotUseItem_C1 : public IAddr_Sym
 {
@@ -364,6 +365,7 @@ public:
 	}
 };
 static CAddr_CTFBotUseItem_C1 addr_CTFBotUseItem_C1;
+#endif
 
 
 class IAddr_Func_EBPPrologue_UniqueCall : public IAddr_Sym

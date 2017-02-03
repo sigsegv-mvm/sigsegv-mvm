@@ -5,6 +5,8 @@
 
 namespace Mod_Visualize_Hitboxes
 {
+	ConVar cvar_clear("sig_visualize_hitboxes_clear", "0", FCVAR_NOTIFY,
+		"Visualization: clear between draws?");
 	ConVar cvar_interval("sig_visualize_hitboxes_interval", "2", FCVAR_NOTIFY,
 		"Visualization: frame interval");
 	
@@ -41,8 +43,12 @@ namespace Mod_Visualize_Hitboxes
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
-			static long frame = 0;
-			if (++frame % cvar_interval.GetInt() != 0) return;
+			static long frame = 0; ++frame;
+			if (cvar_interval.GetInt() != 0 && frame % cvar_interval.GetInt() != 0) return;
+			
+			if (cvar_clear.GetBool()) {
+				NDebugOverlay::Clear();
+			}
 			
 			ForEachEntityByRTTI<CBaseAnimating>([](CBaseAnimating *anim){
 				DrawHitboxes(anim);

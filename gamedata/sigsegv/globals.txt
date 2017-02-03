@@ -96,6 +96,87 @@
 					sym  "_ZL11s_pTokenBuf"
 				}
 				
+				"g_aTeamNames"
+				{
+					type "sym"
+					sym  "g_aTeamNames"
+				}
+				"g_aTeamColors"
+				{
+					type "sym"
+					sym  "g_aTeamColors"
+				}
+
+				"g_aClassNames"
+				{
+					type "sym"
+					sym  "g_aClassNames"
+				}
+				"g_aPlayerClassNames"
+				{
+					type "sym"
+					sym  "g_aPlayerClassNames"
+				}
+				"g_aPlayerClassNames_NonLocalized"
+				{
+					type "sym"
+					sym  "g_aPlayerClassNames_NonLocalized"
+				}
+				"g_aRawPlayerClassNames"
+				{
+					type "sym"
+					sym  "g_aRawPlayerClassNames"
+				}
+				"g_aRawPlayerClassNamesShort"
+				{
+					type "sym"
+					sym  "g_aRawPlayerClassNamesShort"
+				}
+				
+				"g_aWeaponNames"
+				{
+					type "sym"
+					sym  "g_aWeaponNames"
+				}
+				
+				"g_aConditionNames"
+				{
+					type "sym"
+					sym  "_ZL17g_aConditionNames"
+				}
+				
+				"g_szLoadoutStrings"
+				{
+					type "sym"
+					sym  "g_szLoadoutStrings"
+				}
+				"g_szLoadoutStringsForDisplay"
+				{
+					type "sym"
+					sym  "g_szLoadoutStringsForDisplay"
+				}
+				
+				"g_szBotModels"
+				{
+					type "sym"
+					sym  "g_szBotModels"
+				}
+				"g_szBotBossModels"
+				{
+					type "sym"
+					sym  "g_szBotBossModels"
+				}
+				"g_szPlayerRobotModels"
+				{
+					type "sym"
+					sym  "g_szPlayerRobotModels"
+				}
+				"g_szBotBossSentryBusterModel"
+				{
+					type "sym"
+					sym  "g_szBotBossSentryBusterModel"
+				}
+				
 				"s_TankModel"
 				{
 					type "sym"
@@ -116,23 +197,6 @@
 				{
 					type "sym"
 					sym  "g_szRomePromoItems_Misc"
-				}
-				
-				"g_szLoadoutStrings"
-				{
-					type "sym"
-					sym  "g_szLoadoutStrings"
-				}
-				"g_szLoadoutStringsForDisplay"
-				{
-					type "sym"
-					sym  "g_szLoadoutStringsForDisplay"
-				}
-				
-				"g_aWeaponNames"
-				{
-					type "sym"
-					sym  "g_aWeaponNames"
 				}
 			}
 		}

@@ -96,7 +96,7 @@ namespace Mod_Pop_Wave_Extensions
 					return;
 				}
 			} else if (FStrEq(name, "TeamNum")) {
-				info.teamnum = Clamp(subkey->GetInt(), 2, 3);
+				info.teamnum = Clamp(subkey->GetInt(), (int)TF_TEAM_RED, (int)TF_TEAM_BLUE);
 			//	DevMsg("TeamNum \"%s\" --> %d\n", subkey->GetString(), info.teamnum);
 			} else if (FStrEq(name, "Delay")) {
 				info.delay = Max(0.0f, subkey->GetFloat());
@@ -131,14 +131,16 @@ namespace Mod_Pop_Wave_Extensions
 			}
 		}
 		
+		bool fail = false;
 		if (info.use_hint && info.hints.empty()) {
 			Warning("Missing HintName key or Position block in SentryGun block.\n");
-			return;
+			fail = true;
 		}
 		if (info.level == -1) {
 			Warning("Missing Level key in SentryGun block.\n");
-			return;
+			fail = true;
 		}
+		if (fail) return;
 		
 		DevMsg("Wave %08x: add SentryGun\n", (uintptr_t)wave);
 		waves[wave].sentryguns.push_back(info);
@@ -345,8 +347,8 @@ namespace Mod_Pop_Wave_Extensions
 		
 		sentry->InitializeMapPlacedObject();
 		
-		DevMsg("SpawnSentryGun: %08x, level %d, health %d, maxhealth %d\n",
-			(uintptr_t)sentry, level, sentry->GetHealth(), sentry->GetMaxHealth());
+		DevMsg("SpawnSentryGun: #%d, %08x, level %d, health %d, maxhealth %d\n",
+			ENTINDEX(sentry), (uintptr_t)sentry, level, sentry->GetHealth(), sentry->GetMaxHealth());
 	}
 	
 	void SpawnSentryGuns(SentryGunInfo& sg_info)

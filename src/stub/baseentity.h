@@ -23,6 +23,7 @@ public:
 	const Vector& GetAbsVelocity() const;
 	bool IsEFlagSet(int nEFlagMask) const;
 	const matrix3x4_t& EntityToWorldTransform() const;
+	bool NameMatches(const char *pszNameOrWildcard);
 	
 	/* getter/setter */
 	IServerNetworkable *GetNetworkable() const  { return &this->m_Network; }
@@ -35,6 +36,7 @@ public:
 	int GetTeamNumber() const                   { return this->m_iTeamNum; }
 	int GetMaxHealth() const                    { return this->m_iMaxHealth; }
 	int GetHealth() const                       { return this->m_iHealth; }
+	void SetHealth(int amt)                     { this->m_iHealth = amt; }
 	bool IsAlive() const                        { return (this->m_lifeState == LIFE_ALIVE); }
 	CBaseEntity *GetGroundEntity() const        { return this->m_hGroundEntity; }
 	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
@@ -55,11 +57,13 @@ public:
 	void SetRenderColorG(byte g)                { this->m_clrRender->g = g; }
 	void SetRenderColorB(byte b)                { this->m_clrRender->b = b; }
 	void SetRenderColorA(byte a)                { this->m_clrRender->a = a; }
+	bool IsMarkedForDeletion() const            { return ((this->m_iEFlags & EFL_KILLME) != 0); }
 	
 	/* thunk */
 	void Remove()                                                                                                           {        ft_Remove                   (this); }
 	void CalcAbsolutePosition()                                                                                             {        ft_CalcAbsolutePosition     (this); }
 	void CalcAbsoluteVelocity()                                                                                             {        ft_CalcAbsoluteVelocity     (this); }
+	bool NameMatchesComplex(const char *pszNameOrWildcard)                                                                  { return ft_NameMatchesComplex       (this, pszNameOrWildcard); }
 	bool ClassMatches(const char *pszClassOrWildcard)                                                                       { return ft_ClassMatches             (this, pszClassOrWildcard); }
 	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin             (this, absOrigin); }
 	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles             (this, absAngles); }
@@ -140,6 +144,7 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_Remove;
 	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsolutePosition;
 	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsoluteVelocity;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_NameMatchesComplex;
 	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_ClassMatches;
 	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                ft_SetAbsOrigin;
 	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                ft_SetAbsAngles;
@@ -204,6 +209,11 @@ inline edict_t *INDEXENT(int iEdictNum)
 	return engine->PEntityOfEntIndex(iEdictNum);
 }
 
+inline bool FNullEnt(const edict_t *pent)
+{
+	return (pent == nullptr || ENTINDEX(pent) == 0);
+}
+
 inline CBaseEntity *UTIL_EntityByIndex(int entityIndex)
 {
 	CBaseEntity *entity = nullptr;
@@ -259,6 +269,11 @@ inline const matrix3x4_t& CBaseEntity::EntityToWorldTransform() const
 		const_cast<CBaseEntity *>(this)->CalcAbsolutePosition();
 	}
 	return this->m_rgflCoordinateFrame;
+}
+
+inline bool CBaseEntity::NameMatches(const char *pszNameOrWildcard)
+{
+	return (IDENT_STRINGS(this->m_iName, pszNameOrWildcard) || this->NameMatchesComplex(pszNameOrWildcard));
 }
 
 

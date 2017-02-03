@@ -301,6 +301,11 @@ public:
 private:
 	virtual bool CalcOffset(int& off) const override
 	{
+		if (this->m_Extractor == nullptr) {
+			Warning("CProp_Extract: %s::%s FAIL: no extractor provided (nullptr)\n", this->GetObjectName(), this->GetMemberName());
+			return false;
+		}
+		
 		if (!this->m_Extractor->Init()) {
 			Warning("CProp_Extract: %s::%s FAIL: in extractor Init\n", this->GetObjectName(), this->GetMemberName());
 			return false;

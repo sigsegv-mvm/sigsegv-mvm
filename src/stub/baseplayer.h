@@ -28,13 +28,14 @@ public:
 	bool IsAbleToSee(CBaseCombatCharacter *pBCC, FieldOfViewCheckType checkFOV) { return ft_IsAbleToSee_bcc   (this, pBCC, checkFOV); }
 	void SetBloodColor(int nBloodColor)                                         {        ft_SetBloodColor     (this, nBloodColor); }
 	
-	CBaseCombatWeapon *Weapon_GetSlot(int slot) const                      { return vt_Weapon_GetSlot    (this, slot); }
-	bool Weapon_CanSwitchTo(CBaseCombatWeapon *pWeapon)                    { return vt_Weapon_CanSwitchTo(this, pWeapon); }
-	bool Weapon_Switch(CBaseCombatWeapon *pWeapon, int viewmodelindex = 0) { return vt_Weapon_Switch     (this, pWeapon, viewmodelindex); }
-	CNavArea *GetLastKnownArea() const                                     { return vt_GetLastKnownArea  (this); }
-	int GiveAmmo(int iCount, int iAmmoIndex, bool bSuppressSound = false)  { return vt_GiveAmmo          (this, iCount, iAmmoIndex, bSuppressSound); }
-	int GetAmmoCount(int iAmmoIndex) const                                 { return vt_GetAmmoCount      (this, iAmmoIndex); }
-	bool ShouldGib(const CTakeDamageInfo& info)                            { return vt_ShouldGib         (this, info); }
+	CBaseCombatWeapon *Weapon_GetSlot(int slot) const                      { return vt_Weapon_GetSlot     (this, slot); }
+	bool Weapon_CanSwitchTo(CBaseCombatWeapon *pWeapon)                    { return vt_Weapon_CanSwitchTo (this, pWeapon); }
+	bool Weapon_Switch(CBaseCombatWeapon *pWeapon, int viewmodelindex = 0) { return vt_Weapon_Switch      (this, pWeapon, viewmodelindex); }
+	CNavArea *GetLastKnownArea() const                                     { return vt_GetLastKnownArea   (this); }
+	void UpdateLastKnownArea()                                             {        vt_UpdateLastKnownArea(this); }
+	int GiveAmmo(int iCount, int iAmmoIndex, bool bSuppressSound = false)  { return vt_GiveAmmo           (this, iCount, iAmmoIndex, bSuppressSound); }
+	int GetAmmoCount(int iAmmoIndex) const                                 { return vt_GetAmmoCount       (this, iAmmoIndex); }
+	bool ShouldGib(const CTakeDamageInfo& info)                            { return vt_ShouldGib          (this, info); }
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatWeapon>,              m_hActiveWeapon);
@@ -51,6 +52,7 @@ private:
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      vt_Weapon_CanSwitchTo;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *, int> vt_Weapon_Switch;
 	static MemberVFuncThunk<const CBaseCombatCharacter *, CNavArea *>                     vt_GetLastKnownArea;
+	static MemberVFuncThunk<      CBaseCombatCharacter *, void>                           vt_UpdateLastKnownArea;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            vt_GiveAmmo;
 	static MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       vt_GetAmmoCount;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   vt_ShouldGib;
@@ -68,9 +70,22 @@ public:
 };
 
 
+enum PlayerPhysFlag_e
+{
+	PFLAG_DIROVERRIDE               = (1 << 0),
+	PFLAG_DUCKING                   = (1 << 1),
+	PFLAG_USING                     = (1 << 2),
+	PFLAG_OBSERVER                  = (1 << 3),
+	PFLAG_VPHYSICS_MOTIONCONTROLLER = (1 << 4),
+	PFLAG_GAMEPHYSICS_ROTPUSH       = (1 << 5),
+};
+
+
 class CBasePlayer : public CBaseCombatCharacter
 {
 public:
+	float GetDeathTime() const              { return this->m_flDeathTime; }
+	int GetObserverMode() const             { return this->m_iObserverMode; }
 	const char *GetPlayerName()             { return this->m_szNetname; }
 	float MaxSpeed() const                  { return this->m_flMaxspeed; }
 	int GetUserID()                         { return engine->GetPlayerUserId(this->edict()); }
@@ -89,10 +104,14 @@ public:
 	const Vector GetPlayerMaxs() const     { return this->GetPlayerInfo()->GetPlayerMaxs(); }
 	const char *GetWeaponName() const      { return this->GetPlayerInfo()->GetWeaponName(); }
 	
-	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors   (this, pForward, pRight, pUp); }
-	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID   (this, pID); }
-	void SetPlayerName(const char *name)                                               {        ft_SetPlayerName(this, name); }
-	CBaseViewModel *GetViewModel(int viewmodelindex = 0, bool bObserverOK = true)      { return ft_GetViewModel (this, viewmodelindex, bObserverOK); }
+	void EyeVectors(Vector *pForward, Vector *pRight = nullptr, Vector *pUp = nullptr) { return ft_EyeVectors    (this, pForward, pRight, pUp); }
+	bool GetSteamID(CSteamID *pID)                                                     { return ft_GetSteamID    (this, pID); }
+	void SetPlayerName(const char *name)                                               {        ft_SetPlayerName (this, name); }
+	CBaseViewModel *GetViewModel(int viewmodelindex = 0, bool bObserverOK = true)      { return ft_GetViewModel  (this, viewmodelindex, bObserverOK); }
+	void DisableButtons(int nButtons)                                                  {        ft_DisableButtons(this, nButtons); }
+	void EnableButtons(int nButtons)                                                   {        ft_EnableButtons (this, nButtons); }
+	void ForceButtons(int nButtons)                                                    {        ft_ForceButtons  (this, nButtons); }
+	void UnforceButtons(int nButtons)                                                  {        ft_UnforceButtons(this, nButtons); }
 	
 	bool IsBot() const                                             { return vt_IsBot               (this); }
 	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide       (this, bExplode, bForce); }
@@ -107,6 +126,8 @@ public:
 private:
 	IPlayerInfo *GetPlayerInfo() const { return playerinfomanager->GetPlayerInfo(this->edict()); }
 	
+	DECL_SENDPROP(float,                              m_flDeathTime);
+	DECL_SENDPROP(int,                                m_iObserverMode);
 	DECL_SENDPROP(float,                              m_flMaxspeed);
 	DECL_SENDPROP(CUtlVector<CHandle<CEconWearable>>, m_hMyWearables);
 	
@@ -119,6 +140,10 @@ private:
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;
 	static MemberFuncThunk<CBasePlayer *, void, const char *>                 ft_SetPlayerName;
 	static MemberFuncThunk<CBasePlayer *, CBaseViewModel *, int, bool>        ft_GetViewModel;
+	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_DisableButtons;
+	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_EnableButtons;
+	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_ForceButtons;
+	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_UnforceButtons;
 	
 	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
 	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;
