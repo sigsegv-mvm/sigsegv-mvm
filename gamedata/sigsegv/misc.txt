@@ -2153,6 +2153,18 @@
 					sym  "_ZN14CBaseAnimating19LookupPoseParameterEP10CStudioHdrPKc"
 				}
 				
+				"CBaseAnimating::GetPoseParameter [int]"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating16GetPoseParameterEi"
+				}
+				
+				"CBaseAnimating::GetPoseParameter [str]"
+				{
+					type "sym"
+					sym  "_ZN14CBaseAnimating16GetPoseParameterEPKc"
+				}
+				
 				"CBasePlayer::DisableButtons"
 				{
 					type "sym"

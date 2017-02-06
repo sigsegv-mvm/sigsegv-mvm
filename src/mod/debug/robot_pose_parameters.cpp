@@ -34,68 +34,92 @@ namespace Mod_Debug_Robot_Pose_Parameters
 		});
 	}
 	
+	ConVar cvar_giant("sig_debug_robot_pose_parameters_giant", "0", FCVAR_NONE);
 	CON_COMMAND(sig_debug_robot_pose_parameters_change, "")
 	{
 		CTFPlayer *host = ToTFPlayer(UTIL_PlayerByIndex(1));
 		if (host == nullptr) return;
 		
 		auto l_switch = [=](int klass, bool giant){
-			host->HandleCommand_JoinTeam_NoMenus("blue");
-			
-			host->HandleCommand_JoinClass(g_aRawPlayerClassNames[klass]);
-			
-			host->SetMiniBoss(giant);
-			host->SetModelScale(giant ? 1.75f : 1.00f);
+			DevMsg("l_switch: klass = %d, giant = %d\n", klass, giant);
 			
 			const char *model_path = (giant ? g_szBotBossModels[klass] : g_szBotModels[klass]);
 			
+			bool sentry_buster = false;
+			if (klass == 10) {
+				sentry_buster = true;
+				
+				klass      = TF_CLASS_DEMOMAN;
+				model_path = g_szBotBossSentryBusterModel;
+			}
+			
+		//	host->HandleCommand_JoinTeam_NoMenus("blue");
+			
+			DevMsg("l_switch: HandleCommand_JoinClass(\"%s\")\n", g_aRawPlayerClassNames[klass]);
+			host->HandleCommand_JoinClass(g_aRawPlayerClassNames[klass]);
+			
+			DevMsg("l_switch: SetMiniBoss(%d)\n", giant);
+			DevMsg("l_switch: SetModelScale(%.2f)\n", (giant ? 1.75f : 1.00f));
+			host->SetMiniBoss(giant);
+			host->SetModelScale(giant ? 1.75f : 1.00f);
+			
+			DevMsg("l_switch: SetCustomModel(\"%s\")\n", model_path);
+			DevMsg("l_switch: UpdateModel()\n");
 			host->GetPlayerClass()->SetCustomModel(model_path);
 			host->UpdateModel();
 			
-			host->ForceRespawn();
+		//	DevMsg("l_switch: ForceRespawn()\n");
+		//	host->ForceRespawn();
 			
-			PrintToChatAll(CFmtStr("Switched to: %s %s (\"%s\")\n", (giant ? "giant" : "normal"), g_aRawPlayerClassNames[klass], model_path));
+			if (sentry_buster) {
+				PrintToChatAll(CFmtStr("Switched to: sentrybuster (\"%s\")\n", model_path));
+			} else {
+				PrintToChatAll(CFmtStr("Switched to: %s %s (\"%s\")\n", (giant ? "giant" : "normal"), g_aRawPlayerClassNames[klass], model_path));
+			}
 		};
 		
-	//	if (FStrEq(args[1], "scout")) l_switch(TF_CLASS_SCOUT, false);
-		
-		static int n = 0;
-		l_switch((n % 9) + 1, ((n / 9) % 2 == 1));
-		++n;
+		l_switch(atoi(args[1]), cvar_giant.GetBool());
 	}
 	
 	CON_COMMAND(sig_debug_robot_pose_parameters_dump, "")
 	{
-	//	CTFPlayer *host = ToTFPlayer(UTIL_PlayerByIndex(1));
-	//	if (host == nullptr) {
-	//		Warning("host == nullptr\n");
-	//		return;
-	//	}
-	//	
+		CTFPlayer *host = ToTFPlayer(UTIL_PlayerByIndex(1));
+		if (host == nullptr) {
+			Warning("host == nullptr\n");
+			return;
+		}
+		
 	//	host->SetModel(args[1]);
-	//	
-	//	CStudioHdr *pStudioHdr = host->GetModelPtr();
-	//	if (pStudioHdr == nullptr) {
-	//		Warning("pStudioHdr == nullptr\n");
-	//		return;
+		
+		CStudioHdr *pStudioHdr = host->GetModelPtr();
+		if (pStudioHdr == nullptr) {
+			Warning("pStudioHdr == nullptr\n");
+			return;
+		}
+		
+	//	MDLHandle_t handle = mdlcache->FindMDL(args[1]);
+	//	if (handle == MDLHANDLE_INVALID) {
+	//		
 	//	}
-		
-		MDLHandle_t handle = mdlcache->FindMDL(args[1]);
-		Msg("handle = %04x\n", handle);
-		return;
+	//	Msg("handle = %04x\n", handle);
+	//	return;
 		
 		
-	//	Msg("\n");
-	//	Msg("POSE PARAMETER INFO FOR: \"%s\"\n", args[1]);
-	//	Msg("================================================================================\n");
-	//	
-	//	int nParams = pStudioHdr->GetNumPoseParameters();
-	//	Msg("Number of pose parameters: %d\n", nParams);
-	//	for (int i = 0; i < nParams; ++i) {
-	//		const auto& param = pStudioHdr->pPoseParameter(i);
-	//		Msg("[%d] \"%s\" %.2f~%.2f %.2f %08x\n", i, param.pszName(), param.start, param.end, param.loop, param.flags);
-	//	}
-	//	Msg("\n");
+		int nParams = pStudioHdr->GetNumPoseParameters();
+		Msg("\n%-3s %-12s  %7s %7s %7s  %8s\n",
+			"IDX", "NAME________", "__START", "____END", "___LOOP", "___FLAGS");
+		for (int i = 0; i < nParams; ++i) {
+			const auto& param = pStudioHdr->pPoseParameter(i);
+			
+			Msg("%3s %12s  %7s %7s %7s  %8s\n",
+				CFmtStr("[%d]",   i)              .Get(),
+				CFmtStr("\"%s\"", param.pszName()).Get(),
+				CFmtStr("% 7.2f", param.start)    .Get(),
+				CFmtStr("% 7.2f", param.end)      .Get(),
+				CFmtStr("% 7.2f", param.loop)     .Get(),
+				CFmtStr("%08x",   param.flags)    .Get());
+		}
+		Msg("\n");
 	}
 	
 	
@@ -118,6 +142,61 @@ namespace Mod_Debug_Robot_Pose_Parameters
 	}
 	
 	
+	void DrawHitboxes(CBaseAnimating *anim)
+	{
+		if (!anim->IsPlayer() && !anim->IsBaseObject()) return;
+		if (anim->GetTeamNumber() == TEAM_SPECTATOR)    return;
+		if (!anim->IsAlive())                           return;
+		
+		anim->DrawServerHitboxes(3600.0f, false);
+	}
+	
+	void DrawPoseParameterOverlay()
+	{
+		CTFPlayer *host = ToTFPlayer(UTIL_PlayerByIndex(1));
+		if (host == nullptr) {
+			Warning("DrawPoseParameterOverlay: host == nullptr\n");
+			return;
+		}
+		
+		CStudioHdr *pStudioHdr = host->GetModelPtr();
+		if (pStudioHdr == nullptr) {
+			Warning("DrawPoseParameterOverlay: pStudioHdr == nullptr\n");
+			return;
+		}
+		
+		int line = 0;
+		auto l_PrintText = [&](const char *str){
+			NDebugOverlay::ScreenText(0.03f, 0.03f + (line * 0.03f), str, 0xff, 0xff, 0xff, 0xff, 3600.0f);
+			++line;
+		};
+		
+//		l_PrintText("ACTUAL:");
+//		l_PrintText("");
+		l_PrintText("IDX  NAME_________  __VALUE  __START  ____END  ___LOOP  ___FLAGS");
+		int nParams = pStudioHdr->GetNumPoseParameters();
+		for (int i = 0; i < nParams; ++i) {
+			const auto& param = pStudioHdr->pPoseParameter(i);
+			float val = host->GetPoseParameter(i);
+			
+			l_PrintText(CFmtStr("[%d]  %-13s  % 7.2f  % 7.2f  % 7.2f  % 7.2f  %08x\n", i, CFmtStr("\"%s\"", param.pszName()).Get(), val, param.start, param.end, param.loop, param.flags));
+		}
+		
+		l_PrintText("");
+		
+//		l_PrintText("CACHED:");
+//		l_PrintText("");
+//		l_PrintText("IDX  NAME_________  __VALUE  __START  ____END  ___LOOP  ___FLAGS");
+//		int nParams = pStudioHdr->GetNumPoseParameters();
+//		for (int i = 0; i < nParams; ++i) {
+//		//	const auto& param = pStudioHdr->pPoseParameter(i);
+//		//	float val = host->GetPoseParameter(i);
+//		//	
+//		//	l_PrintText(CFmtStr("[%d]  %-13s  % 7.2f  % 7.2f  % 7.2f  % 7.2f  %08x\n", i, CFmtStr("\"%s\"", param.pszName()).Get(), val, param.start, param.end, param.loop, param.flags));
+//		}
+	}
+	
+	
 	class CMod : public IMod, public IFrameUpdateListener
 	{
 	public:
@@ -135,6 +214,14 @@ namespace Mod_Debug_Robot_Pose_Parameters
 			ForEachEntityByRTTI<CTFRagdoll>([](CTFRagdoll *ragdoll){
 				ragdoll->Remove();
 			});
+			
+			NDebugOverlay::Clear();
+			
+			ForEachEntityByRTTI<CBaseAnimating>([](CBaseAnimating *anim){
+				DrawHitboxes(anim);
+			});
+			
+			DrawPoseParameterOverlay();
 		}
 	};
 	CMod s_Mod;
