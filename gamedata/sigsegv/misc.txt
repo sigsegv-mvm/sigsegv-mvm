@@ -2206,6 +2206,25 @@
 					type "sym"
 					sym  "_ZN12CTFGameRules24DistributeCurrencyAmountEiP9CTFPlayerbbb"
 				}
+				
+				"Con_NPrintf"
+				{
+					type "sym"
+					sym  "_Z11Con_NPrintfiPKcz"
+					lib  "engine"
+				}
+				"IVEngineServer::Con_NPrintf"
+				{
+					type "sym"
+					sym  "_ZN14CVEngineServer11Con_NPrintfEiPKcz"
+					lib  "engine"
+				}
+				"IVEngineServer::Con_NXPrintf"
+				{
+					type "sym"
+					sym  "_ZN14CVEngineServer12Con_NXPrintfEPK12con_nprint_sPKcz"
+					lib  "engine"
+				}
 			}
 		}
 	}

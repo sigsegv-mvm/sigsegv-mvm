@@ -251,6 +251,8 @@
     <ClCompile Include="..\src\mod\util\debugoverlay_font_v2.cpp" />
     <ClCompile Include="..\src\mod\util\debugoverlay_font_v3.cpp" />
     <ClCompile Include="..\src\mod\util\listenserverhost.cpp" />
+    <ClCompile Include="..\src\mod\util\notify_recv.cpp" />
+    <ClCompile Include="..\src\mod\util\notify_send.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_enhancements.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_recv.cpp" />
     <ClCompile Include="..\src\mod\util\overlay_send.cpp" />

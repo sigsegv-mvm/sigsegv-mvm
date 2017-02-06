@@ -233,6 +233,8 @@ sourceFiles += [
   'src/mod/util/listenserverhost.cpp',
 #  'src/mod/util/netmsg_client.cpp',
 #  'src/mod/util/netmsg_server.cpp',
+  'src/mod/util/notify_recv.cpp',
+  'src/mod/util/notify_send.cpp',
   'src/mod/util/overlay_enhancements.cpp',
   'src/mod/util/overlay_recv.cpp',
   'src/mod/util/overlay_send.cpp',

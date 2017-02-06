@@ -167,6 +167,16 @@ void *GetAddrOfMemberFunc(MemberPtrTypeConst<C, RET, PARAMS...> ptr)
 {
 	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
 }
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeVaConst<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
 
 
 template<class C, typename RET, typename... PARAMS>
@@ -230,6 +240,16 @@ void *GetAddrOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
 }
 template<class C, typename RET, typename... PARAMS>
 void *GetAddrOfMemberFunc(MemberPtrTypeConst<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeVa<C, RET, PARAMS...> ptr)
+{
+	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
+}
+template<class C, typename RET, typename... PARAMS>
+void *GetAddrOfMemberFunc(MemberPtrTypeVaConst<C, RET, PARAMS...> ptr)
 {
 	return GetAddrOfMemberFunc(reinterpret_cast<MemberPtrType<C, RET, PARAMS...>>(ptr));
 }
