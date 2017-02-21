@@ -145,7 +145,7 @@ namespace Mod_AI_Puppet
 	}
 	
 	
-	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
+	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotMainAction_InitialContainedAction, CTFBot *actor)
 	{
 		return new CTFBotPuppet();
 	}
@@ -156,7 +156,7 @@ namespace Mod_AI_Puppet
 	public:
 		CMod() : IMod("AI:Puppet")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
+			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_InitialContainedAction, "CTFBotMainAction::InitialContainedAction");
 		}
 	};
 	CMod s_Mod;

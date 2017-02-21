@@ -21,6 +21,8 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		"Blue humans in MvM: when spawn protection invulnerability is enabled, disallow shooting from spawn");
 	ConVar cvar_infinite_cloak("sig_mvm_bluhuman_infinite_cloak", "1", FCVAR_NOTIFY,
 		"Blue humans in MvM: enable infinite spy cloak meter");
+	ConVar cvar_infinite_cloak_deadringer("sig_mvm_bluhuman_infinite_cloak_deadringer", "0", FCVAR_NOTIFY,
+		"Blue humans in MvM: enable infinite spy cloak meter (Dead Ringer)");
 	
 	
 	bool IsMvMBlueHuman(CTFPlayer *player)
@@ -76,33 +78,14 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	}
 	
 	
-	/* fix a bug in CPointPopulatorInterface::InputChangeBotAttributes, where
-	 * CollectPlayers<CTFBot> is assumed to only collect actual CTFBots */
-	DETOUR_DECL_MEMBER(int, CollectPlayers_CTFBot, CUtlVector<CTFBot *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	DETOUR_DECL_STATIC(CTFReviveMarker *, CTFReviveMarker_Create, CTFPlayer *player)
 	{
-		if (!shouldAppend) {
-			playerVector->RemoveAll();
+		if (IsMvMBlueHuman(player)) {
+			return nullptr;
 		}
 		
-		for (int i = 1; i <= gpGlobals->maxClients; ++i) {
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
-			if (player == nullptr)                                   continue;
-			if (FNullEnt(player->edict()))                           continue;
-			if (!player->IsPlayer())                                 continue;
-			if (!player->IsConnected())                              continue;
-			if (team != TEAM_ANY && player->GetTeamNumber() != team) continue;
-			if (isAlive && !player->IsAlive())                       continue;
-			
-			/* actually confirm that they're a CTFBot */
-			CTFBot *bot = ToTFBot(player);
-			if (bot == nullptr) continue;
-			
-			playerVector->AddToTail(bot);
-		}
-		
-		return playerVector->Count();
+		return DETOUR_STATIC_CALL(CTFReviveMarker_Create)(player);
 	}
-	
 	
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_ClientCommand, const CCommand& args)
 	{
@@ -172,8 +155,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_GetTeamAssignmentOverride, "CTFGameRules::GetTeamAssignmentOverride");
 			
-			MOD_ADD_DETOUR_MEMBER(CollectPlayers_CTFBot,                  "CollectPlayers<CTFBot>");
-			
+			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,                 "CTFReviveMarker::Create");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ClientCommand,                "CTFPlayer::ClientCommand");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_OnNavAreaChanged,             "CTFPlayer::OnNavAreaChanged");
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ClientCommandKeyValues,    "CTFGameRules::ClientCommandKeyValues");
@@ -202,7 +184,19 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 					}
 					
 					if (cvar_infinite_cloak.GetBool()) {
-						player->m_Shared->m_flCloakMeter = 100.0f;
+						bool should_refill_cloak = true;
+						
+						if (!cvar_infinite_cloak_deadringer.GetBool()) {
+							/* check for attribute "set cloak is feign death" */
+							auto invis = rtti_cast<CTFWeaponInvis *>(player->Weapon_GetWeaponByType(TF_WPN_TYPE_PDA2));
+							if (invis != nullptr && CAttributeManager::AttribHookValue<int>(0, "set_weapon_mode", invis) == 1) {
+								should_refill_cloak = false;
+							}
+						}
+						
+						if (should_refill_cloak) {
+							player->m_Shared->m_flCloakMeter = 100.0f;
+						}
 					}
 				});
 			}

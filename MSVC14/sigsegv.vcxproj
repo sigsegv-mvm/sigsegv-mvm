@@ -232,6 +232,7 @@
     <ClCompile Include="..\src\mod\demo\stringtable_limit.cpp" />
     <ClCompile Include="..\src\mod\etc\laserdot_fix.cpp" />
     <ClCompile Include="..\src\mod\etc\override_move_speed.cpp" />
+    <ClCompile Include="..\src\mod\etc\release_source_mutex.cpp" />
     <ClCompile Include="..\src\mod\mvm\disposable_dispenser.cpp" />
     <ClCompile Include="..\src\mod\pop\eventpopfile_improvements.cpp" />
     <ClCompile Include="..\src\mod\pop\kv_conditional.cpp" />

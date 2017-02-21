@@ -266,6 +266,7 @@ enum
 	TF_NUM_PROJECTILES,
 };
 
+// WARNING: this is weapon TYPE, not weapon SLOT, and any code that uses this is probably WRONG
 enum
 {
 	TF_WPN_TYPE_PRIMARY   = 0,

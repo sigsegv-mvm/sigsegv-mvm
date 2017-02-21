@@ -128,6 +128,8 @@ namespace Mod_Pop_TFBot_Extensions
 		bool use_buster_model = false;
 		std::string use_custom_model;
 		
+		std::map<int, std::string> custom_weapon_models;
+		
 		std::string rocket_custom_model;
 		std::string rocket_custom_particle;
 		
@@ -502,6 +504,49 @@ namespace Mod_Pop_TFBot_Extensions
 			hr.speed, hr.turn_power, hr.min_dot_product);
 	}
 	
+	void Parse_CustomWeaponModel(CTFBotSpawner *spawner, KeyValues *kv)
+	{
+		int slot = -1;
+		const char *path = "";
+		
+		bool got_slot = false;
+		bool got_path = false;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "Slot")) {
+				slot = subkey->GetInt();
+				got_slot = true;
+			} else if (FStrEq(name, "Model")) {
+				path = subkey->GetString();
+				got_path = true;
+			} else {
+				Warning("Unknown key \'%s\' in CustomWeaponModel block.\n", name);
+			}
+		}
+		
+		if (!got_slot) {
+			Warning("No weapon Slot specified in CustomWeaponModel block.\n");
+			return;
+		}
+		
+		if (!got_path) {
+			Warning("No Model path specified in CustomWeaponModel block.\n");
+			return;
+		}
+		
+		// technically we should be using the loadout slot enum, not the weapon type enum
+		if (slot < TF_WPN_TYPE_PRIMARY || slot > TF_WPN_TYPE_PDA2) {
+			Warning("CustomWeaponModel Slot must be one of: { 0, 1, 2, 3, 4, 5, 6 }.\n");
+			return;
+		}
+		
+		DevMsg("CTFBotSpawner %08x: add CustomWeaponModel(%d, \"%s\")\n",
+			(uintptr_t)spawner, slot, path);
+		spawners[spawner].custom_weapon_models[slot] = path;
+	}
+	
 	DETOUR_DECL_MEMBER(bool, CTFBotSpawner_Parse, KeyValues *kv)
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
@@ -525,6 +570,8 @@ namespace Mod_Pop_TFBot_Extensions
 				Parse_ItemColor(spawner, subkey);
 			} else if (FStrEq(name, "HomingRockets")) {
 				Parse_HomingRockets(spawner, subkey);
+			} else if (FStrEq(name, "CustomWeaponModel")) {
+				Parse_CustomWeaponModel(spawner, subkey);
 			} else if (FStrEq(name, "UseHumanModel")) {
 				spawners[spawner].use_human_model = subkey->GetBool();
 			} else if (FStrEq(name, "UseBusterModel")) {
@@ -662,6 +709,39 @@ namespace Mod_Pop_TFBot_Extensions
 								econ_entity->SetRenderColorB(item_color.b);
 							}
 						}
+					}
+					
+					for (const auto& pair : data.custom_weapon_models) {
+						int slot         = pair.first;
+						const char *path = pair.second.c_str();
+						
+						CBaseCombatWeapon *weapon = bot->Weapon_GetSlot(slot);
+						if (weapon == nullptr) {
+							DevMsg("CTFBotSpawner %08x: can't find weapon slot %d for CustomWeaponModel\n",
+								(uintptr_t)spawner, slot);
+							continue;
+						}
+						
+						DevMsg("CTFBotSpawner %08x: weapon slot %d is entity #%d classname \"%s\"\n",
+							(uintptr_t)spawner, slot, ENTINDEX(weapon), weapon->GetClassname());
+						
+						DevMsg("CTFBotSpawner %08x: changing weapon model to \"%s\"\n",
+							(uintptr_t)spawner, path);
+						
+						CBaseEntity::PrecacheModel(path);
+						for (int i = 0; i < MAX_VISION_MODES; ++i) {
+							weapon->SetModelIndexOverride(i, modelinfo->GetModelIndex(path));
+						}
+						
+						
+					//	int idx = CBaseEntity::PrecacheModel(path);
+					//	DevMsg("model idx: %d\n", idx);
+					//	weapon->SetModelIndex(idx);
+						
+					//	weapon->m_iWorldModelIndex = 
+						
+					//	CBaseEntity::PrecacheModel(path);
+					//	weapon->SetModel(path);
 					}
 				}
 			}

@@ -30,6 +30,8 @@ public:
 	DECL_SENDPROP(int,   m_iSecondaryAmmoType);
 	DECL_SENDPROP(int,   m_iClip1);
 	DECL_SENDPROP(int,   m_iClip2);
+	DECL_SENDPROP(int,   m_iViewModelIndex);
+	DECL_SENDPROP(int,   m_iWorldModelIndex);
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatCharacter>, m_hOwner);
@@ -173,6 +175,8 @@ private:
 
 class CTFWeaponBuilder : public CTFWeaponBase {};
 class CTFWeaponSapper : public CTFWeaponBuilder {};
+
+class CTFWeaponInvis : public CTFWeaponBase {};
 
 
 class CBaseViewModel : public CBaseAnimating

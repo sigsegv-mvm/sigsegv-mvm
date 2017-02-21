@@ -381,6 +381,12 @@
 					sym  "_ZN9CTFPlayer22EndPurchasableUpgradesEv"
 				}
 				
+				"CTFPlayer::Weapon_GetWeaponByType"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22Weapon_GetWeaponByTypeEi"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

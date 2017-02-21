@@ -55,6 +55,7 @@ MemberFuncThunk<      CTFPlayer *, float, CTFWeaponBase **         > CTFPlayer::
 MemberFuncThunk<      CTFPlayer *, float, bool                     > CTFPlayer::ft_TeamFortress_CalculateMaxSpeed("CTFPlayer::TeamFortress_CalculateMaxSpeed");
 MemberFuncThunk<      CTFPlayer *, void                            > CTFPlayer::ft_UpdateModel                   ("CTFPlayer::UpdateModel");
 MemberFuncThunk<const CTFPlayer *, CTFWeaponBase *, int            > CTFPlayer::ft_Weapon_OwnsThisID             ("CTFPlayer::Weapon_OwnsThisID");
+MemberFuncThunk<      CTFPlayer *, CTFWeaponBase *, int            > CTFPlayer::ft_Weapon_GetWeaponByType        ("CTFPlayer::Weapon_GetWeaponByType");
 MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int         > CTFPlayer::ft_GetObjectOfType               ("CTFPlayer::GetObjectOfType");
 MemberFuncThunk<      CTFPlayer *, int, int, int                   > CTFPlayer::ft_GetMaxAmmo                    ("CTFPlayer::GetMaxAmmo");
 MemberFuncThunk<      CTFPlayer *, void, const char *              > CTFPlayer::ft_HandleCommand_JoinTeam        ("CTFPlayer::HandleCommand_JoinTeam");
