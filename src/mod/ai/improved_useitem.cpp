@@ -32,7 +32,7 @@ namespace Mod_AI_Improved_UseItem
 		virtual ActionResult<CTFBot> OnStart(CTFBot *actor, Action<CTFBot> *action) override
 		{
 			if (cvar_debug.GetBool()) {
-				DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnStart\n", gpGlobals->curtime, ENTINDEX(actor));
+				DevMsg("[%8.3f] CTFBot%s(#%d): OnStart\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
 			}
 			
 			this->m_State = State::FIRE;
@@ -40,31 +40,41 @@ namespace Mod_AI_Improved_UseItem
 			this->m_flSwitchTime = this->m_hItem->m_flNextPrimaryAttack;
 			actor->PushRequiredWeapon(this->m_hItem);
 			
+			this->m_ctTimeout.Start(10.0f);
+			
 			return ActionResult<CTFBot>::Continue();
 		}
 		
 		virtual ActionResult<CTFBot> Update(CTFBot *actor, float dt) override
 		{
+			if (this->m_ctTimeout.IsElapsed()) {
+				if (cvar_debug.GetBool()) {
+					DevMsg("[%8.3f] CTFBot%s(#%d): Timeout elapsed!\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
+				}
+				return ActionResult<CTFBot>::Done("Timed out");
+			}
+			
 			switch (this->m_State) {
-				
+			
 			case State::FIRE:
 				if (gpGlobals->curtime >= this->m_flSwitchTime) {
 					if (cvar_debug.GetBool()) {
-						DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Using item now\n", gpGlobals->curtime, ENTINDEX(actor));
+						DevMsg("[%8.3f] CTFBot%s(#%d): Using item now\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
 					}
 					actor->PressFireButton(1.0f);
 					this->m_State = State::WAIT;
 				}
 				break;
-				
+			
 			case State::WAIT:
 				if (this->IsDone(actor)) {
 					if (cvar_debug.GetBool()) {
-						DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): Done using item\n", gpGlobals->curtime, ENTINDEX(actor));
+						DevMsg("[%8.3f] CTFBot%s(#%d): Done using item\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
 					}
 					return ActionResult<CTFBot>::Done("Item used");
 				}
 				break;
+			
 			}
 			
 			return ActionResult<CTFBot>::Continue();
@@ -73,20 +83,32 @@ namespace Mod_AI_Improved_UseItem
 		virtual void OnEnd(CTFBot *actor, Action<CTFBot> *action) override
 		{
 			if (cvar_debug.GetBool()) {
-				DevMsg("[%8.3f] CTFBotUseItemImproved(#%d): OnEnd\n", gpGlobals->curtime, ENTINDEX(actor));
+				DevMsg("[%8.3f] CTFBot%s(#%d): OnEnd\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
 			}
 			
+			actor->ReleaseFireButton();
 			actor->PopRequiredWeapon();
 		}
 		
+		virtual ActionResult<CTFBot> OnSuspend(CTFBot *actor, Action<CTFBot> *action) override
+		{
+			if (cvar_debug.GetBool()) {
+				DevMsg("[%8.3f] CTFBot%s(#%d): OnSuspend\n", gpGlobals->curtime, this->GetName(), ENTINDEX(actor));
+			}
+			
+			return ActionResult<CTFBot>::Done("Interrupted");
+		}
+		
 	protected:
-		virtual bool IsDone(CTFBot *actor) const = 0;
+		virtual bool IsDone(CTFBot *actor) = 0;
 		
 	private:
 		CHandle<CTFWeaponBase> m_hItem;
 		
 		State m_State;
 		float m_flSwitchTime;
+		
+		CountdownTimer m_ctTimeout;
 	};
 	
 	
@@ -99,26 +121,62 @@ namespace Mod_AI_Improved_UseItem
 		virtual const char *GetName() const override { return "UseBuffItem"; }
 		
 	private:
-		virtual bool IsDone(CTFBot *actor) const override
+		virtual bool IsDone(CTFBot *actor) override
 		{
 			return actor->m_Shared->m_bRageDraining;
 		}
 	};
 	
+	
 	class CTFBotUseLunchBoxItem : public CTFBotUseItemImproved
 	{
 	public:
+		enum class TauntState : int
+		{
+			BEFORE, // taunt has not yet begun
+			DURING, // taunt is in progress
+			AFTER,  // taunt has completed
+		};
+		
 		CTFBotUseLunchBoxItem(CTFWeaponBase *item) :
 			CTFBotUseItemImproved(item) {}
 		
 		virtual const char *GetName() const override { return "UseLunchBoxItem"; }
 		
-	private:
-		virtual bool IsDone(CTFBot *actor) const override
+		virtual ActionResult<CTFBot> OnStart(CTFBot *actor, Action<CTFBot> *action) override
 		{
-			// FIXME: this is actually backwards
-			return actor->m_Shared->InCond(TF_COND_TAUNTING);
+			this->m_TauntState = TauntState::BEFORE;
+			
+			return CTFBotUseItemImproved::OnStart(actor, action);
 		}
+		
+	private:
+		virtual bool IsDone(CTFBot *actor) override
+		{
+			switch (this->m_TauntState) {
+			
+			case TauntState::BEFORE:
+				if (actor->m_Shared->InCond(TF_COND_TAUNTING)) {
+					this->m_TauntState = TauntState::DURING;
+				}
+				return false;
+			
+			case TauntState::DURING:
+				if (!actor->m_Shared->InCond(TF_COND_TAUNTING)) {
+					this->m_TauntState = TauntState::AFTER;
+				}
+				return false;
+			
+			case TauntState::AFTER:
+				return true;
+			
+			}
+			
+			// should never happen
+			return true;
+		}
+		
+		TauntState m_TauntState;
 	};
 	
 	
