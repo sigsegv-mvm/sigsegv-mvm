@@ -4,7 +4,7 @@
 
 namespace Mod_MvM_ChangeBotAttributes_Crash_Fix
 {
-	DETOUR_DECL_MEMBER(int, CollectPlayers_CTFBot, CUtlVector<CTFBot *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	DETOUR_DECL_STATIC(int, CollectPlayers_CTFBot, CUtlVector<CTFBot *> *playerVector, int team, bool isAlive, bool shouldAppend)
 	{
 		if (!shouldAppend) {
 			playerVector->RemoveAll();
@@ -35,7 +35,7 @@ namespace Mod_MvM_ChangeBotAttributes_Crash_Fix
 	public:
 		CMod() : IMod("MvM:ChangeBotAttributes_Crash_Fix")
 		{
-			MOD_ADD_DETOUR_MEMBER(CollectPlayers_CTFBot, "CollectPlayers<CTFBot>");
+			MOD_ADD_DETOUR_STATIC(CollectPlayers_CTFBot, "CollectPlayers<CTFBot>");
 		}
 	};
 	CMod s_Mod;
