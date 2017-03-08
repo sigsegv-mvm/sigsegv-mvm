@@ -24,6 +24,7 @@ public:
 	bool IsEFlagSet(int nEFlagMask) const;
 	const matrix3x4_t& EntityToWorldTransform() const;
 	bool NameMatches(const char *pszNameOrWildcard);
+	void SetModel(const char *szModelName);
 	
 	/* getter/setter */
 	IServerNetworkable *GetNetworkable() const  { return &this->m_Network; }
@@ -91,7 +92,6 @@ public:
 	void SetModelIndexOverride(int index, int nValue)                                                                       {        vt_SetModelIndexOverride    (this, index, nValue); }
 	datamap_t *GetDataDescMap()                                                                                             { return vt_GetDataDescMap           (this); }
 	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
-	void SetModel(const char *szModelName)                                                                                  {        vt_SetModel                 (this, szModelName); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)     { return ft_PrecacheModel      (name, bPreload); }
@@ -275,6 +275,17 @@ inline bool CBaseEntity::NameMatches(const char *pszNameOrWildcard)
 {
 	return (IDENT_STRINGS(this->m_iName, pszNameOrWildcard) || this->NameMatchesComplex(pszNameOrWildcard));
 }
+
+inline void CBaseEntity::SetModel(const char *szModelName)
+{
+	/* ensure that we don't accidentally run into the fatal Error statement in
+	 * UTIL_SetModel */
+	CBaseEntity::PrecacheModel(szModelName);
+	
+	/* now do the vcall */
+	vt_SetModel(this, szModelName);
+}
+
 
 
 inline void CBaseEntity::NetworkStateChanged()
