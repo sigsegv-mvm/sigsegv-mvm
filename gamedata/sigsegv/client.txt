@@ -75,12 +75,12 @@
 				
 				"[client] CDebugOverlay::DrawAllOverlays"
 				{
-					type  "pattern"
-					sym   "_ZN13CDebugOverlay15DrawAllOverlaysEv"
-					lib   "engine"
-					seg   "text"
-					seek  "558beca1c43c491083ec20837830000f840601000053576a0168e5030000689417311068d41731108d45e068043d491050e84aa0ffff8b3da03c491083c41833db85ff0f8493000000f30f100db01e2f1056"
-					mask  "ffffffff00000000ffffffffffffffffff00000000ffffff00ff00000000ff00000000ff00000000ffffffff00000000ffff00000000ffff00000000ffffffffffffffffff00000000ffffffff00000000ff"
+					type "pattern"
+					sym  "_ZN13CDebugOverlay15DrawAllOverlaysEv"
+					lib  "engine"
+					seg  "text"
+					seek "558beca13410fc1083ec20837830000f84fb00000053576a0168e503000068c84b321068084c32108d45e06874104c1050e88aa1ffff8b3d10104c1083c41833db85ff0f84880000000f57c9568d4900"
+					mask "ffffffff00000000ffff00ffffffffffff00000000ffffffffff00000000ff00000000ff00000000ff0000ff00000000ff00000000ffffff00000000ffffffffffffffffff00000000ffffffffffffff"
 				}
 				"[client] CDebugOverlay::DrawOverlay"
 				{
@@ -96,10 +96,10 @@
 				{
 					type  "pattern"
 					sym   "_Z21RenderWireframeSphereRK6Vectorfii5Colorb"
-					lib   "client"
+					lib   "client" // not found in engine, unlike the others
 					seg   "text"
-					seek  "558bec81ec18020000535657e8dff6ffff8b5d108b4514438bfb895d100faff8488945f88d0c9dfcffffff8945dc0fafc8894dfc8b0da04ad7108b01ff90880100008bf08975e885f674078b068bceff5008"
-					mask  "ffffffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffff00ffffffffffff00"
+					seek  "558bec81ec18020000535657e8dff6ffff8b5d108b4514438bfb0faff8488945f88d0c9dfcffffff8945e40fafc8894d108b0d847ad1108b01ff90900100008bf08975e885f674078b068bceff5008"
+					mask  "ffffffffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffffffffffffffffffff"
 				}
 			//	"[client] RenderSphere"
 			//	{
@@ -117,7 +117,7 @@
 					lib   "engine"
 					seg   "text"
 					seek  "538bdc83ec0883e4f083c404558b6b04896c24048bec81ec680200005657e81df7ffff8b0d7ccf67108b018b8088010000ffd08bf08975e085f67407"
-					mask  "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
+					mask  "ffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffff00"
 				}
 				"[client] RenderWireframeBox"
 				{
@@ -125,8 +125,8 @@
 					sym  "_Z18RenderWireframeBoxRK6VectorRK6QAngleS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ec5802000056e801edffff8b0df4f369108b01ff90900100008bf08975fc85f674078b068bceff5008a12cf469108bce807d1c008b160f450528f4691053576a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec81ec5402000056e841edffff8b0d00a56a108b01ff90900100008bf08975f885f674078b068bceff5008a134a56a108bce807d1c008b160f450530a56a1053576a0050ff5224"
+					mask "ffffffffff00000000ffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
 				"[client] RenderWireframeSweptBox"
 				{
@@ -134,8 +134,8 @@
 					sym  "_Z23RenderWireframeSweptBoxRK6VectorS1_RK6QAngleS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ecc40200008b0df8f36910578b01ff90900100008bf8897df085ff74078b078bcfff5008a12cf469108bcf807d20008b170f450528f4691053566a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec81ecc40200008b0d04a56a10578b01ff90900100008bf8897de485ff74078b078bcfff5008a134a56a108bcf807d20008b170f450530a56a1053566a0050ff5224"
+					mask "ffffffffff00000000ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
 				"[client] RenderBox"
 				{
@@ -180,7 +180,7 @@
 					lib  "engine"
 					seg  "text"
 					seek "558bec81ecf401000056e8b1f9ffff8b0d04f067108b01ff90880100008bf085f674078b068bceff5008a138f067108bce807d14008b160f450534f0671053576a0050ff5224"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					mask "ffffffffff00000000ffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
 				}
 				"[client] RenderTriangle"
 				{
@@ -188,17 +188,17 @@
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ecc40200008b0d78346810578b01ff90900100008bf8897df085ff74078b078bcfff5008a1ac3468108bcf807d20008b170f4505a834681053566a0050ff5224"
-					mask "ffffffffff00000000ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec518b45148bc8c1e9088845fc884dfd8bc8c1e818c1e910807d18008845ffa13ca56a100f450538a56a1050884dfeff75fcff7510ff750cff7508e88efbffff83c4148be55dc3"
+					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffff"
 				}
-				"[client] RenderTriangle [material]" // FIX WINDOWS
+				"[client] RenderTriangle [material]"
 				{
 					type "pattern"
 					sym  "_Z14RenderTriangleRK6VectorS1_S1_5ColorP9IMaterial"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ec0402000056e881f1ffff8b0d04f067108b018b8088010000ffd08bf085f674078b068bceff50088b068bce576a00ff7518ff5024"
-					mask "ffffffffffffffffffffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					seek "558bec81ecfc01000056e8c1f1ffff8b0d00a56a108b018b8090010000ffd08bf085f674078b068bceff50088b068bce576a00ff7518"
+					mask "ffffffffff00000000ffff00000000ffff00000000ffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
 			//	"[client] RenderQuad"
 			//	{
@@ -251,8 +251,8 @@
 					sym  "_ZL19GenerateBoxVerticesRK6VectorRK6QAngleS1_S1_PS_"
 					lib  "engine"
 					seg  "text"
-					seek "558bec83ec405356578d45c050ff750ce8cb24feff8b4d1883c4088b7d1433db83c108894dfc8b4510f6c3017406f30f1007eb04f30f1000f30f1145f0f6c3027407f30f104704eb05"
-					mask "ffffffffff00ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+					seek "558bec83ec405356578d45c050ff750ce8cb24feff8b551883c4088b7d1433db83c2088955fc8b4d10f6c3018bc10f45c7f30f1000f30f1145f0f6c3027407f30f104704eb05"
+					mask "ffffffffff00ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 				}
 				
 				"[client] C_BaseEntity::VPhysicsUpdate"
@@ -372,7 +372,7 @@
 					type "pattern"
 					sym  "TODO"
 					seg  "text"
-					seek "558bec81ec84000000538bd98b4d0c895df856578b7d0885c9751357b910cb1310e81aa3000033c984c00f95c141"
+					seek "558bec81ec80000000538bd98b4d0c895dcc568b75085785c9751356b910601410e82aa6000033c984c00f95c141"
 					mask "ffffffffff00ffffffffffffffffffffff00ffffffffffffffffffffff00000000ff00000000ffffffffffffffff"
 					lib  "vguimatsurface"
 				}
@@ -395,8 +395,8 @@
 					type "pattern"
 					sym  "TODO"
 					seg  "text"
-					seek "558bec83ec34538b5d14565785db0f84d20200008d04dd1300000083e0f0e8bd650600db45148d041b8bfc897dfc8945dc"
-					mask "ffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffffffffffffffffffff"
+					seek "558bec83ec345356578b7d1485ff0f84cb0200008d04fd1300000083e0f0e8bd8c0600db45148d043f8bcc894dfc8945dcdc0de0b80d1085c0"
+					mask "ffffffffff00ffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffff00000000ffff"
 					lib  "vguimatsurface"
 				}
 			//	"[client] ApplyScanlineEffectToTexture"

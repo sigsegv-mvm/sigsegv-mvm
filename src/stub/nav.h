@@ -197,24 +197,33 @@ class CNavArea
 public:
 	const Vector& GetCenter() const    { return this->m_center; }
 	bool HasAttributes(int bits) const { return ((this->m_attributeFlags & bits) != 0); }
+	CNavArea *GetParent() const        { return this->m_parent; }
+	int GetParentHow() const           { return this->m_parentHow; }
+#if TOOLCHAIN_FIXES
 	float GetCostSoFar() const         { return this->m_costSoFar; }
+#endif
 	
 	void GetExtent(Extent *extent) const                                                            {        ft_GetExtent                            (this, extent); }
 	void GetClosestPointOnArea(const Vector& pos, Vector *close) const                              {        ft_GetClosestPointOnArea                (this, &pos, close); }
 	float ComputeAdjacentConnectionHeightChange(const CNavArea *destinationArea) const              { return ft_ComputeAdjacentConnectionHeightChange(this, destinationArea); }
-	void DrawFilled(int r, int g, int b, int a, float deltaT, bool noDepthTest, float margin) const {        ft_DrawFilled                           (this, r, g, b, a, deltaT, noDepthTest, margin); }
+	float GetZ(float x, float y) const                                                              { return ft_GetZ                                 (this, x, y); }
+	void DrawFilled(int r, int g, int b, int a, float deltaT, bool noDepthTest, float margin) const {        vt_DrawFilled                           (this, r, g, b, a, deltaT, noDepthTest, margin); }
+	
 	
 	DECL_EXTRACT(CUtlVector<CHandle<CFuncNavCost>>, m_funcNavCostVector);
 	
 private:
-	DECL_EXTRACT(Vector, m_center);
-	DECL_EXTRACT(int,    m_attributeFlags);
-	DECL_EXTRACT(float,  m_costSoFar);
+	DECL_EXTRACT (Vector,     m_center);
+	DECL_EXTRACT (int,        m_attributeFlags);
+	DECL_RELATIVE(CNavArea *, m_parent);
+	DECL_RELATIVE(int,        m_parentHow);
+	DECL_EXTRACT (float,      m_costSoFar);
 	
-	static MemberFuncThunk<const CNavArea *, void, Extent *>                               ft_GetExtent;
-	static MemberFuncThunk<const CNavArea *, void, const Vector *, Vector *>               ft_GetClosestPointOnArea;
-	static MemberFuncThunk<const CNavArea *, float, const CNavArea *>                      ft_ComputeAdjacentConnectionHeightChange;
-	static MemberFuncThunk<const CNavArea *, void, int, int, int, int, float, bool, float> ft_DrawFilled;
+	static MemberFuncThunk <const CNavArea *, void, Extent *>                               ft_GetExtent;
+	static MemberFuncThunk <const CNavArea *, void, const Vector *, Vector *>               ft_GetClosestPointOnArea;
+	static MemberFuncThunk <const CNavArea *, float, const CNavArea *>                      ft_ComputeAdjacentConnectionHeightChange;
+	static MemberFuncThunk <const CNavArea *, float, float, float>                          ft_GetZ;
+	static MemberVFuncThunk<const CNavArea *, void, int, int, int, int, float, bool, float> vt_DrawFilled;
 };
 
 class CTFNavArea : public CNavArea
@@ -223,7 +232,9 @@ public:
 	TFNavAttributeType GetTFAttributes() const          { return this->m_nAttributes; }
 	bool HasTFAttributes(TFNavAttributeType attr) const { return ((this->m_nAttributes & attr) != 0); }
 	bool IsInCombat() const                             { return (this->GetCombatIntensity() > 0.01f); }
+#if TOOLCHAIN_FIXES
 	float GetIncursionDistance(int team) const          { return this->m_IncursionDistances[team]; }
+#endif
 	
 	bool IsBlocked(int teamID, bool ignoreNavBlockers = false) const { return ft_IsBlocked(this, teamID, ignoreNavBlockers); }
 	float GetCombatIntensity() const                                 { return ft_GetCombatIntensity(this); }
@@ -244,13 +255,17 @@ public:
 	CNavArea *GetNavArea(CBaseEntity *pEntity, int nGetNavAreaFlags, float flBeneathLimit = 120.0f) const                                                                  { return ft_GetNavArea_ent                          (this, pEntity, nGetNavAreaFlags, flBeneathLimit); }
 	CNavArea *GetNearestNavArea(const Vector& pos, bool anyZ = false, float maxDist = 10000.0f, bool checkLOS = false, bool checkGround = true, int team = TEAM_ANY) const { return ft_GetNearestNavArea_vec                   (this, pos, anyZ, maxDist, checkLOS, checkGround, team); }
 	CNavArea *GetNearestNavArea(CBaseEntity *pEntity, int nFlags = GETNAVAREA_CHECK_GROUND, float maxDist = 10000.0f) const                                                { return ft_GetNearestNavArea_ent                   (this, pEntity, nFlags, maxDist); }
+	bool GetGroundHeight(const Vector& pos, float *height, Vector *normal = nullptr) const                                                                                 { return ft_GetGroundHeight                         (this, pos, height, normal); }
+#if TOOLCHAIN_FIXES
 	void CollectAreasOverlappingExtent(const Extent& extent, CUtlVector<CTFNavArea *> *outVector)                                                                          {        ft_CollectAreasOverlappingExtent_CTFNavArea(this, extent, outVector); }
+#endif
 	
 private:
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, float>                        ft_GetNavArea_vec;
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   ft_GetNavArea_ent;
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, bool, float, bool, bool, int> ft_GetNearestNavArea_vec;
 	static MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   ft_GetNearestNavArea_ent;
+	static MemberFuncThunk<const CNavMesh *, bool, const Vector&, float *, Vector *>                  ft_GetGroundHeight;
 	static MemberFuncThunk<      CNavMesh *, void, const Extent&, CUtlVector<CTFNavArea *> *>         ft_CollectAreasOverlappingExtent_CTFNavArea;
 };
 
@@ -274,6 +289,14 @@ inline float NavAreaTravelDistance(CNavArea *startArea, CNavArea *endArea, CostF
 {
 	/* we call NavAreaTravelDistance<CTFBotPathCost> for all functor types; should be okay */
 	return ft_NavAreaTravelDistance_CTFBotPathCost(startArea, endArea, *reinterpret_cast<CTFBotPathCost *>(&costFunc), maxPathLength);
+}
+
+extern StaticFuncThunk<bool, CNavArea *, CNavArea *, const Vector *, CTFBotPathCost&, CNavArea **, float, int, bool> ft_NavAreaBuildPath_CTFBotPathCost;
+template<typename CostFunctor>
+inline bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goalPos, CostFunctor& costFunc, CNavArea **closestArea = nullptr, float maxPathLength = 0.0f, int teamID = TEAM_ANY, bool ignoreNavBlockers = false)
+{
+	/* we call NavAreaBuildPath<CTFBotPathCost> for all functor types; should be okay */
+	return ft_NavAreaBuildPath_CTFBotPathCost(startArea, goalArea, goalPos, *reinterpret_cast<CTFBotPathCost *>(&costFunc), closestArea, maxPathLength, teamID, ignoreNavBlockers);
 }
 
 

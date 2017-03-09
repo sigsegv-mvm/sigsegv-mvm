@@ -280,7 +280,9 @@ public:
 	}
 #endif
 	
+#if TOOLCHAIN_FIXES
 	DECL_EXTRACT(CUtlVector<CFmtStr>, m_Tags);
+#endif
 	DECL_EXTRACT(AttributeType,       m_nBotAttrs);
 	
 private:

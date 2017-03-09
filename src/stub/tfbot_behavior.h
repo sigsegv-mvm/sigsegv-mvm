@@ -97,7 +97,9 @@ SIZE_CHECK(CTFBotPushToCapturePoint, 0x4818);
 class CTFBotMedicHeal : public ActionStub
 {
 public:
+#if TOOLCHAIN_FIXES
 	static CTFBotMedicHeal *New();
+#endif
 	
 protected:
 	CTFBotMedicHeal() = delete;
@@ -120,7 +122,9 @@ SIZE_CHECK(CTFBotMedicHeal, 0x9058);
 class CTFBotSniperLurk : public ActionStub
 {
 public:
+#if TOOLCHAIN_FIXES
 	static CTFBotSniperLurk *New();
+#endif
 	
 protected:
 	CTFBotSniperLurk() = delete;

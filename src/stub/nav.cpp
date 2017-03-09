@@ -296,15 +296,18 @@ struct CExtract_CTFNavArea_m_IncursionDistances : public IExtract<float (*)[4]>
 #endif
 
 
-IMPL_EXTRACT(CUtlVector<CHandle<CFuncNavCost>>, CNavArea, m_funcNavCostVector, new CExtract_CNavArea_m_funcNavCostVector());
-IMPL_EXTRACT(Vector,                            CNavArea, m_center,            new CExtract_CNavArea_m_center());
-IMPL_EXTRACT(int,                               CNavArea, m_attributeFlags,    new CExtract_CNavArea_m_attributeFlags());
-IMPL_EXTRACT(float,                             CNavArea, m_costSoFar,         new CExtract_CNavArea_m_costSoFar());
+IMPL_EXTRACT  (CUtlVector<CHandle<CFuncNavCost>>, CNavArea, m_funcNavCostVector, new CExtract_CNavArea_m_funcNavCostVector());
+IMPL_EXTRACT  (Vector,                            CNavArea, m_center,            new CExtract_CNavArea_m_center());
+IMPL_EXTRACT  (int,                               CNavArea, m_attributeFlags,    new CExtract_CNavArea_m_attributeFlags());
+IMPL_RELATIVE (CNavArea *,                        CNavArea, m_parent,            m_attributeFlags, (116 - 80));
+IMPL_REL_AFTER(int,                               CNavArea, m_parentHow,         m_parent);
+IMPL_EXTRACT  (float,                             CNavArea, m_costSoFar,         new CExtract_CNavArea_m_costSoFar());
 
-MemberFuncThunk<const CNavArea *, void, Extent *>                               CNavArea::ft_GetExtent                            ("CNavArea::GetExtent");
-MemberFuncThunk<const CNavArea *, void, const Vector *, Vector *>               CNavArea::ft_GetClosestPointOnArea                ("CNavArea::GetClosestPointOnArea");
-MemberFuncThunk<const CNavArea *, float, const CNavArea *>                      CNavArea::ft_ComputeAdjacentConnectionHeightChange("CNavArea::ComputeAdjacentConnectionHeightChange");
-MemberFuncThunk<const CNavArea *, void, int, int, int, int, float, bool, float> CNavArea::ft_DrawFilled                           ("CNavArea::DrawFilled");
+MemberFuncThunk <const CNavArea *, void, Extent *>                               CNavArea::ft_GetExtent                            ("CNavArea::GetExtent");
+MemberFuncThunk <const CNavArea *, void, const Vector *, Vector *>               CNavArea::ft_GetClosestPointOnArea                ("CNavArea::GetClosestPointOnArea");
+MemberFuncThunk <const CNavArea *, float, const CNavArea *>                      CNavArea::ft_ComputeAdjacentConnectionHeightChange("CNavArea::ComputeAdjacentConnectionHeightChange");
+MemberFuncThunk <const CNavArea *, float, float, float>                          CNavArea::ft_GetZ                                 ("CNavArea::GetZ");
+MemberVFuncThunk<const CNavArea *, void, int, int, int, int, float, bool, float> CNavArea::vt_DrawFilled                           (TypeName<CNavArea>(), "CNavArea::DrawFilled");
 
 
 IMPL_EXTRACT(TFNavAttributeType, CTFNavArea, m_nAttributes,        new CExtract_CTFNavArea_m_nAttributes());
@@ -318,6 +321,7 @@ MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, float>             
 MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   CNavMesh::ft_GetNavArea_ent                          ("CNavMesh::GetNavArea [ent]");
 MemberFuncThunk<const CNavMesh *, CNavArea *, const Vector&, bool, float, bool, bool, int> CNavMesh::ft_GetNearestNavArea_vec                   ("CNavMesh::GetNearestNavArea [vec]");
 MemberFuncThunk<const CNavMesh *, CNavArea *, CBaseEntity *, int, float>                   CNavMesh::ft_GetNearestNavArea_ent                   ("CNavMesh::GetNearestNavArea [ent]");
+MemberFuncThunk<const CNavMesh *, bool, const Vector&, float *, Vector *>                  CNavMesh::ft_GetGroundHeight                         ("CNavMesh::GetGroundHeight");
 MemberFuncThunk<CNavMesh *, void, const Extent&, CUtlVector<CTFNavArea *> *>               CNavMesh::ft_CollectAreasOverlappingExtent_CTFNavArea("CNavMesh::CollectAreasOverlappingExtent<CTFNavArea>");
 
 
@@ -328,4 +332,5 @@ GlobalThunk<CTFNavMesh *>             TheNavMesh ("TheNavMesh");
 GlobalThunk<CUtlVector<CTFNavArea *>> TheNavAreas("TheNavAreas");
 
 
-StaticFuncThunk<float, CNavArea *, CNavArea *, CTFBotPathCost&, float> ft_NavAreaTravelDistance_CTFBotPathCost("NavAreaTravelDistance<CTFBotPathCost>");
+StaticFuncThunk<float, CNavArea *, CNavArea *, CTFBotPathCost&, float>                                        ft_NavAreaTravelDistance_CTFBotPathCost("NavAreaTravelDistance<CTFBotPathCost>");
+StaticFuncThunk<bool, CNavArea *, CNavArea *, const Vector *, CTFBotPathCost&, CNavArea **, float, int, bool> ft_NavAreaBuildPath_CTFBotPathCost     ("NavAreaBuildPath<CTFBotPathCost>");

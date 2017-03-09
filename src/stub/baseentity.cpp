@@ -37,7 +37,7 @@ MemberFuncThunk<      CBaseEntity *, void                                       
 MemberFuncThunk<      CBaseEntity *, void                                              > CBaseEntity::ft_CalcAbsolutePosition("CBaseEntity::CalcAbsolutePosition");
 MemberFuncThunk<      CBaseEntity *, void                                              > CBaseEntity::ft_CalcAbsoluteVelocity("CBaseEntity::CalcAbsoluteVelocity");
 MemberFuncThunk<      CBaseEntity *, bool, const char *                                > CBaseEntity::ft_NameMatchesComplex  ("CBaseEntity::NameMatchesComplex");
-MemberFuncThunk<      CBaseEntity *, bool, const char *                                > CBaseEntity::ft_ClassMatches        ("CBaseEntity::ClassMatches");
+MemberFuncThunk<      CBaseEntity *, bool, const char *                                > CBaseEntity::ft_ClassMatchesComplex ("CBaseEntity::ClassMatchesComplex");
 MemberFuncThunk<      CBaseEntity *, void, const Vector&                               > CBaseEntity::ft_SetAbsOrigin        ("CBaseEntity::SetAbsOrigin");
 MemberFuncThunk<      CBaseEntity *, void, const QAngle&                               > CBaseEntity::ft_SetAbsAngles        ("CBaseEntity::SetAbsAngles");
 MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *                > CBaseEntity::ft_EmitSound           ("CBaseEntity::EmitSound [const char *, float, float *]");

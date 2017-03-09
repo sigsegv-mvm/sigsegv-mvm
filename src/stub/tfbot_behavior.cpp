@@ -8,7 +8,6 @@
 #endif
 
 
-/* fix an undefined-reference linker error */
 //template<typename T> Action<T>::~Action() {}
 
 
@@ -104,6 +103,7 @@ CTFBotPushToCapturePoint *CTFBotPushToCapturePoint::New(Action<CTFBot> *done_act
 
 
 static MemberFuncThunk<CTFBotMedicHeal *, void> ft_CTFBotMedicHeal_ctor("CTFBotMedicHeal::CTFBotMedicHeal [C1]");
+#if TOOLCHAIN_FIXES
 CTFBotMedicHeal *CTFBotMedicHeal::New()
 {
 	// TODO: verify sizeof(CTFBotMedicHeal) in the game code at runtime
@@ -113,6 +113,7 @@ CTFBotMedicHeal *CTFBotMedicHeal::New()
 	ft_CTFBotMedicHeal_ctor(action);
 	return action;
 }
+#endif
 
 
 CTFBotMedicRetreat *CTFBotMedicRetreat::New()
@@ -132,6 +133,7 @@ CTFBotMedicRetreat *CTFBotMedicRetreat::New()
 
 
 static MemberFuncThunk<CTFBotSniperLurk *, void> ft_CTFBotSniperLurk_ctor("CTFBotSniperLurk::CTFBotSniperLurk [C1]");
+#if TOOLCHAIN_FIXES
 CTFBotSniperLurk *CTFBotSniperLurk::New()
 {
 	// TODO: verify sizeof(CTFBotSniperLurk) in the game code at runtime
@@ -141,6 +143,7 @@ CTFBotSniperLurk *CTFBotSniperLurk::New()
 	ft_CTFBotSniperLurk_ctor(action);
 	return action;
 }
+#endif
 
 
 CTFBotSpyInfiltrate *CTFBotSpyInfiltrate::New()

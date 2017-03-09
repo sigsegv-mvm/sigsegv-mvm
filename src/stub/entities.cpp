@@ -6,11 +6,12 @@
 static constexpr uint8_t s_Buf_CCurrencyPack_m_nAmount[] = {
 	0x55,                               // +0000  push ebp
 	0x89, 0xe5,                         // +0001  mov ebp,esp
-	0xf3, 0x0f, 0x2c, 0x55, 0x0c,       // +0003  cvttss2si edx,[ebp+0xc]
+	0xf3, 0x0f, 0x10, 0x45, 0x0c,       // +0003  movss xmm0,[ebp+0xc]
 	0x8b, 0x45, 0x08,                   // +0008  mov eax,[ebp+this]
-	0x89, 0x90, 0xf0, 0x04, 0x00, 0x00, // +000B  mov [eax+0xVVVVVVVV],edx
-	0x5d,                               // +0011  pop ebp
-	0xc3,                               // +0012  ret
+	0xf3, 0x0f, 0x2c, 0xd0,             // +000B  cvttss2si edx,xmm0
+	0x89, 0x90, 0xfc, 0x04, 0x00, 0x00, // +000F  mov [eax+0xVVVVVVVV],edx
+	0x5d,                               // +0015  pop ebp
+	0xc3,                               // +0016  ret
 };
 
 struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
@@ -21,7 +22,7 @@ struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
 	{
 		buf.CopyFrom(s_Buf_CCurrencyPack_m_nAmount);
 		
-		mask.SetRange(0x0b + 2, 4, 0x00);
+		mask.SetRange(0x0f + 2, 4, 0x00);
 		
 		return true;
 	}
@@ -29,7 +30,7 @@ struct CExtract_CCurrencyPack_m_nAmount : public IExtract<int *>
 	virtual const char *GetFuncName() const override   { return "CCurrencyPack::SetAmount"; }
 	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
 	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { return 0x000b + 2; }
+	virtual uint32_t GetExtractOffset() const override { return 0x000f + 2; }
 };
 
 #elif defined _WINDOWS
@@ -227,7 +228,9 @@ static StaticFuncThunk<bool, CBaseEntity *, const Vector&> ft_PointInRespawnRoom
 bool PointInRespawnRoom(CBaseEntity *ent, const Vector& vec) { return ft_PointInRespawnRoom(ent, vec); }
 
 
+#if TOOLCHAIN_FIXES
 IMPL_EXTRACT(CTeamControlPointMaster::ControlPointMap, CTeamControlPointMaster, m_ControlPoints, new CExtract_CTeamControlPointMaster_m_ControlPoints());
+#endif
 
 GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters("g_hControlPointMasters");
 

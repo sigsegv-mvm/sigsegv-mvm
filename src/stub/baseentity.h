@@ -25,6 +25,7 @@ public:
 	const matrix3x4_t& EntityToWorldTransform() const;
 	bool NameMatches(const char *pszNameOrWildcard);
 	void SetModel(const char *szModelName);
+	bool ClassMatches(const char *pszClassOrWildcard);
 	
 	/* getter/setter */
 	IServerNetworkable *GetNetworkable() const  { return &this->m_Network; }
@@ -65,7 +66,7 @@ public:
 	void CalcAbsolutePosition()                                                                                             {        ft_CalcAbsolutePosition     (this); }
 	void CalcAbsoluteVelocity()                                                                                             {        ft_CalcAbsoluteVelocity     (this); }
 	bool NameMatchesComplex(const char *pszNameOrWildcard)                                                                  { return ft_NameMatchesComplex       (this, pszNameOrWildcard); }
-	bool ClassMatches(const char *pszClassOrWildcard)                                                                       { return ft_ClassMatches             (this, pszClassOrWildcard); }
+	bool ClassMatchesComplex(const char *pszClassOrWildcard)                                                                { return ft_ClassMatchesComplex      (this, pszClassOrWildcard); }
 	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin             (this, absOrigin); }
 	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles             (this, absAngles); }
 	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound                (this, soundname, soundtime, duration); }
@@ -145,7 +146,7 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsolutePosition;
 	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsoluteVelocity;
 	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_NameMatchesComplex;
-	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_ClassMatches;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_ClassMatchesComplex;
 	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                ft_SetAbsOrigin;
 	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                ft_SetAbsAngles;
 	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *>                 ft_EmitSound;
@@ -286,6 +287,10 @@ inline void CBaseEntity::SetModel(const char *szModelName)
 	vt_SetModel(this, szModelName);
 }
 
+inline bool CBaseEntity::ClassMatches(const char *pszClassOrWildcard)
+{
+	return (IDENT_STRINGS(this->m_iClassname, pszClassOrWildcard) || this->ClassMatchesComplex(pszClassOrWildcard));
+}
 
 
 inline void CBaseEntity::NetworkStateChanged()

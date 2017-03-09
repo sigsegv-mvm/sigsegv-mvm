@@ -1135,6 +1135,9 @@
 					
 					// WARNING:
 					// the windows pattern is actually for VProfExport_StartOrStop
+					
+					// also, this is broken after the Feb 2017 toolchain update
+					// (why the hell is VProfRecord_StartOrStop in two noncontiguous chunks in the win build? WHY?)
 				}
 				
 				"CTFGameMovement::ProcessMovement"
@@ -2105,12 +2108,6 @@
 					sym  "_ZN12CTFGameRules25GetTeamAssignmentOverrideEP9CTFPlayerib"
 				}
 				
-				"CollectPlayers<CTFBot>"
-				{
-					type "sym"
-					sym  "_Z14CollectPlayersI6CTFBotEiP10CUtlVectorIPT_10CUtlMemoryIS3_iEEibb"
-				}
-				
 				"CBaseAnimating::ResetSequenceInfo"
 				{
 					type "sym"
@@ -2193,6 +2190,12 @@
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity18NameMatchesComplexEPKc"
+				}
+				
+				"CBaseEntity::ClassMatchesComplex"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity19ClassMatchesComplexEPKc"
 				}
 				
 				"CTFGameRules::ClientCommandKeyValues"

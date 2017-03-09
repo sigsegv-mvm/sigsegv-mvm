@@ -95,6 +95,7 @@ sourceFiles += [
   'src/link/nextbot2.cpp',
   
   'src/re/nextbot.cpp',
+  'src/re/path.cpp',
 ]
 
 sourceFiles += [
@@ -140,7 +141,7 @@ sourceFiles += [
   'src/mod/bot/kill_before_forcespec.cpp',
   'src/mod/bot/medieval_nonmelee.cpp',
   'src/mod/bot/multiclass_weapon.cpp',
-  'src/mod/bot/runfast.cpp',
+#  'src/mod/bot/runfast.cpp',
   'src/mod/bot/spy_medicheal.cpp',
   'src/mod/bot/spy_selectrandomreachableenemy.cpp',
   
@@ -233,7 +234,7 @@ sourceFiles += [
   'src/mod/util/debugoverlay_font_v3.cpp',
   'src/mod/util/dtwatch.cpp',
   'src/mod/util/entity_overlays.cpp',
-  'src/mod/util/jumboframes.cpp',
+#  'src/mod/util/jumboframes.cpp',
   'src/mod/util/listenserverhost.cpp',
 #  'src/mod/util/netmsg_client.cpp',
 #  'src/mod/util/netmsg_server.cpp',
@@ -276,7 +277,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/flamethrower_impulse_101.cpp',
     'src/mod/debug/flamethrower_misc.cpp',
     'src/mod/debug/flamethrower_mojo.cpp',
-    'src/mod/debug/func_nav_cost_tags.cpp',
+#    'src/mod/debug/func_nav_cost_tags.cpp',
     'src/mod/debug/getplayermaxspeed.cpp',
     'src/mod/debug/grenade_logger.cpp',
     'src/mod/debug/grenade_vphysics.cpp',
