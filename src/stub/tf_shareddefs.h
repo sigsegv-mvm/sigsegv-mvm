@@ -266,21 +266,44 @@ enum
 	TF_NUM_PROJECTILES,
 };
 
-// WARNING: this is weapon TYPE, not weapon SLOT, and any code that uses this is probably WRONG
 enum
 {
-	TF_WPN_TYPE_PRIMARY   = 0,
-	TF_WPN_TYPE_SECONDARY = 1,
-	TF_WPN_TYPE_MELEE     = 2,
-	TF_WPN_TYPE_UTILITY   = 3,
-	TF_WPN_TYPE_BUILDING  = 4, // sapper
-	TF_WPN_TYPE_PDA       = 5, // engie build pda, disguise kit
-	TF_WPN_TYPE_PDA2      = 6, // engie destroy pda, invis watch
-	TF_WPN_TYPE_HEAD      = 7,
-	TF_WPN_TYPE_MISC      = 8,
-	TF_WPN_TYPE_ACTION    = 9, // canteens
-	/* slot 10 unknown */
-	TF_WPN_TYPE_TAUNT     = 11,
+	TF_LOADOUT_SLOT_PRIMARY   =  0,
+	TF_LOADOUT_SLOT_SECONDARY =  1,
+	TF_LOADOUT_SLOT_MELEE     =  2,
+	TF_LOADOUT_SLOT_UTILITY   =  3,
+	TF_LOADOUT_SLOT_BUILDING  =  4,
+	TF_LOADOUT_SLOT_PDA       =  5,
+	TF_LOADOUT_SLOT_PDA2      =  6,
+	TF_LOADOUT_SLOT_HEAD      =  7,
+	TF_LOADOUT_SLOT_MISC      =  8,
+	TF_LOADOUT_SLOT_ACTION    =  9,
+	TF_LOADOUT_SLOT_MISC2     = 10,
+	TF_LOADOUT_SLOT_TAUNT     = 11,
+	TF_LOADOUT_SLOT_TAUNT2    = 12,
+	TF_LOADOUT_SLOT_TAUNT3    = 13,
+	TF_LOADOUT_SLOT_TAUNT4    = 14,
+	TF_LOADOUT_SLOT_TAUNT5    = 15,
+	TF_LOADOUT_SLOT_TAUNT6    = 16,
+	TF_LOADOUT_SLOT_TAUNT7    = 17,
+	TF_LOADOUT_SLOT_TAUNT8    = 18,
+};
+
+enum
+{
+	TF_WPN_TYPE_PRIMARY        =  0,
+	TF_WPN_TYPE_SECONDARY      =  1,
+	TF_WPN_TYPE_MELEE          =  2,
+	TF_WPN_TYPE_GRENADE        =  3,
+	TF_WPN_TYPE_BUILDING       =  4,
+	TF_WPN_TYPE_PDA            =  5,
+	TF_WPN_TYPE_ITEM1          =  6,
+	TF_WPN_TYPE_ITEM2          =  7,
+	TF_WPN_TYPE_HEAD           =  8,
+	TF_WPN_TYPE_MISC           =  9,
+	TF_WPN_TYPE_MELEE_ALLCLASS = 10,
+	TF_WPN_TYPE_SECONDARY2     = 11,
+	TF_WPN_TYPE_PRIMARY2       = 12,
 };
 
 enum

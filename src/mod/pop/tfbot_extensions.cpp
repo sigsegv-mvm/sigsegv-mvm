@@ -536,8 +536,7 @@ namespace Mod_Pop_TFBot_Extensions
 			return;
 		}
 		
-		// technically we should be using the loadout slot enum, not the weapon type enum
-		if (slot < TF_WPN_TYPE_PRIMARY || slot > TF_WPN_TYPE_PDA2) {
+		if (slot < TF_LOADOUT_SLOT_PRIMARY || slot > TF_LOADOUT_SLOT_PDA2) {
 			Warning("CustomWeaponModel Slot must be one of: { 0, 1, 2, 3, 4, 5, 6 }.\n");
 			return;
 		}

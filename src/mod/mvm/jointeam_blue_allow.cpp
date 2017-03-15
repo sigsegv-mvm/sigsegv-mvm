@@ -188,7 +188,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 						
 						if (!cvar_infinite_cloak_deadringer.GetBool()) {
 							/* check for attribute "set cloak is feign death" */
-							auto invis = rtti_cast<CTFWeaponInvis *>(player->Weapon_GetWeaponByType(TF_WPN_TYPE_PDA2));
+							auto invis = rtti_cast<CTFWeaponInvis *>(player->Weapon_GetWeaponByType(TF_WPN_TYPE_ITEM1));
 							if (invis != nullptr && CAttributeManager::AttribHookValue<int>(0, "set_weapon_mode", invis) == 1) {
 								should_refill_cloak = false;
 							}
