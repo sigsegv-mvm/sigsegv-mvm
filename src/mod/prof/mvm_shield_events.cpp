@@ -12,8 +12,8 @@ namespace vgui
 namespace Prof_MvM_Shield_Events
 {
 	StringPool pool(true);
-
-
+	
+	
 	#define VPROF_CUSTOM(name) \
 		VPROF_BUDGET(pool(name), pool("CUSTOM"))
 	

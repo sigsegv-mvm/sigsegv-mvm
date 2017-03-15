@@ -175,7 +175,6 @@ sourceFiles += [
   'src/mod/mvm/friendlyfire.cpp',
   'src/mod/mvm/gib_improvements.cpp',
   'src/mod/mvm/jointeam_blue_allow.cpp',
-  'src/mod/mvm/jumptowave_unrepeat.cpp',
   'src/mod/mvm/medigunshield_damage.cpp',
   'src/mod/mvm/no_halloween_souls.cpp',
   'src/mod/mvm/refund_exploit_fix.cpp',
@@ -186,6 +185,8 @@ sourceFiles += [
   'src/mod/perf/flame_breakable_collision.cpp',
   'src/mod/perf/medigun_shield_damage_events.cpp',
   'src/mod/perf/medigun_shield_damage_interval.cpp',
+  'src/mod/perf/mvm_load_popfile.cpp',
+  'src/mod/perf/smokestack_fs_thrash.cpp',
   
   'src/mod/pop/ecattr_extensions.cpp',
   'src/mod/pop/eventpopfile_improvements.cpp',
@@ -204,6 +205,7 @@ sourceFiles += [
   'src/mod/prof/debug_overlay.cpp',
   'src/mod/prof/flame_breakable_collision.cpp',
   'src/mod/prof/mvm_shield_events.cpp',
+  'src/mod/prof/popfile_load.cpp',
   'src/mod/prof/tier2_renderutils.cpp',
   
   'src/mod/robot/building_stomp.cpp',
