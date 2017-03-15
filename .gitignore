@@ -18,3 +18,6 @@ MSVC14/*.psess
 MSVC14/Report*.vsps
 MSVC14/Report*.vspx
 MSVC14/Report*.csv
+
+*.sublime-project
+*.sublime-workspace
