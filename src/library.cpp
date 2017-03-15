@@ -173,7 +173,7 @@ std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const ch
 		std::string name(matches[0]->buffer(), matches[0]->length);
 		return std::make_tuple(true, name, matches[0]->address);
 	} else {
-		return std::make_tuple(false, nullptr, nullptr);
+		return std::make_tuple(false, "", nullptr);
 	}
 }
 

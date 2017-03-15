@@ -137,7 +137,7 @@ public:
 	{
 		void *handle = s_LibHandles.at(lib);
 		assert(handle != nullptr);
-		g_MemUtils.ForEachSymbol(handle, functor);
+		g_MemUtils.ForEachSymbol(handle, std::forward<FUNCTOR>(functor));
 	}
 	
 	static Library WhichLibAtAddr(void *ptr);
