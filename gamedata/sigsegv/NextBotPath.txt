@@ -30,6 +30,26 @@
 					type "sym"
 					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotP20CBaseCombatCharacterRT_fb"
 				}
+				"Path::BuildTrivialPath"
+				{
+					type "sym"
+					sym  "_ZN4Path16BuildTrivialPathEP8INextBotRK6Vector"
+				}
+				"Path::ComputePathDetails"
+				{
+					type "sym"
+					sym  "_ZN4Path18ComputePathDetailsEP8INextBotRK6Vector"
+				}
+				"Path::Optimize"
+				{
+					type "sym"
+					sym  "_ZN4Path8OptimizeEP8INextBot"
+				}
+				"Path::PostProcess"
+				{
+					type "sym"
+					sym  "_ZN4Path11PostProcessEv"
+				}
 			}
 		}
 	}
