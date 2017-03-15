@@ -10,6 +10,7 @@ class CBaseObject;
 class CTFWeaponBase;
 class CTFPlayer;
 class CTFItem;
+class CTFWearable;
 enum ETFFlagType {};
 
 
@@ -259,17 +260,18 @@ public:
 	
 	CTFWeaponBase *GetActiveTFWeapon() const;
 	
-	void ForceChangeTeam(int team, bool b1)                      {        ft_ForceChangeTeam               (this, team, b1); }
-	void StartBuildingObjectOfType(int iType, int iMode)         {        ft_StartBuildingObjectOfType     (this, iType, iMode); }
-	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag                    (this, p1, i1); }
-	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam                   (this, team); }
-	float MedicGetChargeLevel(CTFWeaponBase **medigun = nullptr) { return ft_MedicGetChargeLevel           (this, medigun); }
-	float TeamFortress_CalculateMaxSpeed(bool b1 = false)        { return ft_TeamFortress_CalculateMaxSpeed(this, b1); }
-	void UpdateModel()                                           {        ft_UpdateModel                   (this); }
-	CTFWeaponBase *Weapon_OwnsThisID(int id) const               { return ft_Weapon_OwnsThisID             (this, id); }
-	CTFWeaponBase *Weapon_GetWeaponByType(int type)              { return ft_Weapon_GetWeaponByType        (this, type); }
-	CBaseObject *GetObjectOfType(int iType, int iMode)           { return ft_GetObjectOfType               (this, iType, iMode); }
-	int GetMaxAmmo(int iAmmoIndex, int iClassNumber = -1)        { return ft_GetMaxAmmo                    (this, iAmmoIndex, iClassNumber); }
+	void ForceChangeTeam(int team, bool b1)                      {        ft_ForceChangeTeam                  (this, team, b1); }
+	void StartBuildingObjectOfType(int iType, int iMode)         {        ft_StartBuildingObjectOfType        (this, iType, iMode); }
+	bool HasTheFlag(ETFFlagType *p1 = nullptr, int i1 = 0) const { return ft_HasTheFlag                       (this, p1, i1); }
+	int GetAutoTeam(int team)                                    { return ft_GetAutoTeam                      (this, team); }
+	float MedicGetChargeLevel(CTFWeaponBase **medigun = nullptr) { return ft_MedicGetChargeLevel              (this, medigun); }
+	float TeamFortress_CalculateMaxSpeed(bool b1 = false)        { return ft_TeamFortress_CalculateMaxSpeed   (this, b1); }
+	void UpdateModel()                                           {        ft_UpdateModel                      (this); }
+	CTFWeaponBase *Weapon_OwnsThisID(int id) const               { return ft_Weapon_OwnsThisID                (this, id); }
+	CTFWeaponBase *Weapon_GetWeaponByType(int type)              { return ft_Weapon_GetWeaponByType           (this, type); }
+	CBaseObject *GetObjectOfType(int iType, int iMode)           { return ft_GetObjectOfType                  (this, iType, iMode); }
+	int GetMaxAmmo(int iAmmoIndex, int iClassNumber = -1)        { return ft_GetMaxAmmo                       (this, iAmmoIndex, iClassNumber); }
+	CTFWearable *GetEquippedWearableForLoadoutSlot(int iSlot)    { return ft_GetEquippedWearableForLoadoutSlot(this, iSlot); }
 	
 	void HandleCommand_JoinTeam(const char *pTeamName)                   { ft_HandleCommand_JoinTeam        (this, pTeamName); }
 	void HandleCommand_JoinTeam_NoMenus(const char *pTeamName)           { ft_HandleCommand_JoinTeam_NoMenus(this, pTeamName); }
@@ -303,6 +305,7 @@ private:
 	static MemberFuncThunk<      CTFPlayer *, CTFWeaponBase *, int            > ft_Weapon_GetWeaponByType;
 	static MemberFuncThunk<      CTFPlayer *, CBaseObject *, int, int         > ft_GetObjectOfType;
 	static MemberFuncThunk<      CTFPlayer *, int, int, int                   > ft_GetMaxAmmo;
+	static MemberFuncThunk<      CTFPlayer *, CTFWearable *, int              > ft_GetEquippedWearableForLoadoutSlot;
 	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_HandleCommand_JoinTeam;
 	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_HandleCommand_JoinTeam_NoMenus;
 	static MemberFuncThunk<      CTFPlayer *, void, const char *, bool        > ft_HandleCommand_JoinClass;

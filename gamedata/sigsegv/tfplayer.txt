@@ -387,6 +387,12 @@
 					sym  "_ZN9CTFPlayer22Weapon_GetWeaponByTypeEi"
 				}
 				
+				"CTFPlayer::GetEquippedWearableForLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer33GetEquippedWearableForLoadoutSlotEi"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

@@ -54,7 +54,14 @@ private:
 class CBaseAnimatingOverlay : public CBaseAnimating {};
 class CBaseFlex : public CBaseAnimatingOverlay {};
 
-class CEconEntity : public CBaseAnimating {};
+class CEconEntity : public CBaseAnimating
+{
+public:
+	void DebugDescribe() { ft_DebugDescribe(this); }
+	
+private:
+	static MemberFuncThunk<CEconEntity *, void> ft_DebugDescribe;
+};
 
 
 #endif

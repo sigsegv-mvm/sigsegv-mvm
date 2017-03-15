@@ -295,6 +295,16 @@ private:
 };
 
 
+class CBaseParticleEntity : public CBaseEntity {};
+
+class CSmokeStack : public CBaseParticleEntity
+{
+public:
+	DECL_DATAMAP (string_t, m_strMaterialModel);
+	DECL_SENDPROP(int,      m_iMaterialModel);
+};
+
+
 // 20151007a
 
 // CTFPlayer::Event_Killed

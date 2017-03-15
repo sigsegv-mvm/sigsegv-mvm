@@ -67,6 +67,18 @@
 					sym   "_ZN18CFilterTFBotHasTag9m_DataMapE"
 					class "CFilterTFBotHasTag"
 				}
+				"CTFTeamSpawn::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN12CTFTeamSpawn9m_DataMapE"
+					class "CTFTeamSpawn"
+				}
+				"CSmokeStack::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN11CSmokeStack9m_DataMapE"
+					class "CSmokeStack"
+				}
 			}
 		}
 	}

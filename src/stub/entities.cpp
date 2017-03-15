@@ -240,3 +240,7 @@ IMPL_DATAMAP(string_t, CTFTeamSpawn, m_iszRoundRedSpawn);
 
 
 GlobalThunk<CUtlVector<ITFFlameEntityAutoList *>> ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList("ITFFlameEntityAutoList::m_ITFFlameEntityAutoListAutoList");
+
+
+IMPL_DATAMAP (string_t, CSmokeStack, m_strMaterialModel);
+IMPL_SENDPROP(int,      CSmokeStack, m_iMaterialModel, CSmokeStack);

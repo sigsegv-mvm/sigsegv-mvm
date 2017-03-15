@@ -17,6 +17,7 @@ IMPL_SENDPROP(bool[33],               CTeamplayRoundBasedRules, m_bPlayerReady, 
 
 MemberFuncThunk<CTeamplayRoundBasedRules *, void, int, const char *, int> CTeamplayRoundBasedRules::ft_BroadcastSound              ("CTeamplayRoundBasedRules::BroadcastSound");
 MemberFuncThunk<CTeamplayRoundBasedRules *, float, CBasePlayer *>         CTeamplayRoundBasedRules::ft_GetMinTimeWhenPlayerMaySpawn("CTeamplayRoundBasedRules::GetMinTimeWhenPlayerMaySpawn");
+MemberFuncThunk<CTeamplayRoundBasedRules *, void, gamerules_roundstate_t> CTeamplayRoundBasedRules::ft_State_Transition            ("CTeamplayRoundBasedRules::State_Transition");
 
 MemberVFuncThunk<CTeamplayRoundBasedRules *, float, int, CBasePlayer *> CTeamplayRoundBasedRules::vt_GetNextRespawnWave(TypeName<CTeamplayRoundBasedRules>(), "CTeamplayRoundBasedRules::GetNextRespawnWave");
 

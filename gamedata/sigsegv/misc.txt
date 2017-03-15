@@ -2237,6 +2237,30 @@
 					sym  "_ZN14CVEngineServer12Con_NXPrintfEPK12con_nprint_sPKcz"
 					lib  "engine"
 				}
+				
+				"CTeamplayRoundBasedRules::State_Transition"
+				{
+					type "sym"
+					sym  "_ZN24CTeamplayRoundBasedRules16State_TransitionE22gamerules_roundstate_t"
+				}
+				
+				"CSmokeStack::KeyValue"
+				{
+					type "sym"
+					sym  "_ZN11CSmokeStack8KeyValueEPKcS1_"
+				}
+				
+				"CBaseEntity::ParseMapData"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12ParseMapDataEP14CEntityMapData"
+				}
+				
+				"CEconEntity::DebugDescribe"
+				{
+					type "sym"
+					sym  "_ZN11CEconEntity13DebugDescribeEv"
+				}
 			}
 		}
 	}

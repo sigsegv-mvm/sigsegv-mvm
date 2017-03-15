@@ -98,8 +98,9 @@ public:
 	int GetWinningTeam()               { return this->m_iWinningTeam; }
 	bool IsPlayerReady(int iIndex)     { return this->m_bPlayerReady[iIndex]; }
 	
-	void BroadcastSound(int iTeam, const char *sound, int iAdditionalSoundFlags = 0) {        ft_BroadcastSound(this, iTeam, sound, iAdditionalSoundFlags); }
+	void BroadcastSound(int iTeam, const char *sound, int iAdditionalSoundFlags = 0) {        ft_BroadcastSound              (this, iTeam, sound, iAdditionalSoundFlags); }
 	float GetMinTimeWhenPlayerMaySpawn(CBasePlayer *pPlayer)                         { return ft_GetMinTimeWhenPlayerMaySpawn(this, pPlayer); }
+	void State_Transition(gamerules_roundstate_t newState)                           {        ft_State_Transition            (this, newState); }
 	
 	float GetNextRespawnWave(int iTeam, CBasePlayer *pPlayer) { return vt_GetNextRespawnWave(this, iTeam, pPlayer); }
 	
@@ -110,6 +111,7 @@ private:
 	
 	static MemberFuncThunk<CTeamplayRoundBasedRules *, void, int, const char *, int> ft_BroadcastSound;
 	static MemberFuncThunk<CTeamplayRoundBasedRules *, float, CBasePlayer *>         ft_GetMinTimeWhenPlayerMaySpawn;
+	static MemberFuncThunk<CTeamplayRoundBasedRules *, void, gamerules_roundstate_t> ft_State_Transition;
 	
 	static MemberVFuncThunk<CTeamplayRoundBasedRules *, float, int, CBasePlayer *> vt_GetNextRespawnWave;
 };
