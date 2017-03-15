@@ -7,7 +7,11 @@
 #if defined __cplusplus
 
 
-#define PRAGMA(str) _Pragma(#str)
+#if defined __GNUC__ || defined __clang__
+	#define PRAGMA(str) _Pragma(#str)
+#elif defined _MSC_VER
+	#define PRAGMA(str) __pragma(str)
+#endif
 
 #if defined __GNUC__
 	#define WARN_RESTORE() PRAGMA(GCC diagnostic pop)
