@@ -10,7 +10,7 @@
 namespace Mod_MvM_Dominations
 {
 	constexpr uint8_t s_Buf[] = {
-		0x80, 0xbe, 0x72, 0x09, 0x00, 0x00, 0x00, // +0000  cmp byte ptr [esi+m_bPlayingMannVsMachine],0x0
+		0x80, 0xbf, 0x72, 0x09, 0x00, 0x00, 0x00, // +0000  cmp byte ptr [edi+m_bPlayingMannVsMachine],0x0
 		0x89, 0xc1,                               // +0007  mov ecx,eax
 		0x75, 0xcc,                               // +0009  jnz -0x34
 	};
@@ -40,7 +40,7 @@ namespace Mod_MvM_Dominations
 		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
 			/* NOP out the conditional jump for MvM mode */
-			buf.SetRange(0x09, 2, 0x90);
+			buf .SetRange(0x09, 2, 0x90);
 			mask.SetRange(0x09, 2, 0xff);
 			
 			return true;

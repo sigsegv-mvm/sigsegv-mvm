@@ -157,6 +157,7 @@ sourceFiles += [
   
   'src/mod/etc/bottle_break_fix.cpp',
   'src/mod/etc/heat_seeking_rockets.cpp',
+  'src/mod/etc/holiday_items_allow.cpp',
   'src/mod/etc/instant_scaling.cpp',
   'src/mod/etc/laserdot_fix.cpp',
   'src/mod/etc/limp_projectiles.cpp',
@@ -170,6 +171,7 @@ sourceFiles += [
   'src/mod/mvm/building_destruction_prevention.cpp',
   'src/mod/mvm/changebotattributes_crash_fix.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
+  'src/mod/mvm/chat_unrestrict.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
   'src/mod/mvm/dominations.cpp',
   'src/mod/mvm/explosive_headshot_on_everything.cpp',
@@ -182,6 +184,7 @@ sourceFiles += [
   'src/mod/mvm/robosapper_override.cpp',
 #  'src/mod/mvm/romevision_disable.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
+  'src/mod/mvm/yer_unnerf.cpp',
   
   'src/mod/perf/flame_breakable_collision.cpp',
   'src/mod/perf/medigun_shield_damage_events.cpp',
@@ -220,6 +223,10 @@ sourceFiles += [
   'src/mod/sniper/charge_uncap.cpp',
   'src/mod/sniper/head_uncap.cpp',
   
+  'src/mod/sound/responses_suppress_giant_sentrybuster.cpp',
+  'src/mod/sound/responses_suppress_medicbot_shield.cpp',
+  'src/mod/sound/responses_unused_credits.cpp',
+  'src/mod/sound/responses_unused_sapper.cpp',
   'src/mod/sound/tele_activate.cpp',
   
   'src/mod/tank/gunslinger_combo.cpp',

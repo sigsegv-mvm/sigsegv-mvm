@@ -1,4 +1,5 @@
 #include "mod.h"
+#include "prop.h"
 
 
 namespace Mod_Sniper_Charge_Uncap
@@ -6,15 +7,16 @@ namespace Mod_Sniper_Charge_Uncap
 #if defined _LINUX
 	
 	constexpr uint8_t s_Buf[] = {
-		0xf3, 0x0f, 0x10, 0x45, 0x00,                   // +0000  movss xmm0,DWORD PTR [ebp-0xXX]
-		0xf3, 0x0f, 0x58, 0x45, 0x00,                   // +0005  addss xmm0,DWORD PTR [ebp-0xXX]
-		0xf3, 0x0f, 0x10, 0xc8,                         // +000A  movss xmm1,xmm0
-		0x0f, 0x28, 0xc1,                               // +000E  movaps xmm0,xmm1
-		0x0f, 0x57, 0xc9,                               // +0011  xorps xmm1,xmm1
-		0xf3, 0x0f, 0x5f, 0xc1,                         // +0014  maxss xmm0,xmm1
-		0xf3, 0x0f, 0x5d, 0x05, 0x00, 0x00, 0x00, 0x00, // +0018  minss xmm0,DWORD PTR [XXXXXXXX]
-		0xf3, 0x0f, 0x11, 0x45, 0x00,                   // +0020  movss DWORD PTR [ebp-0xXX],xmm0
-		0xf3, 0x0f, 0x59, 0x40, 0x10,                   // +0025  mulss xmm0,DWORD PTR [eax+0x10]
+		0xf3, 0x0f, 0x5f, 0xc1,                         // +0000  maxss xmm0,xmm1
+		0xf3, 0x0f, 0x5d, 0x05, 0x90, 0xad, 0x1f, 0x01, // +0004  minss xmm0,[100.0f]
+		0xf3, 0x0f, 0x11, 0x45, 0xc8,                   // +000C  movss [ebp-0x38],xmm0
+		0xf3, 0x0f, 0x59, 0x40, 0x10,                   // +0011  mulss xmm0,dword ptr [eax+0x10]
+		0x8d, 0x83, 0xd4, 0x07, 0x00, 0x00,             // +0016  lea eax,[ebx+m_flChargedDamage]
+		0xf3, 0x0f, 0x58, 0x83, 0xd4, 0x07, 0x00, 0x00, // +001C  addss xmm0,dword ptr [ebx+m_flChargedDamage]
+		0xc7, 0x44, 0x24, 0x08, 0x04, 0x00, 0x00, 0x00, // +0024  mov dword ptr [esp+8],4
+		0x89, 0x54, 0x24, 0x04,                         // +002C  mov [esp+4],edx
+		0x89, 0x04, 0x24,                               // +0030  mov [esp],eax
+		0xf3, 0x0f, 0x5d, 0x05, 0xb0, 0x75, 0x1b, 0x01, // +0033  minss xmm0,[150.0f]
 	};
 	
 	struct CPatch_UncapChargeRate_Common : public CPatch
@@ -25,10 +27,15 @@ namespace Mod_Sniper_Charge_Uncap
 		{
 			buf.CopyFrom(s_Buf);
 			
-			mask.SetRange(0x05 + 4, 1, 0x00);
-			mask.SetRange(0x00 + 4, 1, 0x00);
-			mask.SetRange(0x18 + 4, 4, 0x00);
-			mask.SetRange(0x20 + 4, 1, 0x00);
+			int off__CTFSniperRifle_m_flChargedDamage;
+			if (!Prop::FindOffset(off__CTFSniperRifle_m_flChargedDamage, "CTFSniperRifle", "m_flChargedDamage")) return false;
+			
+			buf.SetDword(0x16 + 2, (uint32_t)off__CTFSniperRifle_m_flChargedDamage);
+			buf.SetDword(0x1c + 4, (uint32_t)off__CTFSniperRifle_m_flChargedDamage);
+			
+			mask.SetRange(0x04 + 4, 4, 0x00);
+			mask.SetRange(0x0c + 4, 1, 0x00);
+			mask.SetRange(0x33 + 4, 4, 0x00);
 			
 			return true;
 		}
@@ -36,8 +43,8 @@ namespace Mod_Sniper_Charge_Uncap
 		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
 			/* NOP out the MINSS instruction */
-			buf.SetRange(0x18, 8, 0x90);
-			mask.SetRange(0x18, 8, 0xff);
+			buf .SetRange(0x33, 8, 0x90);
+			mask.SetRange(0x33, 8, 0xff);
 			
 			return true;
 		}

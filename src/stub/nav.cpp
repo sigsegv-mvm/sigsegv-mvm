@@ -306,7 +306,7 @@ IMPL_EXTRACT  (float,                             CNavArea, m_costSoFar,        
 MemberFuncThunk <const CNavArea *, void, Extent *>                               CNavArea::ft_GetExtent                            ("CNavArea::GetExtent");
 MemberFuncThunk <const CNavArea *, void, const Vector *, Vector *>               CNavArea::ft_GetClosestPointOnArea                ("CNavArea::GetClosestPointOnArea");
 MemberFuncThunk <const CNavArea *, float, const CNavArea *>                      CNavArea::ft_ComputeAdjacentConnectionHeightChange("CNavArea::ComputeAdjacentConnectionHeightChange");
-MemberFuncThunk <const CNavArea *, float, float, float>                          CNavArea::ft_GetZ                                 ("CNavArea::GetZ");
+MemberFuncThunk <const CNavArea *, float, float, float>                          CNavArea::ft_GetZ                                 ("CNavArea::GetZ [float float]");
 MemberVFuncThunk<const CNavArea *, void, int, int, int, int, float, bool, float> CNavArea::vt_DrawFilled                           (TypeName<CNavArea>(), "CNavArea::DrawFilled");
 
 

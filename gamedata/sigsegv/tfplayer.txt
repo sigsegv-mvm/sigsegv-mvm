@@ -393,6 +393,12 @@
 					sym  "_ZN9CTFPlayer33GetEquippedWearableForLoadoutSlotEi"
 				}
 				
+				"CTFPlayer::CanHearAndReadChatFrom"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22CanHearAndReadChatFromEP11CBasePlayer"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

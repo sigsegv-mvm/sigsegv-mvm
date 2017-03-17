@@ -35,6 +35,9 @@ MemberVFuncThunk<const CTFWeaponBase *, int> CTFWeaponBase::vt_GetPenetrateType(
 IMPL_SENDPROP(CTFMinigun::MinigunState_t, CTFMinigun, m_iWeaponState, CTFMinigun);
 
 
+IMPL_SENDPROP(float, CTFSniperRifle, m_flChargedDamage, CTFSniperRifle);
+
+
 MemberFuncThunk<CTFSniperRifleDecap *, int> CTFSniperRifleDecap::ft_GetCount("CTFSniperRifleDecap::GetCount");
 
 

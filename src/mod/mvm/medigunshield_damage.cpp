@@ -4,7 +4,7 @@
 namespace Mod_MvM_MedigunShield_Damage
 {
 	constexpr uint8_t s_Buf[] = {
-		0x89, 0x3c, 0x24,                   // +0000  mov [esp],edi
+		0x89, 0x34, 0x24,                   // +0000  mov [esp],esi
 		0xe8, 0xe8, 0x2f, 0x16, 0x00,       // +0003  call CBaseEntity::GetTeamNumber
 		0x83, 0xf8, 0x03,                   // +0008  cmp eax,3
 		0x0f, 0x85, 0xbd, 0xfd, 0xff, 0xff, // +000B  jnz -0x243
@@ -24,6 +24,8 @@ namespace Mod_MvM_MedigunShield_Damage
 			buf.CopyFrom(s_Buf);
 			
 			mask.SetRange(0x03 + 1, 4, 0x00);
+			mask.SetRange(0x0b + 2, 4, 0x00);
+			mask.SetRange(0x11 + 1, 4, 0x00);
 			
 			return true;
 		}

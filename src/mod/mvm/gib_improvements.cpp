@@ -10,9 +10,9 @@ enum TFStunFlags {};
 namespace Mod_MvM_Gib_Improvements
 {
 	constexpr uint8_t s_Buf[] = {
-		0x31, 0xc0,                               // +0000  xor eax,eax
-		0x80, 0xba, 0x5e, 0x09, 0x00, 0x00, 0x00, // +0002  cmp byte ptr [edx+m_bPlayingMannVsMachine],0x0
-		0x75, 0xde,                               // +0009  jnz -0x22
+		0xa1, 0x5c, 0x6c, 0x70, 0x01,             // +0000  mov eax,ds:g_pGameRules
+		0x80, 0xb8, 0x66, 0x09, 0x00, 0x00, 0x00, // +0005  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x0
+		0x0f, 0x85, 0x4e, 0x02, 0x00, 0x00,       // +000C  jnz +0x24e
 	};
 	
 	struct CPatch_CTFPlayer_ShouldGib : public CPatch
@@ -27,12 +27,16 @@ namespace Mod_MvM_Gib_Improvements
 		{
 			buf.CopyFrom(s_Buf);
 			
-			int off_CTFGameRules_m_bPlayingMannVsMachine;
-			if (!Prop::FindOffset(off_CTFGameRules_m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
+			void *addr__g_pGameRules = AddrManager::GetAddr("g_pGameRules");
+			if (addr__g_pGameRules == nullptr) return false;
 			
-			buf.SetDword(0x02 + 2, (uint32_t)off_CTFGameRules_m_bPlayingMannVsMachine);
+			int off__CTFGameRules_m_bPlayingMannVsMachine;
+			if (!Prop::FindOffset(off__CTFGameRules_m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
 			
-			mask[0x09 + 1] = 0x00;
+			buf.SetDword(0x00 + 1, (uint32_t)addr__g_pGameRules);
+			buf.SetDword(0x05 + 2, (uint32_t)off__CTFGameRules_m_bPlayingMannVsMachine);
+			
+			mask.SetRange(0x0c + 2, 4, 0x00);
 			
 			return true;
 		}
@@ -40,8 +44,8 @@ namespace Mod_MvM_Gib_Improvements
 		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
 			/* NOP out the conditional jump for MvM mode */
-			buf.SetRange(0x09, 2, 0x90);
-			mask.SetRange(0x09, 2, 0xff);
+			buf .SetRange(0x0c, 6, 0x90);
+			mask.SetRange(0x0c, 6, 0xff);
 			
 			return true;
 		}

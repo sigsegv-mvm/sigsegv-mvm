@@ -1,32 +1,25 @@
 #include "mod.h"
 #include "stub/tfbot.h"
+#include "util/scope.h"
 
 
 namespace Mod_MvM_ChangeBotAttributes_Crash_Fix
 {
-	DETOUR_DECL_STATIC(int, CollectPlayers_CTFBot, CUtlVector<CTFBot *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	RefCount rc_CPointPopulatorInterface_InputChangeBotAttributes;
+	DETOUR_DECL_MEMBER(void, CPointPopulatorInterface_InputChangeBotAttributes, inputdata_t& inputdata)
 	{
-		if (!shouldAppend) {
-			playerVector->RemoveAll();
+		SCOPED_INCREMENT(rc_CPointPopulatorInterface_InputChangeBotAttributes);
+		DETOUR_MEMBER_CALL(CPointPopulatorInterface_InputChangeBotAttributes)(inputdata);
+	}
+	
+	DETOUR_DECL_MEMBER(CTFBot::EventChangeAttributes_t *, CTFBot_GetEventChangeAttributes)
+	{
+		auto player = reinterpret_cast<CBasePlayer *>(this);
+		if (ToTFBot(player) == nullptr) {
+			return nullptr;
 		}
 		
-		for (int i = 1; i <= gpGlobals->maxClients; ++i) {
-			CBasePlayer *player = UTIL_PlayerByIndex(i);
-			if (player == nullptr)                                   continue;
-			if (FNullEnt(player->edict()))                           continue;
-			if (!player->IsPlayer())                                 continue;
-			if (!player->IsConnected())                              continue;
-			if (team != TEAM_ANY && player->GetTeamNumber() != team) continue;
-			if (isAlive && !player->IsAlive())                       continue;
-			
-			/* actually confirm that they're a CTFBot */
-			CTFBot *bot = ToTFBot(player);
-			if (bot == nullptr) continue;
-			
-			playerVector->AddToTail(bot);
-		}
-		
-		return playerVector->Count();
+		return DETOUR_MEMBER_CALL(CTFBot_GetEventChangeAttributes)();
 	}
 	
 	
@@ -35,7 +28,8 @@ namespace Mod_MvM_ChangeBotAttributes_Crash_Fix
 	public:
 		CMod() : IMod("MvM:ChangeBotAttributes_Crash_Fix")
 		{
-			MOD_ADD_DETOUR_STATIC(CollectPlayers_CTFBot, "CollectPlayers<CTFBot>");
+			MOD_ADD_DETOUR_MEMBER(CPointPopulatorInterface_InputChangeBotAttributes, "CPointPopulatorInterface::InputChangeBotAttributes");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_GetEventChangeAttributes,                   "CTFBot::GetEventChangeAttributes");
 		}
 	};
 	CMod s_Mod;

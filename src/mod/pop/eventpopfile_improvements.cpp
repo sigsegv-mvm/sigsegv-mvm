@@ -7,6 +7,12 @@
 
 namespace Mod_Pop_EventPopfile_Improvements
 {
+	/* these should be somewhere else, maybe in shareddefs? */
+	constexpr int HOLIDAY_NOHOLIDAY                       =  0;
+	constexpr int HOLIDAY_HALLOWEEN                       =  2;
+	constexpr int HOLIDAY_HALLOWEENORFULLMOONORVALENTINES = 10;
+	
+	
 	RefCount rc_CTFBotSpawner_Spawn;
 	IPopulationSpawner *spawner = nullptr;
 	DETOUR_DECL_MEMBER(int, CTFBotSpawner_Spawn, const Vector& where, CUtlVector<CHandle<CBaseEntity>> *ents)
@@ -33,16 +39,22 @@ namespace Mod_Pop_EventPopfile_Improvements
 	{
 		DETOUR_MEMBER_CALL(CPopulationManager_UpdateObjectiveResource)();
 		
-		/* these should be somewhere else, maybe in shareddefs? */
-		constexpr int HOLIDAY_NOHOLIDAY = 0;
-		constexpr int HOLIDAY_HALLOWEEN = 2;
-		
 		ConVarRef tf_forced_holiday("tf_forced_holiday");
 		if (TFObjectiveResource()->m_nMvMEventPopfileType != 0u) {
 			tf_forced_holiday.SetValue(HOLIDAY_HALLOWEEN);
 		} else {
 			tf_forced_holiday.SetValue(HOLIDAY_NOHOLIDAY);
 		}
+	}
+	
+	
+	DETOUR_DECL_STATIC(bool, UTIL_IsHolidayActive, int holiday)
+	{
+		if (holiday == HOLIDAY_HALLOWEENORFULLMOONORVALENTINES && rc_CTFBotSpawner_Spawn > 0) {
+			return true;
+		}
+		
+		return DETOUR_STATIC_CALL(UTIL_IsHolidayActive)(holiday);
 	}
 	
 	
@@ -55,13 +67,15 @@ namespace Mod_Pop_EventPopfile_Improvements
 			MOD_ADD_DETOUR_MEMBER(CTFBot_AddItem,      "CTFBot::AddItem");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_UpdateObjectiveResource, "CPopulationManager::UpdateObjectiveResource");
+			
+			MOD_ADD_DETOUR_STATIC(UTIL_IsHolidayActive, "UTIL_IsHolidayActive");
 		}
 	};
 	CMod s_Mod;
 	
 	
 	ConVar cvar_enable("sig_pop_eventpopfile_improvements", "0", FCVAR_NOTIFY,
-		"Mod: set tf_forced_holiday based on EventPopfile; disable zombie souls for sentry busters",
+		"Mod: make EventPopfile work regardless of holiday; set tf_forced_holiday based on EventPopfile; disable zombie souls for sentry busters",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());

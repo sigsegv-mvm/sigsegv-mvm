@@ -2264,6 +2264,24 @@
 					type "sym"
 					sym  "_ZN11CEconEntity13DebugDescribeEv"
 				}
+				
+				"CPointPopulatorInterface::InputChangeBotAttributes"
+				{
+					type "sym"
+					sym  "_ZN24CPointPopulatorInterface24InputChangeBotAttributesER11inputdata_t"
+				}
+				
+				"UTIL_GetHolidayForString"
+				{
+					type "sym"
+					sym  "_Z24UTIL_GetHolidayForStringPKc"
+				}
+				
+				"UTIL_IsHolidayActive"
+				{
+					type "sym"
+					sym  "_Z20UTIL_IsHolidayActivei"
+				}
 			}
 		}
 	}

@@ -82,7 +82,11 @@ public:
 	DECL_SENDPROP(MinigunState_t, m_iWeaponState);
 };
 
-class CTFSniperRifle : public CTFWeaponBaseGun {};
+class CTFSniperRifle : public CTFWeaponBaseGun
+{
+public:
+	DECL_SENDPROP(float, m_flChargedDamage);
+};
 
 class CTFSniperRifleClassic : public CTFSniperRifle {};
 
