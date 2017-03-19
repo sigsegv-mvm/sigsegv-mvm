@@ -163,6 +163,8 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_DisableSounds.clear();
 			this->m_ItemWhitelist.clear();
 			
+			this->m_FlagResetTimes.clear();
+			
 			for (CTFTeamSpawn *spawn : this->m_ExtraSpawnPoints) {
 				if (spawn != nullptr) {
 					spawn->Remove();
@@ -200,6 +202,8 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		std::vector<std::string> m_DisableSounds;
 		std::vector<std::string> m_ItemWhitelist;
+		
+		std::map<std::string, int> m_FlagResetTimes;
 		
 		std::vector<CHandle<CTFTeamSpawn>> m_ExtraSpawnPoints;
 	};
@@ -369,6 +373,20 @@ namespace Mod_Pop_PopMgr_Extensions
 		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_BroadcastSound)(iTeam, sound, iAdditionalSoundFlags);
 	}
 	
+	DETOUR_DECL_MEMBER(int, CCaptureFlag_GetMaxReturnTime)
+	{
+		auto flag = reinterpret_cast<CCaptureFlag *>(this);
+		
+		if (TFGameRules()->IsMannVsMachineMode()) {
+			auto it = state.m_FlagResetTimes.find(STRING(flag->GetEntityName()));
+			if (it != state.m_FlagResetTimes.end()) {
+				return (*it).second;
+			}
+		}
+		
+		return DETOUR_MEMBER_CALL(CCaptureFlag_GetMaxReturnTime)();
+	}
+	
 	
 	RefCount rc_CTFPlayer_GiveDefaultItems;
 	DETOUR_DECL_MEMBER(void, CTFPlayer_GiveDefaultItems)
@@ -408,6 +426,39 @@ namespace Mod_Pop_PopMgr_Extensions
 			DevMsg("ItemWhitelist: add \"%s\"\n", subkey->GetString());
 			state.m_ItemWhitelist.emplace_back(subkey->GetString());
 		}
+	}
+	
+	void Parse_FlagResetTime(KeyValues *kv)
+	{
+		const char *name = nullptr; // required
+		int reset_time;             // required
+		
+		bool got_time = false;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			if (FStrEq(subkey->GetName(), "Name")) {
+				name = subkey->GetString();
+			} else if (FStrEq(subkey->GetName(), "ResetTime")) {
+				reset_time = subkey->GetInt();
+				got_time = true;
+			} else {
+				Warning("Unknown key \'%s\' in FlagResetTime block.\n", subkey->GetName());
+			}
+		}
+		
+		bool fail = false;
+		if (name == nullptr) {
+			Warning("Missing Name key in FlagResetTime block.\n");
+			fail = true;
+		}
+		if (!got_time) {
+			Warning("Missing ResetTime key in FlagResetTime block.\n");
+			fail = true;
+		}
+		if (fail) return;
+		
+		DevMsg("FlagResetTime: \"%s\" => %d\n", name, reset_time);
+		state.m_FlagResetTimes.emplace(name, reset_time);
 	}
 	
 	void Parse_ExtraSpawnPoint(KeyValues *kv)
@@ -563,6 +614,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_DisableSounds.emplace_back(subkey->GetString());
 				} else if (FStrEq(name, "ItemWhitelist")) {
 					Parse_ItemWhitelist(subkey);
+				} else if (FStrEq(name, "FlagResetTime")) {
+					Parse_FlagResetTime(subkey);
 				} else if (FStrEq(name, "ExtraSpawnPoint")) {
 					Parse_ExtraSpawnPoint(subkey);
 				} else if (FStrEq(name, "PrecacheScriptSound"))  { CBaseEntity::PrecacheScriptSound (subkey->GetString());
@@ -619,6 +672,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_BroadcastSound, "CTeamplayRoundBasedRules::BroadcastSound");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveDefaultItems,              "CTFPlayer::GiveDefaultItems");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveNamedItem,                 "CTFPlayer::GiveNamedItem");
+			MOD_ADD_DETOUR_MEMBER(CCaptureFlag_GetMaxReturnTime,           "CCaptureFlag::GetMaxReturnTime");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");

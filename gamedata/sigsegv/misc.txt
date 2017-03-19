@@ -2282,6 +2282,12 @@
 					type "sym"
 					sym  "_Z20UTIL_IsHolidayActivei"
 				}
+				
+				"CCaptureFlag::GetMaxReturnTime"
+				{
+					type "sym"
+					sym  "_ZN12CCaptureFlag16GetMaxReturnTimeEv"
+				}
 			}
 		}
 	}
