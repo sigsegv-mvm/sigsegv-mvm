@@ -10,19 +10,19 @@ namespace Mod_AI_MvM_Defender_Bots
 	std::vector<bool> stack_m_bPlayingMannVsMachine;
 	void Quirk_MvM_Pre(bool red)
 	{
-		stack_m_bPlayingMannVsMachine.push_back(TFGameRules()->m_bPlayingMannVsMachine);
+		stack_m_bPlayingMannVsMachine.push_back(TFGameRules()->IsMannVsMachineMode());
 		
 		if (red) {
-			TFGameRules()->m_bPlayingMannVsMachine = false;
+			TFGameRules()->Set_m_bPlayingMannVsMachine(false);
 		} else {
-			TFGameRules()->m_bPlayingMannVsMachine = true;
+			TFGameRules()->Set_m_bPlayingMannVsMachine(true);
 		}
 	}
 	void Quirk_MvM_Post()
 	{
 		assert(!stack_m_bPlayingMannVsMachine.empty());
 		
-		TFGameRules()->m_bPlayingMannVsMachine = stack_m_bPlayingMannVsMachine.back();
+		TFGameRules()->Set_m_bPlayingMannVsMachine(stack_m_bPlayingMannVsMachine.back());
 		stack_m_bPlayingMannVsMachine.pop_back();
 	}
 	

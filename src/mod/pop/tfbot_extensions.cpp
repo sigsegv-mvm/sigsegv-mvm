@@ -1236,11 +1236,11 @@ namespace Mod_Pop_TFBot_Extensions
 		// because the alternative would be to make a patch
 		
 		bool is_mvm_mode = TFGameRules()->IsMannVsMachineMode();
-		TFGameRules()->m_bPlayingMannVsMachine = false;
+		TFGameRules()->Set_m_bPlayingMannVsMachine(false);
 		
 		auto result = DETOUR_STATIC_CALL(CTFDroppedWeapon_Create)(vecOrigin, vecAngles, pOwner, pszModelName, pItemView);
 		
-		TFGameRules()->m_bPlayingMannVsMachine = is_mvm_mode;
+		TFGameRules()->Set_m_bPlayingMannVsMachine(is_mvm_mode);
 		
 		return result;
 	}

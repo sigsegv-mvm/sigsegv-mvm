@@ -105,8 +105,8 @@ namespace Mod_Pop_PopMgr_Extensions
 	
 	struct CPopOverride_MedievalMode : public IPopOverride<bool>
 	{
-		virtual bool GetValue() override         { return TFGameRules()->m_bPlayingMedieval; }
-		virtual void SetValue(bool val) override { TFGameRules()->m_bPlayingMedieval = val; }
+		virtual bool GetValue() override         { return TFGameRules()->IsInMedievalMode(); }
+		virtual void SetValue(bool val) override { TFGameRules()->Set_m_bPlayingMedieval(val); }
 	};
 	
 	
@@ -273,7 +273,7 @@ namespace Mod_Pop_PopMgr_Extensions
 	
 	DETOUR_DECL_STATIC(CTFReviveMarker *, CTFReviveMarker_Create, CTFPlayer *player)
 	{
-		if (state.m_bNoReanimators || TFGameRules()->m_bPlayingMedieval) {
+		if (state.m_bNoReanimators || TFGameRules()->IsInMedievalMode()) {
 			return nullptr;
 		}
 		

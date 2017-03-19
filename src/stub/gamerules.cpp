@@ -1,6 +1,12 @@
 #include "stub/gamerules.h"
 
 
+[[gnu::noinline]] bool IsNullptr(uintptr_t ptr)
+{
+	return (ptr == 0);
+}
+
+
 GlobalThunk<CGameRulesProxy *> CGameRulesProxy::s_pGameRulesProxy("CGameRulesProxy::s_pGameRulesProxy");
 
 
