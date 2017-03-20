@@ -18,6 +18,18 @@
 					type "sym"
 					sym  "_ZNK11ILocomotion9TraceHullERK6VectorS2_S2_S2_jP12ITraceFilterP10CGameTrace"
 				}
+				
+				"NextBotGroundLocomotion::GetMaxYawRate"
+				{
+					type "sym"
+					sym  "_ZNK23NextBotGroundLocomotion13GetMaxYawRateEv"
+				}
+				
+				"CTFBaseBossLocomotion::FaceTowards"
+				{
+					type "sym"
+					sym  "_ZN21CTFBaseBossLocomotion11FaceTowardsERK6Vector"
+				}
 			}
 		}
 	}

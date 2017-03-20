@@ -13,6 +13,7 @@ namespace Mod_Pop_Tank_Extensions
 		bool disable_smokestack = false;
 		float scale             = 1.00f;
 		bool force_romevision   = false;
+		float max_turn_rate     =   NAN;
 		
 		std::vector<CHandle<CTFTankBoss>> tanks;
 	};
@@ -23,6 +24,8 @@ namespace Mod_Pop_Tank_Extensions
 	
 	SpawnerData *FindSpawnerDataForTank(const CTFTankBoss *tank)
 	{
+		if (tank == nullptr) return nullptr;
+		
 		for (auto& pair : spawners) {
 			SpawnerData& data = pair.second;
 			for (auto h_tank : data.tanks) {
@@ -33,6 +36,12 @@ namespace Mod_Pop_Tank_Extensions
 		}
 		
 		return nullptr;
+	}
+	SpawnerData *FindSpawnerDataForBoss(const CTFBaseBoss *boss)
+	{
+		/* FindSpawnerDataForTank doesn't do anything special, just a ptr comparison,
+		 * so there's no need to do an expensive rtti_cast or anything if we have a CTFBaseBoss ptr */
+		return FindSpawnerDataForTank(static_cast<const CTFTankBoss *>(boss));
 	}
 	
 	
@@ -77,6 +86,9 @@ namespace Mod_Pop_Tank_Extensions
 			} else if (FStrEq(name, "ForceRomeVision")) {
 			//	DevMsg("Got \"ForceRomeVision\" = %d\n", subkey->GetBool());
 				spawners[spawner].force_romevision = subkey->GetBool();
+			} else if (FStrEq(name, "MaxTurnRate")) {
+			//	DevMsg("Got \"MaxTurnRate\" = %f\n", subkey->GetFloat());
+				spawners[spawner].max_turn_rate = subkey->GetFloat();
 			} else {
 				del = false;
 			}
@@ -280,6 +292,27 @@ namespace Mod_Pop_Tank_Extensions
 	}
 	
 	
+	DETOUR_DECL_MEMBER(void, CTFBaseBossLocomotion_FaceTowards, const Vector& vec)
+	{
+		auto loco = reinterpret_cast<ILocomotion *>(this);
+		auto tank = rtti_cast<CTFTankBoss *>(loco->GetBot()->GetEntity());
+		
+		static ConVarRef tf_base_boss_max_turn_rate("tf_base_boss_max_turn_rate");
+		
+		SpawnerData *data = FindSpawnerDataForTank(tank);
+		if (data != nullptr && !std::isnan(data->max_turn_rate) && tf_base_boss_max_turn_rate.IsValid()) {
+			float saved_rate = tf_base_boss_max_turn_rate.GetFloat();
+			tf_base_boss_max_turn_rate.SetValue(data->max_turn_rate);
+			
+			DETOUR_MEMBER_CALL(CTFBaseBossLocomotion_FaceTowards)(vec);
+			
+			tf_base_boss_max_turn_rate.SetValue(saved_rate);
+		} else {
+			DETOUR_MEMBER_CALL(CTFBaseBossLocomotion_FaceTowards)(vec);
+		}
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -296,6 +329,8 @@ namespace Mod_Pop_Tank_Extensions
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_SetModelIndexOverride, "CBaseEntity::SetModelIndexOverride");
 			
 			MOD_ADD_DETOUR_MEMBER(CBaseAnimating_LookupAttachment, "CBaseAnimating::LookupAttachment");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBaseBossLocomotion_FaceTowards, "CTFBaseBossLocomotion::FaceTowards");
 		}
 		
 		virtual void OnUnload() override
