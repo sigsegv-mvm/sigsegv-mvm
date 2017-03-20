@@ -2302,6 +2302,12 @@
 					sym  "_ZL12_SpewMessage10SpewType_tPKciPK5ColorS1_Pc"
 					lib  "tier0"
 				}
+				
+				"CTFWeaponBase::IsSilentKiller"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase14IsSilentKillerEv"
+				}
 			}
 		}
 	}

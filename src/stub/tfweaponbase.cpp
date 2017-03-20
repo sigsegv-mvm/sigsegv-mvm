@@ -24,9 +24,12 @@ MemberVFuncThunk<const CBaseCombatWeapon *, const char *, int>            CBaseC
 MemberVFuncThunk<const CBaseCombatWeapon *, const char *>                 CBaseCombatWeapon::vt_GetWorldModel(TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::GetWorldModel");
 MemberVFuncThunk<      CBaseCombatWeapon *, void>                         CBaseCombatWeapon::vt_SetViewModel (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::SetViewModel");
 
+
 IMPL_SENDPROP(float, CTFWeaponBase, m_flLastFireTime,       CTFWeaponBase);
 IMPL_SENDPROP(float, CTFWeaponBase, m_flEffectBarRegenTime, CTFWeaponBase);
 IMPL_SENDPROP(float, CTFWeaponBase, m_flEnergy,             CTFWeaponBase);
+
+MemberFuncThunk<CTFWeaponBase *, bool> CTFWeaponBase::ft_IsSilentKiller("CTFWeaponBase::IsSilentKiller");
 
 MemberVFuncThunk<const CTFWeaponBase *, int> CTFWeaponBase::vt_GetWeaponID(     TypeName<CTFBonesaw>(),     "CTFBonesaw::GetWeaponID");
 MemberVFuncThunk<const CTFWeaponBase *, int> CTFWeaponBase::vt_GetPenetrateType(TypeName<CTFSniperRifle>(), "CTFSniperRifle::GetPenetrateType");

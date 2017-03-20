@@ -53,6 +53,8 @@ class CTFWeaponBase : public CBaseCombatWeapon
 public:
 	CTFPlayer *GetTFPlayerOwner() const { return ToTFPlayer(this->GetOwner()); }
 	
+	bool IsSilentKiller() { return ft_IsSilentKiller(this); }
+	
 	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
 	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
 	
@@ -61,6 +63,8 @@ public:
 	DECL_SENDPROP(float, m_flEnergy);
 	
 private:
+	static MemberFuncThunk<CTFWeaponBase *, bool> ft_IsSilentKiller;
+	
 	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetWeaponID;
 	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetPenetrateType;
 };

@@ -177,6 +177,7 @@ sourceFiles += [
   'src/mod/mvm/explosive_headshot_on_everything.cpp',
   'src/mod/mvm/friendlyfire.cpp',
   'src/mod/mvm/gib_improvements.cpp',
+  'src/mod/mvm/human_death_yells.cpp',
   'src/mod/mvm/jointeam_blue_allow.cpp',
   'src/mod/mvm/medigunshield_damage.cpp',
   'src/mod/mvm/no_halloween_souls.cpp',

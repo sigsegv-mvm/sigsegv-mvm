@@ -399,6 +399,18 @@
 					sym  "_ZN9CTFPlayer22CanHearAndReadChatFromEP11CBasePlayer"
 				}
 				
+				"CTFPlayer::DeathSound"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10DeathSoundERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::SpyDeadRingerDeath"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18SpyDeadRingerDeathERK15CTakeDamageInfo"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

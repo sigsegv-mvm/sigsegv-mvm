@@ -288,6 +288,7 @@ public:
 	DECL_SENDPROP   (float,                m_flLastDamageTime);
 	DECL_SENDPROP   (CHandle<CTFItem>,     m_hItem);
 	DECL_RELATIVE   (CTFPlayerAnimState *, m_PlayerAnimState);
+	DECL_EXTRACT    (bool,                 m_bFeigningDeath);
 	
 private:
 	DECL_SENDPROP_RW(CTFPlayerClass, m_PlayerClass);

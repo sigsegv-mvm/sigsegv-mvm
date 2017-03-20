@@ -5,6 +5,75 @@
 #include "util/misc.h"
 
 
+#if defined _LINUX
+
+static constexpr uint8_t s_Buf_CTFPlayer_m_bFeigningDeath[] = {
+	0x8b, 0x45, 0x0c,                               // +0000  mov eax,[ebp+arg_dmginfo]
+	0xc6, 0x83, 0x00, 0x00, 0x00, 0x00, 0x01,       // +0003  mov byte ptr [ebx+m_bFeigningDeath],1
+	0x89, 0x1c, 0x24,                               // +000A  mov [esp],ebx
+	0x89, 0x44, 0x24, 0x04,                         // +000D  mov [esp+4],eax
+	0xe8, 0x00, 0x00, 0x00, 0x00,                   // +0011  call CTFPlayer::FeignDeath
+	0xa1, 0x00, 0x00, 0x00, 0x00,                   // +0016  mov eax,ds:tf_feign_death_duration.m_pParent
+	0xc7, 0x44, 0x24, 0x0c, 0x00, 0x00, 0x00, 0x00, // +001B  mov dword ptr [esp+0xc],nullptr
+	0xf3, 0x0f, 0x10, 0x40, 0x2c,                   // +0023  movss xmm0,dword ptr [eax+m_fValue]
+	0xc7, 0x44, 0x24, 0x04, 0x00, 0x00, 0x00, 0x00, // +0028  mov dword ptr [esp+4],TF_COND_FEIGN_DEATH
+	0x89, 0x34, 0x24,                               // +0030  mov [esp],esi
+	0xf3, 0x0f, 0x11, 0x44, 0x24, 0x08,             // +0033  movss dword ptr [esp+8],xmm0
+	0xe8, 0x00, 0x00, 0x00, 0x00,                   // +0039  call CTFPlayerShared::AddCond
+	0xc6, 0x83, 0x00, 0x00, 0x00, 0x00, 0x00,       // +003E  mov byte ptr [ebx+m_bFeigningDeath],0
+};
+
+struct CExtract_CTFPlayer_m_bFeigningDeath : public IExtract<bool *>
+{
+	static constexpr ptrdiff_t off__ConVar__m_pParent = 0x001c;
+	static constexpr ptrdiff_t off__ConVar__m_fValue  = 0x002c;
+	
+	CExtract_CTFPlayer_m_bFeigningDeath() : IExtract<bool *>(sizeof(s_Buf_CTFPlayer_m_bFeigningDeath)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CTFPlayer_m_bFeigningDeath);
+		
+		uintptr_t addr__tf_feign_death_duration = GetAddrOfConVar__tf_feign_death_duration();
+		if (addr__tf_feign_death_duration == 0) return false;
+		
+		buf.SetDword(0x16 + 1, addr__tf_feign_death_duration);
+		buf[0x23 + 4] = off__ConVar__m_fValue;
+		buf.SetDword(0x28 + 4, TF_COND_FEIGN_DEATH);
+		
+		mask.SetRange(0x03 + 2, 4, 0x00);
+		mask.SetRange(0x11 + 1, 4, 0x00);
+		mask.SetRange(0x39 + 1, 4, 0x00);
+		mask.SetRange(0x3e + 2, 4, 0x00);
+		
+		buf .Dump();
+		mask.Dump();
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFPlayer::SpyDeadRingerDeath"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0120; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0003 + 2; }
+	
+	static uintptr_t GetAddrOfConVar__tf_feign_death_duration()
+	{
+		ConVarRef cvref("tf_feign_death_duration");
+		if (!cvref.IsValid()) return 0;
+		
+		ConVar *cvar = static_cast<ConVar *>(cvref.GetLinkedConVar());
+		return (uintptr_t)cvar + off__ConVar__m_pParent;
+	}
+};
+
+#elif defined _WINDOWS
+
+// TODO
+
+#endif
+
+
 MemberFuncThunk<CMultiplayerAnimState *, void> CMultiplayerAnimState::ft_OnNewModel("CMultiplayerAnimState::OnNewModel");
 
 
@@ -43,6 +112,7 @@ IMPL_SENDPROP(CTFPlayerShared,      CTFPlayer, m_Shared,           CTFPlayer);
 IMPL_SENDPROP(float,                CTFPlayer, m_flLastDamageTime, CTFPlayer);
 IMPL_SENDPROP(CHandle<CTFItem>,     CTFPlayer, m_hItem,            CTFPlayer);
 IMPL_RELATIVE(CTFPlayerAnimState *, CTFPlayer, m_PlayerAnimState,  m_hItem, -0x18); // 20170116a
+IMPL_EXTRACT (bool,                 CTFPlayer, m_bFeigningDeath,   new CExtract_CTFPlayer_m_bFeigningDeath());
 IMPL_SENDPROP(CTFPlayerClass,       CTFPlayer, m_PlayerClass,      CTFPlayer);
 IMPL_SENDPROP(bool,                 CTFPlayer, m_bIsMiniBoss,      CTFPlayer);
 IMPL_SENDPROP(int,                  CTFPlayer, m_nCurrency,        CTFPlayer);
