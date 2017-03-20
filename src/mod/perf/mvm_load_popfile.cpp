@@ -132,3 +132,59 @@ when executing a valid tf_mvm_popfile at this point, we get this:
 - PREROUND -> BETWEEN_RNDS
 
 */
+
+
+
+/*
+
+temp textfile from debugging session RE: tf_mvm_popfile stuff
+=============================================================
+
+- see if we can determine what the cause of the post-GunMettle "popmgr gets stuck if first popfile load fails" thing is
+- server_srv_20170116a.idb
+
+refs to CPopulationManager::FindPopulationFileByShortName
+- CMannVsMachineLogic::InitPopulationManager
+
+refs to "tf_mvm_popfile"
+- CPopulationManager::LoadMvMMission
+- CPopulationManager::CycleMission
+
+Notable Changes:
+- CMannVsMachineLogic::InitPopulationManager
+  - now calls CPopulationManager::FindDefaultPopulationFileShortNames
+- CPopulationManager::Initialize (via CPopulationManager::SetupOnRoundStart via CMannVsMachineLogic::SetupOnRoundStart; possibly others)
+  - seems pretty much the same
+- CPopulationManager::GameRulesThink
+  - called from CTFGameRules::Think; didn't exist before
+
+TODO:
+- look for refs to g_hMannVsMachineLogic
+- look for refs to g_pPopulationManager
+
+FINDINGS:
+- first popfile load occurs with GR_STATE_PREGAME
+- first player getting to the class selection screen causes STARTGAME and PREROUND
+  - PREROUND transition causes CTFGameRules::SetupOnRoundStart to run
+    - this calls CMannVsMachineLogic::SetupOnRoundStart etc
+  - after that initialization fails ('Can't open x.pop'), we go to BETWEEN_ROUNDS
+- when loading a popfile AFTER the initial failure:
+  - we get to CPopulationManager::Initialize
+    - we get to the CPopulationManager::ClearCheckpoint call
+    - we get to the CPopulationManager::DebugWaveStats call
+    - there are zero waves despite the parse not failing!
+
+BREAKPOINTS:
+tf_mvm_popfile
+CMannVsMachineLogic::SetupOnRoundStart
+CMannVsMachineLogic::InitPopulationManager
+CPopulationManager::Initialize
+CPopulationManager::JumpToWave
+
+SOLUTION:
+- The problem is that when loading a new mission, JumpToWave is called with 0 as the wave number. But there are 0 waves in the currently loaded mission, and the checks in JumpToWave don't allow the important stuff (mainly CPopulationManager::Initialize) to run.
+- ALSO SUSPICIOUS:
+  - JumpToWave got an addition in GunMettle, which is that it sets bool @ TFGameRules+0x500 to 1; this messes with state transitions in CTeamplayRoundBasedRules::State_Enter_PREROUND
+  - 
+
+*/
