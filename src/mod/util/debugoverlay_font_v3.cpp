@@ -273,7 +273,7 @@ namespace Mod_Util_DebugOverlay_Font_v3
 			MOD_ADD_DETOUR_MEMBER(ISurface_SetFontGlyphSet, "ISurface::SetFontGlyphSet");
 			MOD_ADD_DETOUR_MEMBER(CWin32Font_Create,        "[client] CWin32Font::Create");
 			
-			MOD_ADD_DETOUR_MEMBER(CFontTextureCache_GetTextureForChars, "[client] CFontTextureCache_GetTextureForChars");
+			MOD_ADD_DETOUR_MEMBER(CFontTextureCache_GetTextureForChars, "[client] CFontTextureCache::GetTextureForChars");
 			MOD_ADD_DETOUR_STATIC(ApplyOutlineToTexture,                "[client] ApplyOutlineToTexture");
 			
 			MOD_ADD_DETOUR_MEMBER(CDebugOverlay_Paint,               "[client] CDebugOverlay::Paint");

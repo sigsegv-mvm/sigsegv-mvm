@@ -354,7 +354,7 @@ namespace Mod_Util_DebugOverlay_Font_v2
 	public:
 		CMod() : IMod("Util:DebugOverlay_Font_v2")
 		{
-			MOD_ADD_DETOUR_MEMBER(CFontTextureCache_GetTextureForChars, "[client] CFontTextureCache_GetTextureForChars");
+			MOD_ADD_DETOUR_MEMBER(CFontTextureCache_GetTextureForChars, "[client] CFontTextureCache::GetTextureForChars");
 		//	MOD_ADD_DETOUR_STATIC(ApplyOutlineToTexture,                "[client] ApplyOutlineToTexture");
 			MOD_ADD_DETOUR_STATIC(ApplyGaussianBlurToTexture,           "[client] ApplyGaussianBlurToTexture");
 			
