@@ -13,17 +13,12 @@
 		{
 			"addrs"
 			{
+				// sorted by class name
 				"CBaseEntity::m_DataMap"
 				{
 					type  "datamap"
 					sym   "_ZN11CBaseEntity9m_DataMapE"
 					class "CBaseEntity"
-				}
-				"CBasePlayer::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN11CBasePlayer9m_DataMapE"
-					class "CBasePlayer"
 				}
 				"CBaseObject::m_DataMap"
 				{
@@ -31,23 +26,23 @@
 					sym   "_ZN11CBaseObject9m_DataMapE"
 					class "CBaseObject"
 				}
-				"CItem::m_DataMap"
+				"CBasePlayer::m_DataMap"
 				{
 					type  "datamap"
-					sym   "_ZN5CItem9m_DataMapE"
-					class "CItem"
-				}
-				"CSpellPickup::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN12CSpellPickup9m_DataMapE"
-					class "CSpellPickup"
+					sym   "_ZN11CBasePlayer9m_DataMapE"
+					class "CBasePlayer"
 				}
 				"CBaseTrigger::m_DataMap"
 				{
 					type  "datamap"
 					sym   "_ZN12CBaseTrigger9m_DataMapE"
 					class "CBaseTrigger"
+				}
+				"CFilterTFBotHasTag::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN18CFilterTFBotHasTag9m_DataMapE"
+					class "CFilterTFBotHasTag"
 				}
 				"CFuncNavCost::m_DataMap"
 				{
@@ -61,17 +56,17 @@
 					sym   "_ZN20CFuncNavPrerequisite9m_DataMapE"
 					class "CFuncNavPrerequisite"
 				}
-				"CFilterTFBotHasTag::m_DataMap"
+				"CItem::m_DataMap"
 				{
 					type  "datamap"
-					sym   "_ZN18CFilterTFBotHasTag9m_DataMapE"
-					class "CFilterTFBotHasTag"
+					sym   "_ZN5CItem9m_DataMapE"
+					class "CItem"
 				}
-				"CTFTeamSpawn::m_DataMap"
+				"CPathTrack::m_DataMap"
 				{
 					type  "datamap"
-					sym   "_ZN12CTFTeamSpawn9m_DataMapE"
-					class "CTFTeamSpawn"
+					sym   "_ZN10CPathTrack9m_DataMapE"
+					class "CPathTrack"
 				}
 				"CSmokeStack::m_DataMap"
 				{
@@ -79,11 +74,17 @@
 					sym   "_ZN11CSmokeStack9m_DataMapE"
 					class "CSmokeStack"
 				}
-				"CPathTrack::m_DataMap"
+				"CSpellPickup::m_DataMap"
 				{
 					type  "datamap"
-					sym   "_ZN10CPathTrack9m_DataMapE"
-					class "CPathTrack"
+					sym   "_ZN12CSpellPickup9m_DataMapE"
+					class "CSpellPickup"
+				}
+				"CTFTeamSpawn::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN12CTFTeamSpawn9m_DataMapE"
+					class "CTFTeamSpawn"
 				}
 			}
 		}
