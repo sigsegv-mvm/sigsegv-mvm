@@ -2288,6 +2288,20 @@
 					type "sym"
 					sym  "_ZN12CCaptureFlag16GetMaxReturnTimeEv"
 				}
+				
+				"Con_DebugLog"
+				{
+					type "sym"
+					sym  "_Z12Con_DebugLogPKcz"
+					lib  "engine"
+				}
+				
+				"_SpewMessage [internal]"
+				{
+					type "sym"
+					sym  "_ZL12_SpewMessage10SpewType_tPKciPK5ColorS1_Pc"
+					lib  "tier0"
+				}
 			}
 		}
 	}
