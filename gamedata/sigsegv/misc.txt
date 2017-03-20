@@ -2303,6 +2303,12 @@
 					lib  "tier0"
 				}
 				
+				"CBaseEntity::Activate"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8ActivateEv"
+				}
+				
 				"CTFWeaponBase::IsSilentKiller"
 				{
 					type "sym"

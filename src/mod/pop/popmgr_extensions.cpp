@@ -110,6 +110,76 @@ namespace Mod_Pop_PopMgr_Extensions
 	};
 	
 	
+	class ExtraTankPath
+	{
+	public:
+		ExtraTankPath(const char *name) : m_strName(name) {}
+		
+		~ExtraTankPath()
+		{
+			for (CPathTrack *node : this->m_PathNodes) {
+				if (node != nullptr) {
+					node->Remove();
+				}
+			}
+		}
+		
+		bool AddNode(const Vector& origin)
+		{
+			assert(!this->m_bSpawned);
+			
+			auto node = rtti_cast<CPathTrack *>(CreateEntityByName("path_track"));
+			if (node == nullptr) return false;
+			
+			CFmtStr name("%s_%zu", this->m_strName.c_str(), this->m_PathNodes.size() + 1);
+			node->SetName(AllocPooledString(name));
+			
+			node->SetAbsOrigin(origin);
+			node->SetAbsAngles(vec3_angle);
+			
+			node->m_eOrientationType = 1;
+			
+			this->m_PathNodes.emplace_back(node);
+			
+			DevMsg("ExtraTankPath: AddNode [ % 7.1f % 7.1f % 7.1f ] \"%s\"\n", VectorExpand(origin), name.Get());
+			return true;
+		}
+		
+		void SpawnNodes()
+		{
+			assert(!this->m_bSpawned);
+			
+			/* connect up the nodes' target links */
+			for (auto it = this->m_PathNodes.begin(); (it + 1) != this->m_PathNodes.end(); ++it) {
+				CPathTrack *curr = *it;
+				CPathTrack *next = *(it + 1);
+				
+				DevMsg("ExtraTankPath: Link \"%s\" -> \"%s\"\n", STRING(curr->GetEntityName()), STRING(next->GetEntityName()));
+				curr->m_target = next->GetEntityName();
+			}
+			
+			/* now call Spawn() on each node */
+			for (CPathTrack *node : this->m_PathNodes) {
+				DevMsg("ExtraTankPath: Spawn \"%s\"\n", STRING(node->GetEntityName()));
+				node->Spawn();
+			}
+			
+			/* now call Activate() on each node */
+			for (CPathTrack *node : this->m_PathNodes) {
+				DevMsg("ExtraTankPath: Activate \"%s\"\n", STRING(node->GetEntityName()));
+				node->Activate();
+			}
+			
+			this->m_bSpawned = true;
+		}
+		
+	private:
+		std::string m_strName;
+		std::vector<CHandle<CPathTrack>> m_PathNodes;
+		bool m_bSpawned = false;
+	};
+	
+	
 	struct PopState
 	{
 		PopState() :
@@ -171,6 +241,8 @@ namespace Mod_Pop_PopMgr_Extensions
 				}
 			}
 			this->m_ExtraSpawnPoints.clear();
+			
+			this->m_ExtraTankPaths.clear();
 		}
 		
 		bool m_bGiantsDropRareSpells;
@@ -206,6 +278,8 @@ namespace Mod_Pop_PopMgr_Extensions
 		std::map<std::string, int> m_FlagResetTimes;
 		
 		std::vector<CHandle<CTFTeamSpawn>> m_ExtraSpawnPoints;
+		
+		std::vector<ExtraTankPath> m_ExtraTankPaths;
 	};
 	PopState state;
 	
@@ -512,25 +586,76 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		// Is it actually OK that we're spawning this stuff during parsing...?
 		
-		CTFTeamSpawn *spawnpoint = rtti_cast<CTFTeamSpawn *>(CreateEntityByName("info_player_teamspawn"));
+		auto spawnpoint = rtti_cast<CTFTeamSpawn *>(CreateEntityByName("info_player_teamspawn"));
 		if (spawnpoint == nullptr) {
 			Warning("Parse_ExtraSpawnPoint: CreateEntityByName(\"info_player_teamspawn\") failed\n");
 			return;
 		}
 		
 		spawnpoint->SetName(AllocPooledString(name));
+		
 		spawnpoint->SetAbsOrigin(origin);
 		spawnpoint->SetAbsAngles(vec3_angle);
 		
-		spawnpoint->Spawn();
-		
 		spawnpoint->ChangeTeam(teamnum);
+		
+		spawnpoint->Spawn();
+		spawnpoint->Activate();
 		
 		state.m_ExtraSpawnPoints.emplace_back(spawnpoint);
 		
 		DevMsg("Parse_ExtraSpawnPoint: #%d, %08x, name \"%s\", teamnum %d, origin [ % 7.1f % 7.1f % 7.1f ], angles [ % 7.1f % 7.1f % 7.1f ]\n",
 			ENTINDEX(spawnpoint), (uintptr_t)spawnpoint, STRING(spawnpoint->GetEntityName()), spawnpoint->GetTeamNumber(),
 			VectorExpand(spawnpoint->GetAbsOrigin()), VectorExpand(spawnpoint->GetAbsAngles()));
+	}
+	
+	void Parse_ExtraTankPath(KeyValues *kv)
+	{
+		const char *name = nullptr; // required
+		std::vector<Vector> points; // required
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			if (FStrEq(subkey->GetName(), "Name")) {
+				name = subkey->GetString();
+			} else if (FStrEq(subkey->GetName(), "Node")) {
+				Vector point; char c;
+				if (sscanf(subkey->GetString(), " %f %f %f %c", &point.x, &point.y, &point.z, &c) == 3) {
+					points.push_back(point);
+				} else {
+					Warning("Invalid value \'%s\' for Node key in ExtraTankPath block.\n", subkey->GetString());
+				}
+			} else {
+				Warning("Unknown key \'%s\' in ExtraTankPath block.\n", subkey->GetName());
+			}
+		}
+		
+		bool fail = false;
+		if (name == nullptr) {
+			Warning("Missing Name key in ExtraTankPath block.\n");
+			fail = true;
+		}
+		if (points.empty()) {
+			Warning("No Node keys specified in ExtraTankPath block.\n");
+			fail = true;
+		}
+		if (fail) return;
+		
+		
+		state.m_ExtraTankPaths.emplace_back(name);
+		auto& path = state.m_ExtraTankPaths.back();
+		
+		for (const auto& point : points) {
+			if (!path.AddNode(point)) {
+				Warning("Parse_ExtraTankPath: ExtraTankPath::AddNode reports that entity creation failed!\n");
+				state.m_ExtraTankPaths.pop_back();
+				return;
+			}
+		}
+		
+		// Is it actually OK that we're spawning this stuff during parsing...?
+		path.SpawnNodes();
+		
+		DevMsg("Parse_ExtraTankPath: name \"%s\", %zu nodes\n", name, points.size());
 	}
 	
 	RefCount rc_CPopulationManager_Parse;
@@ -618,6 +743,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					Parse_FlagResetTime(subkey);
 				} else if (FStrEq(name, "ExtraSpawnPoint")) {
 					Parse_ExtraSpawnPoint(subkey);
+				} else if (FStrEq(name, "ExtraTankPath")) {
+					Parse_ExtraTankPath(subkey);
 				} else if (FStrEq(name, "PrecacheScriptSound"))  { CBaseEntity::PrecacheScriptSound (subkey->GetString());
 				} else if (FStrEq(name, "PrecacheSound"))        { enginesound->PrecacheSound       (subkey->GetString(), false);
 				} else if (FStrEq(name, "PrecacheModel"))        { engine     ->PrecacheModel       (subkey->GetString(), false);

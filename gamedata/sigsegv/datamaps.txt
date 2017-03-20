@@ -79,6 +79,12 @@
 					sym   "_ZN11CSmokeStack9m_DataMapE"
 					class "CSmokeStack"
 				}
+				"CPathTrack::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN10CPathTrack9m_DataMapE"
+					class "CPathTrack"
+				}
 			}
 		}
 	}

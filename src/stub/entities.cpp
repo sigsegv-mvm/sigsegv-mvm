@@ -153,6 +153,8 @@ struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMa
 #endif
 
 
+IMPL_DATAMAP(int, CPathTrack, m_eOrientationType);
+
 MemberFuncThunk<CPathTrack *, CPathTrack *> CPathTrack::ft_GetNext("CPathTrack::GetNext");
 
 

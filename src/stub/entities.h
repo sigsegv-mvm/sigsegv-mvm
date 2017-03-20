@@ -19,6 +19,8 @@ class CPathTrack : public CPointEntity
 public:
 	CPathTrack *GetNext() { return ft_GetNext(this); }
 	
+	DECL_DATAMAP(int, m_eOrientationType);
+	
 private:
 	static MemberFuncThunk<CPathTrack *, CPathTrack *> ft_GetNext;
 };

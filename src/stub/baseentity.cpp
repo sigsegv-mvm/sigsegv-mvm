@@ -3,6 +3,7 @@
 #include "stub/objects.h"
 
 
+IMPL_DATAMAP(string_t,               CBaseEntity, m_target);
 IMPL_DATAMAP(int,                    CBaseEntity, m_debugOverlays);
 IMPL_DATAMAP(CServerNetworkProperty, CBaseEntity, m_Network);
 IMPL_DATAMAP(string_t,               CBaseEntity, m_iClassname);
@@ -53,6 +54,7 @@ MemberVFuncThunk<      CBaseEntity *, Vector                                    
 MemberVFuncThunk<      CBaseEntity *, const QAngle&                                                   > CBaseEntity::vt_EyeAngles                (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");
 MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *                                             > CBaseEntity::vt_SetOwnerEntity           (TypeName<CBaseEntity>(), "CBaseEntity::SetOwnerEntity");
 MemberVFuncThunk<      CBaseEntity *, void                                                            > CBaseEntity::vt_Spawn                    (TypeName<CBaseEntity>(), "CBaseEntity::Spawn");
+MemberVFuncThunk<      CBaseEntity *, void                                                            > CBaseEntity::vt_Activate                 (TypeName<CBaseEntity>(), "CBaseEntity::Activate");
 MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *                                > CBaseEntity::vt_GetVelocity              (TypeName<CBaseEntity>(), "CBaseEntity::GetVelocity");
 MemberVFuncThunk<const CBaseEntity *, const Vector&                                                   > CBaseEntity::vt_WorldSpaceCenter         (TypeName<CBaseEntity>(), "CBaseEntity::WorldSpaceCenter");
 MemberVFuncThunk<const CBaseEntity *, bool                                                            > CBaseEntity::vt_IsCombatItem             (TypeName<CBaseEntity>(), "CBaseEntity::IsCombatItem");

@@ -80,6 +80,7 @@ public:
 	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity           (this, pOwner); }
 	void Spawn()                                                                                                            {        vt_Spawn                    (this); }
+	void Activate()                                                                                                         {        vt_Activate                 (this); }
 	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)                                             {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
 	const Vector& WorldSpaceCenter() const                                                                                  { return vt_WorldSpaceCenter         (this); }
 	bool IsCombatItem() const                                                                                               { return vt_IsCombatItem             (this); }
@@ -108,7 +109,8 @@ public:
 	void NetworkStateChanged();
 	void NetworkStateChanged(void *pVar);
 	
-	DECL_DATAMAP(int, m_debugOverlays);
+	DECL_DATAMAP(string_t, m_target);
+	DECL_DATAMAP(int,      m_debugOverlays);
 	
 	/* TODO: make me private again! */
 	DECL_SENDPROP(int,    m_fFlags);
@@ -162,6 +164,7 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
 	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>                                              vt_SetOwnerEntity;
 	static MemberVFuncThunk<      CBaseEntity *, void>                                                             vt_Spawn;
+	static MemberVFuncThunk<      CBaseEntity *, void>                                                             vt_Activate;
 	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *>                                 vt_GetVelocity;
 	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                                                    vt_WorldSpaceCenter;
 	static MemberVFuncThunk<const CBaseEntity *, bool>                                                             vt_IsCombatItem;
