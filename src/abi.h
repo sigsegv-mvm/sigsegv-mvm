@@ -235,6 +235,7 @@ void *GetAddrOfMemberFunc(MemberPtrType<C, RET, PARAMS...> ptr)
 	
 	u.fptr = ptr;
 	
+	// incremental linking breaks this, because the func ptr will end up really being a ptr to a jmp thunk
 	assert((uintptr_t)u.guts.ptr % 2 == 0);
 	return (void *)u.guts.ptr;
 }
