@@ -99,8 +99,8 @@ non-main thread:
  	atiumdag.dll!60c8535a()	Unknown
  	atiumdag.dll!60c83b66()	Unknown
  	atiumdag.dll!60be4d54()	Unknown
- 	d3d9.dll!_AllocateCB@8()	Unknown
- 	ntdll.dll!_NtSetEvent@8()	Unknown
+ 	d3d9.dll!_AllocateCB()	Unknown
+ 	ntdll.dll!_NtSetEvent()	Unknown
  	GameOverlayRenderer.dll!NotifyVRCleanup() + 13193 bytes	Unknown
  	atiu9pag.dll!OpenAdapter() + 1717 bytes	Unknown
  	d3d9.dll!CD3DDDIDX10_DrawIndexedPrimitive(class CD3DBase *,enum _D3DPRIMITIVETYPE,unsigned int,unsigned int,unsigned int,unsigned int,unsigned int)	Unknown
@@ -134,13 +134,13 @@ non-main thread:
  	MaterialSystem.dll!0f8c3290()	Unknown
  	MaterialSystem.dll!0f8c7158()	Unknown
  	vstdlib.dll!Coroutine_YieldToMain() + 9984 bytes	Unknown
- 	ntdll.dll!_NtClearEvent@4()	Unknown
+ 	ntdll.dll!_NtClearEvent()	Unknown
  	tier0.dll!CThread::ThreadProc() + 256 bytes	Unknown
  	tier0.dll!0fe0d4f7()	Unknown
  	tier0.dll!0fe0d61f()	Unknown
- 	kernel32.dll!@BaseThreadInitThunk@12()	Unknown
+ 	kernel32.dll!@BaseThreadInitThunk()	Unknown
  	ntdll.dll!__RtlUserThreadStart()	Unknown
- 	ntdll.dll!__RtlUserThreadStart@8()	Unknown
+ 	ntdll.dll!__RtlUserThreadStart()	Unknown
 
 
 */
