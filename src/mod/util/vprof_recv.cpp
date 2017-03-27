@@ -5,7 +5,7 @@
 
 // no idea why the linker isn't finding this...
 // the symbol is definitely there in libtier0_srv.so
-CL2Cache::CL2Cache() {}
+//CL2Cache::CL2Cache() {}
 
 
 //void ResetActiveVProfile()

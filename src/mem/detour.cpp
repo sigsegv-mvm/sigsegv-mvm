@@ -172,6 +172,7 @@ bool IDetour_SymRegex::DoLoad()
 	auto text_begin = reinterpret_cast<const void *>(info_seg_text.AddrBegin());
 	auto text_end   = reinterpret_cast<const void *>(info_seg_text.AddrEnd());
 	
+	#warning NEED try/catch for std::regex ctor!
 	std::regex filter(this->m_strPattern, std::regex_constants::ECMAScript);
 	std::vector<Symbol *> syms;
 	LibMgr::ForEachSym(this->m_Library, [&](Symbol *sym){

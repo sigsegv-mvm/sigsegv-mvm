@@ -377,6 +377,7 @@ WARN_IGNORE__NULL_DEREFERENCE()
 WARN_RESTORE()
 #include <toolframework/ienginetool.h>
 #include <toolframework/itoolentity.h>
+#include "sdk2013/l2cache.h"
 WARN_IGNORE__REORDER()
 #include <vprof.h>
 WARN_RESTORE()

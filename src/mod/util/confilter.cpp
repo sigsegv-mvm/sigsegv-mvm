@@ -66,6 +66,8 @@ namespace Mod_Util_ConFilter
 	class CConExcludeFilterRegex final : public CConExcludeFilter
 	{
 	public:
+		#warning NEED try/catch for std::regex ctor!
+		// (need to figure out how exactly to do that given that we're doing member initialization here...)
 		CConExcludeFilterRegex(const char *str, bool icase) :
 			CConExcludeFilter(str, icase), m_Regex(str, std::regex::optimize | std::regex::ECMAScript | (icase ? std::regex::icase : 0)) {}
 		
