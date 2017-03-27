@@ -48,6 +48,7 @@ sourceFiles += [
   'src/addr/standard.cpp',
   
   'src/mem/detour.cpp',
+  'src/mem/hook.cpp',
   'src/mem/patch.cpp',
   'src/mem/scan.cpp',
   
