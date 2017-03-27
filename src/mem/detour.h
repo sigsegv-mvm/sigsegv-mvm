@@ -263,10 +263,14 @@ private:
 #define DETOUR_MEMBER_CALL(name) (this->*name##_Actual)
 #define DETOUR_STATIC_CALL(name) (Actual_##name)
 
-#define DETOUR_DECL_STATIC(ret, name, ...) \
+#define __DETOUR_DECL_STATIC(prefix, name, ...) \
 	CDetour *detour_##name = nullptr; \
-	static ret (*Actual_##name)(__VA_ARGS__) = nullptr; \
-	static ret Detour_##name(__VA_ARGS__)
+	prefix (*Actual_##name)(__VA_ARGS__) = nullptr; \
+	prefix Detour_##name(__VA_ARGS__)
+#define DETOUR_DECL_STATIC(ret, name, ...) \
+	__DETOUR_DECL_STATIC(static ret, name, ##__VA_ARGS__)
+#define DETOUR_DECL_STATIC_CALL_CONVENTION(cc, ret, name, ...) \
+	__DETOUR_DECL_STATIC(cc static ret, name, ##__VA_ARGS__)
 
 #define DETOUR_DECL_MEMBER(ret, name, ...) \
 	static CDetour *detour_##name = nullptr; \

@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "util/misc.h"
+#include "util/scope.h"
 
 // TODO: move to common.h
 #include <boost/algorithm/string/find.hpp>
@@ -7,7 +8,6 @@
 
 namespace Mod_Util_ConFilter
 {
-#if ENABLE_BROKEN_CRASHY_STUFF
 	class CConExcludeFilter
 	{
 	public:
@@ -86,8 +86,13 @@ namespace Mod_Util_ConFilter
 	std::vector<std::unique_ptr<CConExcludeFilter>> filters;
 	
 	
+	RefCount rc_TempDisable;
+	
+	
 	CON_COMMAND(sig_util_confilter_list, "Show info about all console filters")
 	{
+		SCOPED_INCREMENT(rc_TempDisable);
+		
 		Msg("  #TOTAL  #EXCLU  TYPE    CASE   STRING\n");
 		
 		for (auto& filter : filters) {
@@ -102,6 +107,8 @@ namespace Mod_Util_ConFilter
 	
 	CON_COMMAND(sig_util_confilter_clear, "Remove all console filters")
 	{
+		SCOPED_INCREMENT(rc_TempDisable);
+		
 		size_t n_cleared = filters.size();
 		filters.clear();
 		Msg("Removed all %zu console filter(s).\n", n_cleared);
@@ -109,6 +116,8 @@ namespace Mod_Util_ConFilter
 	
 	CON_COMMAND(sig_util_confilter_add, "Add a console filter: <substr|regex> <case|icase> \"string\"")
 	{
+		SCOPED_INCREMENT(rc_TempDisable);
+		
 		auto l_usage = [&]{
 			Msg("Usage: %s <substr|regex> <case|icase> \"string\"\n"
 				"  Filter type:      'substr' => substring match\n"
@@ -159,46 +168,45 @@ namespace Mod_Util_ConFilter
 	
 	
 	// POTENTIAL ISSUE: stupid code may call spew funcs with only partial lines
-//	DETOUR_DECL_STATIC(void, Con_DebugLog, const char *fmt, ...)
-//	{
-	DETOUR_DECL_STATIC(SpewRetval_t, D__SpewMessage, SpewType_t spewType, const char *pGroupName, int nLevel, const Color *pColor, const char *pMsgFormat, va_list args)
+	DETOUR_DECL_STATIC_CALL_CONVENTION(__gcc_regcall, SpewRetval_t, D__SpewMessage, SpewType_t spewType, const char *pGroupName, int nLevel, const Color *pColor, const char *pMsgFormat, va_list args)
 	{
 		static std::mutex s_Mutex;
 		std::lock_guard<std::mutex> lock(s_Mutex);
 		
 		/* shared buffer, guarded by mutex */
-		static char line[4096];
-		V_vsprintf_safe(line, pMsgFormat, args);
+		static char s_Line[8192];
 		
-	//	 printf(        "[STDOUT] Con_DebugLog\n");
-	//	fprintf(stderr, "[STDERR] Con_DebugLog\n");
-		 printf(        "[STDOUT] _SpewMessage: \"%s\"\n", line);
-		fprintf(stderr, "[STDERR] _SpewMessage: \"%s\"\n", line);
-		
-		bool exclude = false;
-		for (auto& filter : filters) {
-			if (filter->ShouldExclude(line)) {
-				exclude = true;
-				break;
+		if (rc_TempDisable == 0) {
+			V_vsprintf_safe(s_Line, pMsgFormat, args);
+			
+			bool exclude = false;
+			for (auto& filter : filters) {
+				if (filter->ShouldExclude(s_Line)) {
+					exclude = true;
+					break;
+				}
+			}
+			
+			if (exclude) {
+				printf("EXCLUDED: |%s|\n", s_Line);
+				return SPEW_CONTINUE;
 			}
 		}
 		
-		auto l_log = [](const char *fmt, ...){
-			FILE *f = fopen("/tmp/log.txt", "a");
-			if (f == nullptr) return;
-			
-			va_list va;
-			va_start(va, fmt);
-			vfprintf(f, fmt, va);
-			va_end(va);
-			
-			fclose(f);
-		};
-		l_log("[%8s] %s\n", (exclude ? "EXCLUDED" : ""), line);
+		// it's slightly annoying that vsprintf has to get called in here, and then called yet again in the actual function.
+		// hypothetically, we could use our pre-vsprintf'd buffer with "%s" and pass that to the actual function,
+		// but this would require us to fabricate a va_list from scratch, which technically you aren't supposed to do.
+		// a way around this would be to make a variadic intermediary function in which we make a va_list the normal way,
+		// but it'd probably have to be a lambda, and there's a retarded amount of overhead associated with doing that,
+		// in addition to the uncertainty that it'd even necessarily work correctly
 		
-		if (exclude) {
-			return SPEW_CONTINUE;
-		}
+	//	return [&](const char *fmt, ...){
+	//		va_list va;
+	//		va_start(va, fmt);
+	//		SpewRetval_t ret = DETOUR_STATIC_CALL(D__SpewMessage)(spewType, pGroupName, nLevel, pColor, pMsgFormat, va);
+	//		va_end(va);
+	//		return ret;
+	//	}("%s", s_Line);
 		
 		return DETOUR_STATIC_CALL(D__SpewMessage)(spewType, pGroupName, nLevel, pColor, pMsgFormat, args);
 	}
@@ -210,10 +218,6 @@ namespace Mod_Util_ConFilter
 		CMod() : IMod("Util:ConFilter")
 		{
 			MOD_ADD_DETOUR_STATIC(D__SpewMessage, "_SpewMessage [internal]");
-				
-		//	MOD_ADD_DETOUR_STATIC(Con_DebugLog, "Con_DebugLog");
-			
-		//	MOD_ADD_DETOUR_STATIC(Con_ColorPrint, "Con_ColorPrint");
 		}
 	};
 	CMod s_Mod;
@@ -225,7 +229,6 @@ namespace Mod_Util_ConFilter
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
-#endif
 }
 
 

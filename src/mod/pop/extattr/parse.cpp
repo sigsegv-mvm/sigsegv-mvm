@@ -4,7 +4,7 @@
 
 namespace Mod_Pop_ExtAttr_Parse
 {
-	DETOUR_DECL_STATIC(bool __gcc_regcall, ParseDynamicAttributes, void *ecattr, KeyValues *kv)
+	DETOUR_DECL_STATIC_CALL_CONVENTION(__gcc_regcall, bool, ParseDynamicAttributes, void *ecattr, KeyValues *kv)
 	{
 		DevMsg("ParseDynamicAttributes: \"%s\" \"%s\"\n", kv->GetName(), kv->GetString());
 		
