@@ -2314,6 +2314,30 @@
 					type "sym"
 					sym  "_ZN13CTFWeaponBase14IsSilentKillerEv"
 				}
+				
+				"CanScatterGunKnockBack"
+				{
+					type "sym"
+					sym  "_Z22CanScatterGunKnockBackP13CTFWeaponBaseff"
+				}
+				
+				"CTFScatterGun::ApplyPostHitEffects"
+				{
+					type "sym"
+					sym  "_ZN13CTFScatterGun19ApplyPostHitEffectsERK15CTakeDamageInfoP9CTFPlayer"
+				}
+				
+				"CTFProjectile_Flare::Explode"
+				{
+					type "sym"
+					sym  "_ZN19CTFProjectile_Flare7ExplodeEP10CGameTraceP11CBaseEntity"
+				}
+				
+				"CTFGrenadePipebombProjectile::PipebombTouch"
+				{
+					type "sym"
+					sym  "_ZN28CTFGrenadePipebombProjectile13PipebombTouchEP11CBaseEntity"
+				}
 			}
 		}
 	}

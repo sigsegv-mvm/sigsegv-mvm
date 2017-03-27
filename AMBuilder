@@ -187,6 +187,7 @@ sourceFiles += [
   'src/mod/mvm/robosapper_override.cpp',
 #  'src/mod/mvm/romevision_disable.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
+  'src/mod/mvm/weapon_antigrief.cpp',
   'src/mod/mvm/yer_unnerf.cpp',
   
   'src/mod/perf/flame_breakable_collision.cpp',
