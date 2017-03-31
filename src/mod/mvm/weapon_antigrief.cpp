@@ -63,9 +63,12 @@ namespace Mod_MvM_Weapon_AntiGrief
 	}
 	
 	
+	static inline bool ShouldBlock_ScorchShot()  { return (cvar_scorchshot .GetBool() && rc_ScorchShot  > 0); }
+	static inline bool ShouldBlock_LooseCannon() { return (cvar_loosecannon.GetBool() && rc_LooseCannon > 0); }
+	
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
 	{
-		if (cvar_scorchshot.GetBool() || cvar_loosecannon.GetBool()) {
+		if (ShouldBlock_ScorchShot() || ShouldBlock_LooseCannon()) {
 			auto player = reinterpret_cast<CTFPlayer *>(this);
 			
 			if (BotIsAGiant(player) && TFGameRules()->IsMannVsMachineMode()) {
@@ -78,7 +81,7 @@ namespace Mod_MvM_Weapon_AntiGrief
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, TFStunFlags flags, CTFPlayer *attacker)
 	{
-		if (cvar_scorchshot.GetBool() || cvar_loosecannon.GetBool()) {
+		if (ShouldBlock_ScorchShot() || ShouldBlock_LooseCannon()) {
 			auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 			auto player = shared->GetOuter();
 			
