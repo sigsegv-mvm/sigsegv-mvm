@@ -43,8 +43,8 @@ namespace Mod_Sniper_Charge_Uncap
 		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
 			/* NOP out the MINSS instruction */
-			buf .SetRange(0x33, 8, 0x90);
-			mask.SetRange(0x33, 8, 0xff);
+			buf .SetRange(0x04, 8, 0x90);
+			mask.SetRange(0x04, 8, 0xff);
 			
 			return true;
 		}
