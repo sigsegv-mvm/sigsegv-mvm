@@ -2338,6 +2338,24 @@
 					type "sym"
 					sym  "_ZN28CTFGrenadePipebombProjectile13PipebombTouchEP11CBaseEntity"
 				}
+				
+				"CBaseEntity::GetDamage"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9GetDamageEv"
+				}
+				
+				"CBaseEntity::SetDamage"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9SetDamageEf"
+				}
+				
+				"CBaseGrenade::SetDamage"
+				{
+					type "sym"
+					sym  "_ZN12CBaseGrenade9SetDamageEf"
+				}
 			}
 		}
 	}

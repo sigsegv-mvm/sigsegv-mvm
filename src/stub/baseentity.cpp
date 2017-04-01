@@ -69,6 +69,8 @@ MemberVFuncThunk<      CBaseEntity *, void, int, int                            
 MemberVFuncThunk<      CBaseEntity *, datamap_t *                                                     > CBaseEntity::vt_GetDataDescMap           (TypeName<CBaseEntity>(), "CBaseEntity::GetDataDescMap");
 MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEntity *, variant_t, int> CBaseEntity::vt_AcceptInput              (TypeName<CBaseEntity>(), "CBaseEntity::AcceptInput");
 MemberVFuncThunk<      CBaseEntity *, void, const char *                                              > CBaseEntity::vt_SetModel                 (TypeName<CBaseEntity>(), "CBaseEntity::SetModel");
+MemberVFuncThunk<      CBaseEntity *, float                                                           > CBaseEntity::vt_GetDamage                (TypeName<CBaseEntity>(), "CBaseEntity::GetDamage");
+MemberVFuncThunk<      CBaseEntity *, void, float                                                     > CBaseEntity::vt_SetDamage                (TypeName<CBaseEntity>(), "CBaseEntity::SetDamage");
 
 StaticFuncThunk<int, const char *, bool>          CBaseEntity::ft_PrecacheModel      ("CBaseEntity::PrecacheModel");
 StaticFuncThunk<bool, const char *>               CBaseEntity::ft_PrecacheSound      ("CBaseEntity::PrecacheSound");

@@ -162,6 +162,7 @@ sourceFiles += [
   'src/mod/etc/instant_scaling.cpp',
   'src/mod/etc/laserdot_fix.cpp',
   'src/mod/etc/limp_projectiles.cpp',
+  'src/mod/etc/loose_cannon_damage_fix.cpp',
   'src/mod/etc/medicgun_beam_machinery.cpp',
   'src/mod/etc/melee_ignore_teammates.cpp',
   'src/mod/etc/mm_spoof.cpp',

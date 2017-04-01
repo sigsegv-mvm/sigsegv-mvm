@@ -94,6 +94,8 @@ public:
 	void SetModelIndexOverride(int index, int nValue)                                                                       {        vt_SetModelIndexOverride    (this, index, nValue); }
 	datamap_t *GetDataDescMap()                                                                                             { return vt_GetDataDescMap           (this); }
 	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
+	float GetDamage()                                                                                                       { return vt_GetDamage                (this); }
+	void SetDamage(float flDamage)                                                                                          {        vt_SetDamage                (this, flDamage); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)     { return ft_PrecacheModel      (name, bPreload); }
@@ -179,6 +181,8 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, datamap_t *>                                                      vt_GetDataDescMap;
 	static MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEntity *, variant_t, int> vt_AcceptInput;
 	static MemberVFuncThunk<      CBaseEntity *, void, const char *>                                               vt_SetModel;
+	static MemberVFuncThunk<      CBaseEntity *, float>                                                            vt_GetDamage;
+	static MemberVFuncThunk<      CBaseEntity *, void, float>                                                      vt_SetDamage;
 	
 	static StaticFuncThunk<int, const char *, bool>          ft_PrecacheModel;
 	static StaticFuncThunk<bool, const char *>               ft_PrecacheSound;
