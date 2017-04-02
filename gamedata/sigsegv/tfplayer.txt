@@ -411,6 +411,12 @@
 					sym  "_ZN9CTFPlayer18SpyDeadRingerDeathERK15CTakeDamageInfo"
 				}
 				
+				"CTFPlayer::GetNumObjects"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13GetNumObjectsEii"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"

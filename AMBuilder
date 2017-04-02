@@ -187,6 +187,7 @@ sourceFiles += [
   'src/mod/mvm/refund_exploit_fix.cpp',
   'src/mod/mvm/robosapper_override.cpp',
 #  'src/mod/mvm/romevision_disable.cpp',
+  'src/mod/mvm/sapper_allow_multiple_active.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
   'src/mod/mvm/weapon_antigrief.cpp',
   'src/mod/mvm/yer_unnerf.cpp',
