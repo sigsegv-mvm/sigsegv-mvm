@@ -1,23 +1,23 @@
 build/
 
-MSVC14/Debug/
-MSVC14/Release/
-MSVC14/Binary/
+MSVC/Debug/
+MSVC/Release/
+MSVC/Binary/
 
-MSVC14/packages/
-MSVC14/ipch/
+MSVC/packages/
+MSVC/ipch/
 
-MSVC14/*.suo
-MSVC14/*.user
-MSVC14/*.opendb
-MSVC14/*.sdf
-MSVC14/.vs
-MSVC14/*.VC.db
+MSVC/*.suo
+MSVC/*.user
+MSVC/*.opendb
+MSVC/*.sdf
+MSVC/.vs
+MSVC/*.VC.db
 
-MSVC14/*.psess
-MSVC14/Report*.vsps
-MSVC14/Report*.vspx
-MSVC14/Report*.csv
+MSVC/*.psess
+MSVC/Report*.vsps
+MSVC/Report*.vspx
+MSVC/Report*.csv
 
 *.sublime-project
 *.sublime-workspace

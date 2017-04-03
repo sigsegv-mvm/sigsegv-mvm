@@ -18,7 +18,7 @@ public:
 	
 	T Extract();
 	
-	virtual int GetLength() const final { return this->m_iLength; }
+	int GetLength() const { return this->m_iLength; }
 	virtual const char *GetFuncName() const = 0;
 	virtual void *GetFuncAddr() const { return nullptr; }
 	virtual uint32_t GetFuncOffMin() const = 0;
@@ -126,6 +126,13 @@ bool IExtract<T>::Check()
 	
 	return true;
 }
+
+
+class IExtractStub final
+{
+public:
+	template<typename... ARGS> IExtractStub(ARGS...) {}
+};
 
 
 #endif

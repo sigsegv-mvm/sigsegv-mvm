@@ -287,6 +287,8 @@ class CProp_Extract : public IPropTyped<T>
 public:
 	CProp_Extract(const char *obj, const char *mem, IExtract<T *> *extractor) :
 		IPropTyped<T>(obj, mem), m_Extractor(extractor) {}
+	CProp_Extract(const char *obj, const char *mem, IExtractStub *stub) :
+		IPropTyped<T>(obj, mem), m_Extractor(nullptr) {}
 	virtual ~CProp_Extract()
 	{
 		if (this->m_Extractor != nullptr) {

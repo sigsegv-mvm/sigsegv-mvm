@@ -154,7 +154,9 @@ void *LibMgr::FindSym(Library lib, const char *sym)
 
 std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern)
 {
+#ifndef _MSC_VER
 	#warning NEED try/catch for std::regex ctor!
+#endif
 	std::regex filter(pattern, std::regex_constants::ECMAScript);
 	
 	std::vector<Symbol *> matches;

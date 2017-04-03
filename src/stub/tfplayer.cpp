@@ -69,7 +69,7 @@ struct CExtract_CTFPlayer_m_bFeigningDeath : public IExtract<bool *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CTFPlayer_m_bFeigningDeath = IExtractStub;
 
 #endif
 
