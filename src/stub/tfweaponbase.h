@@ -71,6 +71,30 @@ private:
 
 class CTFWeaponBaseGun : public CTFWeaponBase {};
 
+class CTFPipebombLauncher : public CTFWeaponBaseGun {};
+
+class CTFCompoundBow : public CTFPipebombLauncher
+{
+public:
+	/* these 4 vfuncs really ought to be in a separate ITFChargeUpWeapon stub
+	 * class, but reliably determining these vtable indexes at runtime is hard,
+	 * plus all calls would have to do an rtti_cast from the derived type to
+	 * ITFChargeUpWeapon before calling the thunk; incidentally, this means that
+	 * ITFChargeUpWeapon would need to be a template class with a parameter
+	 * telling it what the derived class is, so that it knows what source ptr
+	 * type to pass to rtti_cast... what a mess */
+//	bool CanCharge()           { return vt_CanCharge         (this); }
+//	float GetChargeBeginTime() { return vt_GetChargeBeginTime(this); }
+	float GetChargeMaxTime()   { return vt_GetChargeMaxTime  (this); }
+	float GetCurrentCharge()   { return vt_GetCurrentCharge  (this); }
+	
+private:
+//	static MemberVFuncThunk<CTFCompoundBow *, bool>  vt_CanCharge;
+//	static MemberVFuncThunk<CTFCompoundBow *, float> vt_GetChargeBeginTime;
+	static MemberVFuncThunk<CTFCompoundBow *, float> vt_GetChargeMaxTime;
+	static MemberVFuncThunk<CTFCompoundBow *, float> vt_GetCurrentCharge;
+};
+
 class CTFMinigun : public CTFWeaponBaseGun
 {
 public:

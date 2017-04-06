@@ -2356,6 +2356,30 @@
 					type "sym"
 					sym  "_ZN12CBaseGrenade9SetDamageEf"
 				}
+				
+				"CTFCompoundBow::GetChargeMaxTime"
+				{
+					type "sym"
+					sym  "_ZN14CTFCompoundBow16GetChargeMaxTimeEv"
+				}
+				
+				"CTFCompoundBow::GetCurrentCharge"
+				{
+					type "sym"
+					sym  "_ZN14CTFCompoundBow16GetCurrentChargeEv"
+				}
+				
+				"CTFCompoundBow::GetProjectileDamage"
+				{
+					type "sym"
+					sym  "_ZN14CTFCompoundBow19GetProjectileDamageEv"
+				}
+				
+				"CTFWeaponBaseGun::GetProjectileDamage"
+				{
+					type "sym"
+					sym  "_ZN16CTFWeaponBaseGun19GetProjectileDamageEv"
+				}
 			}
 		}
 	}

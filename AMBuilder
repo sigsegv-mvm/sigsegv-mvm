@@ -159,6 +159,7 @@ sourceFiles += [
   'src/mod/etc/bottle_break_fix.cpp',
   'src/mod/etc/heat_seeking_rockets.cpp',
   'src/mod/etc/holiday_items_allow.cpp',
+  'src/mod/etc/huntsman_damage_fix.cpp',
   'src/mod/etc/instant_scaling.cpp',
   'src/mod/etc/laserdot_fix.cpp',
   'src/mod/etc/limp_projectiles.cpp',
