@@ -244,6 +244,7 @@ public:
 	SIZE_CHECK(ExtendedAttr, 0x4);
 #endif
 	
+	bool HasAttribute(AttributeType attr) const { return ((this->m_nBotAttrs & attr) != 0); }
 	MissionType GetMission() const   { return this->m_nMission; }
 	void SetMission(MissionType val) { this->m_nMission = val; }
 	

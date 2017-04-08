@@ -106,6 +106,8 @@ MemberFuncThunk<      CTFPlayerShared *, CBaseEntity *, ETFCond              > C
 MemberFuncThunk<const CTFPlayerShared *, int                                 > CTFPlayerShared::ft_GetDisguiseTeam     ("CTFPlayerShared::GetDisguiseTeam");
 MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsStealthed         ("CTFPlayerShared::IsStealthed");
 MemberFuncThunk<const CTFPlayerShared *, float                               > CTFPlayerShared::ft_GetPercentInvisible ("CTFPlayerShared::GetPercentInvisible");
+MemberFuncThunk<      CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsControlStunned    ("CTFPlayerShared::IsControlStunned");
+MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsLoserStateStunned ("CTFPlayerShared::IsLoserStateStunned");
 
 
 IMPL_SENDPROP(CTFPlayerShared,      CTFPlayer, m_Shared,           CTFPlayer);

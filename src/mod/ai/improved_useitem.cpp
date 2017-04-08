@@ -99,6 +99,16 @@ namespace Mod_AI_Improved_UseItem
 			return ActionResult<CTFBot>::Done("Interrupted");
 		}
 		
+		static bool IsPossible(CTFBot *actor)
+		{
+			/* the bot cannot actually PressFireButton in these cases */
+			if (actor->m_Shared->IsControlStunned())             return false;
+			if (actor->m_Shared->IsLoserStateStunned())          return false;
+			if (actor->HasAttribute(CTFBot::ATTR_SUPPRESS_FIRE)) return false;
+			
+			return true;
+		}
+		
 	protected:
 		virtual bool IsDone(CTFBot *actor) = 0;
 		
@@ -182,18 +192,30 @@ namespace Mod_AI_Improved_UseItem
 	
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBot_OpportunisticallyUseWeaponAbilities)
 	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
 		CTFBotUseItem *result = reinterpret_cast<CTFBotUseItem *>(DETOUR_MEMBER_CALL(CTFBot_OpportunisticallyUseWeaponAbilities)());
 		if (result != nullptr) {
 			CTFWeaponBase *item = result->m_hItem;
 			
 			if (item->GetWeaponID() == TF_WEAPON_BUFF_ITEM) {
 				delete result;
-				return new CTFBotUseBuffItem(item);
+				
+				if (CTFBotUseBuffItem::IsPossible(bot)) {
+					return new CTFBotUseBuffItem(item);
+				} else {
+					return nullptr;
+				}
 			}
 			
 			if (item->GetWeaponID() == TF_WEAPON_LUNCHBOX) {
 				delete result;
-				return new CTFBotUseLunchBoxItem(item);
+				
+				if (CTFBotUseLunchBoxItem::IsPossible(bot)) {
+					return new CTFBotUseLunchBoxItem(item);
+				} else {
+					return nullptr;
+				}
 			}
 		}
 		

@@ -219,6 +219,8 @@ public:
 	int GetDisguiseTeam() const                                                         { return ft_GetDisguiseTeam     (this); }
 	bool IsStealthed() const                                                            { return ft_IsStealthed         (this); }
 	float GetPercentInvisible() const                                                   { return ft_GetPercentInvisible (this); }
+	bool IsControlStunned()                                                             { return ft_IsControlStunned    (this); }
+	bool IsLoserStateStunned() const                                                    { return ft_IsLoserStateStunned (this); }
 	
 	DECL_SENDPROP(float, m_flCloakMeter);
 	DECL_SENDPROP(float, m_flEnergyDrinkMeter);
@@ -244,6 +246,8 @@ private:
 	static MemberFuncThunk<const CTFPlayerShared *, int                                 > ft_GetDisguiseTeam;
 	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsStealthed;
 	static MemberFuncThunk<const CTFPlayerShared *, float                               > ft_GetPercentInvisible;
+	static MemberFuncThunk<      CTFPlayerShared *, bool                                > ft_IsControlStunned;
+	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsLoserStateStunned;
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer

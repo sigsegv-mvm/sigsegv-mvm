@@ -492,6 +492,16 @@
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared19GetPercentInvisibleEv"
 				}
+				"CTFPlayerShared::IsControlStunned"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16IsControlStunnedEv"
+				}
+				"CTFPlayerShared::IsLoserStateStunned"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared19IsLoserStateStunnedEv"
+				}
 				
 				"CTFPlayerClassShared::SetCustomModel"
 				{
