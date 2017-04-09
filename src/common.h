@@ -199,8 +199,8 @@ extern IClientMode *g_pClientMode;
 #include <memory>
 #include <mutex>
 #include <numeric>
-#include <random>
-#include <regex>
+//#include <random> // <-- costs  ~89ms per compile
+//#include <regex>  // <-- costs ~285ms per compile
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -271,19 +271,19 @@ using namespace std::literals;
 
 
 /* LZ4 */
-#include <lz4.h>
+//#include <lz4.h>
 
 
 /* LodePNG */
-#include <lodepng.h>
+//#include <lodepng.h>
 
 
 /* Capstone */
-#include <capstone.h>
+//#include <capstone.h>
 
 
 /* Approximate Nearest Neighbor */
-#include <ANN/ANN.h>
+//#include <ANN/ANN.h>
 
 
 /* Source's public/video/ivideoservices.h is naughty and uses the preprocessor

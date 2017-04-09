@@ -3,6 +3,8 @@
 #include "mem/scan.h"
 #include "util/prof.h"
 
+#include <regex>
+
 
 namespace RTTI
 {

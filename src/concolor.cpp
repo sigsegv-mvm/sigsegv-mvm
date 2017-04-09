@@ -1,6 +1,8 @@
 #include "concolor.h"
 #include "util/misc.h"
 
+#include <ANN/ANN.h>
+
 
 namespace ColorSpew
 {

@@ -2,6 +2,8 @@
 #include "mod/ai/mvm_defender_bots/purchaseupgrades.h"
 #include "stub/gamerules.h"
 
+#include <random>
+
 
 namespace Mod_AI_MvM_Defender_Bots
 {

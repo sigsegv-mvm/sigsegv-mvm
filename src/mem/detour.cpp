@@ -5,6 +5,8 @@
 #include "util/backtrace.h"
 #include "util/demangle.h"
 
+#include <regex>
+
 
 #if !(defined(__i386) || defined(_M_IX86))
 #error Architecture must be IA32

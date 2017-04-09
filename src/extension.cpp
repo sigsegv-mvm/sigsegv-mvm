@@ -7,7 +7,7 @@
 #include "gameconf.h"
 #include "prop.h"
 #include "util/rtti.h"
-#include "disasm/disasm.h"
+//#include "disasm/disasm.h"
 #include "factory.h"
 #include "concolor.h"
 #include "re/nextbot.h"

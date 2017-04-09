@@ -1,5 +1,7 @@
 #include "library.h"
 
+#include <regex>
+
 
 std::map<Library, void *> LibMgr::s_LibPtrs;
 std::map<Library, LibInfo> LibMgr::s_LibInfos;

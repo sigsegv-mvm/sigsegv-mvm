@@ -3,6 +3,8 @@
 #include "stub/gamerules.h"
 #include "util/iterate.h"
 
+#include <random>
+
 
 namespace Mod_AI_MvM_Defender_Bots
 {

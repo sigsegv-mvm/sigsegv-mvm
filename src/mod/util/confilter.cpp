@@ -2,7 +2,7 @@
 #include "util/misc.h"
 #include "util/scope.h"
 
-// TODO: move to common.h
+#include <regex>
 #include <boost/algorithm/string/find.hpp>
 
 
