@@ -117,7 +117,7 @@ static constexpr uint8_t s_Buf_CTFBot_m_nBotAttrs[] = {
 	0xc7, 0x83, 0xb8, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // +0000  mov dword ptr [ebx+m_nMission],0x00000000
 	0xc7, 0x83, 0xd0, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // +000A  mov dword ptr [ebx+m_nBotAttrs],0x00000000
 	0x89, 0x5d, 0x08,                                           // +0014  mov [ebp+this],ebx
-	0x83, 0xc4, 0x14,                                           // +0017  add esp,0x14
+	0x83, 0xc4, 0x24,                                           // +0017  add esp,0x24
 	0x5b,                                                       // +001A  pop ebx
 	0x5d,                                                       // +001B  pop ebp
 	0xe9,                                                       // +001C  jmp CTFBot::StopIdleSound
@@ -135,6 +135,7 @@ struct CExtract_CTFBot_m_nBotAttrs : public IExtract<CTFBot::AttributeType *>
 		
 		mask.SetRange(0x00 + 2, 4, 0x00);
 		mask.SetRange(0x0a + 2, 4, 0x00);
+		mask.SetRange(0x17 + 2, 1, 0x00);
 		
 		return true;
 	}
