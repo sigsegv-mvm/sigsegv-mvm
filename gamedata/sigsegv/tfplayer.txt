@@ -492,6 +492,11 @@
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared19GetPercentInvisibleEv"
 				}
+				"CTFPlayerShared::RadiusCurrencyCollectionCheck"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared29RadiusCurrencyCollectionCheckEv"
+				}
 				"CTFPlayerShared::IsControlStunned"
 				{
 					type "sym"

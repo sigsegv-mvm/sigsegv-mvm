@@ -96,6 +96,9 @@ public:
 	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
 	float GetDamage()                                                                                                       { return vt_GetDamage                (this); }
 	void SetDamage(float flDamage)                                                                                          {        vt_SetDamage                (this, flDamage); }
+	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                   { return vt_FVisible_ent             (this, pEntity, traceMask, ppBlocker); }
+	bool FVisible(const Vector& vecTarget, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                { return vt_FVisible_vec             (this, vecTarget, traceMask, ppBlocker); }
+	void Touch(CBaseEntity *pOther)                                                                                         {        vt_Touch                    (this, pOther); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)     { return ft_PrecacheModel      (name, bPreload); }
@@ -183,6 +186,9 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void, const char *>                                               vt_SetModel;
 	static MemberVFuncThunk<      CBaseEntity *, float>                                                            vt_GetDamage;
 	static MemberVFuncThunk<      CBaseEntity *, void, float>                                                      vt_SetDamage;
+	static MemberVFuncThunk<      CBaseEntity *, bool, CBaseEntity *, int, CBaseEntity **>                         vt_FVisible_ent;
+	static MemberVFuncThunk<      CBaseEntity *, bool, const Vector&, int, CBaseEntity **>                         vt_FVisible_vec;
+	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>                                              vt_Touch;
 	
 	static StaticFuncThunk<int, const char *, bool>          ft_PrecacheModel;
 	static StaticFuncThunk<bool, const char *>               ft_PrecacheSound;

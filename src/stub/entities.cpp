@@ -158,6 +158,17 @@ IMPL_DATAMAP(int, CPathTrack, m_eOrientationType);
 MemberFuncThunk<CPathTrack *, CPathTrack *> CPathTrack::ft_GetNext("CPathTrack::GetNext");
 
 
+IMPL_DATAMAP(float,                CItem, m_flNextResetCheckTime);
+IMPL_DATAMAP(bool,                 CItem, m_bActivateWhenAtRest);
+IMPL_DATAMAP(Vector,               CItem, m_vOriginalSpawnOrigin);
+IMPL_DATAMAP(QAngle,               CItem, m_vOriginalSpawnAngles);
+IMPL_DATAMAP(IPhysicsConstraint *, CItem, m_pConstraint);
+
+
+IMPL_DATAMAP(bool,     CTFPowerup, m_bDisabled);
+IMPL_DATAMAP(bool,     CTFPowerup, m_bAutoMaterialize);
+IMPL_DATAMAP(string_t, CTFPowerup, m_iszModel);
+
 MemberVFuncThunk<CTFPowerup *, float> CTFPowerup::vt_GetLifeTime(TypeName<CTFPowerup>(), "CTFPowerup::GetLifeTime");
 
 
@@ -207,6 +218,8 @@ IMPL_REL_BEFORE(bool, CCurrencyPack, m_bTouched,     m_bPulled);      // 2015100
 IMPL_REL_BEFORE(bool, CCurrencyPack, m_bPulled,      m_bDistributed); // 20151007a
 IMPL_SENDPROP  (bool, CCurrencyPack, m_bDistributed, CCurrencyPack);
 IMPL_EXTRACT   (int,  CCurrencyPack, m_nAmount, new CExtract_CCurrencyPack_m_nAmount());
+
+MemberVFuncThunk<const CCurrencyPack *, bool> CCurrencyPack::vt_AffectedByRadiusCollection(TypeName<CCurrencyPack>(), "CCurrencyPack::AffectedByRadiusCollection");
 
 
 GlobalThunk<CUtlVector<ICurrencyPackAutoList *>> ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList("ICurrencyPackAutoList::m_ICurrencyPackAutoListAutoList");

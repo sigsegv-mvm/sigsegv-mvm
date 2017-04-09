@@ -29,7 +29,14 @@ private:
 class CTFDroppedWeapon : public CBaseAnimating {};
 
 
-class CItem : public CBaseAnimating {};
+class CItem : public CBaseAnimating
+{
+	DECL_DATAMAP(float,                m_flNextResetCheckTime);
+	DECL_DATAMAP(bool,                 m_bActivateWhenAtRest);
+	DECL_DATAMAP(Vector,               m_vOriginalSpawnOrigin);
+	DECL_DATAMAP(QAngle,               m_vOriginalSpawnAngles);
+	DECL_DATAMAP(IPhysicsConstraint *, m_pConstraint);
+};
 
 class CTFAmmoPack : public CItem {};
 
@@ -37,6 +44,10 @@ class CTFPowerup : public CItem
 {
 public:
 	float GetLifeTime() { return vt_GetLifeTime(this); }
+	
+	DECL_DATAMAP(bool,     m_bDisabled);
+	DECL_DATAMAP(bool,     m_bAutoMaterialize);
+	DECL_DATAMAP(string_t, m_iszModel);
 	
 private:
 	static MemberVFuncThunk<CTFPowerup *, float> vt_GetLifeTime;
@@ -226,11 +237,15 @@ public:
 	
 	void SetDistributed(bool val) { this->m_bDistributed = val; }
 	
+	bool AffectedByRadiusCollection() const { return vt_AffectedByRadiusCollection(this); }
+	
 private:
 	DECL_RELATIVE   (bool, m_bTouched);
 	DECL_RELATIVE   (bool, m_bPulled);
 	DECL_SENDPROP_RW(bool, m_bDistributed);
 	DECL_EXTRACT    (int,  m_nAmount);
+	
+	static MemberVFuncThunk<const CCurrencyPack *, bool> vt_AffectedByRadiusCollection;
 };
 
 

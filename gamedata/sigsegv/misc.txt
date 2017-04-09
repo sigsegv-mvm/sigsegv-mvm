@@ -2380,6 +2380,30 @@
 					type "sym"
 					sym  "_ZN16CTFWeaponBaseGun19GetProjectileDamageEv"
 				}
+				
+				"CBaseEntity::FVisible [ent]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8FVisibleEPS_iPS0_"
+				}
+				
+				"CBaseEntity::FVisible [vec]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8FVisibleERK6VectoriPPS_"
+				}
+				
+				"CBaseEntity::Touch"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity5TouchEPS_"
+				}
+				
+				"CCurrencyPack::AffectedByRadiusCollection"
+				{
+					type "sym"
+					sym  "_ZNK13CCurrencyPack26AffectedByRadiusCollectionEv"
+				}
 			}
 		}
 	}

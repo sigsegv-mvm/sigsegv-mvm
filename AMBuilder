@@ -125,6 +125,7 @@ sourceFiles += [
   'src/mod/cond/enhanced_cmds.cpp',
   'src/mod/cond/reprogrammed.cpp',
   
+  'src/mod/credits/better_radius_collection.cpp',
 #  'src/mod/credits/magnet_disable.cpp',
   'src/mod/credits/spawn_autocollect.cpp',
   

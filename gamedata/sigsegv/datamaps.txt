@@ -80,6 +80,12 @@
 					sym   "_ZN12CSpellPickup9m_DataMapE"
 					class "CSpellPickup"
 				}
+				"CTFPowerup::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN10CTFPowerup9m_DataMapE"
+					class "CTFPowerup"
+				}
 				"CTFTeamSpawn::m_DataMap"
 				{
 					type  "datamap"

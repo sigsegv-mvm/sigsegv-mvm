@@ -71,6 +71,9 @@ MemberVFuncThunk<      CBaseEntity *, bool, const char *, CBaseEntity *, CBaseEn
 MemberVFuncThunk<      CBaseEntity *, void, const char *                                              > CBaseEntity::vt_SetModel                 (TypeName<CBaseEntity>(), "CBaseEntity::SetModel");
 MemberVFuncThunk<      CBaseEntity *, float                                                           > CBaseEntity::vt_GetDamage                (TypeName<CBaseEntity>(), "CBaseEntity::GetDamage");
 MemberVFuncThunk<      CBaseEntity *, void, float                                                     > CBaseEntity::vt_SetDamage                (TypeName<CBaseEntity>(), "CBaseEntity::SetDamage");
+MemberVFuncThunk<      CBaseEntity *, bool, CBaseEntity *, int, CBaseEntity **                        > CBaseEntity::vt_FVisible_ent             (TypeName<CBaseEntity>(), "CBaseEntity::FVisible [ent]");
+MemberVFuncThunk<      CBaseEntity *, bool, const Vector&, int, CBaseEntity **                        > CBaseEntity::vt_FVisible_vec             (TypeName<CBaseEntity>(), "CBaseEntity::FVisible [vec]");
+MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *                                             > CBaseEntity::vt_Touch                    (TypeName<CBaseEntity>(), "CBaseEntity::Touch");
 
 StaticFuncThunk<int, const char *, bool>          CBaseEntity::ft_PrecacheModel      ("CBaseEntity::PrecacheModel");
 StaticFuncThunk<bool, const char *>               CBaseEntity::ft_PrecacheSound      ("CBaseEntity::PrecacheSound");
