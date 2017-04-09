@@ -213,6 +213,7 @@ class ExtensionConfig(object):
     cxx.cxxflags += ['-Wabi']
 #   cxx.cxxflags += ['-fabi-version=0']
 #   cxx.cxxflags += ['-fabi-compat-version=2'] # GCC 4.6.1
+    cxx.cxxflags += ['-no-integrated-cpp'] # otherwise, diagnostic pragmas are broken-ish in C++, especially for PCHs
     
     ############################################################################
     # LINKER ###################################################################

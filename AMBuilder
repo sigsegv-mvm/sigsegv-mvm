@@ -7,7 +7,7 @@ projectName = 'sigsegv'
 sourceFiles = []
 
 sourceFiles += [
-#  'src/common.h',
+  'src/common.h',
 ]
 
 sourceFiles += [
