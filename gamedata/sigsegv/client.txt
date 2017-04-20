@@ -372,7 +372,7 @@
 					type "pattern"
 					sym  "TODO"
 					seg  "text"
-					seek "558bec81ec84000000538bd98b4d0c895df856578b7d0885c9751357b910fb1310e8daa5000033c984c00f95c141"
+					seek "558bec81ec80000000538bd98b4d0c895dcc568b75085785c9751356b910fb1310e8daa5000033c984c00f95c141"
 					mask "ffffffffff00ffffffffffffffffffffff00ffffffffffffffffffffff00000000ff00000000ffffffffffffffff"
 					lib  "vguimatsurface"
 				}
@@ -395,8 +395,8 @@
 					type "pattern"
 					sym  "TODO"
 					seg  "text"
-					seek "558bec83ec34538b5d14565785db0f84d20200008d04dd1300000083e0f0e8ed9b0600db45148d041b8bfc897dfc8945dcdc0d10490d1085c0"
-					mask "ffffffffff00ffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffffffffffffffffffff00000000ffff"
+					seek "558bec83ec345356578b7d1485ff0f84d20200008d04dd1300000083e0f0e8ed9b0600db45148d043f8bcc894dfc8945dcdc0d10490d1085c0"
+					mask "ffffffffff00ffffffffffffffffffff00000000ffff00ffffffffffffffff00000000ffffffffffffffffffffffffffffffff00000000ffff"
 					lib  "vguimatsurface"
 				}
 			//	"[client] ApplyScanlineEffectToTexture"
