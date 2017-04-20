@@ -43,6 +43,44 @@ static const char *const configs[] = {
 CSigsegvGameConf g_GCHook;
 
 
+// =============================================================================
+// HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK
+
+// SM's GameConfigManager caches CGameConfig objects by filename, and provides
+// no public interface for evicting them from the cache; and there's really no
+// other way to do this that doesn't involve violating the interface boundary;
+// so, we're just forced to do horrible ugly stupid stuff like this instead...
+
+#include <am-refcounting.h>
+
+class CGameConfig : public ITextListener_SMC, public IGameConfig, public ke::Refcounted<CGameConfig>
+{
+public:
+	bool IsStale() const
+	{
+		assert(this->GetRefCount() > 0);
+		return this->GetRefCount() > 1;
+	}
+	
+	void EvictFromCacheAndClose()
+	{
+		while (this->GetRefCount() > 1) {
+			this->Release();
+		}
+		gameconfs->CloseGameConfigFile(this);
+	}
+	
+private:
+	uintptr_t GetRefCount() const
+	{
+		return *reinterpret_cast<const uintptr_t *>(static_cast<const ke::Refcounted<CGameConfig> *>(this));
+	}
+};
+
+// HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK
+// =============================================================================
+
+
 bool CSigsegvGameConf::LoadAll(char *error, size_t maxlen)
 {
 	gameconfs->AddUserConfigHook("sigsegv", this);
@@ -50,8 +88,21 @@ bool CSigsegvGameConf::LoadAll(char *error, size_t maxlen)
 	for (const char *const *c_name = configs; *c_name != nullptr; ++c_name) {
 		IGameConfig *conf = nullptr;
 		
-		if (!gameconfs->LoadGameConfigFile(*c_name, &conf, error, maxlen) || conf == nullptr) {
+		if (!gameconfs->LoadGameConfigFile(*c_name, &conf, error, maxlen)) {
+			/* failed config loads still require a close operation, otherwise
+			 * they'll end up as stale entries in the gameconf manager cache */
+			gameconfs->CloseGameConfigFile(conf);
 			return false;
+		} else if (conf == nullptr) {
+			return false;
+		}
+		
+		auto conf_internal = static_cast<CGameConfig *>(conf);
+		if (conf_internal->IsStale()) {
+			Warning("GameData warning: file '%s' is stale; evicting from cache and re-loading.\n", *c_name);
+			conf_internal->EvictFromCacheAndClose();
+			--c_name;
+			continue;
 		}
 		
 		this->m_GameConfs.push_back(conf);
