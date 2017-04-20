@@ -5,6 +5,7 @@
 enum class Library : int
 {
 	INVALID,
+	THIS,
 	SERVER,
 	ENGINE,
 	DEDICATED,

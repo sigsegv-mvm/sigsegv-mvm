@@ -10,6 +10,7 @@ std::map<Library, void *> LibMgr::s_LibHandles;
 
 static std::map<Library, const char *> libnames{
 	{ Library::INVALID,            "invalid"            },
+	{ Library::THIS,               "sigsegv"            },
 	{ Library::SERVER,             "server"             },
 	{ Library::ENGINE,             "engine"             },
 	{ Library::DEDICATED,          "dedicated"          },

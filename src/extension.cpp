@@ -251,6 +251,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	gpGlobals = ismm->GetCGlobals();
 	
+	LibMgr::SetPtr(Library::THIS,               this);
 	LibMgr::SetPtr(Library::SERVER,             ServerFactory());
 	LibMgr::SetPtr(Library::ENGINE,             EngineFactory());
 	LibMgr::SetPtr(Library::DEDICATED,          DedicatedFactory());
