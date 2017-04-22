@@ -1,4 +1,5 @@
 #include "stub/baseanimating.h"
+#include "stub/econ.h"
 
 
 IMPL_SENDPROP(int,   CBaseAnimating, m_nSkin,        CBaseAnimating);
@@ -23,3 +24,14 @@ MemberFuncThunk<CBaseAnimating *, float, const char *>             CBaseAnimatin
 
 
 MemberFuncThunk<CEconEntity *, void> CEconEntity::ft_DebugDescribe("CEconEntity::DebugDescribe");
+
+MemberVFuncThunk<CEconEntity *, CAttributeContainer *> CEconEntity::vt_GetAttributeContainer(TypeName<CEconEntity>(), "CEconEntity::GetAttributeContainer");
+
+
+CEconItemView *CEconEntity::GetItem()
+{
+	CAttributeContainer *attr_container = this->GetAttributeContainer();
+	assert(attr_container != nullptr);
+	
+	return attr_container->GetItem();
+}

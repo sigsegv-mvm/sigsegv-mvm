@@ -5,6 +5,10 @@
 #include "stub/baseentity.h"
 
 
+class CAttributeContainer;
+class CEconItemView;
+
+
 class CBaseAnimating : public CBaseEntity
 {
 public:
@@ -59,8 +63,15 @@ class CEconEntity : public CBaseAnimating
 public:
 	void DebugDescribe() { ft_DebugDescribe(this); }
 	
+	// really ought to be in IHasAttributes...
+	CAttributeContainer *GetAttributeContainer() { return vt_GetAttributeContainer(this); }
+	
+	CEconItemView *GetItem();
+	
 private:
 	static MemberFuncThunk<CEconEntity *, void> ft_DebugDescribe;
+	
+	static MemberVFuncThunk<CEconEntity *, CAttributeContainer *> vt_GetAttributeContainer;
 };
 
 

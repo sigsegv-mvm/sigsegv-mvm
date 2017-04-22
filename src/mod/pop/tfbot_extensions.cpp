@@ -693,6 +693,41 @@ namespace Mod_Pop_TFBot_Extensions
 						CEconItemDefinition *item_def = GetItemSchema()->GetItemDefinitionByName(item_name);
 						if (item_def == nullptr) continue;
 						
+						for (int i = 0; i < bot->GetNumWearables(); ++i) {
+							CEconWearable *wearable = bot->GetWearable(i);
+							if (wearable == nullptr) continue;
+							
+							CEconItemView *item_view = wearable->GetItem();
+							if (item_view == nullptr) continue;
+							
+							if (item_view->GetItemDefIndex() == item_def->m_iItemDefIndex) {
+								DevMsg("CTFBotSpawner %08x: applying color %02X%02X%02X to item \"%s\"\n",
+									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name);
+								
+								wearable->SetRenderColorR(item_color.r);
+								wearable->SetRenderColorG(item_color.g);
+								wearable->SetRenderColorB(item_color.b);
+							}
+						}
+						
+						for (int i = 0; i < bot->WeaponCount(); ++i) {
+							CBaseCombatWeapon *weapon = bot->GetWeapon(i);
+							if (weapon == nullptr) continue;
+							
+							CEconItemView *item_view = weapon->GetItem();
+							if (item_view == nullptr) continue;
+							
+							if (item_view->GetItemDefIndex() == item_def->m_iItemDefIndex) {
+								DevMsg("CTFBotSpawner %08x: applying color %02X%02X%02X to item \"%s\"\n",
+									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name);
+								
+								weapon->SetRenderColorR(item_color.r);
+								weapon->SetRenderColorG(item_color.g);
+								weapon->SetRenderColorB(item_color.b);
+							}
+						}
+						
+					#if 0
 						for (int slot = GetNumberOfLoadoutSlots() - 1; slot >= 0; --slot) {
 							CEconEntity *econ_entity = nullptr;
 							
@@ -708,6 +743,7 @@ namespace Mod_Pop_TFBot_Extensions
 								econ_entity->SetRenderColorB(item_color.b);
 							}
 						}
+					#endif
 					}
 					
 					for (const auto& pair : data.custom_weapon_models) {

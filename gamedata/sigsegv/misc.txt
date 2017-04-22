@@ -2404,6 +2404,24 @@
 					type "sym"
 					sym  "_ZNK13CCurrencyPack26AffectedByRadiusCollectionEv"
 				}
+				
+				"CEconEntity::GetAttributeContainer"
+				{
+					type "sym"
+					sym  "_ZN11CEconEntity21GetAttributeContainerEv"
+				}
+				
+				"CEconItemSchema::GetItemDefinition"
+				{
+					type "sym"
+					sym  "_ZNK15CEconItemSchema17GetItemDefinitionEi"
+				}
+				
+				"CEconItemDefinition::BInitVisualBlockFromKV"
+				{
+					type "sym"
+					sym  "_ZN19CEconItemDefinition22BInitVisualBlockFromKVEP9KeyValuesP10CUtlVectorI10CUtlString10CUtlMemoryIS3_iEE"
+				}
 			}
 		}
 	}

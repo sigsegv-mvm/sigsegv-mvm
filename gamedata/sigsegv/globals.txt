@@ -198,6 +198,12 @@
 					type "sym"
 					sym  "g_szRomePromoItems_Misc"
 				}
+				
+				"g_TeamVisualSections"
+				{
+					type "sym"
+					sym  "g_TeamVisualSections"
+				}
 			}
 		}
 	}

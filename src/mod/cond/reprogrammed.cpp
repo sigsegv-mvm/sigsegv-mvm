@@ -172,6 +172,36 @@ namespace Mod_Cond_Reprogrammed
 		"Mod: make some tweaks to TF_COND_REPROGRAMMED that Hell-met requested");
 	
 	
+	bool WeaponHasMiniBossSounds(CBaseCombatWeapon *weapon)
+	{
+		CEconItemView *item_view = weapon->GetItem();
+		if (item_view == nullptr) return false;
+		
+		CEconItemDefinition *item_def = item_view->GetItemDefinition();
+		if (item_def == nullptr) return false;
+		
+		static int idx_visuals_mvm_boss = []{
+			for (int i = 0; i < NUM_VISUALS_BLOCKS; ++i) {
+				if (g_TeamVisualSections[i] == nullptr)                  continue;
+				if (FStrEq(g_TeamVisualSections[i], "visuals_mvm_boss")) return i;
+			}
+			return -1;
+		}();
+		if (idx_visuals_mvm_boss == -1) return false;
+		
+		/* NO: item definition has no "visuals_mvm_boss" block */
+		perteamvisuals_t *visuals_boss = item_def->m_Visuals[idx_visuals_mvm_boss];
+		if (visuals_boss == nullptr) return false;
+		
+		for (int i = 0; i < NUM_SHOOT_SOUND_TYPES; ++i) {
+			if (visuals_boss->m_Sounds[i] != nullptr) return true;
+		}
+		
+		/* NO: "visuals_mvm_boss" block lacks any "sound_*" entries */
+		return false;
+	}
+	
+	
 	void ChangeWeaponAndWearableTeam(CTFPlayer *player, int team)
 	{
 		DevMsg("ChangeWeaponAndWearableTeam (#%d \"%s\"): teamnum %d => %d\n",
@@ -190,7 +220,26 @@ namespace Mod_Cond_Reprogrammed
 			int pre_skin = weapon->m_nSkin;
 			
 			if (pre_team == TF_TEAM_RED || pre_team == TF_TEAM_BLUE) {
-				weapon->ChangeTeam(team);
+				/* don't change the team of weapons that have special giant-specific sounds, because the client only
+				 * uses those sound overrides if the weapon is on TF_TEAM_BLUE, and there's no other easy workaround */
+				if (pre_team == TF_TEAM_BLUE && TFGameRules()->IsMannVsMachineMode() && !WeaponHasMiniBossSounds(weapon)) {
+				//	ConColorMsg(Color(0xff, 0x00, 0xff, 0xff),
+				//		"- weapon with itemdefidx %4d: no miniboss sounds\n", [](CBaseCombatWeapon *weapon){
+				//		CEconItemView *item_view = weapon->GetItem();
+				//		if (item_view == nullptr) return -1;
+				//		
+				//		return item_view->GetItemDefIndex();
+				//	}(weapon));
+					weapon->ChangeTeam(team);
+				} else {
+				//	ConColorMsg(Color(0xff, 0x00, 0xff, 0xff),
+				//		"- weapon with itemdefidx %4d: HAS MINIBOSS SOUNDS!\n", [](CBaseCombatWeapon *weapon){
+				//		CEconItemView *item_view = weapon->GetItem();
+				//		if (item_view == nullptr) return -1;
+				//		
+				//		return item_view->GetItemDefIndex();
+				//	}(weapon));
+				}
 			} else {
 		//		DevMsg("  weapon %d (#%d \"%s\"): refusing to call ChangeTeam\n",
 		//			i, ENTINDEX(weapon), weapon->GetClassname());
