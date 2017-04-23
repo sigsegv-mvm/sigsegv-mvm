@@ -25,8 +25,14 @@ namespace Mod_Credits_Better_Radius_Collection
 		if (player->GetTeamNumber() != TF_TEAM_RED) return;
 		if (!player->IsAlive())                     return;
 		
-		if (gpGlobals->curtime - tLastCheck < cvar_interval.GetFloat()) return;
-		tLastCheck = gpGlobals->curtime;
+		float tNow   = gpGlobals->curtime;
+		float tDelta = tNow - tLastCheck;
+		
+		/* return if we're too soon after the previous check;
+		 * but NOT if the current time is LESS THAN the previous check time,
+		 * which can happen on map change due to gpGlobals->curtime resetting */
+		if (tDelta >= 0.0f && tDelta < cvar_interval.GetFloat()) return;
+		tLastCheck = tNow;
 		
 		float radius_sqr = Square(player->IsPlayerClass(TF_CLASS_SCOUT) ? 288.0f : 72.0f);
 		Vector player_pos = player->GetAbsOrigin();
