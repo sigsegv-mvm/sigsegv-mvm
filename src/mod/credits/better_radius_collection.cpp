@@ -6,11 +6,6 @@
 
 namespace Mod_Credits_Better_Radius_Collection
 {
-	ConVar cvar_interval("sig_credits_better_radius_collection_interval", "0.050", FCVAR_NOTIFY,
-		"Wait this long between RadiusCurrencyCollectionCheck runs");
-	
-	
-	float tLastCheck = -1.0f;
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_RadiusCurrencyCollectionCheck)
 	{
 		/* don't mess with CBonusPack stuff in other game modes */
@@ -25,14 +20,8 @@ namespace Mod_Credits_Better_Radius_Collection
 		if (player->GetTeamNumber() != TF_TEAM_RED) return;
 		if (!player->IsAlive())                     return;
 		
-		float tNow   = gpGlobals->curtime;
-		float tDelta = tNow - tLastCheck;
-		
-		/* return if we're too soon after the previous check;
-		 * but NOT if the current time is LESS THAN the previous check time,
-		 * which can happen on map change due to gpGlobals->curtime resetting */
-		if (tDelta >= 0.0f && tDelta < cvar_interval.GetFloat()) return;
-		tLastCheck = tNow;
+		/* only run every 3rd tick */
+		if (gpGlobals->tickcount % 3 != 0) return;
 		
 		float radius_sqr = Square(player->IsPlayerClass(TF_CLASS_SCOUT) ? 288.0f : 72.0f);
 		Vector player_pos = player->GetAbsOrigin();
