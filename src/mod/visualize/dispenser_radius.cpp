@@ -9,7 +9,7 @@ namespace Mod_Visualize_Dispenser_Radius
 	//   - UTIL_EntitiesInSphere
 	
 	// for health:
-	// rectangle, 140x140x140 HU, CDispenserTouchTrigger "dispenser_touch_trigger"
+	// box, 128x128x128 HU, CDispenserTouchTrigger "dispenser_touch_trigger"
 	
 	
 	ConVar cvar_duration("sig_visualize_dispenser_radius_duration", "5.00", FCVAR_NOTIFY,
@@ -40,7 +40,7 @@ namespace Mod_Visualize_Dispenser_Radius
 				(float)i * 45.0f,
 				0.0f,
 			};
-			NDebugOverlay::Sphere(dispenser->GetAbsOrigin() + Vector(0, 0, 32.0f), angles, radius, 0x00, 0xff, 0x00, 0x80, false, cvar_duration.GetFloat());
+			NDebugOverlay::Sphere(dispenser->GetAbsOrigin() + Vector(0.0f, 0.0f, 32.0f), angles, radius, 0x00, 0xff, 0x00, 0x80, false, cvar_duration.GetFloat());
 		}
 		
 		NDebugOverlay::Box(dispenser->GetAbsOrigin(), Vector(-radius, -radius, -radius), Vector(radius, radius, radius), 0xff, 0x00, 0x00, 0x80, cvar_duration.GetFloat());

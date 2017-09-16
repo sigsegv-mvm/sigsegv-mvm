@@ -90,7 +90,7 @@ void *AddrManager::GetAddr(const char *name)
 	assert(state != IAddr::State::LOADING);
 	
 	if (state == IAddr::State::FAIL) {
-		DevMsg("AddrManager::GetAddr FAIL: have but cannot resolve addr for name \"%s\"\n", name);
+		DevMsg("AddrManager::GetAddr FAIL: cannot resolve addr for name \"%s\"\n", name);
 		return nullptr;
 	}
 	

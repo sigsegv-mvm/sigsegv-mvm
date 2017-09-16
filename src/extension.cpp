@@ -14,6 +14,7 @@
 #include "version.h"
 #include "convar_restore.h"
 #include "stub/igamesystem.h"
+//#include "entity.h"
 
 
 CExtSigsegv g_Ext;
@@ -56,8 +57,9 @@ IMatSystemSurface *g_pMatSystemSurface = nullptr;
 CGlobalVars *gpGlobals         = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
 
-IVEngineClient *engineclient = nullptr;
-IBaseClientDLL *clientdll    = nullptr;
+IVEngineClient *engineclient     = nullptr;
+IBaseClientDLL *clientdll        = nullptr;
+IClientEntityList *cl_entitylist = nullptr;
 
 SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
 SourceMod::IExtensionManager *smexts         = nullptr;
@@ -139,6 +141,7 @@ void CExtSigsegv::SDK_OnUnload()
 	}
 	
 	IHotplugAction::UnloadAll();
+//	IHotplugEntity::UninstallAll();
 	
 	g_ModManager.Unload();
 	
@@ -234,9 +237,10 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	}
 	
 	if (ClientFactory() != nullptr) {
-		GET_IFACE_REQUIRED(Engine, engineclient, VENGINE_CLIENT_INTERFACE_VERSION);
-		GET_IFACE_REQUIRED(Client, clientdll,    CLIENT_DLL_INTERFACE_VERSION);
-		GET_IFACE_OPTIONAL(Client, clienttools,  VCLIENTTOOLS_INTERFACE_VERSION);
+		GET_IFACE_REQUIRED(Engine, engineclient,  VENGINE_CLIENT_INTERFACE_VERSION);
+		GET_IFACE_REQUIRED(Client, clientdll,     CLIENT_DLL_INTERFACE_VERSION);
+		GET_IFACE_REQUIRED(Client, cl_entitylist, VCLIENTENTITYLIST_INTERFACE_VERSION);
+		GET_IFACE_OPTIONAL(Client, clienttools,   VCLIENTTOOLS_INTERFACE_VERSION);
 	}
 	
 	if (DedicatedFactory() != nullptr) {

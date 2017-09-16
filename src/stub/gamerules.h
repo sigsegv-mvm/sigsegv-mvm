@@ -50,7 +50,7 @@ enum gamerules_roundstate_t
 class CBaseMultiplayerPlayer;
 class CTFPlayer;
 struct VoiceCommandMenuItem_t;
-class CMannVsMachineUpgrades;
+struct CMannVsMachineUpgrades;
 
 
 class CGameRulesProxy : public CBaseEntity
@@ -129,8 +129,10 @@ private:
 class CTFGameRules : public CTeamplayRoundBasedRules
 {
 public:
-	bool IsInMedievalMode() const    { NULL_RET(false); return this->m_bPlayingMedieval; }
-	bool IsMannVsMachineMode() const { NULL_RET(false); return this->m_bPlayingMannVsMachine; }
+	bool IsInMedievalMode() const                { NULL_RET(false); return this->m_bPlayingMedieval; }
+	bool IsMannVsMachineMode() const             { NULL_RET(false); return this->m_bPlayingMannVsMachine; }
+	const char *GetCustomUpgradesFile() const    { NULL_RET(""   ); return this->m_pszCustomUpgradesFile; }
+	void SetCustomUpgradesFile(const char *path);
 	
 	bool CanUpgradeWithAttrib(CTFPlayer *player, int slot, unsigned short attr, CMannVsMachineUpgrades *upgrade) { NULL_RET(false); return ft_CanUpgradeWithAttrib               (this, player, slot, attr, upgrade); }
 	int GetCostForUpgrade(CMannVsMachineUpgrades *upgrade, int slot, int pclass, CTFPlayer *player)              { NULL_RET(    0); return ft_GetCostForUpgrade                  (this, upgrade, slot, pclass, player); }
@@ -138,13 +140,17 @@ public:
 	bool IsUpgradeTierEnabled(CTFPlayer *player, int slot, int tier)                                             { NULL_RET(false); return ft_IsUpgradeTierEnabled               (this, player, slot, tier); }
 	void PlayerReadyStatus_UpdatePlayerState(CTFPlayer *player, bool state)                                      { NULL_RET(     ); return ft_PlayerReadyStatus_UpdatePlayerState(this, player, state); }
 	void DistributeCurrencyAmount(int amount, CTFPlayer *player, bool b1, bool b2, bool b3)                      { NULL_RET(     );        ft_DistributeCurrencyAmount           (this, amount, player, b1, b2, b3); }
+	void SetCustomUpgradesFile(inputdata_t& inputdata)                                                           { NULL_RET(     );        ft_SetCustomUpgradesFile              (this, inputdata); }
+	
+	bool FlagsMayBeCapped() { NULL_RET(false); return vt_FlagsMayBeCapped(this); }
 	
 	void Set_m_bPlayingMedieval(bool val)      { NULL_RET(); this->m_bPlayingMedieval      = val; }
 	void Set_m_bPlayingMannVsMachine(bool val) { NULL_RET(); this->m_bPlayingMannVsMachine = val; }
 	
 private:
-	DECL_SENDPROP(bool, m_bPlayingMedieval);
-	DECL_SENDPROP(bool, m_bPlayingMannVsMachine);
+	DECL_SENDPROP(bool,           m_bPlayingMedieval);
+	DECL_SENDPROP(bool,           m_bPlayingMannVsMachine);
+	DECL_SENDPROP(char[MAX_PATH], m_pszCustomUpgradesFile);
 	
 	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, unsigned short, CMannVsMachineUpgrades *> ft_CanUpgradeWithAttrib;
 	static MemberFuncThunk<CTFGameRules *, int, CMannVsMachineUpgrades *, int, int, CTFPlayer *>             ft_GetCostForUpgrade;
@@ -152,6 +158,9 @@ private:
 	static MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, int>                                      ft_IsUpgradeTierEnabled;
 	static MemberFuncThunk<CTFGameRules *, void, CTFPlayer *, bool>                                          ft_PlayerReadyStatus_UpdatePlayerState;
 	static MemberFuncThunk<CTFGameRules *, void, int, CTFPlayer *, bool, bool, bool>                         ft_DistributeCurrencyAmount;
+	static MemberFuncThunk<CTFGameRules *, void, inputdata_t&>                                               ft_SetCustomUpgradesFile;
+	
+	static MemberVFuncThunk<CTFGameRules *, bool> vt_FlagsMayBeCapped;
 };
 
 
@@ -171,6 +180,23 @@ inline const CViewVectors *CGameRules::GetViewVectors() const
 	}
 	
 	return vt_GetViewVectors(this);
+}
+
+
+inline void CTFGameRules::SetCustomUpgradesFile(const char *path)
+{
+	NULL_RET();
+	
+	variant_t variant;
+	variant.SetString(MAKE_STRING(path));
+	
+	inputdata_t inputdata;
+	inputdata.pActivator = UTIL_EntityByIndex(0);
+	inputdata.pCaller    = UTIL_EntityByIndex(0);
+	inputdata.value      = variant;
+	inputdata.nOutputID  = -1;
+	
+	this->SetCustomUpgradesFile(inputdata);
 }
 
 

@@ -179,6 +179,9 @@ IMPL_SENDPROP(CHandle<CBaseEntity>, CTFReviveMarker, m_hOwner,   CTFReviveMarker
 IMPL_SENDPROP(short,                CTFReviveMarker, m_nRevives, CTFReviveMarker);
 
 
+MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> CEconWearable::vt_UnEquip(TypeName<CEconWearable>(), "CEconWearable::UnEquip");
+
+
 IMPL_SENDPROP(bool, CTFBotHintEngineerNest, m_bHasActiveTeleporter, CTFBotHintEngineerNest);
 
 MemberFuncThunk<const CTFBotHintEngineerNest *, bool> CTFBotHintEngineerNest::ft_IsStaleNest      ("CTFBotHintEngineerNest::IsStaleNest");
@@ -186,6 +189,9 @@ MemberFuncThunk<      CTFBotHintEngineerNest *, void> CTFBotHintEngineerNest::ft
 
 
 GlobalThunk<CUtlVector<ITFBotHintEntityAutoList *>> ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList("ITFBotHintEntityAutoList::m_ITFBotHintEntityAutoListAutoList");
+
+
+MemberVFuncThunk<const CTFItem *, int> CTFItem::vt_GetItemID(TypeName<CTFItem>(), "CTFItem::GetItemID");
 
 
 IMPL_SENDPROP(bool, CCaptureFlag, m_bDisabled,   CCaptureFlag);
@@ -234,6 +240,11 @@ IMPL_RELATIVE(CUtlVector<float>,   CTFTankBoss, m_NodeDists,       m_pBodyInterf
 IMPL_RELATIVE(float,               CTFTankBoss, m_flTotalDistance, m_pBodyInterface, 0x24);
 IMPL_RELATIVE(int,                 CTFTankBoss, m_iCurrentNode,    m_pBodyInterface, 0x28);
 IMPL_RELATIVE(int,                 CTFTankBoss, m_iModelIndex,     m_pBodyInterface, 0x44);
+
+
+IMPL_SENDPROP(bool, CCaptureZone, m_bDisabled, CCaptureZone);
+
+MemberFuncThunk<CCaptureZone *, void, CBaseEntity *> CCaptureZone::ft_Capture("CCaptureZone::Capture");
 
 
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");

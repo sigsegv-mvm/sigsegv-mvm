@@ -56,6 +56,15 @@ namespace Mod_Cond_Reprogrammed
 		}
 	};
 	
+	struct CPatch_CMissionPopulator_UpdateMissionDestroySentries : public CPatch_CMissionPopulator_UpdateMission
+	{
+		virtual const char *GetFuncName() const override { return "CMissionPopulator::UpdateMissionDestroySentries"; }
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0800; } // @ 0x0442
+		
+		/* exact same pattern matching and replacment as the other patch */
+	};
+	
 	
 	constexpr uint8_t s_Buf_CheckStuck[] = {
 		0x89, 0x04, 0x24,                   // +0000  mov [esp],eax
@@ -522,6 +531,7 @@ namespace Mod_Cond_Reprogrammed
 			
 			/* fix: make mission populators aware of red-team mission bots */
 			this->AddPatch(new CPatch_CMissionPopulator_UpdateMission());
+			this->AddPatch(new CPatch_CMissionPopulator_UpdateMissionDestroySentries());
 			
 			/* fix: make tf_resolve_stuck_players apply to all bots in MvM, rather than blu-team players */
 			this->AddPatch(new CPatch_CTFGameMovement_CheckStuck());

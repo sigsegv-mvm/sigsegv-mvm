@@ -128,4 +128,47 @@ namespace std
 #endif
 
 
+struct VStricmpLess
+{
+	bool operator()(const char *lhs, const char *rhs) const
+	{
+		return (V_stricmp(lhs, rhs) < 0);
+	}
+};
+
+
+inline bool StringToIntStrict(const char *str, int& out, int base = 0)
+{
+	char *str_end = nullptr;
+	long num = strtol(str, &str_end, base);
+	
+	if (str_end != str) {
+		out = (int)num;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+inline bool StringToFloatStrict(const char *str, float& out)
+{
+	char *str_end = nullptr;
+	float num = strtof(str, &str_end);
+	
+	if (str_end != str) {
+		out = num;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
+template<int SIZE_BUF = FMTSTR_STD_LEN, typename... ARGS>
+std::string CFmtStdStr(ARGS... args)
+{
+	return CFmtStrN<SIZE_BUF>(std::forward<ARGS>(args)...).Get();
+}
+
+
 #endif

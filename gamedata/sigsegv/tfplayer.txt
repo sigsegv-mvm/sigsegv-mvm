@@ -417,6 +417,42 @@
 					sym  "_ZN9CTFPlayer13GetNumObjectsEii"
 				}
 				
+				"CTFPlayer::DoClassSpecialSkill"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19DoClassSpecialSkillEv"
+				}
+				
+				"CTFPlayer::CanAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9CanAttackEi"
+				}
+				
+				"CTFPlayer::ChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10ChangeTeamEibbb"
+				}
+				
+				"CTFPlayer::ItemIsAllowed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13ItemIsAllowedEP13CEconItemView"
+				}
+				
+				"CTFPlayer::IsAllowedToPickUpFlag"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer21IsAllowedToPickUpFlagEv"
+				}
+				
+				"CTFPlayer::ModifyOrAppendCriteria::kSlotCriteriaName"
+				{
+					type "sym"
+					sym  "_ZZN9CTFPlayer22ModifyOrAppendCriteriaER14AI_CriteriaSetE17kSlotCriteriaName"
+				}
+				
 				"CTFPlayerShared::AddCond"
 				{
 					type "sym"
@@ -506,6 +542,16 @@
 				{
 					type "sym"
 					sym  "_ZNK15CTFPlayerShared19IsLoserStateStunnedEv"
+				}
+				"CTFPlayerShared::RadiusSpyScan"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared13RadiusSpyScanEv"
+				}
+				"CTFPlayerShared::GetActiveTFWeapon"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared17GetActiveTFWeaponEv"
 				}
 				
 				"CTFPlayerClassShared::SetCustomModel"

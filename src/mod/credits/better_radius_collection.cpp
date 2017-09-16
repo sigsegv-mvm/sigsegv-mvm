@@ -6,6 +6,19 @@
 
 namespace Mod_Credits_Better_Radius_Collection
 {
+	/* which team is allowed to collect credits? */
+	int GetCreditTeamNum()
+	{
+		/* HACK: make behavior consistent with another mod */
+		static ConVarRef sig_mvm_set_credit_team("sig_mvm_set_credit_team");
+		if (sig_mvm_set_credit_team.IsValid() && sig_mvm_set_credit_team.GetBool()) {
+			return sig_mvm_set_credit_team.GetInt();
+		}
+		
+		return TF_TEAM_RED;
+	}
+	
+	
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_RadiusCurrencyCollectionCheck)
 	{
 		/* don't mess with CBonusPack stuff in other game modes */
@@ -17,8 +30,8 @@ namespace Mod_Credits_Better_Radius_Collection
 		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 		auto player = shared->GetOuter();
 		
-		if (player->GetTeamNumber() != TF_TEAM_RED) return;
-		if (!player->IsAlive())                     return;
+		if (player->GetTeamNumber() != GetCreditTeamNum()) return;
+		if (!player->IsAlive())                            return;
 		
 		/* only run every 3rd tick */
 		if (gpGlobals->tickcount % 3 != 0) return;

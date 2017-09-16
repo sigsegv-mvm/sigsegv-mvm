@@ -5,6 +5,7 @@
 
 namespace Mod_Util_Add_Item
 {
+	/* only works on TFBots */
 	CON_COMMAND(sig_add_item, "Gives the item with the specified name to the currently selected TFBot")
 	{
 		if (args.ArgC() < 2) {
@@ -12,9 +13,10 @@ namespace Mod_Util_Add_Item
 			return;
 		}
 		if (args.ArgC() > 2) {
-			Warning("Multiple arguments given. Use quotes for multi-word item names.\n");
+			Warning("Extraneous arguments given. Use quotes for multi-word item names.\n");
 			return;
 		}
+		const char *arg_itemname = args[1];
 		
 		INextBot *selected = TheNextBots().GetSelectedBot();
 		if (selected == nullptr) {
@@ -28,7 +30,38 @@ namespace Mod_Util_Add_Item
 			return;
 		}
 		
-		bot->AddItem(args[1]);
+		bot->AddItem(arg_itemname);
+		Msg("Gave item '%s' to bot '%s'.\n", arg_itemname, bot->GetPlayerName());
+	}
+	
+	CON_COMMAND(sig_add_item_name, "Gives the item with the specified name to the bot(s) with the specified name")
+	{
+		for (int i = 0; i < args.ArgC(); ++i) {
+			Msg("args[%d]: |%s|\n", i, args[i]);
+		}
+		
+		if (args.ArgC() < 2) {
+			Warning("Expected an argument for the bot name to select.\n");
+			return;
+		}
+		if (args.ArgC() < 3) {
+			Warning("Expected an argument for the item name to give.\n");
+			return;
+		}
+		if (args.ArgC() > 3) {
+			Warning("Extraneous arguments given. Use quotes for multi-word item names.\n");
+			return;
+		}
+		const char *arg_botname  = args[1];
+		const char *arg_itemname = args[2];
+		
+		ForEachTFPlayer([=](CTFPlayer *player){
+			if (!player->IsBot())                              return;
+			if (!FStrEq(player->GetPlayerName(), arg_botname)) return;
+			
+			static_cast<CTFBot *>(player)->AddItem(arg_itemname);
+			Msg("Gave item '%s' to bot '%s'.\n", arg_itemname, player->GetPlayerName());
+		});
 	}
 	
 	CON_COMMAND(sig_add_item_all, "Gives the item with the specified name to all bots")
@@ -38,15 +71,16 @@ namespace Mod_Util_Add_Item
 			return;
 		}
 		if (args.ArgC() > 2) {
-			Warning("Multiple arguments given. Use quotes for multi-word item names.\n");
+			Warning("Extraneous arguments given. Use quotes for multi-word item names.\n");
 			return;
 		}
+		const char *arg_itemname = args[1];
 		
-		/* include puppet bots */
 		ForEachTFPlayer([=](CTFPlayer *player){
-			if (player->IsBot()) {
-				static_cast<CTFBot *>(player)->AddItem(args[1]);
-			}
+			if (!player->IsBot()) return;
+			
+			static_cast<CTFBot *>(player)->AddItem(arg_itemname);
+			Msg("Gave item '%s' to bot '%s'.\n", arg_itemname, player->GetPlayerName());
 		});
 	}
 }

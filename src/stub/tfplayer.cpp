@@ -1,11 +1,39 @@
 #include "stub/tfplayer.h"
 #include "stub/tfweaponbase.h"
 #include "stub/entities.h"
-#include "stub/strings.h"
-#include "util/misc.h"
 
 
 #if defined _LINUX
+
+static constexpr uint8_t s_Buf_CTFPlayerShared_m_pOuter[] = {
+	0x55,                               // +0000  push ebp
+	0x89, 0xe5,                         // +0001  mov ebp,esp
+	0x8b, 0x45, 0x08,                   // +0003  mov eax,[ebp+this]
+	0x8b, 0x80, 0x00, 0x00, 0x00, 0x00, // +0006  mov eax,[eax+m_pOuter]
+	0x89, 0x45, 0x08,                   // +000C  mov [ebp+this],eax
+	0x5d,                               // +000F  pop ebp
+	0xe9,                               // +0010  jmp CBaseCombatCharacter::GetActiveWeapon
+};
+
+struct CExtract_CTFPlayerShared_m_pOuter : public IExtract<CTFPlayer **>
+{
+	CExtract_CTFPlayerShared_m_pOuter() : IExtract<CTFPlayer **>(sizeof(s_Buf_CTFPlayerShared_m_pOuter)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CTFPlayerShared_m_pOuter);
+		
+		mask.SetRange(0x06 + 2, 4, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTFPlayerShared::GetActiveTFWeapon"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0006 + 2; }
+};
+
 
 static constexpr uint8_t s_Buf_CTFPlayer_m_bFeigningDeath[] = {
 	0x8b, 0x45, 0x0c,                               // +0000  mov eax,[ebp+arg_dmginfo]
@@ -46,9 +74,6 @@ struct CExtract_CTFPlayer_m_bFeigningDeath : public IExtract<bool *>
 		mask.SetRange(0x39 + 1, 4, 0x00);
 		mask.SetRange(0x3e + 2, 4, 0x00);
 		
-		buf .Dump();
-		mask.Dump();
-		
 		return true;
 	}
 	
@@ -69,6 +94,7 @@ struct CExtract_CTFPlayer_m_bFeigningDeath : public IExtract<bool *>
 
 #elif defined _WINDOWS
 
+using CExtract_CTFPlayerShared_m_pOuter = IExtractStub;
 using CExtract_CTFPlayer_m_bFeigningDeath = IExtractStub;
 
 #endif
@@ -84,16 +110,17 @@ IMPL_SENDPROP(string_t, CTFPlayerClassShared, m_iszCustomModel, CTFPlayer);
 MemberFuncThunk<CTFPlayerClassShared *, void, const char *, bool> CTFPlayerClassShared::ft_SetCustomModel("CTFPlayerClassShared::SetCustomModel");
 
 
-IMPL_SENDPROP(float, CTFPlayerShared, m_flCloakMeter,            CTFPlayer);
-IMPL_SENDPROP(float, CTFPlayerShared, m_flEnergyDrinkMeter,      CTFPlayer);
-IMPL_SENDPROP(float, CTFPlayerShared, m_flHypeMeter,             CTFPlayer);
-IMPL_SENDPROP(float, CTFPlayerShared, m_flChargeMeter,           CTFPlayer);
-IMPL_SENDPROP(float, CTFPlayerShared, m_flRageMeter,             CTFPlayer);
-IMPL_SENDPROP(bool,  CTFPlayerShared, m_bRageDraining,           CTFPlayer);
-IMPL_SENDPROP(int,   CTFPlayerShared, m_iCritMult,               CTFPlayer);
-IMPL_SENDPROP(bool,  CTFPlayerShared, m_bInUpgradeZone,          CTFPlayer);
-IMPL_SENDPROP(float, CTFPlayerShared, m_flStealthNoAttackExpire, CTFPlayer);
-IMPL_SENDPROP(int,   CTFPlayerShared, m_nPlayerState,            CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flCloakMeter,            CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flEnergyDrinkMeter,      CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flHypeMeter,             CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flChargeMeter,           CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flRageMeter,             CTFPlayer);
+IMPL_SENDPROP(bool,        CTFPlayerShared, m_bRageDraining,           CTFPlayer);
+IMPL_SENDPROP(int,         CTFPlayerShared, m_iCritMult,               CTFPlayer);
+IMPL_SENDPROP(bool,        CTFPlayerShared, m_bInUpgradeZone,          CTFPlayer);
+IMPL_SENDPROP(float,       CTFPlayerShared, m_flStealthNoAttackExpire, CTFPlayer);
+IMPL_SENDPROP(int,         CTFPlayerShared, m_nPlayerState,            CTFPlayer);
+IMPL_EXTRACT (CTFPlayer *, CTFPlayerShared, m_pOuter,                  new CExtract_CTFPlayerShared_m_pOuter());
 
 MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > CTFPlayerShared::ft_AddCond             ("CTFPlayerShared::AddCond");
 MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > CTFPlayerShared::ft_RemoveCond          ("CTFPlayerShared::RemoveCond");
@@ -112,10 +139,10 @@ MemberFuncThunk<const CTFPlayerShared *, bool                                > C
 
 IMPL_SENDPROP(CTFPlayerShared,      CTFPlayer, m_Shared,           CTFPlayer);
 IMPL_SENDPROP(float,                CTFPlayer, m_flLastDamageTime, CTFPlayer);
-IMPL_SENDPROP(CHandle<CTFItem>,     CTFPlayer, m_hItem,            CTFPlayer);
 IMPL_RELATIVE(CTFPlayerAnimState *, CTFPlayer, m_PlayerAnimState,  m_hItem, -0x18); // 20170116a
 IMPL_EXTRACT (bool,                 CTFPlayer, m_bFeigningDeath,   new CExtract_CTFPlayer_m_bFeigningDeath());
 IMPL_SENDPROP(CTFPlayerClass,       CTFPlayer, m_PlayerClass,      CTFPlayer);
+IMPL_SENDPROP(CHandle<CTFItem>,     CTFPlayer, m_hItem,            CTFPlayer);
 IMPL_SENDPROP(bool,                 CTFPlayer, m_bIsMiniBoss,      CTFPlayer);
 IMPL_SENDPROP(int,                  CTFPlayer, m_nCurrency,        CTFPlayer);
 
@@ -137,6 +164,8 @@ MemberFuncThunk<      CTFPlayer *, void, const char *, bool        > CTFPlayer::
 MemberFuncThunk<      CTFPlayer *, void, const char *, float, float> CTFPlayer::ft_AddCustomAttribute               ("CTFPlayer::AddCustomAttribute");
 MemberFuncThunk<      CTFPlayer *, void, const char *              > CTFPlayer::ft_RemoveCustomAttribute            ("CTFPlayer::RemoveCustomAttribute");
 MemberFuncThunk<      CTFPlayer *, void                            > CTFPlayer::ft_RemoveAllCustomAttributes        ("CTFPlayer::RemoveAllCustomAttributes");
+
+MemberVFuncThunk<CTFPlayer *, CBaseEntity *, const char *, int, CEconItemView *, bool> CTFPlayer::vt_GiveNamedItem(TypeName<CTFPlayer>(), "CTFPlayer::GiveNamedItem");
 
 
 StaticFuncThunk<CEconItemView *, CTFPlayer *, int, CEconEntity **> CTFPlayerSharedUtils::ft_GetEconItemViewByLoadoutSlot("CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot");
@@ -162,7 +191,7 @@ CTFWeaponBase *CTFPlayer::GetActiveTFWeapon() const
 }
 
 
-static int GetNumberOfTFConds()
+int GetNumberOfTFConds()
 {
 	static int iNumTFConds =
 	[]{
@@ -223,27 +252,4 @@ ETFCond GetTFConditionFromName(const char *name)
 }
 
 
-int GetNumberOfLoadoutSlots()
-{
-	static int iNumLoadoutSlots =
-	[]{
-		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "GetNumberOfLoadoutSlots: in lambda\n");
-		
-		const SegInfo& info_seg_server_rodata = LibMgr::GetInfo(Library::SERVER).GetSeg(Segment::RODATA);
-		
-		constexpr char prefix[] = "#LoadoutSlot_";
-		
-		for (int i = 0; i < 64; ++i) {
-			const char *str = g_szLoadoutStringsForDisplay[i];
-			
-			if (str == nullptr || !info_seg_server_rodata.ContainsAddr(str, 1) || strncmp(str, prefix, strlen(prefix)) != 0) {
-				return i;
-			}
-		}
-		
-		assert(false);
-		return 0;
-	}();
-	
-	return iNumLoadoutSlots;
-}
+StaticFuncThunk<int, CUtlVector<CTFPlayer *> *, int, bool, bool> ft_CollectPlayers_CTFPlayer("CollectPlayers<CTFPlayer>");

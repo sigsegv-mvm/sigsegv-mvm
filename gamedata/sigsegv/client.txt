@@ -535,6 +535,7 @@
 				{
 					type  "fixed"
 					sym   "TODO"
+					seg   "text"
 					addr  "0x32d030"
 					build "3780793"
 					lib   "client"
@@ -544,6 +545,7 @@
 				{
 					type  "fixed"
 					sym   "TODO"
+					seg   "text"
 					addr  "0x4e5fe0"
 					build "3780793"
 					lib   "client"
@@ -553,9 +555,50 @@
 				{
 					type  "fixed"
 					sym   "TODO"
+					seg   "text"
 					addr  "0x4f6f30"
 					build "3780793"
 					lib   "client"
+				}
+				
+				"[client] C_BaseEntity::EstimateAbsVelocity"
+				{
+					type "pattern"
+					sym  "_ZN12C_BaseEntity19EstimateAbsVelocityER6Vector"
+					seg  "text"
+					seek "558bec83ec0c568bf1e822fd00003bf0752b8bcee8b7e7ffff8b4508d9865c010000d918d98660010000d95804d98664010000d958085e8be55dc20400"
+					mask "ffffffffffffffffffff00000000ffffffffffffff00000000ffffffffff0000ffffffffffffffff0000ffffffffffffff0000ffffffffffffffffffff"
+					lib  "client"
+				}
+				
+				// likely only exists in the Windows build; GCC inlines this
+				"[client] C_BaseEntity::GetAbsVelocity"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZNK12C_BaseEntity14GetAbsVelocityEv"
+					seg    "text"
+					unistr "m_CalcAbsoluteVelocityMutex"
+					lib    "client"
+				}
+				
+				"[client] C_BaseEntity::GetVectors"
+				{
+					type "pattern"
+					sym  "_ZNK12C_BaseEntity10GetVectorsEP6VectorS1_S1_"
+					seg  "text"
+					seek "558bec56578bf1e884cdffff8b45088dbe3403000085c0740c506a0057e8aef3570083c40c"
+					mask "ffffffffffffffff00000000ffffffffff0000ffffffffffffffffffffff00000000ffffff"
+					lib  "client"
+				}
+				
+				"[client] C_BaseEntity::GetParentToWorldTransform"
+				{
+					type "pattern"
+					sym  "_ZN12C_BaseEntity25GetParentToWorldTransformER11matrix3x4_t"
+					seg  "text"
+					seek "558bec83ec18568bb1ac01000083feff747ba120bc05258bd681e2ff0f0000c1ee0c03d23974d00875638b74d00485f6745b8a81a601000084c0743d8b56048d4e04578d7de80fb6c057"
+					mask "ffffffffffffffffff0000ffffffffffff00ff00000000ffffffffffffffffffffffffffffffffffff00ffffffffffffff00ffff0000ffffffffff00ffffffffffffffffffffffffffff"
+					lib  "client"
 				}
 			}
 		}

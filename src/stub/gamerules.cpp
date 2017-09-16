@@ -28,8 +28,9 @@ MemberFuncThunk<CTeamplayRoundBasedRules *, void, gamerules_roundstate_t> CTeamp
 MemberVFuncThunk<CTeamplayRoundBasedRules *, float, int, CBasePlayer *> CTeamplayRoundBasedRules::vt_GetNextRespawnWave(TypeName<CTeamplayRoundBasedRules>(), "CTeamplayRoundBasedRules::GetNextRespawnWave");
 
 
-IMPL_SENDPROP(bool, CTFGameRules, m_bPlayingMedieval,      CTFGameRulesProxy);
-IMPL_SENDPROP(bool, CTFGameRules, m_bPlayingMannVsMachine, CTFGameRulesProxy);
+IMPL_SENDPROP(bool,           CTFGameRules, m_bPlayingMedieval,      CTFGameRulesProxy);
+IMPL_SENDPROP(bool,           CTFGameRules, m_bPlayingMannVsMachine, CTFGameRulesProxy);
+IMPL_SENDPROP(char[MAX_PATH], CTFGameRules, m_pszCustomUpgradesFile, CTFGameRulesProxy);
 
 MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, unsigned short, CMannVsMachineUpgrades *> CTFGameRules::ft_CanUpgradeWithAttrib               ("CTFGameRules::CanUpgradeWithAttrib");
 MemberFuncThunk<CTFGameRules *, int, CMannVsMachineUpgrades *, int, int, CTFPlayer *>             CTFGameRules::ft_GetCostForUpgrade                  ("CTFGameRules::GetCostForUpgrade");
@@ -37,6 +38,9 @@ MemberFuncThunk<CTFGameRules *, int, int>                                       
 MemberFuncThunk<CTFGameRules *, bool, CTFPlayer *, int, int>                                      CTFGameRules::ft_IsUpgradeTierEnabled               ("CTFGameRules::IsUpgradeTierEnabled");
 MemberFuncThunk<CTFGameRules *, void, CTFPlayer *, bool>                                          CTFGameRules::ft_PlayerReadyStatus_UpdatePlayerState("CTFGameRules::PlayerReadyStatus_UpdatePlayerState");
 MemberFuncThunk<CTFGameRules *, void, int, CTFPlayer *, bool, bool, bool>                         CTFGameRules::ft_DistributeCurrencyAmount           ("CTFGameRules::DistributeCurrencyAmount");
+MemberFuncThunk<CTFGameRules *, void, inputdata_t&>                                               CTFGameRules::ft_SetCustomUpgradesFile              ("CTFGameRules::SetCustomUpgradesFile");
+
+MemberVFuncThunk<CTFGameRules *, bool> CTFGameRules::vt_FlagsMayBeCapped(TypeName<CTFGameRules>(), "CTFGameRules::FlagsMayBeCapped");
 
 
 GlobalThunk<CGameRules *> g_pGameRules("g_pGameRules");

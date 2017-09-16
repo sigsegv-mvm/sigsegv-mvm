@@ -115,7 +115,10 @@ bool IExtract<T>::Check()
 	
 	CScan<ExtractScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufExtract, this->m_MaskExtract);
 	if (!scan.ExactlyOneMatch()) {
-		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
+		DevMsg("IExtract::Check: FAIL: \"%s\": found %u matching regions:\n", this->m_pszFuncName, scan.Matches().size());
+		for (auto match : scan.Matches()) {
+			DevMsg("  +0x%04x\n", (uintptr_t)match - (uintptr_t)this->m_pFuncAddr);
+		}
 		return false;
 	}
 	

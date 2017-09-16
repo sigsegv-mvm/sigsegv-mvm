@@ -111,6 +111,7 @@ class CBaseEntityList;
 
 class IVEngineClient;
 class IBaseClientDLL;
+class IClientEntityList;
 
 class IEngineTool;
 class IServerTools;
@@ -173,6 +174,7 @@ extern CBaseEntityList *g_pEntityList;
 
 extern IVEngineClient *engineclient;
 extern IBaseClientDLL *clientdll;
+extern IClientEntityList *cl_entitylist;
 
 extern IEngineTool *enginetools;
 extern IServerTools *servertools;
@@ -323,7 +325,6 @@ WARN_RESTORE()
 #include <datamap.h>
 #include <predictioncopy.h>
 #include <takedamageinfo.h>
-#include <iserverunknown.h>
 #include <iserverentity.h>
 WARN_IGNORE__ADDRESS()
 WARN_IGNORE__NONNULL_COMPARE()
@@ -422,6 +423,8 @@ WARN_RESTORE()
 WARN_IGNORE__REORDER()
 #include <../server/variant_t.h>
 WARN_RESTORE()
+#include <icliententity.h>
+#include <icliententitylist.h>
 
 #define DECLARE_PREDICTABLE()
 #include <collisionproperty.h>

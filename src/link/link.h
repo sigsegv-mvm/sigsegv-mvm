@@ -19,12 +19,19 @@ public:
 		this->m_bLinked = this->Link();
 	}
 	
+	void ForceLink(uintptr_t addr)
+	{
+		this->ForceAddr(addr);
+		this->m_bLinked = true;
+	}
+	
 	bool IsLinked() const { return this->m_bLinked; }
 	
 protected:
 	ILinkage() {}
 	
 	virtual bool Link() = 0;
+	virtual void ForceAddr(uintptr_t addr) = 0;
 	
 private:
 	bool m_bLinked = false;
@@ -61,6 +68,8 @@ public:
 	}
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { this->m_pFuncPtr = (FPtr)addr; }
+	
 	FPtr GetFuncPtr() const { return this->m_pFuncPtr; }
 	
 	const char *m_pszFuncName;
@@ -93,6 +102,8 @@ protected:
 	const void *GetFuncPtr() const { return this->m_pFuncPtr; }
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { this->m_pFuncPtr = (const void *)addr; }
+	
 	const char *m_pszFuncName;
 	
 	const void *m_pFuncPtr = nullptr;
@@ -149,7 +160,6 @@ public:
 };
 
 
-template<class C, typename RET, typename... PARAMS>
 class MemberVFuncThunkBase : public ILinkage
 {
 public:
@@ -197,6 +207,8 @@ protected:
 	int GetVTableIndex() const { return this->m_iVTIndex; }
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { this->m_iVTIndex = addr; }
+	
 	const char *m_pszVTableName;
 	const char *m_pszFuncName;
 	
@@ -204,21 +216,21 @@ private:
 };
 
 template<class C, typename RET, typename... PARAMS>
-class MemberVFuncThunk : public MemberVFuncThunkBase<C, RET, PARAMS...>
+class MemberVFuncThunk : public MemberVFuncThunkBase
 {
 public:
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
-		MemberVFuncThunkBase<C, RET, PARAMS...>(n_vtable, n_func) {}
+		MemberVFuncThunkBase(n_vtable, n_func) {}
 };
 
 template<class C, typename RET, typename... PARAMS>
-class MemberVFuncThunk<C *, RET, PARAMS...> : public MemberVFuncThunkBase<C, RET, PARAMS...>
+class MemberVFuncThunk<C *, RET, PARAMS...> : public MemberVFuncThunkBase
 {
 public:
 	using FPtr = RET (C::*)(PARAMS...);
 	
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
-		MemberVFuncThunkBase<C, RET, PARAMS...>(n_vtable, n_func) {}
+		MemberVFuncThunkBase(n_vtable, n_func) {}
 	
 	RET operator()(const C *obj, PARAMS... args) const = delete;
 	RET operator()(      C *obj, PARAMS... args) const
@@ -235,13 +247,13 @@ public:
 };
 
 template<class C, typename RET, typename... PARAMS>
-class MemberVFuncThunk<const C *, RET, PARAMS...> : public MemberVFuncThunkBase<C, RET, PARAMS...>
+class MemberVFuncThunk<const C *, RET, PARAMS...> : public MemberVFuncThunkBase
 {
 public:
 	using FPtr = RET (C::*)(PARAMS...) const;
 	
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
-		MemberVFuncThunkBase<C, RET, PARAMS...>(n_vtable, n_func) {}
+		MemberVFuncThunkBase(n_vtable, n_func) {}
 	
 	RET operator()(      C *obj, PARAMS... args) const = delete;
 	RET operator()(const C *obj, PARAMS... args) const
@@ -296,6 +308,8 @@ protected:
 	T *GetPtr() const { return this->m_pObjPtr; }
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { this->m_pObjPtr = (T *)addr; }
+	
 	const char *m_pszObjName;
 	
 	T *m_pObjPtr = nullptr;
@@ -338,6 +352,8 @@ public:
 	}
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { /* unimplemented */ }
+	
 	const char *m_pszName;
 	uint8_t *m_pDest;
 };
@@ -371,6 +387,8 @@ public:
 	}
 	
 private:
+	virtual void ForceAddr(uintptr_t addr) override { /* unimplemented */ }
+	
 	const char *m_pszName;
 	uint8_t *m_pDest;
 };
@@ -395,6 +413,21 @@ RET CallNonVirt(C *obj, const char *n_func, PARAMS... args)
 	auto pFunc = MakePtrToMemberFunc<C, RET, PARAMS...>(addr);
 	return (obj->*pFunc)(args...);
 }
+
+
+/* easy way to leverage existing code to find a VT entry offset */
+class VTOffFinder : public MemberVFuncThunkBase
+{
+public:
+	VTOffFinder(const char *n_vtable, const char *n_func) :
+		MemberVFuncThunkBase(n_vtable, n_func)
+	{
+		this->InvokeLink();
+	}
+	
+	bool IsValid() const       { return (this->GetVTableIndex() != -1); }
+	operator ptrdiff_t() const { return (this->GetVTableIndex() * 4); }
+};
 
 
 #endif

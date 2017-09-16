@@ -43,12 +43,18 @@ class CWaveSpawnPopulator : public IPopulator {};
 class CWave : public IPopulator
 {
 public:
-	void AddClassType(string_t icon, int count, unsigned int flags) { ft_AddClassType(this, icon, count, flags); }
+	void AddClassType(string_t icon, int count, unsigned int flags) { ft_AddClassType      (this, icon, count, flags); }
+	void ForceFinish()                                              { ft_ForceFinish       (this); }
+	void ActiveWaveUpdate()                                         { ft_ActiveWaveUpdate  (this); }
+	void WaveCompleteUpdate()                                       { ft_WaveCompleteUpdate(this); }
 	
 	CUtlVector<CWaveSpawnPopulator *> m_WaveSpawns;
 	
 private:
 	static MemberFuncThunk<CWave *, void, string_t, int, unsigned int> ft_AddClassType;
+	static MemberFuncThunk<CWave *, void>                              ft_ForceFinish;
+	static MemberFuncThunk<CWave *, void>                              ft_ActiveWaveUpdate;
+	static MemberFuncThunk<CWave *, void>                              ft_WaveCompleteUpdate;
 };
 
 class CMissionPopulator : public IPopulator

@@ -116,13 +116,22 @@ inline void ByteBuf::CopyFrom(const uint8_t *arr)
 
 inline void ByteBuf::Dump() const
 {
-	DevMsg("       __00_01_02_03__04_05_06_07__08_09_0A_0B__0C_0D_0E_0F__\n");
+	constexpr int bytes_per_line  = 16;
+	constexpr int bytes_per_group =  4;
 	
-	for (int i = 0; i < this->GetSize(); i += 16) {
-		std::string line = CFmtStrN<16>("+0x%04X", i).Get();
+	int addr_digits = [](int size){
+		if (size <= (1 <<  8)) return 2;
+		if (size <= (1 << 16)) return 4;
+		if (size <= (1 << 24)) return 6;
+		return 8;
+	}(this->GetSize());
+	
+	DevMsg("   %*s__00_01_02_03__04_05_06_07__08_09_0A_0B__0C_0D_0E_0F__\n", addr_digits, "");
+	for (int i = 0; i < this->GetSize(); i += bytes_per_line) {
+		std::string line = CFmtStrN<16>("+0x%0*X", addr_digits, i).Get();
 		
-		for (int j = i; j < this->GetSize() && j < i + 16; ++j) {
-			line += CFmtStrN<16>("%*s%02X", ((j % 4 == 0) ? 2 : 1), "", this->m_Buf[j]).Get();
+		for (int j = i; j < this->GetSize() && j < i + bytes_per_line; ++j) {
+			line += CFmtStrN<16>("%*s%02X", ((j % bytes_per_group == 0) ? 2 : 1), "", this->m_Buf[j]).Get();
 		}
 		
 		DevMsg("%s\n", line.c_str());

@@ -6,6 +6,7 @@ IMPL_SENDPROP(int,   CBaseAnimating, m_nSkin,        CBaseAnimating);
 IMPL_SENDPROP(int,   CBaseAnimating, m_nBody,        CBaseAnimating);
 IMPL_SENDPROP(float, CBaseAnimating, m_flModelScale, CBaseAnimating);
 IMPL_SENDPROP(float, CBaseAnimating, m_flCycle,      CBaseAnimating);
+IMPL_SENDPROP(int,   CBaseAnimating, m_nHitboxSet,   CBaseAnimating);
 
 MemberFuncThunk<CBaseAnimating *, void, float, float>              CBaseAnimating::ft_SetModelScale       ("CBaseAnimating::SetModelScale");
 MemberFuncThunk<CBaseAnimating *, void, float, bool>               CBaseAnimating::ft_DrawServerHitboxes  ("CBaseAnimating::DrawServerHitboxes");
@@ -21,11 +22,15 @@ MemberFuncThunk<CBaseAnimating *, CStudioHdr *>                    CBaseAnimatin
 MemberFuncThunk<CBaseAnimating *, int, CStudioHdr *, const char *> CBaseAnimating::ft_LookupPoseParameter ("CBaseAnimating::LookupPoseParameter");
 MemberFuncThunk<CBaseAnimating *, float, int>                      CBaseAnimating::ft_GetPoseParameter_int("CBaseAnimating::GetPoseParameter [int]");
 MemberFuncThunk<CBaseAnimating *, float, const char *>             CBaseAnimating::ft_GetPoseParameter_str("CBaseAnimating::GetPoseParameter [str]");
+MemberFuncThunk<CBaseAnimating *, void, int, matrix3x4_t&>         CBaseAnimating::ft_GetBoneTransform    ("CBaseAnimating::GetBoneTransform");
 
+
+IMPL_SENDPROP(bool, CEconEntity, m_bValidatedAttachedEntity, CEconEntity);
 
 MemberFuncThunk<CEconEntity *, void> CEconEntity::ft_DebugDescribe("CEconEntity::DebugDescribe");
 
 MemberVFuncThunk<CEconEntity *, CAttributeContainer *> CEconEntity::vt_GetAttributeContainer(TypeName<CEconEntity>(), "CEconEntity::GetAttributeContainer");
+MemberVFuncThunk<CEconEntity *, void, CBaseEntity *>   CEconEntity::vt_GiveTo               (TypeName<CEconEntity>(), "CEconEntity::GiveTo");
 
 
 CEconItemView *CEconEntity::GetItem()

@@ -201,6 +201,11 @@ class ExtensionConfig(object):
 #   cxx.cflags += ['-Wa,--compress-debug-sections=zlib']
     cxx.cflags += ['-Wno-unknown-pragmas']
     
+    # C++ modules!!!
+    if cxx.version >= 'clang-3.7':
+      cxx.cflags += ['-fmodules']
+#      cxx.cflags += ['-fbuiltin-module-map'] # invalid in clang-3.9 and possibly other versions
+    
     ############################################################################
     # C++ COMPILER #############################################################
     ############################################################################
@@ -211,19 +216,22 @@ class ExtensionConfig(object):
     cxx.cxxflags += ['-fvisibility-inlines-hidden']
     cxx.cxxflags += ['-Wno-invalid-offsetof']
     cxx.cxxflags += ['-Wabi']
+    cxx.cxxflags += ['-Wabi-tag']
 #   cxx.cxxflags += ['-fabi-version=0']
 #   cxx.cxxflags += ['-fabi-compat-version=2'] # GCC 4.6.1
-    cxx.cxxflags += ['-no-integrated-cpp'] # otherwise, diagnostic pragmas are broken-ish in C++, especially for PCHs
+    if have_gcc:
+      cxx.cxxflags += ['-no-integrated-cpp'] # otherwise, diagnostic pragmas are broken-ish in C++, especially for PCHs
+      cxx.cxxflags += ['-D_GLIBCXX_USE_CXX11_ABI=0'] # prevent GCC 5.1+ ABI incompatibility with std::string
     
     ############################################################################
     # LINKER ###################################################################
     ############################################################################
     cxx.linkflags += ['-m32']
     cxx.linkflags += ['-pthread']
-    cxx.linkflags += ['-fuse-ld=gold']
+#    cxx.linkflags += ['-fuse-ld=gold']
     cxx.linkflags += ['-fno-use-linker-plugin'] # ?????
     cxx.linkflags += ['-Wl,--no-undefined']
-    cxx.linkflags += ['-Wl,--threads'] # crashy
+#    cxx.linkflags += ['-Wl,--threads'] # crashy
     cxx.linkflags += ['-Wl,--wrap,__assert_fail']
     cxx.linkflags += ['-Wl,--export-dynamic']
 #   cxx.linkflags += ['-Wa,--compress-debug-sections=zlib']
@@ -489,7 +497,8 @@ class ExtensionConfig(object):
         compiler.linkflags.append(compiler.Dep(lib_path))
 
     for library in dynamic_libs:
-      source_path = os.path.join(lib_folder, library)
+      source_path = os.path.join('/pool/Game/SteamCMD/tf2/bin', library)
+      #source_path = os.path.join(lib_folder, library)
       output_path = os.path.join(binary.localFolder, library)
 
       def make_linker(source_path, output_path):

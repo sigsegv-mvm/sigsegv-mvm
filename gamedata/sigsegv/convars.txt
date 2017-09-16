@@ -31,6 +31,31 @@
 					name "con_filter_text_out"
 					lib  "engine"
 				}
+				
+				"dtwatchent"
+				{
+					type "convar"
+					name "dtwatchent"
+					lib  "engine"
+				}
+				"dtwatchvar"
+				{
+					type "convar"
+					name "dtwatchvar"
+					lib  "engine"
+				}
+				"dtwatchclass"
+				{
+					type "convar"
+					name "dtwatchclass"
+					lib  "engine"
+				}
+				"dtwarning"
+				{
+					type "convar"
+					name "dtwarning"
+					lib  "engine"
+				}
 			}
 		}
 	}

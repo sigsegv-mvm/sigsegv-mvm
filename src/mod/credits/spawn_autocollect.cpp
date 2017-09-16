@@ -8,6 +8,19 @@
 
 namespace Mod_Credits_Spawn_AutoCollect
 {
+	/* which team is allowed to collect credits? */
+	int GetCreditTeamNum()
+	{
+		/* HACK: make behavior consistent with another mod */
+		static ConVarRef sig_mvm_set_credit_team("sig_mvm_set_credit_team");
+		if (sig_mvm_set_credit_team.IsValid() && sig_mvm_set_credit_team.GetBool()) {
+			return sig_mvm_set_credit_team.GetInt();
+		}
+		
+		return TF_TEAM_RED;
+	}
+	
+	
 	DETOUR_DECL_MEMBER(void, CCurrencyPack_ComeToRest)
 	{
 		auto pack = reinterpret_cast<CCurrencyPack *>(this);
@@ -15,18 +28,23 @@ namespace Mod_Credits_Spawn_AutoCollect
 		DETOUR_MEMBER_CALL(CCurrencyPack_ComeToRest)();
 		
 		if (!pack->IsMarkedForDeletion() && !pack->IsBeingPulled() && !pack->IsDistributed()) {
-			auto area = reinterpret_cast<CTFNavArea *>(TheNavMesh->GetNavArea(pack->GetAbsOrigin()));
-			if (area != nullptr && area->HasTFAttributes(BLUE_SPAWN_ROOM)) {
-				DevMsg("Non-distributed CCurrencyPack (#%d / $%d) landed in BLUE_SPAWN_ROOM area; distributing now.\n",
-					ENTINDEX(pack), pack->GetAmount());
+			int credit_team = GetCreditTeamNum();
+			if (credit_team == TF_TEAM_RED || credit_team == TF_TEAM_BLUE) {
+				TFNavAttributeType spawn_attr = ((credit_team == TF_TEAM_RED) ? BLUE_SPAWN_ROOM : RED_SPAWN_ROOM);
 				
-				pack->SetDistributed(true);
-				
-				TFGameRules()->DistributeCurrencyAmount(pack->GetAmount(), nullptr, true, false, false);
-				TFObjectiveResource()->m_nMvMWorldMoney -= pack->GetAmount();
-				
-				StopParticleEffects(pack);
-				DispatchParticleEffect("mvm_cash_embers_red", PATTACH_ABSORIGIN_FOLLOW, pack);
+				auto area = reinterpret_cast<CTFNavArea *>(TheNavMesh->GetNavArea(pack->GetAbsOrigin()));
+				if (area != nullptr && area->HasTFAttributes(spawn_attr)) {
+					DevMsg("Non-distributed CCurrencyPack (#%d / $%d) landed in spawn room nav area; distributing now.\n",
+						ENTINDEX(pack), pack->GetAmount());
+					
+					pack->SetDistributed(true);
+					
+					TFGameRules()->DistributeCurrencyAmount(pack->GetAmount(), nullptr, true, false, false);
+					TFObjectiveResource()->m_nMvMWorldMoney -= pack->GetAmount();
+					
+					StopParticleEffects(pack);
+					DispatchParticleEffect("mvm_cash_embers_red", PATTACH_ABSORIGIN_FOLLOW, pack);
+				}
 			}
 		}
 	}

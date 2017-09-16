@@ -117,4 +117,47 @@ namespace Normal
 }
 
 
+#if 0
+
+/* still not 100% sure what the purpose of this is... needs a closer look */
+
+void FindHullIntersection(const Vector& vecWeaponShootPos, CGameTrace& trace, const Vector& vecDuckMins, const Vector& vecDuckMaxs, CBaseEntity *pOwner)
+{
+	CTraceFilterSimple filter(pOwner);
+	trace_t tr;
+	
+	UTIL_TraceLine(vecWeaponShootPos, vecWeaponShootPos + (2.0f * (trace.endpos - vecWeaponShootPos)), MASK_SOLID, &filter, &tr);
+	if (tr.fraction < 1.0f) {
+		trace = tr;
+		return;
+	}
+	
+	Vector vecMinsMaxs[2] {
+		vecDuckMins,
+		vecDuckMaxs,
+	};
+	
+	float flBestSqr = Square(1000000.0f);
+	for (int i = 0; i <= 1; ++i) {
+		for (int j = 0; j <= 1; ++j) {
+			for (int k = 0; k <= 1; ++k) {
+				Vector vecStart = vecWeaponShootPos;
+				Vector vecDelta = Vector(vecMinsMaxs[i].x, vecMinsMaxs[j].y, vecMinsMaxs[k].z);
+				
+				UTIL_TraceLine(vecStart, vecStart + vecDelta, MASK_SOLID, &filter, &tr);
+				if (tr.traction < 1.0f) {
+					float flDistSqr = vecWeaponShootPos.DistToSqr(tr.endpos);
+					if (flDistSqr < flBestSqr) {
+						flBestSqr = flDistSqr;
+						trace = tr;
+					}
+				}
+			}
+		}
+	}
+}
+
+#endif
+
+
 #endif

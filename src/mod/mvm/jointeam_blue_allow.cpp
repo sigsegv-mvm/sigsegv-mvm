@@ -12,13 +12,314 @@
 
 namespace Mod_MvM_JoinTeam_Blue_Allow
 {
+	using CollectPlayersFunc_t = int (*)(CUtlVector<CTFPlayer *> *, int, bool, bool);
+	
+	
+	constexpr uint8_t s_Buf_CollectPlayers_Caller1[] = {
+		0xc7, 0x44, 0x24, 0x0c, 0x00, 0x00, 0x00, 0x00, // +0000  mov dword ptr [esp+0xc],<bool:shouldAppend>
+		0xc7, 0x44, 0x24, 0x08, 0x00, 0x00, 0x00, 0x00, // +0008  mov dword ptr [esp+0x8],<bool:isAlive>
+		0xc7, 0x44, 0x24, 0x04, 0x00, 0x00, 0x00, 0x00, // +0010  mov dword ptr [esp+0x4],<int:team>
+		0x89, 0x04, 0x24,                               // +0018  mov [esp],exx
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +001B  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0022  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0029  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0030  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0037  mov [ebp-0xXXX],0x00000000
+		0xe8, 0x00, 0x00, 0x00, 0x00,                   // +003E  call CollectPlayers<CTFPlayer>
+	};
+	
+	template<uint32_t OFF_MIN, uint32_t OFF_MAX, int TEAM, bool IS_ALIVE, bool SHOULD_APPEND, CollectPlayersFunc_t REPLACE_FUNC>
+	struct CPatch_CollectPlayers_Caller1 : public CPatch
+	{
+		CPatch_CollectPlayers_Caller1(const char *func_name) : CPatch(sizeof(s_Buf_CollectPlayers_Caller1)), m_pszFuncName(func_name) {}
+		
+		virtual const char *GetFuncName() const override { return this->m_pszFuncName; }
+		virtual uint32_t GetFuncOffMin() const override  { return OFF_MIN; }
+		virtual uint32_t GetFuncOffMax() const override  { return OFF_MAX; }
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_CollectPlayers_Caller1);
+			
+			buf.SetDword(0x00 + 4, (uint32_t)SHOULD_APPEND);
+			buf.SetDword(0x08 + 4, (uint32_t)IS_ALIVE);
+			buf.SetDword(0x10 + 4, (uint32_t)TEAM);
+			
+			/* allow any 3-bit source register code */
+			mask[0x18 + 1] = 0b11000111;
+			
+			mask.SetDword(0x1b + 2, 0xfffff003);
+			mask.SetDword(0x22 + 2, 0xfffff003);
+			mask.SetDword(0x29 + 2, 0xfffff003);
+			mask.SetDword(0x30 + 2, 0xfffff003);
+			mask.SetDword(0x37 + 2, 0xfffff003);
+			
+			mask.SetDword(0x3e + 1, 0x00000000);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* for now, replace the call instruction with 'int3' opcodes */
+			buf .SetRange(0x3e, 5, 0xcc);
+			mask.SetRange(0x3e, 5, 0xff);
+			
+			return true;
+		}
+		
+		virtual bool AdjustPatchInfo(ByteBuf& buf) const override
+		{
+			auto src = (uint8_t *)this->GetActualLocation() + (0x3e + 5);
+			auto dst = (uint8_t *)REPLACE_FUNC;
+			
+			ptrdiff_t off = (dst - src);
+			
+			/* set the opcode back to 'call' */
+			buf[0x3e] = 0xe8;
+			
+			/* put the relative offset into place */
+			buf.SetDword(0x3e + 1, off);
+			
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller1::AdjustPatchInfo] src: 0x%08x\n", (uintptr_t)src);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller1::AdjustPatchInfo] dst: 0x%08x\n", (uintptr_t)dst);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller1::AdjustPatchInfo] off: 0x%08x\n", (uintptr_t)off);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller1::AdjustPatchInfo] BUF DUMP:\n");
+			buf.Dump();
+			
+			return true;
+		}
+		
+	private:
+		const char *m_pszFuncName;
+	};
+	
+	
+	constexpr uint8_t s_Buf_CollectPlayers_Caller2[] = {
+		0x89, 0x04, 0x24,                               // +0000  mov [esp],exx
+		0xc7, 0x44, 0x24, 0x0c, 0x00, 0x00, 0x00, 0x00, // +0003  mov dword ptr [esp+0xc],<bool:shouldAppend>
+		0xc7, 0x44, 0x24, 0x08, 0x00, 0x00, 0x00, 0x00, // +000B  mov dword ptr [esp+0x8],<bool:isAlive>
+		0xc7, 0x44, 0x24, 0x04, 0x00, 0x00, 0x00, 0x00, // +0013  mov dword ptr [esp+0x4],<int:team>
+		0xa3, 0x00, 0x00, 0x00, 0x00,                   // +001B  mov ds:0xXXXXXXXX,eax
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0020  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0027  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +002E  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +0035  mov [ebp-0xXXX],0x00000000
+		0xc7, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,       // +003C  mov [ebp-0xXXX],0x00000000
+		0xe8, 0x00, 0x00, 0x00, 0x00,                   // +0043  call CollectPlayers<CTFPlayer>
+	};
+	
+	template<uint32_t OFF_MIN, uint32_t OFF_MAX, int TEAM, bool IS_ALIVE, bool SHOULD_APPEND, CollectPlayersFunc_t REPLACE_FUNC>
+	struct CPatch_CollectPlayers_Caller2 : public CPatch
+	{
+		CPatch_CollectPlayers_Caller2(const char *func_name) : CPatch(sizeof(s_Buf_CollectPlayers_Caller2)), m_pszFuncName(func_name) {}
+		
+		virtual const char *GetFuncName() const override { return this->m_pszFuncName; }
+		virtual uint32_t GetFuncOffMin() const override  { return OFF_MIN; }
+		virtual uint32_t GetFuncOffMax() const override  { return OFF_MAX; }
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_CollectPlayers_Caller2);
+			
+			/* allow any 3-bit source register code */
+			mask[0x00 + 1] = 0b11000111;
+			
+			buf.SetDword(0x03 + 4, (uint32_t)SHOULD_APPEND);
+			buf.SetDword(0x0b + 4, (uint32_t)IS_ALIVE);
+			buf.SetDword(0x13 + 4, (uint32_t)TEAM);
+			
+			mask.SetDword(0x1b + 1, 0x00000000);
+			
+			mask.SetDword(0x20 + 2, 0xfffff003);
+			mask.SetDword(0x27 + 2, 0xfffff003);
+			mask.SetDword(0x2e + 2, 0xfffff003);
+			mask.SetDword(0x35 + 2, 0xfffff003);
+			mask.SetDword(0x3c + 2, 0xfffff003);
+			
+			mask.SetDword(0x43 + 1, 0x00000000);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* for now, replace the call instruction with 'int3' opcodes */
+			buf .SetRange(0x43, 5, 0xcc);
+			mask.SetRange(0x43, 5, 0xff);
+			
+			return true;
+		}
+		
+		virtual bool AdjustPatchInfo(ByteBuf& buf) const override
+		{
+			auto src = (uint8_t *)this->GetActualLocation() + (0x43 + 5);
+			auto dst = (uint8_t *)REPLACE_FUNC;
+			
+			ptrdiff_t off = (dst - src);
+			
+			/* set the opcode back to 'call' */
+			buf[0x43] = 0xe8;
+			
+			/* put the relative offset into place */
+			buf.SetDword(0x43 + 1, off);
+			
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller2::AdjustPatchInfo] src: 0x%08x\n", (uintptr_t)src);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller2::AdjustPatchInfo] dst: 0x%08x\n", (uintptr_t)dst);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller2::AdjustPatchInfo] off: 0x%08x\n", (uintptr_t)off);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller2::AdjustPatchInfo] BUF DUMP:\n");
+			buf.Dump();
+			
+			return true;
+		}
+		
+	private:
+		const char *m_pszFuncName;
+	};
+	
+	
+	constexpr uint8_t s_Buf_CollectPlayers_Caller3[] = {
+		0x01, 0x45, 0x00,                               // +0000  add [ebp-0xXX],eax
+		0x8b, 0x45, 0x08,                               // +0003  mov eax,[ebp+this]
+		0x8b, 0x80, 0x00, 0x00, 0x00, 0x00,             // +0006  mov eax,[eax+0xXXXX]
+		0xc7, 0x44, 0x24, 0x0c, 0x00, 0x00, 0x00, 0x00, // +000C  mov dword ptr [esp+0xc],<bool:shouldAppend>
+		0xc7, 0x44, 0x24, 0x08, 0x00, 0x00, 0x00, 0x00, // +0014  mov dword ptr [esp+0x8],<bool:isAlive>
+		0xc7, 0x44, 0x24, 0x04, 0x00, 0x00, 0x00, 0x00, // +001C  mov dword ptr [esp+0x4],<int:team>
+		0x01, 0x45, 0x00,                               // +0024  add [ebp-0xXX],eax
+		0x8d, 0x45, 0x00,                               // +0027  lea eax,[ebp-0xXX]
+		0x89, 0x04, 0x24,                               // +002A  mov [esp],exx
+		0xe8, 0x00, 0x00, 0x00, 0x00,                   // +002D  call CollectPlayers<CTFPlayer>
+	};
+	
+	template<uint32_t OFF_MIN, uint32_t OFF_MAX, int TEAM, bool IS_ALIVE, bool SHOULD_APPEND, CollectPlayersFunc_t REPLACE_FUNC>
+	struct CPatch_CollectPlayers_Caller3 : public CPatch
+	{
+		CPatch_CollectPlayers_Caller3(const char *func_name) : CPatch(sizeof(s_Buf_CollectPlayers_Caller3)), m_pszFuncName(func_name) {}
+		
+		virtual const char *GetFuncName() const override { return this->m_pszFuncName; }
+		virtual uint32_t GetFuncOffMin() const override  { return OFF_MIN; }
+		virtual uint32_t GetFuncOffMax() const override  { return OFF_MAX; }
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_CollectPlayers_Caller3);
+			
+			mask[0x00 + 2] = 0x00;
+			
+			mask.SetDword(0x06 + 2, 0x00000000);
+			
+			buf.SetDword(0x0c + 4, (uint32_t)SHOULD_APPEND);
+			buf.SetDword(0x14 + 4, (uint32_t)IS_ALIVE);
+			buf.SetDword(0x1c + 4, (uint32_t)TEAM);
+			
+			mask[0x24 + 2] = 0x00;
+			mask[0x27 + 2] = 0x00;
+			
+			/* allow any 3-bit source register code */
+			mask[0x2a + 1] = 0b11000111;
+			
+			mask.SetDword(0x2d + 1, 0x00000000);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* for now, replace the call instruction with 'int3' opcodes */
+			buf .SetRange(0x2d, 5, 0xcc);
+			mask.SetRange(0x2d, 5, 0xff);
+			
+			return true;
+		}
+		
+		virtual bool AdjustPatchInfo(ByteBuf& buf) const override
+		{
+			auto src = (uint8_t *)this->GetActualLocation() + (0x2d + 5);
+			auto dst = (uint8_t *)REPLACE_FUNC;
+			
+			ptrdiff_t off = (dst - src);
+			
+			/* set the opcode back to 'call' */
+			buf[0x2d] = 0xe8;
+			
+			/* put the relative offset into place */
+			buf.SetDword(0x2d + 1, off);
+			
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller3::AdjustPatchInfo] src: 0x%08x\n", (uintptr_t)src);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller3::AdjustPatchInfo] dst: 0x%08x\n", (uintptr_t)dst);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller3::AdjustPatchInfo] off: 0x%08x\n", (uintptr_t)off);
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[CPatch_CollectPlayers_Caller3::AdjustPatchInfo] BUF DUMP:\n");
+			buf.Dump();
+			
+			return true;
+		}
+		
+	private:
+		const char *m_pszFuncName;
+	};
+	
+	
+	constexpr uint8_t s_Buf_RadiusSpyScan[] = {
+		0x8b, 0x87, 0x00, 0x00, 0x00, 0x00, // +0000  mov exx,[exx+offsetof(CTFPlayerShared, m_pOuter)]
+		0x89, 0x04, 0x24,                   // +0006  mov [esp],exx
+		0xe8, 0x00, 0x00, 0x00, 0x00,       // +0009  call CBaseEntity::GetTeamNumber
+		0x83, 0xf8, 0x02,                   // +000E  cmp eax,TF_TEAM_RED
+	};
+	
+	struct CPatch_RadiusSpyScan : public CPatch
+	{
+		CPatch_RadiusSpyScan() : CPatch(sizeof(s_Buf_RadiusSpyScan)) {}
+		
+		virtual const char *GetFuncName() const override { return "CTFPlayerShared::RadiusSpyScan"; }
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0020; } // @ +0x000c
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_RadiusSpyScan);
+			
+			int off_CTFPlayerShared_m_pOuter;
+			if (!Prop::FindOffset(off_CTFPlayerShared_m_pOuter, "CTFPlayerShared", "m_pOuter")) return false;
+			buf.SetDword(0x00 + 2, off_CTFPlayerShared_m_pOuter);
+			
+			/* allow any 3-bit source or destination register code */
+			mask[0x00 + 1] = 0b11000000;
+			
+			/* allow any 3-bit source register code */
+			mask[0x06 + 1] = 0b11000111;
+			
+			mask.SetDword(0x09 + 1, 0x00000000);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* replace 'cmp eax,TF_TEAM_RED' with 'cmp eax,eax; nop' */
+			buf[0x0e + 0] = 0x39;
+			buf[0x0e + 1] = 0xc0;
+			buf[0x0e + 2] = 0x90;
+			
+			mask.SetRange(0x0e, 3, 0xff);
+			
+			return true;
+		}
+	};
+	
+	
 	ConVar cvar_max("sig_mvm_jointeam_blue_allow_max", "-1", FCVAR_NOTIFY,
 		"Blue humans in MvM: max humans to allow on blue team (-1 for no limit)");
+	
+	ConVar cvar_flag_pickup("sig_mvm_bluhuman_flag_pickup", "0", FCVAR_NOTIFY,
+		"Blue humans in MvM: allow picking up the flag");
+	ConVar cvar_flag_capture("sig_mvm_bluhuman_flag_capture", "0", FCVAR_NOTIFY,
+		"Blue humans in MvM: allow scoring a flag Capture by carrying it to the capture zone");
 	
 	ConVar cvar_spawn_protection("sig_mvm_bluhuman_spawn_protection", "1", FCVAR_NOTIFY,
 		"Blue humans in MvM: enable spawn protection invulnerability");
 	ConVar cvar_spawn_no_shoot("sig_mvm_bluhuman_spawn_noshoot", "1", FCVAR_NOTIFY,
 		"Blue humans in MvM: when spawn protection invulnerability is enabled, disallow shooting from spawn");
+	
 	ConVar cvar_infinite_cloak("sig_mvm_bluhuman_infinite_cloak", "1", FCVAR_NOTIFY,
 		"Blue humans in MvM: enable infinite spy cloak meter");
 	ConVar cvar_infinite_cloak_deadringer("sig_mvm_bluhuman_infinite_cloak_deadringer", "0", FCVAR_NOTIFY,
@@ -87,6 +388,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		return DETOUR_STATIC_CALL(CTFReviveMarker_Create)(player);
 	}
 	
+	
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_ClientCommand, const CCommand& args)
 	{
 		auto player = reinterpret_cast<CTFPlayer *>(this);
@@ -128,6 +430,53 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	}
 	
 	
+	DETOUR_DECL_MEMBER(bool, CTFPlayer_IsAllowedToPickUpFlag)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		if (IsMvMBlueHuman(player) && !cvar_flag_pickup.GetBool()) {
+			return false;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFPlayer_IsAllowedToPickUpFlag)();
+	}
+	
+	DETOUR_DECL_MEMBER(void, CCaptureZone_ShimTouch, CBaseEntity *pOther)
+	{
+		auto zone = reinterpret_cast<CCaptureZone *>(this);
+		
+		[&]{
+			if (zone->IsDisabled()) return;
+			
+			CTFPlayer *player = ToTFPlayer(pOther);
+			if (player == nullptr)       return;
+			if (!IsMvMBlueHuman(player)) return;
+			
+			if (!cvar_flag_capture.GetBool()) return;
+			
+			if (!player->HasItem()) return;
+			CTFItem *item = player->GetItem();
+			
+			if (item->GetItemID() != TF_ITEM_CAPTURE_FLAG) return;
+			
+			auto flag = dynamic_cast<CCaptureFlag *>(item);
+			if (flag == nullptr) return;
+			
+			// skipping flag->m_nType check out of laziness
+			
+			if (!TFGameRules()->FlagsMayBeCapped()) return;
+			
+			#warning Should have flag->IsCaptured() check in here
+		//	if (flag->IsCaptured() || zone->GetTeamNumber() == TEAM_UNASSIGNED || player->GetTeamNumber() == TEAM_UNASSIGNED || zone->GetTeamNumber() == player->GetTeamNumber()) {
+			if (zone->GetTeamNumber() == TEAM_UNASSIGNED || player->GetTeamNumber() == TEAM_UNASSIGNED || zone->GetTeamNumber() == player->GetTeamNumber()) {
+				zone->Capture(player);
+			}
+		}();
+		
+		DETOUR_MEMBER_CALL(CCaptureZone_ShimTouch)(pOther);
+	}
+	
+	
 //	DETOUR_DECL_MEMBER(void, CPlayerMove_StartCommand, CBasePlayer *player, CUserCmd *ucmd)
 //	{
 //		DETOUR_MEMBER_CALL(CPlayerMove_StartCommand)(player, ucmd);
@@ -145,6 +494,88 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 //	}
 	
 	
+	RefCount rc_CTFGameRules_FireGameEvent__teamplay_round_start;
+	DETOUR_DECL_MEMBER(void, CTFGameRules_FireGameEvent, IGameEvent *event)
+	{
+		SCOPED_INCREMENT_IF(rc_CTFGameRules_FireGameEvent__teamplay_round_start,
+			(event != nullptr && strcmp(event->GetName(), "teamplay_round_start") == 0));
+		DETOUR_MEMBER_CALL(CTFGameRules_FireGameEvent)(event);
+	}
+	
+	DETOUR_DECL_STATIC(int, CollectPlayers_CTFPlayer, CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		if (rc_CTFGameRules_FireGameEvent__teamplay_round_start > 0 &&
+			(team == TF_TEAM_BLUE && !isAlive && !shouldAppend)) {
+			/* collect players on BOTH teams */
+			(void)DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
+			(void)DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, TF_TEAM_BLUE, isAlive, true);
+			
+			/* remove human players from the list so that only the bots remain */
+			for (int i = 0; i < playerVector->Count(); ++i) {
+				if (!(*playerVector)[i]->IsBot()) {
+					playerVector->FastRemove(i);
+					--i;
+				}
+			}
+			
+			return playerVector->Count();
+		}
+		
+		return DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, team, isAlive, shouldAppend);
+	}
+	
+	
+	static int CollectPlayers_RedAndBlue(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		(void) CollectPlayers(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
+		return CollectPlayers(playerVector, TF_TEAM_BLUE, isAlive, true);
+	}
+	
+	static int CollectPlayers_RedAndBlue_NotBot(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		(void) CollectPlayers(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
+		(void) CollectPlayers(playerVector, TF_TEAM_BLUE, isAlive, true);
+		
+		/* remove human players from the list so that only bots remain */
+		for (int i = 0; i < playerVector->Count(); ++i) {
+			if (!(*playerVector)[i]->IsBot()) {
+				playerVector->FastRemove(i);
+				--i;
+			}
+		}
+		
+		return playerVector->Count();
+	}
+	
+	
+	RefCount rc_CTFPlayerShared_RadiusSpyScan;
+	int radius_spy_scan_teamnum = TEAM_INVALID;
+	DETOUR_DECL_MEMBER(void, CTFPlayerShared_RadiusSpyScan)
+	{
+		auto player = reinterpret_cast<CTFPlayerShared *>(this)->GetOuter();
+		
+		/* instead of restricting the ability to team red, restrict it to human players */
+		if (player->IsBot()) {
+			return;
+		}
+		
+		SCOPED_INCREMENT(rc_CTFPlayerShared_RadiusSpyScan);
+		radius_spy_scan_teamnum = player->GetTeamNumber();
+		
+		DETOUR_MEMBER_CALL(CTFPlayerShared_RadiusSpyScan)();
+	}
+	
+	static int CollectPlayers_RadiusSpyScan(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		/* sanity checks */
+		assert(rc_CTFPlayerShared_RadiusSpyScan > 0);
+		assert(radius_spy_scan_teamnum == TF_TEAM_RED || radius_spy_scan_teamnum == TF_TEAM_BLUE);
+		
+		/* rather than always affecting blue players, affect players on the opposite team of the player with the ability */
+		return CollectPlayers(playerVector, GetEnemyTeam(radius_spy_scan_teamnum), isAlive, shouldAppend);
+	}
+	
+	
 	// TODO: fix fast engie re-deploy only working on red
 	
 	
@@ -153,14 +584,44 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	public:
 		CMod() : IMod("MvM:JoinTeam_Blue_Allow")
 		{
+			/* change the team assignment rules */
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_GetTeamAssignmentOverride, "CTFGameRules::GetTeamAssignmentOverride");
 			
-			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,                 "CTFReviveMarker::Create");
+			/* don't drop reanimators for blue humans */
+			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create, "CTFReviveMarker::Create");
+			
+			/* enable upgrading in blue spawn zones via "upgrade" client command */
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ClientCommand,                "CTFPlayer::ClientCommand");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_OnNavAreaChanged,             "CTFPlayer::OnNavAreaChanged");
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ClientCommandKeyValues,    "CTFGameRules::ClientCommandKeyValues");
 			
-		//	MOD_ADD_DETOUR_MEMBER(CPlayerMove_StartCommand,               "CPlayerMove::StartCommand");
+			/* allow flag pickup and capture depending on convar values */
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsAllowedToPickUpFlag, "CTFPlayer::IsAllowedToPickUpFlag");
+			MOD_ADD_DETOUR_MEMBER(CCaptureZone_ShimTouch,          "CCaptureZone::ShimTouch");
+			
+			/* disallow attacking while in the blue spawn room */
+		//	MOD_ADD_DETOUR_MEMBER(CPlayerMove_StartCommand, "CPlayerMove::StartCommand");
+			
+			/* fix hardcoded teamnum check when forcing bots to move to team spec at round change */
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_FireGameEvent, "CTFGameRules::FireGameEvent");
+			MOD_ADD_DETOUR_STATIC(CollectPlayers_CTFPlayer,   "CollectPlayers<CTFPlayer>");
+			
+			/* fix hardcoded teamnum check when clearing MvM checkpoints */
+			this->AddPatch(new CPatch_CollectPlayers_Caller2<0x0000, 0x0100, TF_TEAM_RED, false, false, CollectPlayers_RedAndBlue>("CPopulationManager::ClearCheckpoint"));
+			
+			/* fix hardcoded teamnum check when restoring MvM checkpoints */
+			this->AddPatch(new CPatch_CollectPlayers_Caller1<0x0000, 0x0200, TF_TEAM_RED, false, false, CollectPlayers_RedAndBlue>("CPopulationManager::RestoreCheckpoint"));
+			
+			/* fix hardcoded teamnum check when restoring player currency */
+			this->AddPatch(new CPatch_CollectPlayers_Caller3<0x0000, 0x0100, TF_TEAM_RED, false, false, CollectPlayers_RedAndBlue>("CPopulationManager::RestorePlayerCurrency"));
+			
+			/* fix hardcoded teamnum check when respawning dead players and resetting their sentry stats at wave end */
+			this->AddPatch(new CPatch_CollectPlayers_Caller1<0x0000, 0x0400, TF_TEAM_RED, false, false, CollectPlayers_RedAndBlue_NotBot>("CWave::WaveCompleteUpdate"));
+			
+			/* fix hardcoded teamnum checks in the radius spy scan ability */
+			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_RadiusSpyScan, "CTFPlayerShared::RadiusSpyScan");
+			this->AddPatch(new CPatch_CollectPlayers_Caller1<0x0000, 0x0100, TF_TEAM_BLUE, true, false, CollectPlayers_RadiusSpyScan>("CTFPlayerShared::RadiusSpyScan"));
+			this->AddPatch(new CPatch_RadiusSpyScan());
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }

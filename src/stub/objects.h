@@ -9,28 +9,37 @@
 class CBaseObject : public CBaseCombatCharacter
 {
 public:
-	int GetType() const           { return this->m_iObjectType; }
-	int GetObjectMode() const     { return this->m_iObjectMode; }
-	CTFPlayer *GetBuilder() const { return this->m_hBuilder; }
+	int GetType() const               { return this->m_iObjectType; }
+	int GetObjectMode() const         { return this->m_iObjectMode; }
+	CTFPlayer *GetBuilder() const     { return this->m_hBuilder; }
 	
+	// avoid situations where we accidentally do the wrong thing
+	void SetHealth(int amt) = delete;
+	
+	void SetHealth(float amt)              {        ft_SetHealth        (this, amt); }
 	void SetPlasmaDisabled(float duration) {        ft_SetPlasmaDisabled(this, duration); }
-	bool HasSapper()                       { return ft_HasSapper(this); }
+	bool HasSapper()                       { return ft_HasSapper        (this); }
 	
-	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement           (this, pPlayer); }
-	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding            (this, pBuilder); }
-//	void DetonateObject()                     {        vt_DetonateObject           (this); }
-	void InitializeMapPlacedObject()          {        vt_InitializeMapPlacedObject(this); }
-	void FinishedBuilding()                   {        vt_FinishedBuilding         (this); }
+	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement               (this, pPlayer); }
+	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding                (this, pBuilder); }
+//	void DetonateObject()                     {        vt_DetonateObject               (this); }
+	void InitializeMapPlacedObject()          {        vt_InitializeMapPlacedObject    (this); }
+	void FinishedBuilding()                   {        vt_FinishedBuilding             (this); }
+	int GetMiniBuildingStartingHealth()       { return vt_GetMiniBuildingStartingHealth(this); }
+	int GetMaxHealthForCurrentLevel()         { return vt_GetMaxHealthForCurrentLevel  (this); }
 	
 	DECL_DATAMAP(int, m_nDefaultUpgradeLevel);
 	
 	DECL_SENDPROP(int,                m_iUpgradeLevel);
+	DECL_SENDPROP(bool,               m_bMiniBuilding);
+	DECL_SENDPROP(bool,               m_bDisposableBuilding);
 	
 private:
 	DECL_SENDPROP(int,                m_iObjectType);
 	DECL_SENDPROP(int,                m_iObjectMode);
 	DECL_SENDPROP(CHandle<CTFPlayer>, m_hBuilder);
 	
+	static MemberFuncThunk<CBaseObject *, void, float> ft_SetHealth;
 	static MemberFuncThunk<CBaseObject *, void, float> ft_SetPlasmaDisabled;
 	static MemberFuncThunk<CBaseObject *, bool>        ft_HasSapper;
 	
@@ -39,6 +48,8 @@ private:
 //	static MemberVFuncThunk<CBaseObject *, void>                vt_DetonateObject;
 	static MemberVFuncThunk<CBaseObject *, void>                vt_InitializeMapPlacedObject;
 	static MemberVFuncThunk<CBaseObject *, void>                vt_FinishedBuilding;
+	static MemberVFuncThunk<CBaseObject *, int>                 vt_GetMiniBuildingStartingHealth;
+	static MemberVFuncThunk<CBaseObject *, int>                 vt_GetMaxHealthForCurrentLevel;
 };
 
 

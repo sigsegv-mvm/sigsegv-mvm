@@ -6,7 +6,51 @@
 #include "prop.h"
 
 
+struct inputdata_t
+{
+	CBaseEntity *pActivator;
+	CBaseEntity *pCaller;
+	variant_t value;
+	int nOutputID;
+};
+
+
+enum DebugOverlayBits_t
+{
+	OVERLAY_TEXT_BIT                 = 0x00000001, // show text debug overlay for this entity
+	OVERLAY_NAME_BIT                 = 0x00000002, // show name debug overlay for this entity
+	OVERLAY_BBOX_BIT                 = 0x00000004, // show bounding box overlay for this entity
+	OVERLAY_PIVOT_BIT                = 0x00000008, // show pivot for this entity
+	OVERLAY_MESSAGE_BIT              = 0x00000010, // show messages for this entity
+	OVERLAY_ABSBOX_BIT               = 0x00000020, // show abs bounding box overlay
+	OVERLAY_RBOX_BIT                 = 0x00000040, // show the rbox overlay
+	OVERLAY_SHOW_BLOCKSLOS           = 0x00000080, // show entities that block NPC LOS
+	OVERLAY_ATTACHMENTS_BIT          = 0x00000100, // show attachment points
+	OVERLAY_AUTOAIM_BIT              = 0x00000200, // Display autoaim radius
+	OVERLAY_NPC_SELECTED_BIT         = 0x00001000, // the npc is current selected
+	OVERLAY_NPC_NEAREST_BIT          = 0x00002000, // show the nearest node of this npc
+	OVERLAY_NPC_ROUTE_BIT            = 0x00004000, // draw the route for this npc
+	OVERLAY_NPC_TRIANGULATE_BIT      = 0x00008000, // draw the triangulation for this npc
+	OVERLAY_NPC_ZAP_BIT              = 0x00010000, // destroy the NPC
+	OVERLAY_NPC_ENEMIES_BIT          = 0x00020000, // show npc's enemies
+	OVERLAY_NPC_CONDITIONS_BIT       = 0x00040000, // show NPC's current conditions
+	OVERLAY_NPC_SQUAD_BIT            = 0x00080000, // show npc squads
+	OVERLAY_NPC_TASK_BIT             = 0x00100000, // show npc task details
+	OVERLAY_NPC_FOCUS_BIT            = 0x00200000, // show line to npc's enemy and target
+	OVERLAY_NPC_VIEWCONE_BIT         = 0x00400000, // show npc's viewcone
+	OVERLAY_NPC_KILL_BIT             = 0x00800000, // kill the NPC, running all appropriate AI.
+	OVERLAY_WC_CHANGE_ENTITY         = 0x01000000, // object changed during WC edit
+	OVERLAY_BUDDHA_MODE              = 0x02000000, // take damage but don't die
+	OVERLAY_NPC_STEERING_REGULATIONS = 0x04000000, // Show the steering regulations associated with the NPC
+	OVERLAY_TASK_TEXT_BIT            = 0x08000000, // show task and schedule names when they start
+	OVERLAY_PROP_DEBUG               = 0x10000000, 
+	OVERLAY_NPC_RELATION_BIT         = 0x20000000, // show relationships between target and all children
+	OVERLAY_VIEWOFFSET               = 0x40000000, // show view offset
+};
+
+
 class CBaseCombatCharacter;
+class INextBot;
 
 
 class CServerNetworkProperty : public IServerNetworkable {};
@@ -28,38 +72,45 @@ public:
 	bool ClassMatches(const char *pszClassOrWildcard);
 	
 	/* getter/setter */
-	IServerNetworkable *GetNetworkable() const  { return &this->m_Network; }
-	CServerNetworkProperty *NetworkProp() const { return &this->m_Network; }
-	const char *GetClassname() const            { return STRING((string_t)this->m_iClassname); }
-	string_t GetEntityName() const              { return this->m_iName; }
-	void SetName(string_t newName)              { this->m_iName = newName; }
-	ICollideable *GetCollideable() const        { return &this->m_Collision; }
-	CCollisionProperty *CollisionProp() const   { return &this->m_Collision; }
-	int GetTeamNumber() const                   { return this->m_iTeamNum; }
-	int GetMaxHealth() const                    { return this->m_iMaxHealth; }
-	int GetHealth() const                       { return this->m_iHealth; }
-	void SetHealth(int amt)                     { this->m_iHealth = amt; }
-	bool IsAlive() const                        { return (this->m_lifeState == LIFE_ALIVE); }
-	CBaseEntity *GetGroundEntity() const        { return this->m_hGroundEntity; }
-	CBaseEntity *GetOwnerEntity() const         { return this->m_hOwnerEntity; }
-	IPhysicsObject *VPhysicsGetObject() const   { return this->m_pPhysicsObject; }
-	int GetFlags() const                        { return this->m_fFlags; }
-	int GetCollisionGroup() const               { return this->m_CollisionGroup; }
-	SolidType_t GetSolid() const                { return this->CollisionProp()->GetSolid(); }
-	model_t *GetModel() const                   { return const_cast<model_t *>(modelinfo->GetModel(this->GetModelIndex())); }
-	bool IsTransparent() const                  { return (this->m_nRenderMode != kRenderNormal); }
-	MoveType_t GetMoveType() const              { return (MoveType_t)(unsigned char)this->m_MoveType; }
-	MoveCollide_t GetMoveCollide() const        { return (MoveCollide_t)(unsigned char)this->m_MoveCollide; }
-	void SetMoveCollide(MoveCollide_t val)      { this->m_MoveCollide = val; }
-	CBaseEntity *GetMoveParent()                { return this->m_hMoveParent; }
-	CBaseEntity *FirstMoveChild()               { return this->m_hMoveChild; }
-	CBaseEntity *NextMovePeer()                 { return this->m_hMovePeer; }
-	const color32 GetRenderColor() const        { return this->m_clrRender; }
-	void SetRenderColorR(byte r)                { this->m_clrRender->r = r; }
-	void SetRenderColorG(byte g)                { this->m_clrRender->g = g; }
-	void SetRenderColorB(byte b)                { this->m_clrRender->b = b; }
-	void SetRenderColorA(byte a)                { this->m_clrRender->a = a; }
-	bool IsMarkedForDeletion() const            { return ((this->m_iEFlags & EFL_KILLME) != 0); }
+	IServerNetworkable *GetNetworkable() const    { return &this->m_Network; }
+	CServerNetworkProperty *NetworkProp() const   { return &this->m_Network; }
+	const char *GetClassname() const              { return STRING((string_t)this->m_iClassname); }
+	string_t GetEntityName() const                { return this->m_iName; }
+	void SetName(string_t newName)                { this->m_iName = newName; }
+	ICollideable *GetCollideable() const          { return &this->m_Collision; }
+	CCollisionProperty *CollisionProp() const     { return &this->m_Collision; }
+	int GetTeamNumber() const                     { return this->m_iTeamNum; }
+	int GetMaxHealth() const                      { return this->m_iMaxHealth; }
+	void SetMaxHealth(int amt)                    { this->m_iMaxHealth = amt; }
+	int GetHealth() const                         { return this->m_iHealth; }
+	void SetHealth(int amt)                       { this->m_iHealth = amt; }
+	bool IsAlive() const                          { return (this->m_lifeState == LIFE_ALIVE); }
+	CBaseEntity *GetGroundEntity() const          { return this->m_hGroundEntity; }
+	CBaseEntity *GetOwnerEntity() const           { return this->m_hOwnerEntity; }
+	IPhysicsObject *VPhysicsGetObject() const     { return this->m_pPhysicsObject; }
+	int GetFlags() const                          { return this->m_fFlags; }
+	int GetCollisionGroup() const                 { return this->m_CollisionGroup; }
+	SolidType_t GetSolid() const                  { return this->CollisionProp()->GetSolid(); }
+	model_t *GetModel() const                     { return const_cast<model_t *>(modelinfo->GetModel(this->GetModelIndex())); }
+	bool IsTransparent() const                    { return (this->m_nRenderMode != kRenderNormal); }
+	MoveType_t GetMoveType() const                { return (MoveType_t)(unsigned char)this->m_MoveType; }
+	MoveCollide_t GetMoveCollide() const          { return (MoveCollide_t)(unsigned char)this->m_MoveCollide; }
+	void SetMoveCollide(MoveCollide_t val)        { this->m_MoveCollide = val; }
+	CBaseEntity *GetMoveParent()                  { return this->m_hMoveParent; }
+	CBaseEntity *FirstMoveChild()                 { return this->m_hMoveChild; }
+	CBaseEntity *NextMovePeer()                   { return this->m_hMovePeer; }
+	const color32 GetRenderColor() const          { return this->m_clrRender; }
+	void SetRenderColorR(byte r)                  { this->m_clrRender->r = r; }
+	void SetRenderColorG(byte g)                  { this->m_clrRender->g = g; }
+	void SetRenderColorB(byte b)                  { this->m_clrRender->b = b; }
+	void SetRenderColorA(byte a)                  { this->m_clrRender->a = a; }
+	bool IsMarkedForDeletion() const              { return ((this->m_iEFlags & EFL_KILLME) != 0); }
+	float GetGravity() const                      { return this->m_flGravity; }
+	void SetGravity(float gravity)                { this->m_flGravity = gravity; }
+	const Vector& GetLocalVelocity() const        { return this->m_vecVelocity; }
+	const Vector& GetLocalOrigin() const          { return this->m_vecOrigin; }
+	const QAngle& GetLocalAngles() const          { return this->m_angRotation; }
+	const QAngle& GetLocalAngularVelocity() const { return this->m_vecAngVelocity; }
 	
 	/* thunk */
 	void Remove()                                                                                                           {        ft_Remove                   (this); }
@@ -69,7 +120,8 @@ public:
 	bool ClassMatchesComplex(const char *pszClassOrWildcard)                                                                { return ft_ClassMatchesComplex      (this, pszClassOrWildcard); }
 	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin             (this, absOrigin); }
 	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles             (this, absAngles); }
-	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound                (this, soundname, soundtime, duration); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound_member1        (this, soundname, soundtime, duration); }
+	void EmitSound(const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = nullptr)    {        ft_EmitSound_member2        (this, soundname, handle, soundtime, duration); }
 	float GetNextThink(const char *szContext)                                                                               { return ft_GetNextThink             (this, szContext); }
 	bool IsBSPModel() const                                                                                                 { return ft_IsBSPModel               (this); }
 	void EntityText(int text_offset, const char *text, float duration, int r, int g, int b, int a)                          {        ft_EntityText               (this, text_offset, text, duration, r, g, b, a); }
@@ -83,6 +135,8 @@ public:
 	void Activate()                                                                                                         {        vt_Activate                 (this); }
 	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)                                             {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
 	const Vector& WorldSpaceCenter() const                                                                                  { return vt_WorldSpaceCenter         (this); }
+	bool IsBaseCombatWeapon() const                                                                                         { return vt_IsBaseCombatWeapon       (this); }
+	bool IsWearable() const                                                                                                 { return vt_IsWearable               (this); }
 	bool IsCombatItem() const                                                                                               { return vt_IsCombatItem             (this); }
 	void SetModelIndex(int index)                                                                                           {        vt_SetModelIndex            (this, index); }
 	int GetModelIndex() const                                                                                               { return vt_GetModelIndex            (this); }
@@ -99,11 +153,17 @@ public:
 	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                   { return vt_FVisible_ent             (this, pEntity, traceMask, ppBlocker); }
 	bool FVisible(const Vector& vecTarget, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                { return vt_FVisible_vec             (this, vecTarget, traceMask, ppBlocker); }
 	void Touch(CBaseEntity *pOther)                                                                                         {        vt_Touch                    (this, pOther); }
+	INextBot *MyNextBotPointer()                                                                                            { return vt_MyNextBotPointer         (this); }
+	void Teleport(const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity)                            {        vt_Teleport                 (this, newPosition, newAngles, newVelocity); }
 	
 	/* static */
-	static int PrecacheModel(const char *name, bool bPreload = true)     { return ft_PrecacheModel      (name, bPreload); }
-	static bool PrecacheSound(const char *name)                          { return ft_PrecacheSound      (name); }
-	static HSOUNDSCRIPTHANDLE PrecacheScriptSound(const char *soundname) { return ft_PrecacheScriptSound(soundname); }
+	static int PrecacheModel(const char *name, bool bPreload = true)                                                                                                                                      { return ft_PrecacheModel      (name, bPreload); }
+	static bool PrecacheSound(const char *name)                                                                                                                                                           { return ft_PrecacheSound      (name); }
+	static HSOUNDSCRIPTHANDLE PrecacheScriptSound(const char *soundname)                                                                                                                                  { return ft_PrecacheScriptSound(soundname); }
+	static void EmitSound(IRecipientFilter& filter, int iEntIndex, const char *soundname, const Vector *pOrigin = nullptr, float soundtime = 0.0f, float *duration = nullptr)                             {        ft_EmitSound_static1  (filter, iEntIndex, soundname, pOrigin, soundtime, duration); }
+	static void EmitSound(IRecipientFilter& filter, int iEntIndex, const char *soundname, HSOUNDSCRIPTHANDLE& handle, const Vector *pOrigin = nullptr, float soundtime = 0.0f, float *duration = nullptr) {        ft_EmitSound_static2  (filter, iEntIndex, soundname, handle, pOrigin, soundtime, duration); }
+	static void EmitSound(IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params)                                                                                                             {        ft_EmitSound_static3  (filter, iEntIndex, params); }
+	static void EmitSound(IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params, HSOUNDSCRIPTHANDLE& handle)                                                                                 {        ft_EmitSound_static4  (filter, iEntIndex, params, handle); }
 	
 	/* hack */
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
@@ -136,6 +196,8 @@ private:
 	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMoveChild);
 	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMovePeer);
 	DECL_DATAMAP(CHandle<CBaseEntity>,   m_hMoveParent);
+	DECL_DATAMAP(float,                  m_flGravity);
+	DECL_DATAMAP(QAngle,                 m_vecAngVelocity);
 	
 	DECL_SENDPROP_RW(CCollisionProperty,   m_Collision);
 	DECL_SENDPROP   (int,                  m_iTeamNum);
@@ -148,22 +210,26 @@ private:
 	DECL_SENDPROP   (unsigned char,        m_MoveType);
 	DECL_SENDPROP   (unsigned char,        m_MoveCollide);
 	DECL_SENDPROP_RW(color32,              m_clrRender);
+	DECL_SENDPROP   (Vector,               m_vecVelocity);
+	DECL_SENDPROP   (Vector,               m_vecOrigin);
+	DECL_SENDPROP   (QAngle,               m_angRotation);
 	
-	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_Remove;
-	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsolutePosition;
-	static MemberFuncThunk<      CBaseEntity *, void>                                               ft_CalcAbsoluteVelocity;
-	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_NameMatchesComplex;
-	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                 ft_ClassMatchesComplex;
-	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                ft_SetAbsOrigin;
-	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                ft_SetAbsAngles;
-	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *>                 ft_EmitSound;
-	static MemberFuncThunk<      CBaseEntity *, float, const char *>                                ft_GetNextThink;
-	static MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *>                      ft_EntityToWorldSpace;
-	static MemberFuncThunk<const CBaseEntity *, bool>                                               ft_IsBSPModel;
-	static MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, int, int> ft_EntityText;
-	static MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&>                        ft_TakeDamage;
-	static MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t>                    ft_SetMoveType;
-	static MemberFuncThunk<      CBaseEntity *, model_t *>                                          ft_GetModel;
+	static MemberFuncThunk<      CBaseEntity *, void>                                                    ft_Remove;
+	static MemberFuncThunk<      CBaseEntity *, void>                                                    ft_CalcAbsolutePosition;
+	static MemberFuncThunk<      CBaseEntity *, void>                                                    ft_CalcAbsoluteVelocity;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                      ft_NameMatchesComplex;
+	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                      ft_ClassMatchesComplex;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                     ft_SetAbsOrigin;
+	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                     ft_SetAbsAngles;
+	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *>                      ft_EmitSound_member1;
+	static MemberFuncThunk<      CBaseEntity *, void, const char *, HSOUNDSCRIPTHANDLE&, float, float *> ft_EmitSound_member2;
+	static MemberFuncThunk<      CBaseEntity *, float, const char *>                                     ft_GetNextThink;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&, Vector *>                           ft_EntityToWorldSpace;
+	static MemberFuncThunk<const CBaseEntity *, bool>                                                    ft_IsBSPModel;
+	static MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, int, int>      ft_EntityText;
+	static MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&>                             ft_TakeDamage;
+	static MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t>                         ft_SetMoveType;
+	static MemberFuncThunk<      CBaseEntity *, model_t *>                                               ft_GetModel;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                                                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
@@ -172,6 +238,8 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void>                                                             vt_Activate;
 	static MemberVFuncThunk<      CBaseEntity *, void, Vector *, AngularImpulse *>                                 vt_GetVelocity;
 	static MemberVFuncThunk<const CBaseEntity *, const Vector&>                                                    vt_WorldSpaceCenter;
+	static MemberVFuncThunk<const CBaseEntity *, bool>                                                             vt_IsBaseCombatWeapon;
+	static MemberVFuncThunk<const CBaseEntity *, bool>                                                             vt_IsWearable;
 	static MemberVFuncThunk<const CBaseEntity *, bool>                                                             vt_IsCombatItem;
 	static MemberVFuncThunk<      CBaseEntity *, void, int>                                                        vt_SetModelIndex;
 	static MemberVFuncThunk<const CBaseEntity *, int>                                                              vt_GetModelIndex;
@@ -189,10 +257,16 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, bool, CBaseEntity *, int, CBaseEntity **>                         vt_FVisible_ent;
 	static MemberVFuncThunk<      CBaseEntity *, bool, const Vector&, int, CBaseEntity **>                         vt_FVisible_vec;
 	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>                                              vt_Touch;
+	static MemberVFuncThunk<      CBaseEntity *, INextBot *>                                                       vt_MyNextBotPointer;
+	static MemberVFuncThunk<      CBaseEntity *, void, const Vector *, const QAngle *, const Vector *>             vt_Teleport;
 	
-	static StaticFuncThunk<int, const char *, bool>          ft_PrecacheModel;
-	static StaticFuncThunk<bool, const char *>               ft_PrecacheSound;
-	static StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *> ft_PrecacheScriptSound;
+	static StaticFuncThunk<int, const char *, bool>                                                                         ft_PrecacheModel;
+	static StaticFuncThunk<bool, const char *>                                                                              ft_PrecacheSound;
+	static StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *>                                                                ft_PrecacheScriptSound;
+	static StaticFuncThunk<void, IRecipientFilter&, int, const char *, const Vector *, float, float *>                      ft_EmitSound_static1;
+	static StaticFuncThunk<void, IRecipientFilter&, int, const char *, HSOUNDSCRIPTHANDLE&, const Vector *, float, float *> ft_EmitSound_static2;
+	static StaticFuncThunk<void, IRecipientFilter&, int, const EmitSound_t&>                                                ft_EmitSound_static3;
+	static StaticFuncThunk<void, IRecipientFilter&, int, const EmitSound_t&, HSOUNDSCRIPTHANDLE&>                           ft_EmitSound_static4;
 };
 
 inline CBaseEntity *GetContainingEntity(edict_t *pent)

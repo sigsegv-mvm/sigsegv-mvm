@@ -71,7 +71,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\amtl\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;SE_EPISODEONE=1;SE_DARKMESSIAH=2;SE_ORANGEBOX=3;SE_BLOODYGOODTIME=4;SE_EYE=5;SE_CSS=6;SE_ORANGEBOXVALVE=7;SE_LEFT4DEAD=8;SE_LEFT4DEAD2=9;SE_ALIENSWARM=10;SE_PORTAL2=11;SE_CSGO=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -126,7 +126,7 @@
     <ClCompile>
       <AdditionalOptions>/MP</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\amtl\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;SE_EPISODEONE=1;SE_DARKMESSIAH=2;SE_ORANGEBOX=3;SE_BLOODYGOODTIME=4;SE_EYE=5;SE_CSS=6;SE_ORANGEBOXVALVE=7;SE_LEFT4DEAD=8;SE_LEFT4DEAD2=9;SE_ALIENSWARM=10;SE_PORTAL2=11;SE_CSGO=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -211,6 +211,7 @@
     <ClCompile Include="..\src\mod.cpp" />
     <ClCompile Include="..\src\mod\ai\engiebot_nopush.cpp" />
     <ClCompile Include="..\src\mod\ai\wrapassassin_altfire.cpp" />
+    <ClCompile Include="..\src\mod\anim\estimateabsvelocity_moveparent_fix.cpp" />
     <ClCompile Include="..\src\mod\attr\undocumented.cpp" />
     <ClCompile Include="..\src\mod\bot\kill_before_forcespec.cpp" />
     <ClCompile Include="..\src\mod\bot\medieval_nonmelee.cpp" />
@@ -271,6 +272,7 @@
     <ClCompile Include="..\src\mod\visualize\blast_radius.cpp" />
     <ClCompile Include="..\src\mod\visualize\dispenser_radius.cpp" />
     <ClCompile Include="..\src\mod\visualize\explosive_headshot.cpp" />
+    <ClCompile Include="..\src\mod\visualize\hitboxes.cpp" />
     <ClCompile Include="..\src\mod\visualize\minigun_deflect.cpp" />
     <ClCompile Include="..\src\mod\visualize\taunt_attacks.cpp" />
     <ClCompile Include="..\src\prop.cpp" />
@@ -283,6 +285,7 @@
     <ClCompile Include="..\src\sm\MemoryUtils.cpp" />
     <ClCompile Include="..\src\stub\baseanimating.cpp" />
     <ClCompile Include="..\src\stub\baseentity.cpp" />
+    <ClCompile Include="..\src\stub\baseentity_cl.cpp" />
     <ClCompile Include="..\src\stub\baseplayer.cpp" />
     <ClCompile Include="..\src\stub\cdebugoverlay.cpp" />
     <ClCompile Include="..\src\stub\econ.cpp" />
@@ -292,6 +295,7 @@
     <ClCompile Include="..\src\stub\misc.cpp" />
     <ClCompile Include="..\src\stub\objects.cpp" />
     <ClCompile Include="..\src\stub\particles.cpp" />
+    <ClCompile Include="..\src\stub\populators.cpp" />
     <ClCompile Include="..\src\stub\projectiles.cpp" />
     <ClCompile Include="..\src\stub\strings.cpp" />
     <ClCompile Include="..\src\stub\tfbot.cpp" />

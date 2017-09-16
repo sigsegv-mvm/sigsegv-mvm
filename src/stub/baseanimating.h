@@ -15,6 +15,7 @@ public:
 	float GetModelScale() const                 { return this->m_flModelScale; }
 	float GetCycle() const                      { return this->m_flCycle; }
 	void SetCycle(float cycle)                  { this->m_flCycle = cycle; }
+	int GetHitboxSet() const                    { return this->m_nHitboxSet; }
 	int LookupPoseParameter(const char *szName) { return this->LookupPoseParameter(this->GetModelPtr(), szName); }
 	
 	void SetModelScale(float scale, float change_duration = 0.0f)          {        ft_SetModelScale       (this, scale, change_duration); }
@@ -31,6 +32,7 @@ public:
 	int LookupPoseParameter(CStudioHdr *pStudioHdr, const char *szName)    { return ft_LookupPoseParameter (this, pStudioHdr, szName); }
 	float GetPoseParameter(int iParameter)                                 { return ft_GetPoseParameter_int(this, iParameter); }
 	float GetPoseParameter(const char *szName)                             { return ft_GetPoseParameter_str(this, szName); }
+	void GetBoneTransform(int iBone, matrix3x4_t& pBoneToWorld)            { return ft_GetBoneTransform    (this, iBone, pBoneToWorld); }
 	
 	DECL_SENDPROP   (int,   m_nSkin);
 	DECL_SENDPROP   (int,   m_nBody);
@@ -38,6 +40,7 @@ public:
 private:
 	DECL_SENDPROP   (float, m_flModelScale);
 	DECL_SENDPROP_RW(float, m_flCycle);
+	DECL_SENDPROP   (int,   m_nHitboxSet);
 	
 	static MemberFuncThunk<CBaseAnimating *, void, float, float>              ft_SetModelScale;
 	static MemberFuncThunk<CBaseAnimating *, void, float, bool>               ft_DrawServerHitboxes;
@@ -53,6 +56,7 @@ private:
 	static MemberFuncThunk<CBaseAnimating *, int, CStudioHdr *, const char *> ft_LookupPoseParameter;
 	static MemberFuncThunk<CBaseAnimating *, float, int>                      ft_GetPoseParameter_int;
 	static MemberFuncThunk<CBaseAnimating *, float, const char *>             ft_GetPoseParameter_str;
+	static MemberFuncThunk<CBaseAnimating *, void, int, matrix3x4_t&>         ft_GetBoneTransform;
 };
 
 class CBaseAnimatingOverlay : public CBaseAnimating {};
@@ -63,15 +67,19 @@ class CEconEntity : public CBaseAnimating
 public:
 	void DebugDescribe() { ft_DebugDescribe(this); }
 	
-	// really ought to be in IHasAttributes...
+	// GetAttributeContainer really ought to be in IHasAttributes...
 	CAttributeContainer *GetAttributeContainer() { return vt_GetAttributeContainer(this); }
+	void GiveTo(CBaseEntity *ent)                {        vt_GiveTo(this, ent); }
 	
 	CEconItemView *GetItem();
+	
+	DECL_SENDPROP_RW(bool, m_bValidatedAttachedEntity);
 	
 private:
 	static MemberFuncThunk<CEconEntity *, void> ft_DebugDescribe;
 	
 	static MemberVFuncThunk<CEconEntity *, CAttributeContainer *> vt_GetAttributeContainer;
+	static MemberVFuncThunk<CEconEntity *, void, CBaseEntity *>   vt_GiveTo;
 };
 
 

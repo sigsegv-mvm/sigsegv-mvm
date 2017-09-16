@@ -38,6 +38,12 @@
 					sym   "_ZN12CBaseTrigger9m_DataMapE"
 					class "CBaseTrigger"
 				}
+				"CEconItemView::m_DataMap"
+				{
+					type  "datamap"
+					sym   "_ZN13CEconItemView9m_DataMapE"
+					class "CEconItemView"
+				}
 				"CFilterTFBotHasTag::m_DataMap"
 				{
 					type  "datamap"

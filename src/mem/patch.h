@@ -44,6 +44,7 @@ public:
 	virtual uint32_t GetFuncOffMin() const = 0;
 	virtual uint32_t GetFuncOffMax() const = 0;
 	
+	/* only call these after verification has succeeded! */
 	uint32_t GetActualOffset() const;
 	void *GetActualLocation() const;
 	
@@ -56,8 +57,12 @@ protected:
 	
 	virtual bool PostInit() { return true; }
 	
+	/* these are both called one time, early, by CPatch::Init */
 	virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
+	
+	/* this is called multiple times, late, by CPatch::Apply */
+	virtual bool AdjustPatchInfo(ByteBuf& buf) const { return true; }
 	
 	void *GetFuncAddr() const { return this->m_pFuncAddr; }
 	

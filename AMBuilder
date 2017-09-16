@@ -7,10 +7,6 @@ projectName = 'sigsegv'
 sourceFiles = []
 
 sourceFiles += [
-  'src/common.h',
-]
-
-sourceFiles += [
   'libs/lz4/lib/lz4.c',
   
   'libs/lodepng/lodepng.cpp',
@@ -71,6 +67,8 @@ sourceFiles += [
   
   'src/re/nextbot.cpp',
   'src/re/path.cpp',
+  
+#  'src/entity/trigger_gravity_improved.cpp',
 ]
 
 sourceFiles += [
@@ -78,6 +76,7 @@ sourceFiles += [
   'src/mod/ai/engiebot_nopush.cpp',
   'src/mod/ai/engiebot_wrangler.cpp',
   'src/mod/ai/focus_one_player.cpp',
+  'src/mod/ai/giant_pyro.cpp',
   'src/mod/ai/improved_useitem.cpp',
   'src/mod/ai/nextboteventresponder_hooks.cpp',
   'src/mod/ai/prevent_postmortem_updates.cpp',
@@ -107,6 +106,7 @@ sourceFiles += [
 #  'src/mod/ai/mvm_defender_bots/trackers/tanks.cpp',
   
   'src/mod/anim/player_updatemodel_animstate_fix.cpp',
+  'src/mod/anim/estimateabsvelocity_moveparent_fix.cpp',
   
   'src/mod/attr/healonkill_overheal_melee.cpp',
   'src/mod/attr/undocumented.cpp',
@@ -132,6 +132,7 @@ sourceFiles += [
   'src/mod/demo/stringtable_limit.cpp',
   
   'src/mod/etc/bottle_break_fix.cpp',
+  'src/mod/etc/debug_mission_change_crash.cpp',
   'src/mod/etc/deflect_rocket_spew.cpp',
   'src/mod/etc/heat_seeking_rockets.cpp',
   'src/mod/etc/holiday_items_allow.cpp',
@@ -147,13 +148,16 @@ sourceFiles += [
   'src/mod/etc/override_move_speed.cpp',
   'src/mod/etc/release_source_mutex.cpp',
   'src/mod/etc/suppress_nb_event_messages.cpp',
+  'src/mod/etc/target_changegravity_improved.cpp',
   
   'src/mod/mvm/building_destruction_prevention.cpp',
   'src/mod/mvm/changebotattributes_crash_fix.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
   'src/mod/mvm/chat_unrestrict.cpp',
   'src/mod/mvm/disposable_dispenser.cpp',
+  'src/mod/mvm/disposable_sentry_health_upgrades.cpp',
   'src/mod/mvm/dominations.cpp',
+  'src/mod/mvm/drop_weapons.cpp',
   'src/mod/mvm/explosive_headshot_on_everything.cpp',
   'src/mod/mvm/friendlyfire.cpp',
   'src/mod/mvm/gib_improvements.cpp',
@@ -166,6 +170,8 @@ sourceFiles += [
 #  'src/mod/mvm/romevision_disable.cpp',
   'src/mod/mvm/sapper_allow_multiple_active.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
+  'src/mod/mvm/set_credit_team.cpp',
+  'src/mod/mvm/upgradestation_regen_improved.cpp',
   'src/mod/mvm/weapon_antigrief.cpp',
   'src/mod/mvm/yer_unnerf.cpp',
   
@@ -215,17 +221,19 @@ sourceFiles += [
   'src/mod/tank/gunslinger_combo.cpp',
   
   'src/mod/util/add_item.cpp',
-#  'src/mod/util/client_cmds.cpp',
+  'src/mod/util/client_cmds.cpp',
   'src/mod/util/confilter.cpp',
   'src/mod/util/console_recv.cpp',
   'src/mod/util/console_send.cpp',
   'src/mod/util/debugoverlay_font.cpp',
   'src/mod/util/debugoverlay_font_v2.cpp',
   'src/mod/util/debugoverlay_font_v3.cpp',
+  'src/mod/util/dtwarning_use_cvar.cpp',
   'src/mod/util/dtwatch.cpp',
   'src/mod/util/entity_overlays.cpp',
 #  'src/mod/util/jumboframes.cpp',
   'src/mod/util/listenserverhost.cpp',
+  'src/mod/util/make_item.cpp',
 #  'src/mod/util/netmsg_client.cpp',
 #  'src/mod/util/netmsg_server.cpp',
   'src/mod/util/notify_recv.cpp',
@@ -248,6 +256,7 @@ if 'mods_debug' not in Extension.exclude:
   sourceFiles += [
     'src/mod/debug/airblastvuln.cpp',
     'src/mod/debug/backtrace.cpp',
+    'src/mod/debug/better_ent_text.cpp',
     'src/mod/debug/bottle_break.cpp',
     'src/mod/debug/building_status.cpp',
     'src/mod/debug/changelevel.cpp',
@@ -273,6 +282,8 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/grenade_vphysics.cpp',
     'src/mod/debug/heal_debuff.cpp',
     'src/mod/debug/hurt_float.cpp',
+    'src/mod/debug/interp_arrow.cpp',
+    'src/mod/debug/ispotentiallytraversable_trace.cpp',
     'src/mod/debug/known_entities.cpp',
     'src/mod/debug/list_competitive_convars.cpp',
     'src/mod/debug/medigun_speed.cpp',
@@ -306,6 +317,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/shortcircuit_rubberband.cpp',
     'src/mod/debug/sound_leak.cpp',
     'src/mod/debug/static_props.cpp',
+    'src/mod/debug/sticky_detonation_delay.cpp',
     'src/mod/debug/sticky_detonation_order.cpp',
     'src/mod/debug/stringtables.cpp',
     'src/mod/debug/suicide_bomber.cpp',
@@ -318,6 +330,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/useitem_broken.cpp',
     'src/mod/debug/usermsg_overflow.cpp',
     'src/mod/debug/usermsg_overflow_v2.cpp',
+    'src/mod/debug/vaccinator.cpp',
     'src/mod/debug/vprof_record.cpp',
   ]
 
@@ -334,6 +347,7 @@ if 'mods_visualize' not in Extension.exclude:
     'src/mod/visualize/dispenser_radius.cpp',
     'src/mod/visualize/engie_nests.cpp',
     'src/mod/visualize/explosive_headshot.cpp',
+    'src/mod/visualize/flamethrower.cpp',
     'src/mod/visualize/hitboxes.cpp',
     'src/mod/visualize/huntsman.cpp',
     'src/mod/visualize/jar_radius.cpp',
@@ -375,6 +389,10 @@ _, autogen = builder.AddCommand(
 )
 binary.compiler.sourcedeps += autogen
 
+
+# PCH for GCC only (breaks Clang autogen.h dependency detection)
+if 'gcc' in binary.compiler.version.vendor_name:
+  project.sources = [ 'src/common.h' ] + project.sources
 
 binary.compiler.cflags += [ '-include', 'common.h' ]
 

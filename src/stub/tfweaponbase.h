@@ -61,6 +61,8 @@ public:
 	DECL_SENDPROP(float, m_flLastFireTime);
 	DECL_SENDPROP(float, m_flEffectBarRegenTime);
 	DECL_SENDPROP(float, m_flEnergy);
+	DECL_SENDPROP(CHandle<CTFWearable>, m_hExtraWearable);
+	DECL_SENDPROP(CHandle<CTFWearable>, m_hExtraWearableViewModel);
 	
 private:
 	static MemberFuncThunk<CTFWeaponBase *, bool> ft_IsSilentKiller;
@@ -72,6 +74,8 @@ private:
 class CTFWeaponBaseGun : public CTFWeaponBase {};
 
 class CTFPipebombLauncher : public CTFWeaponBaseGun {};
+
+class CTFGrenadeLauncher : public CTFWeaponBaseGun {};
 
 class CTFCompoundBow : public CTFPipebombLauncher
 {

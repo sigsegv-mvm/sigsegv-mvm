@@ -1,6 +1,7 @@
 #include "mod.h"
 
 
+#if 0
 namespace Mod_Credits_Magnet_Disable
 {
 	constexpr uint8_t s_Buf[] = {
@@ -61,3 +62,4 @@ namespace Mod_Credits_Magnet_Disable
 			s_Mod.Toggle(var.GetBool());
 		});
 }
+#endif

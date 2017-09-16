@@ -15,7 +15,7 @@ bool CPatch::Init()
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
 	if (this->m_pFuncAddr == nullptr) {
-		DevMsg("CPatch::Init: FAIL: no addr for \"%s\"\n", this->m_pszFuncName);
+		DevMsg("CPatch::Init: FAIL: \"%s\": can't find func addr\n", this->m_pszFuncName);
 		return false;
 	}
 	
@@ -46,7 +46,7 @@ bool CPatch::Check()
 	using PatchScanner = CMaskedScanner<ScanDir::FORWARD, ScanResults::ALL, 1>;
 	
 	uintptr_t addr_min = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMin;
-	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength + 1;
+	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
 	if (this->Verbose()) {
 		DevMsg("CPatch::Check: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
@@ -59,7 +59,10 @@ bool CPatch::Check()
 	
 	CScan<PatchScanner> scan(CAddrAddrBounds((void *)addr_min, (void *)addr_max), this->m_BufVerify, this->m_MaskVerify);
 	if (!scan.ExactlyOneMatch()) {
-		DevMsg("CPatch::Check: FAIL: \"%s\": found %u matching regions\n", this->m_pszFuncName, scan.Matches().size());
+		DevMsg("CPatch::Check: FAIL: \"%s\": found %u matching regions:\n", this->m_pszFuncName, scan.Matches().size());
+		for (auto match : scan.Matches()) {
+			DevMsg("  +0x%04x\n", (uintptr_t)match - (uintptr_t)this->m_pFuncAddr);
+		}
 		return false;
 	}
 	
@@ -85,7 +88,12 @@ void CPatch::Apply()
 	}
 	
 	if (!this->m_bFoundOffset) {
-		DevWarning("CPatch::Apply: haven't found actual offset yet!\n");
+		DevWarning("CPatch::Apply: \"%s\": haven't found actual offset yet!\n", this->m_pszFuncName);
+		return;
+	}
+	
+	if (!this->AdjustPatchInfo(this->m_BufPatch)) {
+		DevMsg("CPatch::Apply: \"%s\": GetPatchInfo returned false\n", this->m_pszFuncName);
 		return;
 	}
 	
@@ -120,7 +128,7 @@ void CPatch::UnApply()
 	}
 	
 	if (!this->m_bFoundOffset) {
-		DevWarning("CPatch::UnApply: haven't found actual offset yet!\n");
+		DevWarning("CPatch::UnApply: \"%s\": haven't found actual offset yet!\n", this->m_pszFuncName);
 		return;
 	}
 	
@@ -143,12 +151,14 @@ void CPatch::UnApply()
 
 uint32_t CPatch::GetActualOffset() const
 {
-	if (!this->m_bFoundOffset) return -1;
+//	if (!this->m_bFoundOffset) return -1;
+	assert(this->m_bFoundOffset);
 	return this->m_iFuncOffActual;
 }
 
 void *CPatch::GetActualLocation() const
 {
-	if (!this->m_bFoundOffset) return nullptr;
+//	if (!this->m_bFoundOffset) return nullptr;
+	assert(this->m_bFoundOffset);
 	return (void *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
 }

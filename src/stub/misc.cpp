@@ -50,3 +50,10 @@ string_t FindPooledString(const char *pszValue) { return ft_FindPooledString(psz
 
 static StaticFuncThunk<IGameSystem *> ft_GameStringSystem("GameStringSystem");
 IGameSystem *GameStringSystem() { return ft_GameStringSystem(); }
+
+
+static StaticFuncThunk<const char *, uint64> ft_CSteamID_Render_static("CSteamID::Render [static]");
+const char *CSteamID::Render(uint64 ulSteamID) { return ft_CSteamID_Render_static(ulSteamID); }
+
+static MemberFuncThunk<const CSteamID *, const char *> ft_CSteamID_Render_member("CSteamID::Render [member]");
+const char *CSteamID::Render() const { return ft_CSteamID_Render_member(this); }

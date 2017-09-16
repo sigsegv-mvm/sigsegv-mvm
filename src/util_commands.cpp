@@ -1,6 +1,6 @@
 /* handy utility commands */
 
-#include "stub/baseentity.h"
+#include "stub/gamerules.h"
 #include "util/iterate.h"
 
 
@@ -48,4 +48,20 @@ CON_COMMAND_F(find_ent_ex, "Find and list all entities with classnames or target
 	}
 	
 	Msg("Found %u matches, out of %u total entities.\n", matches.size(), nTotalEntities);
+}
+
+
+CON_COMMAND_F(sig_setcustomupgradesfile, "Equivalent to firing the SetCustomUpgradesFile on a tf_gamerules entity, except it will always work", FCVAR_NONE)
+{
+	if (args.ArgC() < 2) {
+		Msg("Format: sig_setcustomupgradesfile <path>\n");
+		return;
+	}
+	
+	if (TFGameRules() == nullptr) {
+		Msg("sig_setcustomupgradesfile: TFGameRules() == nullptr\n");
+		return;
+	}
+	
+	TFGameRules()->SetCustomUpgradesFile(args[1]);
 }

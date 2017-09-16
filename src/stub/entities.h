@@ -79,7 +79,14 @@ public:
 class CTFMedigunShield : public CBaseAnimating {};
 
 
-class CEconWearable : public CEconEntity {};
+class CEconWearable : public CEconEntity
+{
+public:
+	void UnEquip(CBasePlayer *player) { vt_UnEquip(this, player); }
+	
+private:
+	static MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> vt_UnEquip;
+};
 
 class CTFWearable : public CEconWearable {};
 
@@ -117,7 +124,15 @@ private:
 class CBaseProp : public CBaseAnimating {};
 class CBreakableProp : public CBaseProp {};
 class CDynamicProp : public CBreakableProp {};
-class CTFItem : public CDynamicProp {};
+
+class CTFItem : public CDynamicProp
+{
+public:
+	int GetItemID() const { return vt_GetItemID(this); }
+	
+private:
+	static MemberVFuncThunk<const CTFItem *, int> vt_GetItemID;
+};
 
 class CCaptureFlag : public CTFItem
 {
@@ -258,7 +273,20 @@ private:
 };
 
 
-class CCaptureZone : public CBaseTrigger {};
+class CCaptureZone : public CBaseTrigger
+{
+public:
+	bool IsDisabled() const { return this->m_bDisabled; }
+	
+	void Capture(CBaseEntity *ent) { ft_Capture(this, ent); }
+	
+private:
+	// yes, they really put a member variable in this class with the same name
+	// as one that's in the parent class... sigh...
+	DECL_SENDPROP(bool, m_bDisabled);
+	
+	static MemberFuncThunk<CCaptureZone *, void, CBaseEntity *> ft_Capture;
+};
 
 
 class ICaptureZoneAutoList

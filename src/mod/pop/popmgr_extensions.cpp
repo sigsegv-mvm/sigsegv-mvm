@@ -3,6 +3,7 @@
 #include "stub/projectiles.h"
 #include "stub/tfbot.h"
 #include "stub/gamerules.h"
+#include "stub/populators.h"
 #include "stub/misc.h"
 #include "util/iterate.h"
 #include "util/scope.h"
@@ -24,7 +25,7 @@ namespace Mod_Pop_PopMgr_Extensions
 				this->m_bOverridden = false;
 			}
 		}
-		void Set(T val)
+		void Set(const T& val)
 		{
 			if (!this->m_bOverridden) {
 				this->Backup();
@@ -36,7 +37,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 	protected:
 		virtual T GetValue() = 0;
-		virtual void SetValue(T val) = 0;
+		virtual void SetValue(const T& val) = 0;
 		
 	private:
 		void Backup()
@@ -53,9 +54,13 @@ namespace Mod_Pop_PopMgr_Extensions
 	};
 	
 	template<typename T> T ConVar_GetValue(const ConVarRef& cvar);
-	template<> bool  ConVar_GetValue<bool> (const ConVarRef& cvar) { return cvar.GetBool(); }
-	template<> int   ConVar_GetValue<int>  (const ConVarRef& cvar) { return cvar.GetInt(); }
-	template<> float ConVar_GetValue<float>(const ConVarRef& cvar) { return cvar.GetFloat(); }
+	template<> bool        ConVar_GetValue<bool>       (const ConVarRef& cvar) { return cvar.GetBool();   }
+	template<> int         ConVar_GetValue<int>        (const ConVarRef& cvar) { return cvar.GetInt();    }
+	template<> float       ConVar_GetValue<float>      (const ConVarRef& cvar) { return cvar.GetFloat();  }
+	template<> std::string ConVar_GetValue<std::string>(const ConVarRef& cvar) { return cvar.GetString(); }
+	
+	template<typename T> void ConVar_SetValue(ConVarRef& cvar, const T& val) { cvar.SetValue(val); }
+	template<> void ConVar_SetValue(ConVarRef& cvar, const std::string& val) { cvar.SetValue(val.c_str()); }
 	
 	template<typename T>
 	class CPopOverride_ConVar : public IPopOverride<T>
@@ -66,7 +71,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		virtual T GetValue() override { return ConVar_GetValue<T>(MyConVar()); }
 		
-		virtual void SetValue(T val) override
+		virtual void SetValue(const T& val) override
 		{
 			/* set the ConVar value in a manner that circumvents:
 			 * - FCVAR_NOTIFY notifications
@@ -82,7 +87,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			MyConVar().Ref_HasMin() = false;
 			MyConVar().Ref_HasMax() = false;
 			
-			MyConVar().SetValue(val);
+			ConVar_SetValue<T>(MyConVar(), val);
 			
 			MyConVar().Ref_Flags()  = old_flags;
 			MyConVar().Ref_HasMin() = old_hasmin;
@@ -105,8 +110,38 @@ namespace Mod_Pop_PopMgr_Extensions
 	
 	struct CPopOverride_MedievalMode : public IPopOverride<bool>
 	{
-		virtual bool GetValue() override         { return TFGameRules()->IsInMedievalMode(); }
-		virtual void SetValue(bool val) override { TFGameRules()->Set_m_bPlayingMedieval(val); }
+		virtual bool GetValue() override                { return TFGameRules()->IsInMedievalMode(); }
+		virtual void SetValue(const bool& val) override { TFGameRules()->Set_m_bPlayingMedieval(val); }
+	};
+	
+	
+	class CPopOverride_CustomUpgradesFile : public IPopOverride<std::string>
+	{
+	public:
+		virtual std::string GetValue() override
+		{
+			std::string val = TFGameRules()->GetCustomUpgradesFile();
+			
+			if (val == "") {
+				val = "scripts/items/mvm_upgrades.txt";
+			}
+			
+			return val;
+		}
+		
+		virtual void SetValue(const std::string& val) override
+		{
+			std::string real_val = val;
+			
+			if (real_val == "") {
+				real_val = "scripts/items/mvm_upgrades.txt";
+			}
+			
+			if (this->GetValue() != real_val) {
+				ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "CPopOverride_CustomUpgradesFile: SetCustomUpgradesFile(\"%s\")\n", real_val.c_str());
+				TFGameRules()->SetCustomUpgradesFile(real_val.c_str());
+			}
+		}
 	};
 	
 	
@@ -194,8 +229,12 @@ namespace Mod_Pop_PopMgr_Extensions
 			m_DeathPenalty            ("tf_mvm_death_penalty"),
 			m_SentryBusterFriendlyFire("tf_bot_suicide_bomb_friendly_fire"),
 			m_BotPushaway             ("tf_avoidteammates_pushaway"),
+			m_HumansMustJoinTeam      ("mp_humans_must_join_team"),
 			m_AllowJoinTeamBlue       ("sig_mvm_jointeam_blue_allow"),
 			m_AllowJoinTeamBlueMax    ("sig_mvm_jointeam_blue_allow_max"),
+			m_BluHumanFlagPickup      ("sig_mvm_bluhuman_flag_pickup"),
+			m_BluHumanFlagCapture     ("sig_mvm_bluhuman_flag_capture"),
+			m_SetCreditTeam           ("sig_mvm_set_credit_team"),
 			m_EnableDominations       ("sig_mvm_dominations")
 		{
 			this->Reset();
@@ -212,6 +251,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_bSniperAllowHeadshots   = false;
 			this->m_bDisableUpgradeStations = false;
 			this->m_flRemoveGrapplingHooks  = -1.0f;
+			this->m_bReverseWinConditions   = false;
 			
 			this->m_MedievalMode            .Reset();
 			this->m_SpellsEnabled           .Reset();
@@ -225,13 +265,21 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_DeathPenalty            .Reset();
 			this->m_SentryBusterFriendlyFire.Reset();
 			this->m_BotPushaway             .Reset();
+			this->m_HumansMustJoinTeam      .Reset();
 			
 			this->m_AllowJoinTeamBlue   .Reset();
 			this->m_AllowJoinTeamBlueMax.Reset();
+			this->m_BluHumanFlagPickup  .Reset();
+			this->m_BluHumanFlagCapture .Reset();
+			this->m_SetCreditTeam       .Reset();
 			this->m_EnableDominations   .Reset();
 			
-			this->m_DisableSounds.clear();
-			this->m_ItemWhitelist.clear();
+			this->m_CustomUpgradesFile.Reset();
+			
+			this->m_DisableSounds  .clear();
+			this->m_ItemWhitelist  .clear();
+			this->m_ItemBlacklist  .clear();
+		//	this->m_DisallowedItems.clear();
 			
 			this->m_FlagResetTimes.clear();
 			
@@ -254,26 +302,35 @@ namespace Mod_Pop_PopMgr_Extensions
 		bool m_bSniperAllowHeadshots;
 		bool m_bDisableUpgradeStations;
 		float m_flRemoveGrapplingHooks;
+		bool m_bReverseWinConditions;
 		
-		CPopOverride_MedievalMode  m_MedievalMode;
-		CPopOverride_ConVar<bool>  m_SpellsEnabled;
-		CPopOverride_ConVar<bool>  m_GrapplingHook;
-		CPopOverride_ConVar<bool>  m_RespecEnabled;
-		CPopOverride_ConVar<int>   m_RespecLimit;
-		CPopOverride_ConVar<float> m_BonusRatioHalf;
-		CPopOverride_ConVar<float> m_BonusRatioFull;
-		CPopOverride_ConVar<bool>  m_FixedBuybacks;
-		CPopOverride_ConVar<int>   m_BuybacksPerWave;
-		CPopOverride_ConVar<int>   m_DeathPenalty;
-		CPopOverride_ConVar<bool>  m_SentryBusterFriendlyFire;
-		CPopOverride_ConVar<bool>  m_BotPushaway;
+		CPopOverride_MedievalMode        m_MedievalMode;
+		CPopOverride_ConVar<bool>        m_SpellsEnabled;
+		CPopOverride_ConVar<bool>        m_GrapplingHook;
+		CPopOverride_ConVar<bool>        m_RespecEnabled;
+		CPopOverride_ConVar<int>         m_RespecLimit;
+		CPopOverride_ConVar<float>       m_BonusRatioHalf;
+		CPopOverride_ConVar<float>       m_BonusRatioFull;
+		CPopOverride_ConVar<bool>        m_FixedBuybacks;
+		CPopOverride_ConVar<int>         m_BuybacksPerWave;
+		CPopOverride_ConVar<int>         m_DeathPenalty;
+		CPopOverride_ConVar<bool>        m_SentryBusterFriendlyFire;
+		CPopOverride_ConVar<bool>        m_BotPushaway;
+		CPopOverride_ConVar<std::string> m_HumansMustJoinTeam;
 		
-		CPopOverride_ConVar<bool>  m_AllowJoinTeamBlue;
-		CPopOverride_ConVar<int>   m_AllowJoinTeamBlueMax;
-		CPopOverride_ConVar<bool>  m_EnableDominations;
+		CPopOverride_ConVar<bool> m_AllowJoinTeamBlue;
+		CPopOverride_ConVar<int>  m_AllowJoinTeamBlueMax;
+		CPopOverride_ConVar<bool> m_BluHumanFlagPickup;
+		CPopOverride_ConVar<bool> m_BluHumanFlagCapture;
+		CPopOverride_ConVar<int>  m_SetCreditTeam;
+		CPopOverride_ConVar<bool> m_EnableDominations;
 		
-		std::vector<std::string> m_DisableSounds;
-		std::vector<std::string> m_ItemWhitelist;
+		CPopOverride_CustomUpgradesFile m_CustomUpgradesFile;
+		
+		std::set<std::string> m_DisableSounds;
+		std::set<std::string> m_ItemWhitelist;
+		std::set<std::string> m_ItemBlacklist;
+	//	std::set<int>         m_DisallowedItems;
 		
 		std::map<std::string, int> m_FlagResetTimes;
 		
@@ -358,15 +415,6 @@ namespace Mod_Pop_PopMgr_Extensions
 		return DETOUR_STATIC_CALL(CTFReviveMarker_Create)(player);
 	}
 	
-	DETOUR_DECL_MEMBER(void, CBaseEntity_EmitSound, const char *soundname, float soundtime, float *duration)
-	{
-		if (state.m_bNoMvMDeathTune && soundname != nullptr && strcmp(soundname, "MVM.PlayerDied") == 0) {
-			return;
-		}
-		
-		DETOUR_MEMBER_CALL(CBaseEntity_EmitSound)(soundname, soundtime, duration);
-	}
-	
 	DETOUR_DECL_MEMBER(void, CTFSniperRifle_CreateSniperDot)
 	{
 		auto rifle = reinterpret_cast<CTFSniperRifle *>(this);
@@ -436,16 +484,98 @@ namespace Mod_Pop_PopMgr_Extensions
 		if (TFGameRules()->IsMannVsMachineMode()) {
 		//	DevMsg("CTeamplayRoundBasedRules::BroadcastSound(%d, \"%s\", 0x%08x)\n", iTeam, sound, iAdditionalSoundFlags);
 			
-			for (const auto& str : state.m_DisableSounds) {
-				if (V_stricmp(sound, str.c_str()) == 0) {
-					DevMsg("Blocked sound \"%s\"\n", sound);
-					return;
-				}
+			if (sound != nullptr && state.m_DisableSounds.count(std::string(sound)) != 0) {
+				DevMsg("Blocked sound \"%s\" via CTeamplayRoundBasedRules::BroadcastSound\n", sound);
+				return;
 			}
 		}
 		
 		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_BroadcastSound)(iTeam, sound, iAdditionalSoundFlags);
 	}
+	
+	DETOUR_DECL_STATIC(void, CBaseEntity_EmitSound_static_emitsound, IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params)
+	{
+		if (TFGameRules()->IsMannVsMachineMode()) {
+			const char *sound = params.m_pSoundName;
+			
+		//	DevMsg("CBaseEntity::EmitSound(#%d, \"%s\")\n", iEntIndex, sound);
+			
+			if (state.m_bNoMvMDeathTune && sound != nullptr && strcmp(sound, "MVM.PlayerDied") == 0) {
+				return;
+			}
+			
+			if (sound != nullptr && state.m_DisableSounds.count(std::string(sound)) != 0) {
+				DevMsg("Blocked sound \"%s\" via CBaseEntity::EmitSound\n", sound);
+				return;
+			}
+		}
+		
+		DETOUR_STATIC_CALL(CBaseEntity_EmitSound_static_emitsound)(filter, iEntIndex, params);
+	}
+	
+	DETOUR_DECL_STATIC(void, CBaseEntity_EmitSound_static_emitsound_handle, IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params, HSOUNDSCRIPTHANDLE& handle)
+	{
+		if (TFGameRules()->IsMannVsMachineMode()) {
+			const char *sound = params.m_pSoundName;
+			
+		//	DevMsg("CBaseEntity::EmitSound(#%d, \"%s\", 0x%04x)\n", iEntIndex, sound, (uint16_t)handle);
+			
+			if (sound != nullptr && state.m_DisableSounds.count(std::string(sound)) != 0) {
+				DevMsg("Blocked sound \"%s\" via CBaseEntity::EmitSound\n", sound);
+				return;
+			}
+		}
+		
+		DETOUR_STATIC_CALL(CBaseEntity_EmitSound_static_emitsound_handle)(filter, iEntIndex, params, handle);
+	}
+	
+//	RefCount rc_CTFPlayer_GiveDefaultItems;
+//	DETOUR_DECL_MEMBER(void, CTFPlayer_GiveDefaultItems)
+//	{
+//		SCOPED_INCREMENT(rc_CTFPlayer_GiveDefaultItems);
+//		DETOUR_MEMBER_CALL(CTFPlayer_GiveDefaultItems)();
+//	}
+	
+	DETOUR_DECL_MEMBER(CBaseEntity *, CTFPlayer_GiveNamedItem, const char *classname, int i1, const CEconItemView *item_view, bool b1)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		/* this only applies to red team, for what essentially amount to "legacy" reasons */
+		if (TFGameRules()->IsMannVsMachineMode() && player->GetTeamNumber() == TF_TEAM_RED) {
+			/* only enforce the whitelist/blacklist if they are non-empty */
+			
+			if (!state.m_ItemWhitelist.empty() && state.m_ItemWhitelist.count(std::string(classname)) == 0) {
+				DevMsg("[%s] GiveNamedItem(\"%s\"): denied by whitelist\n", player->GetPlayerName(), classname);
+				return nullptr;
+			}
+			
+			if (!state.m_ItemBlacklist.empty() && state.m_ItemBlacklist.count(std::string(classname)) != 0) {
+				DevMsg("[%s] GiveNamedItem(\"%s\"): denied by blacklist\n", player->GetPlayerName(), classname);
+				return nullptr;
+			}
+		}
+		
+	//	DevMsg("[%s] GiveNamedItem(\"%s\"): provisionally allowed\n", player->GetPlayerName(), classname);
+		return DETOUR_MEMBER_CALL(CTFPlayer_GiveNamedItem)(classname, i1, item_view, b1);
+	}
+	
+#if 0
+	DETOUR_DECL_MEMBER(bool, CTFPlayer_ItemIsAllowed, CEconItemView *item_view)
+	{
+		auto player = reinterpret_cast<CTFPlayer *>(this);
+		
+		if (TFGameRules()->IsMannVsMachineMode() && item_view != nullptr) {
+			int item_defidx = item_view->GetItemDefIndex();
+			
+			if (state.m_DisallowedItems.count(item_defidx) != 0) {
+				DevMsg("[%s] CTFPlayer::ItemIsAllowed(%d): denied\n", player->GetPlayerName(), item_defidx);
+				return false;
+			}
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFPlayer_ItemIsAllowed)(item_view);
+	}
+#endif
 	
 	DETOUR_DECL_MEMBER(int, CCaptureFlag_GetMaxReturnTime)
 	{
@@ -462,43 +592,109 @@ namespace Mod_Pop_PopMgr_Extensions
 	}
 	
 	
-	RefCount rc_CTFPlayer_GiveDefaultItems;
-	DETOUR_DECL_MEMBER(void, CTFPlayer_GiveDefaultItems)
+#if 0
+	DETOUR_DECL_MEMBER(void, CTFGameRules_SetWinningTeam, int team, int iWinReason, bool bForceMapReset, bool bSwitchTeams, bool bDontAddScore, bool bFinal)
 	{
-		SCOPED_INCREMENT(rc_CTFPlayer_GiveDefaultItems);
-		DETOUR_MEMBER_CALL(CTFPlayer_GiveDefaultItems)();
-	}
-	
-	DETOUR_DECL_MEMBER(CBaseEntity *, CTFPlayer_GiveNamedItem, const char *classname, int i1, const CEconItemView *item_view, bool b1)
-	{
-		auto player = reinterpret_cast<CTFPlayer *>(this);
-		
-		if (TFGameRules()->IsMannVsMachineMode() && !state.m_ItemWhitelist.empty() && player->GetTeamNumber() == TF_TEAM_RED) {
-			bool allowed = false;
+		if (TFGameRules()->IsMannVsMachineMode() && state.m_bReverseWinConditions && team == TF_TEAM_BLUE) {
+			// don't forward the call to SetWinningTeam
+			// instead, imitate what is done when a wave is completed
 			
-			for (const auto& str : state.m_ItemWhitelist) {
-				if (FStrEq(classname, str.c_str())) {
-					allowed = true;
-					break;
-				}
-			}
+			ForEachTFPlayer([](CTFPlayer *player){
+				if (!player->IsAlive())                     return;
+				if (player->GetTeamNumber() != TF_TEAM_RED) return;
+				
+				player->CommitSuicide(true, false);
+			});
 			
-			if (!allowed) {
-			//	DevMsg("[%s] GiveNamedItem(\"%s\"): denied\n", player->GetPlayerName(), classname);
-				return nullptr;
-			}
+			// ...
+			
+			return;
 		}
 		
-	//	DevMsg("[%s] GiveNamedItem(\"%s\"): provisionally allowed\n", player->GetPlayerName(), classname);
-		return DETOUR_MEMBER_CALL(CTFPlayer_GiveNamedItem)(classname, i1, item_view, b1);
+		DETOUR_MEMBER_CALL(CTFGameRules_SetWinningTeam)(team, iWinReason, bForceMapReset, bSwitchTeams, bDontAddScore, bFinal);
 	}
+#endif
+	
+	DETOUR_DECL_MEMBER(void, CTeamplayRoundBasedRules_State_Enter, gamerules_roundstate_t newState)
+	{
+		gamerules_roundstate_t oldState = TFGameRules()->State_Get();
+		
+	//	ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[State] MvM:%d Reverse:%d oldState:%d newState:%d\n",
+	//		TFGameRules()->IsMannVsMachineMode(), state.m_bReverseWinConditions, oldState, newState);
+		
+		if (TFGameRules()->IsMannVsMachineMode() && state.m_bReverseWinConditions && oldState == GR_STATE_TEAM_WIN && newState == GR_STATE_PREROUND) {
+			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "GR_STATE_TEAM_WIN --> GR_STATE_PREROUND\n");
+			
+			CWave *wave = g_pPopulationManager->GetCurrentWave();
+			
+			// TODO(?): find all TFBots not on TEAM_SPECTATOR and switch them to TEAM_SPECTATOR
+			
+			/* call this twice to ensure all wavespawns get to state DONE */
+			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ForceFinish\n");
+			wave->ForceFinish();
+			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "MID  CWave::ForceFinish\n");
+			wave->ForceFinish();
+			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ForceFinish\n");
+			
+			// is this necessary or not? unsure...
+			// TODO: if enabled, need to block CTFPlayer::CommitSuicide call from ActiveWaveUpdate
+		//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ActiveWaveUpdate\n");
+		//	wave->ActiveWaveUpdate();
+		//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ActiveWaveUpdate\n");
+			
+			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::WaveCompleteUpdate\n");
+			wave->WaveCompleteUpdate();
+			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::WaveCompleteUpdate\n");
+			
+			// TODO(?): for all human players on TF_TEAM_BLUE: if !IsAlive(), then call ForceRespawn()
+			
+			return;
+		}
+		
+		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_State_Enter)(newState);
+	}
+	
+//	RefCount rc_CTFGameRules_FireGameEvent_teamplay_round_start;
+//	DETOUR_DECL_MEMBER(void, CTFGameRules_FireGameEvent, IGameEvent *event)
+//	{
+//		SCOPED_INCREMENT_IF(rc_CTFGameRules_FireGameEvent_teamplay_round_start, FStrEq(event->GetName(), "teamplay_round_start"));
+//		
+//		DETOUR_MEMBER_CALL(CTFGameRules_FireGameEvent)(event);
+//	}
+//	
+//	DETOUR_DECL_MEMBER(void, CTFPlayer_ChangeTeam, int iTeamNum, bool b1, bool b2, bool b3)
+//	{
+//		auto player = reinterpret_cast<CTFPlayer *>(this);
+//		
+//		if (rc_CTFGameRules_FireGameEvent_teamplay_round_start > 0 && TFGameRules()->IsMannVsMachineMode() && state.m_bReverseWinConditions && iTeamNum == TEAM_SPECTATOR) {
+//			ConColorMsg(Color(0x00, 0xff, 0xff, 0xff), "BLOCKING ChangeTeam(TEAM_SPECTATOR) for player #%d \"%s\" on team %d\n",
+//				ENTINDEX(player), player->GetPlayerName(), player->GetTeamNumber());
+//			return;
+//		}
+//		
+//		DETOUR_MEMBER_CALL(CTFPlayer_ChangeTeam)(iTeamNum, b1, b2, b3);
+//	}
+	
+	
+//	DETOUR_DECL_MEMBER(void, CPopulationManager_PostInitialize)
+//	{
+//		DETOUR_MEMBER_CALL(CPopulationManager_PostInitialize)();
+//	}
 	
 	
 	void Parse_ItemWhitelist(KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
 			DevMsg("ItemWhitelist: add \"%s\"\n", subkey->GetString());
-			state.m_ItemWhitelist.emplace_back(subkey->GetString());
+			state.m_ItemWhitelist.emplace(subkey->GetString());
+		}
+	}
+	
+	void Parse_ItemBlacklist(KeyValues *kv)
+	{
+		FOR_EACH_SUBKEY(kv, subkey) {
+			DevMsg("ItemBlacklist: add \"%s\"\n", subkey->GetString());
+			state.m_ItemBlacklist.emplace(subkey->GetString());
 		}
 	}
 	
@@ -706,6 +902,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_bDisableUpgradeStations = subkey->GetBool();
 				} else if (FStrEq(name, "RemoveGrapplingHooks")) {
 					state.m_flRemoveGrapplingHooks = subkey->GetFloat();
+				} else if (FStrEq(name, "ReverseWinConditions")) {
+					state.m_bReverseWinConditions = subkey->GetBool();
 				} else if (FStrEq(name, "MedievalMode")) {
 					state.m_MedievalMode.Set(subkey->GetBool());
 				} else if (FStrEq(name, "GrapplingHook")) {
@@ -728,17 +926,31 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_SentryBusterFriendlyFire.Set(subkey->GetBool());
 				} else if (FStrEq(name, "BotPushaway")) {
 					state.m_BotPushaway.Set(subkey->GetBool());
+				} else if (FStrEq(name, "HumansMustJoinTeam")) {
+					state.m_HumansMustJoinTeam.Set(subkey->GetString());
 				} else if (FStrEq(name, "AllowJoinTeamBlue")) {
 					state.m_AllowJoinTeamBlue.Set(subkey->GetBool());
 				} else if (FStrEq(name, "AllowJoinTeamBlueMax")) {
 					state.m_AllowJoinTeamBlueMax.Set(subkey->GetInt());
+				} else if (FStrEq(name, "BluHumanFlagPickup")) {
+					state.m_BluHumanFlagPickup.Set(subkey->GetBool());
+				} else if (FStrEq(name, "BluHumanFlagCapture")) {
+					state.m_BluHumanFlagCapture.Set(subkey->GetBool());
+				} else if (FStrEq(name, "SetCreditTeam")) {
+					state.m_SetCreditTeam.Set(subkey->GetInt());
 				} else if (FStrEq(name, "EnableDominations")) {
 					state.m_EnableDominations.Set(subkey->GetBool());
+				} else if (FStrEq(name, "CustomUpgradesFile")) {
+					static const std::string prefix("download/scripts/items/");
+					state.m_CustomUpgradesFile.Set(prefix + subkey->GetString());
 				} else if (FStrEq(name, "DisableSound")) {
-					DevMsg("Got DisableSound: \"%s\"\n", subkey->GetString());
-					state.m_DisableSounds.emplace_back(subkey->GetString());
+					state.m_DisableSounds.emplace(subkey->GetString());
 				} else if (FStrEq(name, "ItemWhitelist")) {
 					Parse_ItemWhitelist(subkey);
+				} else if (FStrEq(name, "ItemBlacklist")) {
+					Parse_ItemBlacklist(subkey);
+			//	} else if (FStrEq(name, "DisallowedItems")) {
+			//		Parse_DisallowedItems(subkey);
 				} else if (FStrEq(name, "FlagResetTime")) {
 					Parse_FlagResetTime(subkey);
 				} else if (FStrEq(name, "ExtraSpawnPoint")) {
@@ -784,22 +996,31 @@ namespace Mod_Pop_PopMgr_Extensions
 	public:
 		CMod() : IMod("Pop:PopMgr_Extensions")
 		{
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_PlayerKilled,               "CTFGameRules::PlayerKilled");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ShouldDropSpellPickup,      "CTFGameRules::ShouldDropSpellPickup");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup,            "CTFGameRules::DropSpellPickup");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,              "CTFGameRules::IsUsingSpells");
-			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,                  "CTFReviveMarker::Create");
-			MOD_ADD_DETOUR_MEMBER(CBaseEntity_EmitSound,                   "CBaseEntity::EmitSound [const char *, float, float *]");
-			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CreateSniperDot,          "CTFSniperRifle::CreateSniperDot");
-			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CanFireCriticalShot,      "CTFSniperRifle::CanFireCriticalShot");
-			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_CanFireCriticalShot,       "CTFWeaponBase::CanFireCriticalShot");
-			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Arrow_StrikeTarget,        "CTFProjectile_Arrow::StrikeTarget");
-			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,        "CTFGameRules::IsPVEModeControlled");
-			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,                  "CUpgrades::UpgradeTouch");
-			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_BroadcastSound, "CTeamplayRoundBasedRules::BroadcastSound");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveDefaultItems,              "CTFPlayer::GiveDefaultItems");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveNamedItem,                 "CTFPlayer::GiveNamedItem");
-			MOD_ADD_DETOUR_MEMBER(CCaptureFlag_GetMaxReturnTime,           "CCaptureFlag::GetMaxReturnTime");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_PlayerKilled,                     "CTFGameRules::PlayerKilled");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ShouldDropSpellPickup,            "CTFGameRules::ShouldDropSpellPickup");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup,                  "CTFGameRules::DropSpellPickup");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsUsingSpells,                    "CTFGameRules::IsUsingSpells");
+			MOD_ADD_DETOUR_STATIC(CTFReviveMarker_Create,                        "CTFReviveMarker::Create");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CreateSniperDot,                "CTFSniperRifle::CreateSniperDot");
+			MOD_ADD_DETOUR_MEMBER(CTFSniperRifle_CanFireCriticalShot,            "CTFSniperRifle::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_CanFireCriticalShot,             "CTFWeaponBase::CanFireCriticalShot");
+			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Arrow_StrikeTarget,              "CTFProjectile_Arrow::StrikeTarget");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_IsPVEModeControlled,              "CTFGameRules::IsPVEModeControlled");
+			MOD_ADD_DETOUR_MEMBER(CUpgrades_UpgradeTouch,                        "CUpgrades::UpgradeTouch");
+			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_BroadcastSound,       "CTeamplayRoundBasedRules::BroadcastSound");
+			MOD_ADD_DETOUR_STATIC(CBaseEntity_EmitSound_static_emitsound,        "CBaseEntity::EmitSound [static: emitsound]");
+			MOD_ADD_DETOUR_STATIC(CBaseEntity_EmitSound_static_emitsound_handle, "CBaseEntity::EmitSound [static: emitsound + handle]");
+		//	MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveDefaultItems,                    "CTFPlayer::GiveDefaultItems");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_GiveNamedItem,                       "CTFPlayer::GiveNamedItem");
+		//	MOD_ADD_DETOUR_MEMBER(CTFPlayer_ItemIsAllowed,                       "CTFPlayer::ItemIsAllowed");
+			MOD_ADD_DETOUR_MEMBER(CCaptureFlag_GetMaxReturnTime,                 "CCaptureFlag::GetMaxReturnTime");
+			
+		//	MOD_ADD_DETOUR_MEMBER(CTFGameRules_SetWinningTeam,          "CTFGameRules::SetWinningTeam");
+			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
+		//	MOD_ADD_DETOUR_MEMBER(CTFGameRules_FireGameEvent,           "CTFGameRules::FireGameEvent");
+		//	MOD_ADD_DETOUR_MEMBER(CTFPlayer_ChangeTeam,                 "CTFPlayer::ChangeTeam");
+			
+		//	MOD_ADD_DETOUR_MEMBER(CPopulationManager_PostInitialize, "CPopulationManager::PostInitialize");
 			
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_Parse, "CPopulationManager::Parse");
 			MOD_ADD_DETOUR_MEMBER(KeyValues_LoadFromFile,   "KeyValues::LoadFromFile");

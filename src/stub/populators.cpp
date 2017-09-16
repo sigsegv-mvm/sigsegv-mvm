@@ -43,6 +43,19 @@ struct CExtract_CPopulationManager_m_RespecPoints : public IExtract<CPopulationM
 #elif defined _WINDOWS
 
 // TODO
+struct CExtract_CPopulationManager_m_RespecPoints : public IExtract<CPopulationManager::SteamIDMap *>
+{
+	using T = CPopulationManager::SteamIDMap *;
+	
+	CExtract_CPopulationManager_m_RespecPoints() : IExtract<T>(0) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
+	
+	virtual const char *GetFuncName() const override   { return "CPopulationManager::ResetRespecPoints"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
+	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
+};
 
 #endif
 
@@ -56,7 +69,10 @@ IMPL_EXTRACT(CPopulationManager::SteamIDMap, CPopulationManager, m_RespecPoints,
 GlobalThunk<CPopulationManager *> g_pPopulationManager("g_pPopulationManager");
 
 
-MemberFuncThunk<CWave *, void, string_t, int, unsigned int> CWave::ft_AddClassType("CWave::AddClassType");
+MemberFuncThunk<CWave *, void, string_t, int, unsigned int> CWave::ft_AddClassType      ("CWave::AddClassType");
+MemberFuncThunk<CWave *, void>                              CWave::ft_ForceFinish       ("CWave::ForceFinish");
+MemberFuncThunk<CWave *, void>                              CWave::ft_ActiveWaveUpdate  ("CWave::ActiveWaveUpdate");
+MemberFuncThunk<CWave *, void>                              CWave::ft_WaveCompleteUpdate("CWave::WaveCompleteUpdate");
 
 
 MemberFuncThunk<CMissionPopulator *, bool, int> CMissionPopulator::ft_UpdateMission("CMissionPopulator::UpdateMission");

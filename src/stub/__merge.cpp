@@ -1,5 +1,6 @@
 #include "stub/baseanimating.cpp"
 #include "stub/baseentity.cpp"
+#include "stub/baseentity_cl.cpp"
 #include "stub/baseplayer.cpp"
 #include "stub/cdebugoverlay.cpp"
 #include "stub/dt_send.cpp"

@@ -14,7 +14,17 @@ namespace Mod_Etc_Release_Source_Mutex
 	const char *GetWinErrorString()
 	{
 		static char msg[1024];
+		
+		msg[0] = '\0';
 		::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, ::GetLastError(), 0, msg, sizeof(msg), nullptr);
+		
+		/* chop off any trailing newline characters */
+		for (int i = strlen(msg) - 1; i >= 0; --i) {
+			if (msg[i] == '\r' || msg[i] == '\n') {
+				msg[i] = '\0';
+			}
+		}
+		
 		return msg;
 	}
 	
@@ -32,8 +42,12 @@ namespace Mod_Etc_Release_Source_Mutex
 			return;
 		}
 		
+		bool success = true;
+		
 		if (!::ReleaseMutex(hMutex)) {
 			Msg("ReleaseMutex failed: %s\n", GetWinErrorString());
+		} else {
+			Msg("Success.\n");
 		}
 		
 		if (!::CloseHandle(hMutex)) {

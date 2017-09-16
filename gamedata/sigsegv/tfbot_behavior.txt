@@ -13,6 +13,16 @@
 		{
 			"addrs"
 			{
+				"CTFBotMainAction::~CTFBotMainAction [D0]"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainActionD0Ev"
+				}
+				"CTFBotMainAction::~CTFBotMainAction [D2]"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainActionD2Ev"
+				}
 				"CTFBotMainAction::OnStart"
 				{
 					type "sym"

@@ -202,8 +202,7 @@ public:
 	void NetworkStateChanged();
 	void NetworkStateChanged(void *pVar);
 	
-	CTFPlayer *GetOuter();
-	
+	CTFPlayer *GetOuter()          { return this->m_pOuter; }
 	int GetState() const           { return this->m_nPlayerState; }
 	void SetState(int nState)      { this->m_nPlayerState = nState; }
 	bool InState(int nState) const { return (this->m_nPlayerState == nState); }
@@ -222,18 +221,19 @@ public:
 	bool IsControlStunned()                                                             { return ft_IsControlStunned    (this); }
 	bool IsLoserStateStunned() const                                                    { return ft_IsLoserStateStunned (this); }
 	
-	DECL_SENDPROP(float, m_flCloakMeter);
-	DECL_SENDPROP(float, m_flEnergyDrinkMeter);
-	DECL_SENDPROP(float, m_flHypeMeter);
-	DECL_SENDPROP(float, m_flChargeMeter);
-	DECL_SENDPROP(float, m_flRageMeter);
-	DECL_SENDPROP(bool,  m_bRageDraining);
-	DECL_SENDPROP(int,   m_iCritMult);
-	DECL_SENDPROP(bool,  m_bInUpgradeZone);
-	DECL_SENDPROP(float, m_flStealthNoAttackExpire);
+	DECL_SENDPROP(float,       m_flCloakMeter);
+	DECL_SENDPROP(float,       m_flEnergyDrinkMeter);
+	DECL_SENDPROP(float,       m_flHypeMeter);
+	DECL_SENDPROP(float,       m_flChargeMeter);
+	DECL_SENDPROP(float,       m_flRageMeter);
+	DECL_SENDPROP(bool,        m_bRageDraining);
+	DECL_SENDPROP(int,         m_iCritMult);
+	DECL_SENDPROP(bool,        m_bInUpgradeZone);
+	DECL_SENDPROP(float,       m_flStealthNoAttackExpire);
 	
 private:
-	DECL_SENDPROP(int,   m_nPlayerState);
+	DECL_SENDPROP(int,         m_nPlayerState);
+	DECL_EXTRACT (CTFPlayer *, m_pOuter);
 	
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, float, CBaseEntity * > ft_AddCond;
 	static MemberFuncThunk<      CTFPlayerShared *, void, ETFCond, bool                 > ft_RemoveCond;
@@ -258,6 +258,8 @@ public:
 	
 	bool IsPlayerClass(int iClass) const;
 	int StateGet() const        { return this->m_Shared->GetState(); }
+	bool HasItem() const        { return this->m_hItem != nullptr; }
+	CTFItem *GetItem() const    { return this->m_hItem; }
 	bool IsMiniBoss() const     { return this->m_bIsMiniBoss; }
 	int GetCurrency() const     { return this->m_nCurrency; }
 	void SetMiniBoss(bool boss) { this->m_bIsMiniBoss = boss; }
@@ -285,19 +287,21 @@ public:
 	void RemoveCustomAttribute(const char *s1)                  { ft_RemoveCustomAttribute    (this, s1); }
 	void RemoveAllCustomAttributes()                            { ft_RemoveAllCustomAttributes(this); }
 	
+	CBaseEntity *GiveNamedItem(const char *pszName, int iSubType, CEconItemView *pItem, bool bDontTranslateForClass) { return vt_GiveNamedItem(this, pszName, iSubType, pItem, bDontTranslateForClass); }
+	
 //	typedef int taunts_t;
 //	void Taunt(taunts_t, int);
 	
 	DECL_SENDPROP_RW(CTFPlayerShared,      m_Shared);
 	DECL_SENDPROP   (float,                m_flLastDamageTime);
-	DECL_SENDPROP   (CHandle<CTFItem>,     m_hItem);
 	DECL_RELATIVE   (CTFPlayerAnimState *, m_PlayerAnimState);
 	DECL_EXTRACT    (bool,                 m_bFeigningDeath);
 	
 private:
-	DECL_SENDPROP_RW(CTFPlayerClass, m_PlayerClass);
-	DECL_SENDPROP   (bool,           m_bIsMiniBoss);
-	DECL_SENDPROP   (int,            m_nCurrency);
+	DECL_SENDPROP_RW(CTFPlayerClass,   m_PlayerClass);
+	DECL_SENDPROP   (CHandle<CTFItem>, m_hItem);
+	DECL_SENDPROP   (bool,             m_bIsMiniBoss);
+	DECL_SENDPROP   (int,              m_nCurrency);
 	
 	static MemberFuncThunk<      CTFPlayer *, void, int, bool                 > ft_ForceChangeTeam;
 	static MemberFuncThunk<      CTFPlayer *, void, int, int                  > ft_StartBuildingObjectOfType;
@@ -318,6 +322,8 @@ private:
 	static MemberFuncThunk<      CTFPlayer *, void, const char *              > ft_RemoveCustomAttribute;
 	static MemberFuncThunk<      CTFPlayer *, void                            > ft_RemoveAllCustomAttributes;
 //	static MemberFuncThunk<      CTFPlayer *, void, taunts_t, int             > ft_Taunt;
+	
+	static MemberVFuncThunk<CTFPlayer *, CBaseEntity *, const char *, int, CEconItemView *, bool> vt_GiveNamedItem;
 };
 
 class CTFPlayerSharedUtils
@@ -348,11 +354,11 @@ inline void CTFPlayerClassShared::NetworkStateChanged()           { this->GetOut
 inline void CTFPlayerClassShared::NetworkStateChanged(void *pVar) { this->GetOuter()->NetworkStateChanged(pVar); }
 
 
-inline CTFPlayer *CTFPlayerShared::GetOuter()
-{
-	static int off = Prop::FindOffsetAssert("CTFPlayer", "m_Shared");
-	return (CTFPlayer *)((uintptr_t)this - off);
-}
+//inline CTFPlayer *CTFPlayerShared::GetOuter()
+//{
+//	static int off = Prop::FindOffsetAssert("CTFPlayer", "m_Shared");
+//	return (CTFPlayer *)((uintptr_t)this - off);
+//}
 
 inline void CTFPlayerShared::NetworkStateChanged()           { this->GetOuter()->NetworkStateChanged(); }
 inline void CTFPlayerShared::NetworkStateChanged(void *pVar) { this->GetOuter()->NetworkStateChanged(pVar); }
@@ -367,6 +373,8 @@ inline CTFPlayer *ToTFPlayer(CBaseEntity *pEntity)
 }
 
 
+int GetNumberOfTFConds();
+
 bool IsValidTFConditionNumber(int num);
 ETFCond ClampTFConditionNumber(int num);
 
@@ -374,7 +382,8 @@ const char *GetTFConditionName(ETFCond cond);
 ETFCond GetTFConditionFromName(const char *name);
 
 
-int GetNumberOfLoadoutSlots();
+extern StaticFuncThunk<int, CUtlVector<CTFPlayer *> *, int, bool, bool> ft_CollectPlayers_CTFPlayer;
+template<> inline int CollectPlayers<CTFPlayer>(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend) { return ft_CollectPlayers_CTFPlayer(playerVector, team, isAlive, shouldAppend); }
 
 
 #endif

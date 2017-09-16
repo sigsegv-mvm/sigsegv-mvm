@@ -27,6 +27,7 @@ public:
 	bool IsAbleToSee(const CBaseEntity *entity, FieldOfViewCheckType checkFOV)  { return ft_IsAbleToSee_ent   (this, entity, checkFOV); }
 	bool IsAbleToSee(CBaseCombatCharacter *pBCC, FieldOfViewCheckType checkFOV) { return ft_IsAbleToSee_bcc   (this, pBCC, checkFOV); }
 	void SetBloodColor(int nBloodColor)                                         {        ft_SetBloodColor     (this, nBloodColor); }
+	bool Weapon_Detach(CBaseCombatWeapon *pWeapon)                              { return ft_Weapon_Detach     (this, pWeapon); }
 	
 	CBaseCombatWeapon *Weapon_GetSlot(int slot) const                      { return vt_Weapon_GetSlot     (this, slot); }
 	bool Weapon_CanSwitchTo(CBaseCombatWeapon *pWeapon)                    { return vt_Weapon_CanSwitchTo (this, pWeapon); }
@@ -47,6 +48,7 @@ private:
 	static MemberFuncThunk<CBaseCombatCharacter *, bool, const CBaseEntity *, FieldOfViewCheckType>    ft_IsAbleToSee_ent;
 	static MemberFuncThunk<CBaseCombatCharacter *, bool, CBaseCombatCharacter *, FieldOfViewCheckType> ft_IsAbleToSee_bcc;
 	static MemberFuncThunk<CBaseCombatCharacter *, void, int>                                          ft_SetBloodColor;
+	static MemberFuncThunk<CBaseCombatCharacter *, bool, CBaseCombatWeapon *>                          ft_Weapon_Detach;
 	
 	static MemberVFuncThunk<const CBaseCombatCharacter *, CBaseCombatWeapon *, int>       vt_Weapon_GetSlot;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, CBaseCombatWeapon *>      vt_Weapon_CanSwitchTo;
@@ -112,12 +114,14 @@ public:
 	void EnableButtons(int nButtons)                                                   {        ft_EnableButtons (this, nButtons); }
 	void ForceButtons(int nButtons)                                                    {        ft_ForceButtons  (this, nButtons); }
 	void UnforceButtons(int nButtons)                                                  {        ft_UnforceButtons(this, nButtons); }
+	void SnapEyeAngles(const QAngle& viewAngles)                                       {        ft_SnapEyeAngles (this, viewAngles); }
 	
 	bool IsBot() const                                             { return vt_IsBot               (this); }
 	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide       (this, bExplode, bForce); }
 	void ForceRespawn()                                            {        vt_ForceRespawn        (this); }
 	Vector Weapon_ShootPosition()                                  { return vt_Weapon_ShootPosition(this); }
 	float GetPlayerMaxSpeed()                                      { return vt_GetPlayerMaxSpeed   (this); }
+	void RemoveWearable(CEconWearable *wearable)                   {        vt_RemoveWearable      (this, wearable); }
 	
 	
 	DECL_SENDPROP(CPlayerLocalData, m_Local);
@@ -144,12 +148,14 @@ private:
 	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_EnableButtons;
 	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_ForceButtons;
 	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_UnforceButtons;
+	static MemberFuncThunk<CBasePlayer *, void, const QAngle&>                ft_SnapEyeAngles;
 	
-	static MemberVFuncThunk<const CBasePlayer *, bool>             vt_IsBot;
-	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool> vt_CommitSuicide;
-	static MemberVFuncThunk<      CBasePlayer *, void>             vt_ForceRespawn;
-	static MemberVFuncThunk<      CBasePlayer *, Vector>           vt_Weapon_ShootPosition;
-	static MemberVFuncThunk<      CBasePlayer *, float>            vt_GetPlayerMaxSpeed;
+	static MemberVFuncThunk<const CBasePlayer *, bool>                  vt_IsBot;
+	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool>      vt_CommitSuicide;
+	static MemberVFuncThunk<      CBasePlayer *, void>                  vt_ForceRespawn;
+	static MemberVFuncThunk<      CBasePlayer *, Vector>                vt_Weapon_ShootPosition;
+	static MemberVFuncThunk<      CBasePlayer *, float>                 vt_GetPlayerMaxSpeed;
+	static MemberVFuncThunk<      CBasePlayer *, void, CEconWearable *> vt_RemoveWearable;
 };
 
 class CBaseMultiplayerPlayer : public CBasePlayer
@@ -202,6 +208,10 @@ inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
 	
 	return pPlayer;
 }
+
+
+template<typename T>
+int CollectPlayers(CUtlVector<T *> *playerVector, int team = TEAM_ANY, bool isAlive = false, bool shouldAppend = false);
 
 
 #endif

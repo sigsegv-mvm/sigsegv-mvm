@@ -8,6 +8,7 @@ public:
 	constexpr Color32() = default;
 	
 #if !defined _MSC_VER
+	#warning TODO: go thru entire codebase and enable constexpr for MSVC
 	constexpr
 #endif
 	Color32(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff)

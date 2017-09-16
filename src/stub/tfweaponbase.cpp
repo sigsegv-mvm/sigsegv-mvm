@@ -25,9 +25,11 @@ MemberVFuncThunk<const CBaseCombatWeapon *, const char *>                 CBaseC
 MemberVFuncThunk<      CBaseCombatWeapon *, void>                         CBaseCombatWeapon::vt_SetViewModel (TypeName<CBaseCombatWeapon>(), "CBaseCombatWeapon::SetViewModel");
 
 
-IMPL_SENDPROP(float, CTFWeaponBase, m_flLastFireTime,       CTFWeaponBase);
-IMPL_SENDPROP(float, CTFWeaponBase, m_flEffectBarRegenTime, CTFWeaponBase);
-IMPL_SENDPROP(float, CTFWeaponBase, m_flEnergy,             CTFWeaponBase);
+IMPL_SENDPROP(float,                CTFWeaponBase, m_flLastFireTime,          CTFWeaponBase);
+IMPL_SENDPROP(float,                CTFWeaponBase, m_flEffectBarRegenTime,    CTFWeaponBase);
+IMPL_SENDPROP(float,                CTFWeaponBase, m_flEnergy,                CTFWeaponBase);
+IMPL_SENDPROP(CHandle<CTFWearable>, CTFWeaponBase, m_hExtraWearable,          CTFWeaponBase);
+IMPL_SENDPROP(CHandle<CTFWearable>, CTFWeaponBase, m_hExtraWearableViewModel, CTFWeaponBase);
 
 MemberFuncThunk<CTFWeaponBase *, bool> CTFWeaponBase::ft_IsSilentKiller("CTFWeaponBase::IsSilentKiller");
 

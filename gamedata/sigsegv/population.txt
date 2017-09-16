@@ -83,6 +83,11 @@
 					type "sym"
 					sym  "_ZN18CPopulationManager7WaveEndEb"
 				}
+				"CPopulationManager::ClearCheckpoint"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager15ClearCheckpointEv"
+				}
 				"CPopulationManager::RestoreCheckpoint"
 				{
 					type "sym"
@@ -92,6 +97,26 @@
 				{
 					type "sym"
 					sym  "_ZN18CPopulationManager14GetCurrentWaveEv"
+				}
+				"CPopulationManager::ResetMap"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager8ResetMapEv"
+				}
+				"CPopulationManager::PostInitialize"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager14PostInitializeEv"
+				}
+				"CPopulationManager::RestorePlayerCurrency"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager21RestorePlayerCurrencyEv"
+				}
+				"CPopulationManager::OnCurrencyCollected"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager19OnCurrencyCollectedEibb"
 				}
 				
 				"CMissionPopulator::Parse"
@@ -139,6 +164,16 @@
 				{
 					type "sym"
 					sym  "_ZN5CWave16ActiveWaveUpdateEv"
+				}
+				"CWave::WaveCompleteUpdate"
+				{
+					type "sym"
+					sym  "_ZN5CWave18WaveCompleteUpdateEv"
+				}
+				"CWave::ForceFinish"
+				{
+					type "sym"
+					sym  "_ZN5CWave11ForceFinishEv"
 				}
 				"CWave::~CWave [D0]"
 				{

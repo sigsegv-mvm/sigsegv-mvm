@@ -351,6 +351,16 @@ enum
 	MAX_VISION_MODES,
 };
 
+enum
+{
+	TF_ITEM_UNDEFINED    = 0,
+	TF_ITEM_CAPTURE_FLAG = (1 << 0),
+//	TF_ITEM_HEALTH_KIT   = (1 << 1),
+//	TF_ITEM_ARMOR        = (1 << 2),
+//	TF_ITEM_AMMO_PACK    = (1 << 3),
+//	TF_ITEM_GRENADE_PACK = (1 << 4),
+};
+
 
 #define TF_FLAGINFO_NONE		0
 #define TF_FLAGINFO_STOLEN		(1<<0)
@@ -360,20 +370,35 @@ enum
 /* I invented this function, because this particular idiom comes up frequently;
  * I can't seem to actually find it anywhere in the 2013 SDK or the 2007 leak,
  * so I don't know if it actually is an inlined function or just a copypasta */
-inline int GetEnemyTeam(CBaseEntity *ent)
+inline int GetEnemyTeam(int teamnum)
 {
-	int enemy_team = ent->GetTeamNumber();
-	
-	switch (enemy_team) {
+	switch (teamnum) {
 	case TF_TEAM_RED:
-		enemy_team = TF_TEAM_BLUE;
+		teamnum = TF_TEAM_BLUE;
 		break;
 	case TF_TEAM_BLUE:
-		enemy_team = TF_TEAM_RED;
+		teamnum = TF_TEAM_RED;
 		break;
 	}
 	
-	return enemy_team;
+	return teamnum;
+}
+inline int GetEnemyTeam(CBaseEntity *ent)
+{
+	return GetEnemyTeam(ent->GetTeamNumber());
+}
+
+
+inline bool IsLoadoutSlot_Cosmetic(int slot)
+{
+	switch (slot) {
+	case TF_LOADOUT_SLOT_HEAD:
+	case TF_LOADOUT_SLOT_MISC:
+	case TF_LOADOUT_SLOT_MISC2:
+		return true;
+	default:
+		return false;
+	}
 }
 
 

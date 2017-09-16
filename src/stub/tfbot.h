@@ -5,6 +5,7 @@
 #include "prop.h"
 #include "stub/tfplayer.h"
 #include "stub/tfweaponbase.h"
+#include "stub/econ.h"
 #include "util/misc.h"
 #include "re/nextbot.h"
 #include "util/rtti.h"
@@ -14,18 +15,6 @@ class ILocomotion;
 class IBody;
 class IVision;
 class IIntention;
-
-
-union attribute_data_union_t
-{
-	void *ptr;
-};
-
-struct static_attrib_t
-{
-	unsigned short m_iAttrIndex;    // +0x00
-	attribute_data_union_t m_Value; // +0x04
-};
 
 
 template<typename T>

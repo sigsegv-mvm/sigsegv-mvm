@@ -599,10 +599,41 @@
 					sym  "_Z19StopParticleEffectsP11CBaseEntity"
 				}
 				
-				"CBaseEntity::EmitSound [const char *, float, float *]"
+				// const char *, float, float *
+				"CBaseEntity::EmitSound [member: normal]"
 				{
 					type "sym"
 					sym  "_ZN11CBaseEntity9EmitSoundEPKcfPf"
+				}
+				// const char *, HSOUNDSCRIPTHANDLE&, float, float *
+				"CBaseEntity::EmitSound [member: normal + handle]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundEPKcRsfPf"
+				}
+				// IRecipientFilter&, int, const char *, const Vector *, float, float *
+				"CBaseEntity::EmitSound [static: normal]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundER16IRecipientFilteriPKcPK6VectorfPf"
+				}
+				// IRecipientFilter&, int, const char *, short&, const Vector *, float, float *
+				"CBaseEntity::EmitSound [static: normal + handle]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundER16IRecipientFilteriPKcRsPK6VectorfPf"
+				}
+				// IRecipientFilter&, int, const EmitSound_t&
+				"CBaseEntity::EmitSound [static: emitsound]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundER16IRecipientFilteriRK11EmitSound_t"
+				}
+				// IRecipientFilter&, int, const EmitSound_t&, short&
+				"CBaseEntity::EmitSound [static: emitsound + handle]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity9EmitSoundER16IRecipientFilteriRK11EmitSound_tRs"
 				}
 				
 				"IGameSystem::Add"
@@ -750,16 +781,26 @@
 					sym  "_Z13GetItemSchemav"
 				}
 				
-				"CEconItemSchema::GetAttributeDefinitionByName"
+				"CEconItemSchema::GetItemDefinition"
 				{
 					type "sym"
-					sym  "_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
+					sym  "_ZNK15CEconItemSchema17GetItemDefinitionEi"
 				}
-				
 				"CEconItemSchema::GetItemDefinitionByName"
 				{
 					type "sym"
-					sym  "_ZN15CEconItemSchema23GetItemDefinitionByNameEPKc"
+					sym  "_ZNK15CEconItemSchema23GetItemDefinitionByNameEPKc"
+				}
+				
+				"CEconItemSchema::GetAttributeDefinition"
+				{
+					type "sym"
+					sym  "_ZNK15CEconItemSchema22GetAttributeDefinitionEi"
+				}
+				"CEconItemSchema::GetAttributeDefinitionByName"
+				{
+					type "sym"
+					sym  "_ZNK15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
 				}
 				
 				"CTFGameRules::CanUpgradeWithAttrib"
@@ -1035,8 +1076,11 @@
 				
 				"CBaseAnimating::DrawServerHitboxes"
 				{
-					type "sym"
+					type "pattern"
 					sym  "_ZN14CBaseAnimating18DrawServerHitboxesEfb"
+					seg  "text"
+					seek "558bec83ec44578bf980bf41030000000f859301000083bf6c040000007510e84c4c020085c074078bcfe8e1260000"
+					mask "ffffffffffffffffffffff0000ffffffffff00000000ffff0000ffffffffffff00000000ffffffffffffff00000000"
 				}
 				
 //				"CRConClient::SendCmd"
@@ -1852,12 +1896,6 @@
 					sym  "_ZL14tf_mvm_popfileRK8CCommand"
 				}
 				
-				"CPopulationManager::ResetMap"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager8ResetMapEv"
-				}
-				
 				"CBaseEntity::AcceptInput"
 				{
 					type "sym"
@@ -2339,6 +2377,17 @@
 					sym  "_ZN28CTFGrenadePipebombProjectile13PipebombTouchEP11CBaseEntity"
 				}
 				
+				"CheckMedicResist"
+				{
+					type "sym"
+					sym  "_ZL16CheckMedicResist7ETFCondS_P9CTFPlayerfRfbS2_.isra.543"
+					// ugh, this addr is probably gonna break every rebuild
+					
+					// maybe try this:
+				//	type "sym regex"
+				//	sym  ".*CheckMedicResist.*ETFCond.*isra.*"
+				}
+				
 				"CBaseEntity::GetDamage"
 				{
 					type "sym"
@@ -2405,16 +2454,58 @@
 					sym  "_ZNK13CCurrencyPack26AffectedByRadiusCollectionEv"
 				}
 				
+				"CTargetChangeGravity::InputChangeGrav"
+				{
+					type "sym"
+					sym  "_ZN20CTargetChangeGravity15InputChangeGravER11inputdata_t"
+				}
+				
+				"CTargetChangeGravity::InputResetGrav"
+				{
+					type "sym"
+					sym  "_ZN20CTargetChangeGravity14InputResetGravER11inputdata_t"
+				}
+				
+				"CTFGrenadeLauncher::SecondaryAttack"
+				{
+					type "sym"
+					sym  "_ZN18CTFGrenadeLauncher15SecondaryAttackEv"
+				}
+				
+				"CTFPipebombLauncher::SecondaryAttack"
+				{
+					type "sym"
+					sym  "_ZN19CTFPipebombLauncher15SecondaryAttackEv"
+				}
+				
+				"CTFWeaponBaseMelee::SecondaryAttack"
+				{
+					type "sym"
+					sym  "_ZN18CTFWeaponBaseMelee15SecondaryAttackEv"
+				}
+				
+				"CTFWeaponBase::CanPerformSecondaryAttack"
+				{
+					type "sym"
+					sym  "_ZNK13CTFWeaponBase25CanPerformSecondaryAttackEv"
+				}
+				
+				"CTFWeaponBase::ItemPostFrame"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase13ItemPostFrameEv"
+				}
+				
+				"CTFWeaponBase::ItemBusyFrame"
+				{
+					type "sym"
+					sym  "_ZN13CTFWeaponBase13ItemBusyFrameEv"
+				}
+				
 				"CEconEntity::GetAttributeContainer"
 				{
 					type "sym"
 					sym  "_ZN11CEconEntity21GetAttributeContainerEv"
-				}
-				
-				"CEconItemSchema::GetItemDefinition"
-				{
-					type "sym"
-					sym  "_ZNK15CEconItemSchema17GetItemDefinitionEi"
 				}
 				
 				"CEconItemDefinition::BInitVisualBlockFromKV"
@@ -2427,6 +2518,249 @@
 				{
 					type "sym"
 					sym  "_ZN13CTFBaseRocket7DestroyEbb"
+				}
+				
+				"CCaptureZone::ShimTouch"
+				{
+					type "sym"
+					sym  "_ZN12CCaptureZone9ShimTouchEP11CBaseEntity"
+				}
+				
+				"CTFItem::GetItemID"
+				{
+					type "sym"
+					sym  "_ZNK7CTFItem9GetItemIDEv"
+				}
+				
+				"CTFGameRules::FlagsMayBeCapped"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules16FlagsMayBeCappedEv"
+				}
+				
+				"CCaptureZone::Capture"
+				{
+					type "sym"
+					sym  "_ZN12CCaptureZone7CaptureEP11CBaseEntity"
+				}
+				
+				"CTFGameRules::SetWinningTeam"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules14SetWinningTeamEiibbbb"
+				}
+				
+				"CTFGameRules::FireGameEvent"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules13FireGameEventEP10IGameEvent"
+				}
+				
+				"CBaseObject::GetMiniBuildingStartingHealth"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject29GetMiniBuildingStartingHealthEv"
+				}
+				
+				"CBaseObject::GetMaxHealthForCurrentLevel"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject27GetMaxHealthForCurrentLevelEv"
+				}
+				
+				"CObjectSentrygun::MakeDisposableBuilding"
+				{
+					type "sym"
+					sym  "_ZN16CObjectSentrygun22MakeDisposableBuildingEP9CTFPlayer"
+				}
+				
+				"CBaseObject::SetHealth"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject9SetHealthEf"
+				}
+				
+				"CBaseAnimating::GetBoneTransform"
+				{
+					type "pattern"
+					sym  "_ZN14CBaseAnimating16GetBoneTransformEiR11matrix3x4_t"
+					seg  "text"
+					seek "558bec568bf180be4103000000757483be6c040000007510e83341020085c074078bcee8c81b00008b866c04000085c07451833800744c578b7d0885ff78438b003bb89c000000"
+					mask "ffffffffffffffff0000ffffffff00ffff0000ffffffffffff00000000ffffffffffffff00000000ffff0000ffffffffff00ffffffff00ffffffffffffff00ffffffff0000ffff"
+				}
+				
+				"ILocomotion::IsPotentiallyTraversable"
+				{
+					type "sym"
+					sym  "_ZNK11ILocomotion24IsPotentiallyTraversableERK6VectorS2_NS_16TraverseWhenTypeEPf"
+				}
+				
+				"CSteamID::Render [static]"
+				{
+					type "sym"
+					sym  "_ZN8CSteamID6RenderEy"
+				}
+				"CSteamID::Render [member]"
+				{
+					type "sym"
+					sym  "_ZNK8CSteamID6RenderEv"
+				}
+				
+				"CTFItemDefinition::GetLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZNK17CTFItemDefinition14GetLoadoutSlotEi"
+				}
+				
+				"CBasePlayer::RemoveWearable"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer14RemoveWearableEP13CEconWearable"
+				}
+				
+				"CBaseEntity::IsBaseCombatWeapon"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity18IsBaseCombatWeaponEv"
+				}
+				
+				"CBaseEntity::IsWearable"
+				{
+					type "sym"
+					sym  "_ZNK11CBaseEntity10IsWearableEv"
+				}
+				
+				"CEconWearable::UnEquip"
+				{
+					type "sym"
+					sym  "_ZN13CEconWearable7UnEquipEP11CBasePlayer"
+				}
+				
+				"CBaseCombatCharacter::Weapon_Detach"
+				{
+					type "sym"
+					sym  "_ZN20CBaseCombatCharacter13Weapon_DetachEP17CBaseCombatWeapon"
+				}
+				
+				"ItemGeneration"
+				{
+					type "sym"
+					sym  "_Z14ItemGenerationv"
+				}
+				
+				"CEconItemView::Init"
+				{
+					type "sym"
+					sym  "_ZN13CEconItemView4InitEiiij"
+				}
+				
+				"CEconItemView::GetStaticData"
+				{
+					type "sym"
+					sym  "_ZNK13CEconItemView13GetStaticDataEv"
+				}
+				
+				"CEconItemAttribute::GetStaticData"
+				{
+					type "sym"
+					sym  "_ZNK18CEconItemAttribute13GetStaticDataEv"
+				}
+				
+				"CEconItemView::CEconItemView [C1]"
+				{
+					type "sym"
+					sym  "_ZN13CEconItemViewC1Ev"
+				}
+				
+				"CEconItemAttribute::CEconItemAttribute [C1]"
+				{
+					type "sym"
+					sym  "_ZN18CEconItemAttributeC1Ev"
+				}
+				
+				"CAttributeList::AddAttribute"
+				{
+					type "sym"
+					sym  "_ZN14CAttributeList12AddAttributeEP18CEconItemAttribute"
+				}
+				
+				"CTFGameRules::SetCustomUpgradesFile"
+				{
+					type "sym"
+					sym  "_ZN12CTFGameRules21SetCustomUpgradesFileER11inputdata_t"
+				}
+				
+				"CEconEntity::GiveTo"
+				{
+					type "sym"
+					sym  "_ZN11CEconEntity6GiveToEP11CBaseEntity"
+				}
+				
+				"CEconItemSchema::GetEquipRegionBitMaskByName"
+				{
+					type "sym"
+					sym  "_ZNK15CEconItemSchema27GetEquipRegionBitMaskByNameEPKc"
+				}
+				
+				"CBaseEntity::SetNextThink [index]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12SetNextThinkEif"
+				}
+				
+				"CBaseEntity::SetNextThink [name]"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity12SetNextThinkEfPKc"
+				}
+				
+				"CUpgrades::PlayerPurchasingUpgrade"
+				{
+					type "sym"
+					sym  "_ZN9CUpgrades23PlayerPurchasingUpgradeEP9CTFPlayeriibbb"
+				}
+				
+				"CollectPlayers<CTFPlayer>"
+				{
+					type "sym"
+					sym  "_Z14CollectPlayersI9CTFPlayerEiP10CUtlVectorIPT_10CUtlMemoryIS3_iEEibb"
+				}
+				
+				"CTFPowerup::ValidTouch"
+				{
+					type "sym"
+					sym  "_ZN10CTFPowerup10ValidTouchEP11CBasePlayer"
+				}
+				
+				"CBaseEntity::DrawDebugTextOverlays"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity21DrawDebugTextOverlaysEv"
+				}
+				
+				"CBaseEntity::MyNextBotPointer"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity16MyNextBotPointerEv"
+				}
+				
+				"CBasePlayer::SnapEyeAngles"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer13SnapEyeAnglesERK6QAngle"
+				}
+				
+				"CBaseEntity::Teleport"
+				{
+					type "sym"
+					sym  "_ZN11CBaseEntity8TeleportEPK6VectorPK6QAngleS2_"
+				}
+				
+				"DataTable_Warning"
+				{
+					type "sym"
+					sym  "_Z17DataTable_WarningPKcz"
+					lib  "engine"
 				}
 			}
 		}
