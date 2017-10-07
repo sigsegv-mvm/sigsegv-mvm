@@ -186,6 +186,22 @@
 					sym  "_ZN5CWaveD2Ev"
 				}
 				
+				"CWaveSpawnPopulator::Parse"
+				{
+					type "sym"
+					sym  "_ZN19CWaveSpawnPopulator5ParseEP9KeyValues"
+				}
+				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D0]"
+				{
+					type "sym"
+					sym  "_ZN19CWaveSpawnPopulatorD0Ev"
+				}
+				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D2]"
+				{
+					type "sym"
+					sym  "_ZN19CWaveSpawnPopulatorD2Ev"
+				}
+				
 				"IPopulationSpawner::GetClassIcon"
 				{
 					type "sym"

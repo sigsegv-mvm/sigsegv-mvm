@@ -546,9 +546,17 @@ namespace Mod_Pop_TFBot_Extensions
 		spawners[spawner].custom_weapon_models[slot] = path;
 	}
 	
-	DETOUR_DECL_MEMBER(bool, CTFBotSpawner_Parse, KeyValues *kv)
+	DETOUR_DECL_MEMBER(bool, CTFBotSpawner_Parse, KeyValues *kv_orig)
 	{
 		auto spawner = reinterpret_cast<CTFBotSpawner *>(this);
+		
+		// make a temporary copy of the KV subtree for this spawner
+		// the reason for this: `kv_orig` *might* be a ptr to a shared template KV subtree
+		// we'll be deleting our custom keys after we parse them so that the Valve code doesn't see them
+		// but we don't want to delete them from the shared template KV subtree (breaks multiple uses of the template)
+		// so we use this temp copy, delete things from it, pass it to the Valve code, then delete it
+		// (we do the same thing in Pop:WaveSpawn_Extensions)
+		KeyValues *kv = kv_orig->MakeCopy();
 		
 	//	DevMsg("CTFBotSpawner::Parse\n");
 		
@@ -605,7 +613,12 @@ namespace Mod_Pop_TFBot_Extensions
 			subkey->deleteThis();
 		}
 		
-		return DETOUR_MEMBER_CALL(CTFBotSpawner_Parse)(kv);
+		bool result = DETOUR_MEMBER_CALL(CTFBotSpawner_Parse)(kv);
+		
+		// delete the temporary copy of the KV subtree
+		kv->deleteThis();
+		
+		return result;
 	}
 	
 	

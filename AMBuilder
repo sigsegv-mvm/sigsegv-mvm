@@ -190,6 +190,7 @@ sourceFiles += [
   'src/mod/pop/tank_extensions.cpp',
   'src/mod/pop/tfbot_extensions.cpp',
   'src/mod/pop/wave_extensions.cpp',
+  'src/mod/pop/wavespawn_extensions.cpp',
 #  'src/mod/pop/extattr/alwaysfireweaponalt.cpp',
 #  'src/mod/pop/extattr/parse.cpp',
 #  'src/mod/pop/extattr/targetstickies.cpp',
