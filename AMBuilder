@@ -113,6 +113,7 @@ sourceFiles += [
   
   'src/mod/bot/demo_elevation_fix.cpp',
   'src/mod/bot/isspacetospawnhere_scale.cpp',
+  'src/mod/bot/kart_locomotion.cpp',
   'src/mod/bot/kill_before_forcespec.cpp',
   'src/mod/bot/medieval_nonmelee.cpp',
   'src/mod/bot/multiclass_weapon.cpp',
