@@ -340,7 +340,7 @@ WARN_RESTORE()
 #include <usercmd.h>
 #include <npcevent.h>
 #include <dt_send.h>
-#include "sdk2013/bitbuf.h"
+#include <bitbuf.h>
 #include <eiface.h>
 #include <ispatialpartition.h>
 #include <random.h>
