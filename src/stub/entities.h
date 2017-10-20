@@ -159,6 +159,7 @@ private:
 
 class NextBotCombatCharacter : public CBaseCombatCharacter {};
 
+
 class CTFBaseBoss : public NextBotCombatCharacter
 {
 public:
@@ -179,6 +180,28 @@ public:
 	DECL_RELATIVE(int,                 m_iCurrentNode);
 	DECL_RELATIVE(int,                 m_iModelIndex);
 };
+
+
+class CHalloweenBaseBoss : public NextBotCombatCharacter
+{
+public:
+	enum HalloweenBossType
+	{
+		INVALID         = 0,
+		HEADLESS_HATMAN = 1,
+		EYEBALL_BOSS    = 2,
+		MERASMUS        = 3,
+	};
+	
+	static CHalloweenBaseBoss *SpawnBossAtPos(HalloweenBossType type, const Vector& pos, int team, CBaseEntity *owner) { return ft_SpawnBossAtPos(type, pos, team, owner); }
+	
+private:
+	static StaticFuncThunk<CHalloweenBaseBoss *, HalloweenBossType, const Vector&, int, CBaseEntity *> ft_SpawnBossAtPos;
+};
+
+class CHeadlessHatman : public CHalloweenBaseBoss {};
+class CMerasmus       : public CHalloweenBaseBoss {};
+class CEyeballBoss    : public CHalloweenBaseBoss {};
 
 
 class CBaseToggle : public CBaseEntity {};

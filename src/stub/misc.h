@@ -37,4 +37,22 @@ extern StaticFuncThunk<const char *, const char *, int> TranslateWeaponEntForCla
 #include <gamestringpool.h>
 
 
+class CMapListManager
+{
+public:
+	void RefreshList()                      {        ft_RefreshList(this); }
+	int GetMapCount() const                 { return ft_GetMapCount(this); }
+	int IsMapValid(int index) const         { return ft_IsMapValid (this, index); }
+	const char *GetMapName(int index) const { return ft_GetMapName (this, index); }
+	
+private:
+	static MemberFuncThunk<      CMapListManager *, void>              ft_RefreshList;
+	static MemberFuncThunk<const CMapListManager *, int>               ft_GetMapCount;
+	static MemberFuncThunk<const CMapListManager *, int, int>          ft_IsMapValid;
+	static MemberFuncThunk<const CMapListManager *, const char *, int> ft_GetMapName;
+};
+
+extern GlobalThunk<CMapListManager> g_MapListMgr;
+
+
 #endif

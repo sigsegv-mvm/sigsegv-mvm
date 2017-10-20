@@ -372,6 +372,9 @@ private:
 CItemGeneration *ItemGeneration();
 
 
+void CopyStringAttributeValueToCharPointerOutput(const CAttribute_String *attr_str, const char **p_cstr);
+
+
 extern GlobalThunk<const char *[NUM_VISUALS_BLOCKS]> g_TeamVisualSections;
 
 

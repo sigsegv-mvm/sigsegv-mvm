@@ -242,6 +242,9 @@ IMPL_RELATIVE(int,                 CTFTankBoss, m_iCurrentNode,    m_pBodyInterf
 IMPL_RELATIVE(int,                 CTFTankBoss, m_iModelIndex,     m_pBodyInterface, 0x44);
 
 
+StaticFuncThunk<CHalloweenBaseBoss *, CHalloweenBaseBoss::HalloweenBossType, const Vector&, int, CBaseEntity *> CHalloweenBaseBoss::ft_SpawnBossAtPos("CHalloweenBaseBoss::SpawnBossAtPos");
+
+
 IMPL_SENDPROP(bool, CCaptureZone, m_bDisabled, CCaptureZone);
 
 MemberFuncThunk<CCaptureZone *, void, CBaseEntity *> CCaptureZone::ft_Capture("CCaptureZone::Capture");

@@ -13,9 +13,23 @@ void CC_ListProps(const CCommand& cmd)
 //		len_mem = Max(len_mem, strlen(prop->GetMemberName()));
 	}
 	
+	std::vector<IProp *> props_sorted;
+	for (auto prop : AutoList<IProp>::List()) {
+		props_sorted.push_back(prop);
+	}
+	std::sort(props_sorted.begin(), props_sorted.end(), [](const IProp *lhs, const IProp *rhs){
+		std::string obj_lhs = lhs->GetObjectName();
+		std::string obj_rhs = rhs->GetObjectName();
+		if (obj_lhs != obj_rhs) return (obj_lhs < obj_rhs);
+		
+		std::string mem_lhs = lhs->GetMemberName();
+		std::string mem_rhs = rhs->GetMemberName();
+		return (mem_lhs < mem_rhs);
+	});
+	
 	MAT_SINGLE_THREAD_BLOCK {
 		Msg("%-8s  %7s  %-*s  %s\n", "KIND", "VALUE", len_obj, "CLASS", "MEMBER");
-		for (auto prop : AutoList<IProp>::List()) {
+		for (auto prop : props_sorted) {
 			const char *n_obj = prop->GetObjectName();
 			const char *n_mem = prop->GetMemberName();
 			const char *kind  = prop->GetKind();

@@ -17,6 +17,7 @@
 #include "stub/populators.cpp"
 #include "stub/projectiles.cpp"
 #include "stub/strings.cpp"
+#include "stub/team.cpp"
 #include "stub/tf_objective_resource.cpp"
 #include "stub/tfbot.cpp"
 #include "stub/tfbot_behavior.cpp"

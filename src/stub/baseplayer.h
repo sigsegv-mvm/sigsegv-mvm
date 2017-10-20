@@ -116,12 +116,13 @@ public:
 	void UnforceButtons(int nButtons)                                                  {        ft_UnforceButtons(this, nButtons); }
 	void SnapEyeAngles(const QAngle& viewAngles)                                       {        ft_SnapEyeAngles (this, viewAngles); }
 	
-	bool IsBot() const                                             { return vt_IsBot               (this); }
-	void CommitSuicide(bool bExplode = false, bool bForce = false) {        vt_CommitSuicide       (this, bExplode, bForce); }
-	void ForceRespawn()                                            {        vt_ForceRespawn        (this); }
-	Vector Weapon_ShootPosition()                                  { return vt_Weapon_ShootPosition(this); }
-	float GetPlayerMaxSpeed()                                      { return vt_GetPlayerMaxSpeed   (this); }
-	void RemoveWearable(CEconWearable *wearable)                   {        vt_RemoveWearable      (this, wearable); }
+	bool IsBot() const                                                   { return vt_IsBot               (this); }
+	void CommitSuicide(bool bExplode = false, bool bForce = false)       {        vt_CommitSuicide       (this, bExplode, bForce); }
+	void ForceRespawn()                                                  {        vt_ForceRespawn        (this); }
+	Vector Weapon_ShootPosition()                                        { return vt_Weapon_ShootPosition(this); }
+	float GetPlayerMaxSpeed()                                            { return vt_GetPlayerMaxSpeed   (this); }
+	void RemoveWearable(CEconWearable *wearable)                         {        vt_RemoveWearable      (this, wearable); }
+	void ChangeTeam(int iTeamNum, bool bAutoTeam, bool bSilent, bool b3) {        vt_ChangeTeam_bool3    (this, iTeamNum, bAutoTeam, bSilent, b3); }
 	
 	
 	DECL_SENDPROP(CPlayerLocalData, m_Local);
@@ -150,12 +151,13 @@ private:
 	static MemberFuncThunk<CBasePlayer *, void, int>                          ft_UnforceButtons;
 	static MemberFuncThunk<CBasePlayer *, void, const QAngle&>                ft_SnapEyeAngles;
 	
-	static MemberVFuncThunk<const CBasePlayer *, bool>                  vt_IsBot;
-	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool>      vt_CommitSuicide;
-	static MemberVFuncThunk<      CBasePlayer *, void>                  vt_ForceRespawn;
-	static MemberVFuncThunk<      CBasePlayer *, Vector>                vt_Weapon_ShootPosition;
-	static MemberVFuncThunk<      CBasePlayer *, float>                 vt_GetPlayerMaxSpeed;
-	static MemberVFuncThunk<      CBasePlayer *, void, CEconWearable *> vt_RemoveWearable;
+	static MemberVFuncThunk<const CBasePlayer *, bool>                        vt_IsBot;
+	static MemberVFuncThunk<      CBasePlayer *, void, bool, bool>            vt_CommitSuicide;
+	static MemberVFuncThunk<      CBasePlayer *, void>                        vt_ForceRespawn;
+	static MemberVFuncThunk<      CBasePlayer *, Vector>                      vt_Weapon_ShootPosition;
+	static MemberVFuncThunk<      CBasePlayer *, float>                       vt_GetPlayerMaxSpeed;
+	static MemberVFuncThunk<      CBasePlayer *, void, CEconWearable *>       vt_RemoveWearable;
+	static MemberVFuncThunk<      CBasePlayer *, void, int, bool, bool, bool> vt_ChangeTeam_bool3;
 };
 
 class CBaseMultiplayerPlayer : public CBasePlayer

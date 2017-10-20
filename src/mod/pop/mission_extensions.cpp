@@ -89,7 +89,7 @@ namespace Mod_Pop_Mission_Extensions
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayerClassShared_SetCustomModel, const char *s1, bool b1)
 	{
-		if (rc_CMissionPopulator_UpdateMissionDestroySentries > 0 && current_mission != nullptr && FStrEq(s1, "models/bots/demo/bot_sentry_buster.mdl")) {
+		if (rc_CMissionPopulator_UpdateMissionDestroySentries > 0 && current_mission != nullptr && s1 != nullptr && FStrEq(s1, "models/bots/demo/bot_sentry_buster.mdl")) {
 			auto it = missions.find(current_mission);
 			if (it != missions.end()) {
 				MissionData& data = (*it).second;

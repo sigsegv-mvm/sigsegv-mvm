@@ -118,6 +118,16 @@
 					type "sym"
 					sym  "_ZN18CPopulationManager19OnCurrencyCollectedEibb"
 				}
+				"CPopulationManager::CollectMvMBots"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager14CollectMvMBotsEP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS2_iEE"
+				}
+				"CPopulationManager::AllocateBots"
+				{
+					type "sym"
+					sym  "_ZN18CPopulationManager12AllocateBotsEv"
+				}
 				
 				"CMissionPopulator::Parse"
 				{
@@ -175,6 +185,11 @@
 					type "sym"
 					sym  "_ZN5CWave11ForceFinishEv"
 				}
+				"CWave::IsDoneWithNonSupportWaves"
+				{
+					type "sym"
+					sym  "_ZN5CWave25IsDoneWithNonSupportWavesEv"
+				}
 				"CWave::~CWave [D0]"
 				{
 					type "sym"
@@ -227,6 +242,16 @@
 				{
 					type "sym"
 					sym  "_ZN12CTankSpawnerD2Ev"
+				}
+				"CTankSpawner::GetClassIcon"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawner12GetClassIconEi"
+				}
+				"CTankSpawner::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZN12CTankSpawner10IsMiniBossEi"
 				}
 				"CTankSpawner::Parse"
 				{

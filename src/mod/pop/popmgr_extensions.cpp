@@ -145,6 +145,59 @@ namespace Mod_Pop_PopMgr_Extensions
 	};
 	
 	
+	class ItemListEntry
+	{
+	public:
+		virtual ~ItemListEntry() = default;
+		virtual bool Matches(const char *classname, const CEconItemView *item_view) const = 0;
+	};
+	
+	class ItemListEntry_Classname : public ItemListEntry
+	{
+	public:
+		ItemListEntry_Classname(const char *classname) : m_strClassname(classname) {}
+		
+		virtual bool Matches(const char *classname, const CEconItemView *item_view) const override
+		{
+			if (classname == nullptr) return false;
+			return FStrEq(this->m_strClassname.c_str(), classname);
+		}
+		
+	private:
+		std::string m_strClassname;
+	};
+	
+	class ItemListEntry_Name : public ItemListEntry
+	{
+	public:
+		ItemListEntry_Name(const char *name) : m_strName(name) {}
+		
+		virtual bool Matches(const char *classname, const CEconItemView *item_view) const override
+		{
+			if (item_view == nullptr) return false;
+			return FStrEq(this->m_strName.c_str(), item_view->GetStaticData()->GetName(""));
+		}
+		
+	private:
+		std::string m_strName;
+	};
+	
+	class ItemListEntry_DefIndex : public ItemListEntry
+	{
+	public:
+		ItemListEntry_DefIndex(int def_index) : m_iDefIndex(def_index) {}
+		
+		virtual bool Matches(const char *classname, const CEconItemView *item_view) const override
+		{
+			if (item_view == nullptr) return false;
+			return (this->m_iDefIndex == item_view->GetItemDefIndex());
+		}
+		
+	private:
+		int m_iDefIndex;
+	};
+	
+	
 	class ExtraTankPath
 	{
 	public:
@@ -235,7 +288,8 @@ namespace Mod_Pop_PopMgr_Extensions
 			m_BluHumanFlagPickup      ("sig_mvm_bluhuman_flag_pickup"),
 			m_BluHumanFlagCapture     ("sig_mvm_bluhuman_flag_capture"),
 			m_SetCreditTeam           ("sig_mvm_set_credit_team"),
-			m_EnableDominations       ("sig_mvm_dominations")
+			m_EnableDominations       ("sig_mvm_dominations"),
+			m_RobotLimit              ("sig_mvm_robot_limit_override")
 		{
 			this->Reset();
 		}
@@ -273,6 +327,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_BluHumanFlagCapture .Reset();
 			this->m_SetCreditTeam       .Reset();
 			this->m_EnableDominations   .Reset();
+			this->m_RobotLimit          .Reset();
 			
 			this->m_CustomUpgradesFile.Reset();
 			
@@ -293,16 +348,16 @@ namespace Mod_Pop_PopMgr_Extensions
 			this->m_ExtraTankPaths.clear();
 		}
 		
-		bool m_bGiantsDropRareSpells;
+		bool  m_bGiantsDropRareSpells;
 		float m_flSpellDropRateCommon;
 		float m_flSpellDropRateGiant;
-		bool m_bNoReanimators;
-		bool m_bNoMvMDeathTune;
-		bool m_bSniperHideLasers;
-		bool m_bSniperAllowHeadshots;
-		bool m_bDisableUpgradeStations;
+		bool  m_bNoReanimators;
+		bool  m_bNoMvMDeathTune;
+		bool  m_bSniperHideLasers;
+		bool  m_bSniperAllowHeadshots;
+		bool  m_bDisableUpgradeStations;
 		float m_flRemoveGrapplingHooks;
-		bool m_bReverseWinConditions;
+		bool  m_bReverseWinConditions;
 		
 		CPopOverride_MedievalMode        m_MedievalMode;
 		CPopOverride_ConVar<bool>        m_SpellsEnabled;
@@ -324,13 +379,14 @@ namespace Mod_Pop_PopMgr_Extensions
 		CPopOverride_ConVar<bool> m_BluHumanFlagCapture;
 		CPopOverride_ConVar<int>  m_SetCreditTeam;
 		CPopOverride_ConVar<bool> m_EnableDominations;
+		CPopOverride_ConVar<int>  m_RobotLimit;
 		
 		CPopOverride_CustomUpgradesFile m_CustomUpgradesFile;
 		
-		std::set<std::string> m_DisableSounds;
-		std::set<std::string> m_ItemWhitelist;
-		std::set<std::string> m_ItemBlacklist;
-	//	std::set<int>         m_DisallowedItems;
+		std::set<std::string>                       m_DisableSounds;
+		std::vector<std::unique_ptr<ItemListEntry>> m_ItemWhitelist;
+		std::vector<std::unique_ptr<ItemListEntry>> m_ItemBlacklist;
+	//	std::set<int>                               m_DisallowedItems;
 		
 		std::map<std::string, int> m_FlagResetTimes;
 		
@@ -540,18 +596,36 @@ namespace Mod_Pop_PopMgr_Extensions
 	{
 		auto player = reinterpret_cast<CTFPlayer *>(this);
 		
-		/* this only applies to red team, for what essentially amount to "legacy" reasons */
+		/* this only applies to red team, for what essentially amounts to "legacy" reasons */
 		if (TFGameRules()->IsMannVsMachineMode() && player->GetTeamNumber() == TF_TEAM_RED) {
 			/* only enforce the whitelist/blacklist if they are non-empty */
 			
-			if (!state.m_ItemWhitelist.empty() && state.m_ItemWhitelist.count(std::string(classname)) == 0) {
-				DevMsg("[%s] GiveNamedItem(\"%s\"): denied by whitelist\n", player->GetPlayerName(), classname);
-				return nullptr;
+			if (!state.m_ItemWhitelist.empty()) {
+				bool found = false;
+				for (const auto& entry : state.m_ItemWhitelist) {
+					if (entry->Matches(classname, item_view)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					DevMsg("[%s] GiveNamedItem(\"%s\"): denied by whitelist\n", player->GetPlayerName(), classname);
+					return nullptr;
+				}
 			}
 			
-			if (!state.m_ItemBlacklist.empty() && state.m_ItemBlacklist.count(std::string(classname)) != 0) {
-				DevMsg("[%s] GiveNamedItem(\"%s\"): denied by blacklist\n", player->GetPlayerName(), classname);
-				return nullptr;
+			if (!state.m_ItemBlacklist.empty()) {
+				bool found = false;
+				for (const auto& entry : state.m_ItemBlacklist) {
+					if (entry->Matches(classname, item_view)) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					DevMsg("[%s] GiveNamedItem(\"%s\"): denied by blacklist\n", player->GetPlayerName(), classname);
+					return nullptr;
+				}
 			}
 		}
 		
@@ -685,16 +759,38 @@ namespace Mod_Pop_PopMgr_Extensions
 	void Parse_ItemWhitelist(KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
-			DevMsg("ItemWhitelist: add \"%s\"\n", subkey->GetString());
-			state.m_ItemWhitelist.emplace(subkey->GetString());
+			if (FStrEq(subkey->GetName(), "Classname")) {
+				DevMsg("ItemWhitelist: Add Classname entry: \"%s\"\n", subkey->GetString());
+				state.m_ItemWhitelist.push_back(std::make_unique<ItemListEntry_Classname>(subkey->GetString()));
+			} else if (FStrEq(subkey->GetName(), "Name")) {
+				DevMsg("ItemWhitelist: Add Name entry: \"%s\"\n", subkey->GetString());
+				state.m_ItemWhitelist.push_back(std::make_unique<ItemListEntry_Name>(subkey->GetString()));
+			} else if (FStrEq(subkey->GetName(), "DefIndex")) {
+				DevMsg("ItemWhitelist: Add DefIndex entry: %d\n", subkey->GetInt());
+				state.m_ItemWhitelist.push_back(std::make_unique<ItemListEntry_DefIndex>(subkey->GetInt()));
+			} else {
+				DevMsg("ItemWhitelist: Found DEPRECATED entry with key \"%s\"; treating as Classname entry: \"%s\"\n", subkey->GetName(), subkey->GetString());
+				state.m_ItemWhitelist.push_back(std::make_unique<ItemListEntry_Classname>(subkey->GetString()));
+			}
 		}
 	}
 	
 	void Parse_ItemBlacklist(KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
-			DevMsg("ItemBlacklist: add \"%s\"\n", subkey->GetString());
-			state.m_ItemBlacklist.emplace(subkey->GetString());
+			if (FStrEq(subkey->GetName(), "Classname")) {
+				DevMsg("ItemBlacklist: Add Classname entry: \"%s\"\n", subkey->GetString());
+				state.m_ItemBlacklist.push_back(std::make_unique<ItemListEntry_Classname>(subkey->GetString()));
+			} else if (FStrEq(subkey->GetName(), "Name")) {
+				DevMsg("ItemBlacklist: Add Name entry: \"%s\"\n", subkey->GetString());
+				state.m_ItemBlacklist.push_back(std::make_unique<ItemListEntry_Name>(subkey->GetString()));
+			} else if (FStrEq(subkey->GetName(), "DefIndex")) {
+				DevMsg("ItemBlacklist: Add DefIndex entry: %d\n", subkey->GetInt());
+				state.m_ItemBlacklist.push_back(std::make_unique<ItemListEntry_DefIndex>(subkey->GetInt()));
+			} else {
+				DevMsg("ItemBlacklist: Found DEPRECATED entry with key \"%s\"; treating as Classname entry: \"%s\"\n", subkey->GetName(), subkey->GetString());
+				state.m_ItemBlacklist.push_back(std::make_unique<ItemListEntry_Classname>(subkey->GetString()));
+			}
 		}
 	}
 	
@@ -836,7 +932,6 @@ namespace Mod_Pop_PopMgr_Extensions
 		}
 		if (fail) return;
 		
-		
 		state.m_ExtraTankPaths.emplace_back(name);
 		auto& path = state.m_ExtraTankPaths.back();
 		
@@ -940,6 +1035,8 @@ namespace Mod_Pop_PopMgr_Extensions
 					state.m_SetCreditTeam.Set(subkey->GetInt());
 				} else if (FStrEq(name, "EnableDominations")) {
 					state.m_EnableDominations.Set(subkey->GetBool());
+				} else if (FStrEq(name, "RobotLimit")) {
+					state.m_RobotLimit.Set(subkey->GetInt());
 				} else if (FStrEq(name, "CustomUpgradesFile")) {
 					static const std::string prefix("download/scripts/items/");
 					state.m_CustomUpgradesFile.Set(prefix + subkey->GetString());
@@ -1040,6 +1137,8 @@ namespace Mod_Pop_PopMgr_Extensions
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{
+			if (!TFGameRules()->IsMannVsMachineMode()) return;
+			
 			if (state.m_flRemoveGrapplingHooks >= 0.0f) {
 				ForEachEntityByRTTI<CTFProjectile_GrapplingHook>([](CTFProjectile_GrapplingHook *proj){
 					float dt = gpGlobals->curtime - proj->m_flTimeInit;

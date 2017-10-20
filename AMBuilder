@@ -108,6 +108,7 @@ sourceFiles += [
   'src/mod/anim/player_updatemodel_animstate_fix.cpp',
   'src/mod/anim/estimateabsvelocity_moveparent_fix.cpp',
   
+  'src/mod/attr/customprojectilemodel_precache.cpp',
   'src/mod/attr/healonkill_overheal_melee.cpp',
   'src/mod/attr/undocumented.cpp',
   
@@ -168,6 +169,7 @@ sourceFiles += [
   'src/mod/mvm/no_halloween_souls.cpp',
   'src/mod/mvm/refund_exploit_fix.cpp',
   'src/mod/mvm/robosapper_override.cpp',
+  'src/mod/mvm/robot_limit.cpp',
 #  'src/mod/mvm/romevision_disable.cpp',
   'src/mod/mvm/sapper_allow_multiple_active.cpp',
   'src/mod/mvm/sentrybuster_enhancements.cpp',
@@ -230,6 +232,7 @@ sourceFiles += [
   'src/mod/util/debugoverlay_font.cpp',
   'src/mod/util/debugoverlay_font_v2.cpp',
   'src/mod/util/debugoverlay_font_v3.cpp',
+  'src/mod/util/download_manager.cpp',
   'src/mod/util/dtwarning_use_cvar.cpp',
   'src/mod/util/dtwatch.cpp',
   'src/mod/util/entity_overlays.cpp',
@@ -288,6 +291,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/ispotentiallytraversable_trace.cpp',
     'src/mod/debug/known_entities.cpp',
     'src/mod/debug/list_competitive_convars.cpp',
+    'src/mod/debug/max_clients.cpp',
     'src/mod/debug/medigun_speed.cpp',
     'src/mod/debug/medigunshield_obstruction.cpp',
     'src/mod/debug/melee_trace.cpp',

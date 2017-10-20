@@ -319,4 +319,8 @@ inline CTFBot *ToTFBot(CBaseEntity *pEntity)
 }
 
 
+template<typename T> T *NextBotCreatePlayerBot(const char *name, bool fake_client = true);
+template<> CTFBot *NextBotCreatePlayerBot<CTFBot>(const char *name, bool fake_client);
+
+
 #endif

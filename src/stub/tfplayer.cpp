@@ -1,6 +1,8 @@
 #include "stub/tfplayer.h"
 #include "stub/tfweaponbase.h"
 #include "stub/entities.h"
+#include "stub/strings.h"
+#include "util/misc.h"
 
 
 #if defined _LINUX

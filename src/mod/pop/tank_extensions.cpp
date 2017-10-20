@@ -3,6 +3,7 @@
 #include "stub/entities.h"
 #include "stub/populators.h"
 #include "stub/strings.h"
+#include "stub/misc.h"
 #include "util/scope.h"
 
 
@@ -10,10 +11,12 @@ namespace Mod_Pop_Tank_Extensions
 {
 	struct SpawnerData
 	{
-		bool disable_smokestack = false;
-		float scale             = 1.00f;
-		bool force_romevision   = false;
-		float max_turn_rate     =   NAN;
+		bool disable_smokestack =  false;
+		float scale             =  1.00f;
+		bool force_romevision   =  false;
+		float max_turn_rate     =    NAN;
+		std::string icon        = "tank";
+		bool is_miniboss        =   true;
 		
 		std::vector<CHandle<CTFTankBoss>> tanks;
 	};
@@ -89,6 +92,12 @@ namespace Mod_Pop_Tank_Extensions
 			} else if (FStrEq(name, "MaxTurnRate")) {
 			//	DevMsg("Got \"MaxTurnRate\" = %f\n", subkey->GetFloat());
 				spawners[spawner].max_turn_rate = subkey->GetFloat();
+			} else if (FStrEq(name, "IconOverride")) {
+			//	DevMsg("Got \"IconOverride\" = \"%s\"\n", subkey->GetString());
+				spawners[spawner].icon = subkey->GetString();
+			} else if (FStrEq(name, "IsMiniBoss")) {
+			//	DevMsg("Got \"IsMiniBoss\" = %d\n", subkey->GetBool());
+				spawners[spawner].is_miniboss = subkey->GetBool();
 			} else {
 				del = false;
 			}
@@ -313,6 +322,32 @@ namespace Mod_Pop_Tank_Extensions
 	}
 	
 	
+	DETOUR_DECL_MEMBER(string_t, CTankSpawner_GetClassIcon, int index)
+	{
+		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		
+		SpawnerData *data = FindSpawnerDataForTank(tank);
+		if (data != nullptr) {
+			return AllocPooledString(data->icon.c_str());
+		}
+		
+		return DETOUR_MEMBER_CALL(CTankSpawner_GetClassIcon)(index);
+	}
+	
+	
+	DETOUR_DECL_MEMBER(bool, CTankSpawner_IsMiniBoss, int index)
+	{
+		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		
+		SpawnerData *data = FindSpawnerDataForTank(tank);
+		if (data != nullptr) {
+			return data->is_miniboss;
+		}
+		
+		return DETOUR_MEMBER_CALL(CTankSpawner_IsMiniBoss)(index);
+	}
+	
+	
 	class CMod : public IMod
 	{
 	public:
@@ -331,6 +366,10 @@ namespace Mod_Pop_Tank_Extensions
 			MOD_ADD_DETOUR_MEMBER(CBaseAnimating_LookupAttachment, "CBaseAnimating::LookupAttachment");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBaseBossLocomotion_FaceTowards, "CTFBaseBossLocomotion::FaceTowards");
+			
+			MOD_ADD_DETOUR_MEMBER(CTankSpawner_GetClassIcon, "CTankSpawner::GetClassIcon");
+			
+			MOD_ADD_DETOUR_MEMBER(CTankSpawner_IsMiniBoss, "CTankSpawner::IsMiniBoss");
 		}
 		
 		virtual void OnUnload() override

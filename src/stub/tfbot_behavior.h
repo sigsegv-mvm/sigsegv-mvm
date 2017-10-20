@@ -201,8 +201,17 @@ SIZE_CHECK(CTFBotDead, 0x0038);
 
 class CTFBotMainAction : public ActionStub
 {
-	/* TODO */
+public:
+	const CKnownEntity *SelectCloserThreat(CTFBot *actor, const CKnownEntity *threat1, const CKnownEntity *threat2) const { return ft_SelectCloserThreat(this, actor, threat1, threat2); }
+	
+protected:
+//	CTFBotMainAction() = default;
+	CTFBotMainAction() = delete;
+	
+private:
+	static MemberFuncThunk<const CTFBotMainAction *, const CKnownEntity *, CTFBot *, const CKnownEntity *, const CKnownEntity *> ft_SelectCloserThreat;
 };
+// TODO: SIZE_CHECK etc
 
 
 #endif

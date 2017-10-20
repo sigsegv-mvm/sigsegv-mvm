@@ -204,6 +204,19 @@
 					type "sym"
 					sym  "g_TeamVisualSections"
 				}
+				
+				"g_MapListMgr"
+				{
+					type "sym"
+					sym  "g_MapListMgr"
+					lib  "engine"
+				}
+				
+				"s_TFTeamManager"
+				{
+					type "sym"
+					sym  "s_TFTeamManager"
+				}
 			}
 		}
 	}

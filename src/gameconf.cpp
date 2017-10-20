@@ -166,6 +166,8 @@ SMCResult CSigsegvGameConf::ReadSMC_KeyValue(const SMCStates *states, const char
 #endif
 	
 	switch (this->m_Section) {
+	case ParseSection::ADDRS:
+		return this->AddrEntry_Abbreviated(key, value);
 	case ParseSection::ADDRS_ENTRY:
 		return this->AddrEntry_KeyValue(key, value);
 	}
@@ -248,6 +250,16 @@ SMCResult CSigsegvGameConf::AddrEntry_End()
 	
 	auto parser = this->m_AddrParsers.at(type);
 	return (this->*parser)();
+}
+
+
+/* shorthand: for sym entries in lib server, allow a "name" "sym" line instead of a whole block */
+SMCResult CSigsegvGameConf::AddrEntry_Abbreviated(const char *key, const char *value)
+{
+	this->AddrEntry_Start(key);
+	this->AddrEntry_KeyValue("type", "sym");
+	this->AddrEntry_KeyValue("sym",  value);
+	return this->AddrEntry_End();
 }
 
 

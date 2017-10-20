@@ -4,7 +4,7 @@
 
 #include "link/link.h"
 #include "stub/baseplayer.h"
-#include "util/iterate.h"
+//#include "util/iterate.h" // <-- very bad to include util/iterate.h in a header!
 
 
 class CRecipientFilter : public IRecipientFilter
@@ -84,9 +84,12 @@ inline void CRecipientFilter::AddAllPlayers()
 {
 	this->m_Recipients.clear();
 	
-	ForEachPlayer([=](CBasePlayer *player){
+	for (int i = 1; i <= gpGlobals->maxClients; ++i) {
+		CBasePlayer *player = UTIL_PlayerByIndex(i);
+		if (player == nullptr) continue;
+		
 		this->AddRecipient(player);
-	});
+	}
 }
 inline void CRecipientFilter::RemoveAllRecipients()
 {

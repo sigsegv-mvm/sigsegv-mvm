@@ -87,6 +87,21 @@ inline void ForEachBot(const FUNCTOR& func)
 		if (!CALL_FUNCTOR(T *)(func, player)) break;
 	}
 }
+
+#ifdef _INCLUDE_SIGSEGV_STUB_TEAM_H_
+template<typename FUNCTOR>
+inline void ForEachPlayerOnTeam(CTeam *team, const FUNCTOR& func)
+{
+	using T = CBasePlayer;
+	
+	for (int i = team->GetNumPlayers() - 1; i >= 0; --i) {
+		T *player = team->GetPlayer(i);
+		if (player == nullptr) continue;
+		
+		if (!CALL_FUNCTOR(T *)(func, player)) break;
+	}
+}
+#endif
 #endif
 
 
@@ -103,6 +118,21 @@ inline void ForEachTFPlayer(const FUNCTOR& func)
 		if (!CALL_FUNCTOR(T *)(func, player)) break;
 	}
 }
+
+#ifdef _INCLUDE_SIGSEGV_STUB_TEAM_H_
+template<typename FUNCTOR>
+inline void ForEachTFPlayerOnTeam(CTeam *team, const FUNCTOR& func)
+{
+	using T = CTFPlayer;
+	
+	for (int i = team->GetNumPlayers() - 1; i >= 0; --i) {
+		T *player = ToTFPlayer(team->GetPlayer(i));
+		if (player == nullptr) continue;
+		
+		if (!CALL_FUNCTOR(T *)(func, player)) break;
+	}
+}
+#endif
 #endif
 
 
@@ -117,6 +147,26 @@ inline void ForEachTFBot(const FUNCTOR& func)
 		if (bot == nullptr) continue;
 		
 		if (!CALL_FUNCTOR(T *)(func, bot)) break;
+	}
+}
+#endif
+
+
+#ifdef _INCLUDE_SIGSEGV_STUB_MISC_H_
+template<typename FUNCTOR>
+inline void ForEachMap(const FUNCTOR& func)
+{
+	using T = const char *;
+	
+	CMapListManager& mgr = g_MapListMgr;
+	
+	mgr.RefreshList();
+	
+	for (int i = 0; i < mgr.GetMapCount(); ++i) {
+		const char *map_name = mgr.GetMapName(i);
+		if (map_name == nullptr || map_name[0] == '\x00' || strcmp(map_name, "Invalid!!!") == 0) continue;
+		
+		if (!CALL_FUNCTOR(T *)(func, map_name)) break;
 	}
 }
 #endif

@@ -169,6 +169,12 @@
 					type "sym"
 					sym  "_ZN13NextBotPlayerI9CTFPlayerE14SetButtonScaleEff"
 				}
+				
+				"NextBotCreatePlayerBot<CTFBot>"
+				{
+					type "sym"
+					sym  "_Z22NextBotCreatePlayerBotI6CTFBotEPT_PKcb"
+				}
 			}
 		}
 	}

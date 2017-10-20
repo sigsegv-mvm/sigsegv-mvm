@@ -298,7 +298,9 @@ class IVideoRecorder;
 #define RAD_TELEMETRY_DISABLED
 #undef   NO_STRING_T
 #undef WEAK_STRING_T
+#include <commonmacros.h>
 #include <basetypes.h>
+#include <platform.h>
 WARN_IGNORE__ADDRESS()
 #include <dbg.h>
 WARN_RESTORE()

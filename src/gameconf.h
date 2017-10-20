@@ -43,6 +43,8 @@ private:
 	SMCResult AddrEntry_KeyValue(const char *key, const char *value);
 	SMCResult AddrEntry_End();
 	
+	SMCResult AddrEntry_Abbreviated(const char *key, const char *value);
+	
 	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
 		{ "sym",                                   &CSigsegvGameConf::AddrEntry_Load_Sym },
 		{ "sym regex",                             &CSigsegvGameConf::AddrEntry_Load_Sym_Regex },

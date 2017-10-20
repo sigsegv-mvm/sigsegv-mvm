@@ -38,16 +38,20 @@ namespace Mod_Etc_Debug_Mission_Change_Crash
 		auto ent = reinterpret_cast<CBaseEntity *>(this);
 		
 		if (ent == nullptr) {
+			BACKTRACE();
 			Msg("[CBaseEntity::SetNextThink(index)] ENTER: this == nullptr (ctx %d, next @ %.3f, reltime %.3f)\n", nContextIndex, thinkTime, thinkTime - gpGlobals->curtime);
 		} else if (!IsEntityPtr(ent)) {
+			BACKTRACE();
 			Msg("[CBaseEntity::SetNextThink(index)] ENTER: !IsEntityPtr(this) (ent @ 0x%08x, ctx %d, next @ %.3f, reltime %.3f)\n", (uintptr_t)ent, nContextIndex, thinkTime, thinkTime - gpGlobals->curtime);
 		} else if (*reinterpret_cast<void **>(ent) == nullptr) {
+			BACKTRACE();
 			Msg("[CBaseEntity::SetNextThink(index)] ENTER: vtptr == nullptr (ent @ 0x%08x, ent #%d, ctx %d, next @ %.3f, reltime %.3f)\n", (uintptr_t)ent, GetEntityIndexOfPtr(ent), nContextIndex, thinkTime, thinkTime - gpGlobals->curtime);
 		}
 		
 		DETOUR_MEMBER_CALL(CBaseEntity_SetNextThink_index)(nContextIndex, thinkTime);
 		
 		if (ent == nullptr || *reinterpret_cast<void **>(ent) == nullptr) {
+			BACKTRACE();
 			Msg("[CBaseEntity::SetNextThink(index)] LEAVE\n");
 		}
 	}
@@ -58,15 +62,19 @@ namespace Mod_Etc_Debug_Mission_Change_Crash
 		
 		if (ent == nullptr) {
 			Msg("[CBaseEntity::SetNextThink(name)] ENTER: this == nullptr (ctx \"%s\", next @ %.3f, reltime %.3f)\n", szContext, nextThinkTime, nextThinkTime - gpGlobals->curtime);
+			BACKTRACE();
 		} else if (!IsEntityPtr(ent)) {
 			Msg("[CBaseEntity::SetNextThink(name)] ENTER: !IsEntityPtr(this) (ent @ 0x%08x, ctx \"%s\", next @ %.3f, reltime %.3f)\n", (uintptr_t)ent, szContext, nextThinkTime, nextThinkTime - gpGlobals->curtime);
+			BACKTRACE();
 		} else if (*reinterpret_cast<void **>(ent) == nullptr) {
 			Msg("[CBaseEntity::SetNextThink(name)] ENTER: vtptr == nullptr (ent @ 0x%08x, ent #%d, ctx \"%s\", next @ %.3f, reltime %.3f)\n", (uintptr_t)ent, GetEntityIndexOfPtr(ent), szContext, nextThinkTime, nextThinkTime - gpGlobals->curtime);
+			BACKTRACE();
 		}
 		
 		DETOUR_MEMBER_CALL(CBaseEntity_SetNextThink_name)(nextThinkTime, szContext);
 		
 		if (ent == nullptr || *reinterpret_cast<void **>(ent) == nullptr) {
+			BACKTRACE();
 			Msg("[CBaseEntity::SetNextThink(name)] LEAVE\n");
 		}
 	}

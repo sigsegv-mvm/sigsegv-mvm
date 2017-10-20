@@ -2762,6 +2762,81 @@
 					sym  "_Z17DataTable_WarningPKcz"
 					lib  "engine"
 				}
+				
+				"CTFWeaponBaseGun::GetCustomProjectileModel"
+				{
+					type "sym"
+					sym  "_ZN16CTFWeaponBaseGun24GetCustomProjectileModelEP17CAttribute_String"
+				}
+				
+				"CopyStringAttributeValueToCharPointerOutput"
+				{
+					type "sym"
+					sym  "_Z43CopyStringAttributeValueToCharPointerOutputPK17CAttribute_StringPPKc"
+				}
+				
+				"CBaseObject::DetonateObject"
+				{
+					type "sym"
+					sym  "_ZN11CBaseObject14DetonateObjectEv"
+				}
+				
+				"CHalloweenBaseBoss::SpawnBossAtPos"
+				{
+					type "sym"
+					sym  "_ZN18CHalloweenBaseBoss14SpawnBossAtPosE17HalloweenBossTypeRK6VectoriP11CBaseEntity"
+				}
+				
+				"CServerGameDLL::ServerActivate"
+				{
+					type "sym"
+					sym  "_ZN14CServerGameDLL14ServerActivateEP7edict_tii"
+				}
+				
+				"CMapListManager::RefreshList"
+				{
+					type "sym"
+					sym  "_ZN15CMapListManager11RefreshListEv"
+					lib  "engine"
+				}
+				"CMapListManager::GetMapCount"
+				{
+					type "sym"
+					sym  "_ZNK15CMapListManager11GetMapCountEv"
+					lib  "engine"
+				}
+				"CMapListManager::IsMapValid"
+				{
+					type "sym"
+					sym  "_ZNK15CMapListManager10IsMapValidEi"
+					lib  "engine"
+				}
+				"CMapListManager::GetMapName"
+				{
+					type "sym"
+					sym  "_ZNK15CMapListManager10GetMapNameEi"
+					lib  "engine"
+				}
+				
+				"CBasePlayer::ChangeTeam [int, bool, bool, bool]"
+				{
+					type "sym"
+					sym  "_ZN11CBasePlayer10ChangeTeamEibbb"
+				}
+				
+				"CTeam::GetNumPlayers" "_ZNK5CTeam13GetNumPlayersEv"
+				"CTeam::GetName"       "_ZNK5CTeam7GetNameEv"
+				"CTeam::GetPlayer"     "_ZNK5CTeam9GetPlayerEi"
+				"CTeam::GetTeamNumber" "_ZNK5CTeam13GetTeamNumberEv"
+				
+				"CTFTeam::GetNumObjects" "_ZN7CTFTeam13GetNumObjectsEi"
+				"CTFTeam::GetObject"     "_ZN7CTFTeam9GetObjectEi"
+				
+				"CTFTeamManager::IsValidTeam" "_ZN14CTFTeamManager11IsValidTeamEi"
+				"CTFTeamManager::GetTeam"     "_ZN14CTFTeamManager7GetTeamEi"
+				
+				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
+				"CTeamplayRules::SetStalemate"   "_ZN14CTeamplayRules12SetStalemateEibb"
 			}
 		}
 	}

@@ -139,6 +139,8 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		ActionType action = ACTION_Default;
 		
+		bool use_melee_threat_prioritization = false;
+		
 #ifdef ENABLE_BROKEN_STUFF
 		bool drop_weapon = false;
 #endif
@@ -473,13 +475,12 @@ namespace Mod_Pop_TFBot_Extensions
 	void Parse_HomingRockets(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		HomingRockets& hr = spawners[spawner].homing_rockets;
+		hr.enable = true;
 		
 		FOR_EACH_SUBKEY(kv, subkey) {
 			const char *name = subkey->GetName();
 			
-			if (FStrEq(name, "Enable")) {
-				hr.enable = subkey->GetBool();
-			} else if (FStrEq(name, "IgnoreDisguisedSpies")) {
+			if (FStrEq(name, "IgnoreDisguisedSpies")) {
 				hr.ignore_disguised_spies = subkey->GetBool();
 			} else if (FStrEq(name, "IgnoreStealthedSpies")) {
 				hr.ignore_stealthed_spies = subkey->GetBool();
@@ -491,14 +492,16 @@ namespace Mod_Pop_TFBot_Extensions
 				hr.min_dot_product = Clamp(subkey->GetFloat(), -1.0f, 1.0f);
 			} else if (FStrEq(name, "MaxAimError")) {
 				hr.min_dot_product = std::cos(DEG2RAD(Clamp(subkey->GetFloat(), 0.0f, 180.0f)));
+			} else if (FStrEq(name, "Enable")) {
+				/* this used to be a parameter but it was redundant and has been removed;
+				 * ignore it without issuing a warning */
 			} else {
 				Warning("Unknown key \'%s\' in HomingRockets block.\n", name);
 			}
 		}
 		
-		DevMsg("CTFBotSpawner %08x: set HomingRockets(%s, %s, %s, %.2f, %.1f, %.2f)\n",
+		DevMsg("CTFBotSpawner %08x: set HomingRockets(%s, %s, %.2f, %.1f, %.2f)\n",
 			(uintptr_t)spawner,
-			(hr.enable                 ? "true" : "false"),
 			(hr.ignore_disguised_spies ? "true" : "false"),
 			(hr.ignore_stealthed_spies ? "true" : "false"),
 			hr.speed, hr.turn_power, hr.min_dot_product);
@@ -591,6 +594,8 @@ namespace Mod_Pop_TFBot_Extensions
 				spawners[spawner].rocket_custom_particle = subkey->GetString();
 			} else if (FStrEq(name, "RingOfFire")) {
 				spawners[spawner].ring_of_fire = subkey->GetFloat();
+			} else if (FStrEq(name, "UseMeleeThreatPrioritization")) {
+				spawners[spawner].use_melee_threat_prioritization = subkey->GetBool();
 #ifdef ENABLE_BROKEN_STUFF
 			} else if (FStrEq(name, "DropWeapon")) {
 				spawners[spawner].drop_weapon = subkey->GetBool();
@@ -1228,6 +1233,32 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	DETOUR_DECL_MEMBER(const CKnownEntity *, CTFBotMainAction_SelectMoreDangerousThreatInternal, const INextBot *nextbot, const CBaseCombatCharacter *them, const CKnownEntity *threat1, const CKnownEntity *threat2)
+	{
+		auto action = reinterpret_cast<const CTFBotMainAction *>(this);
+		
+		// TODO: make the perf impact of this less obnoxious if possible
+		if (!spawners.empty()) {
+			CTFBot *actor = ToTFBot(nextbot->GetEntity());
+			
+			CTFBotSpawner *spawner = spawner_of_bot[actor];
+			if (spawner != nullptr) {
+				auto it = spawners.find(spawner);
+				if (it != spawners.end()) {
+					SpawnerData& data = (*it).second;
+					
+					/* do the exact same thing as the game code does when the bot has WeaponRestrictions MeleeOnly */
+					if (data.use_melee_threat_prioritization) {
+						return action->SelectCloserThreat(actor, threat1, threat2);
+					}
+				}
+			}
+		}
+		
+		return DETOUR_MEMBER_CALL(CTFBotMainAction_SelectMoreDangerousThreatInternal)(nextbot, them, threat1, threat2);
+	}
+	
+	
 #ifdef ENABLE_BROKEN_STUFF
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_ShouldDropAmmoPack)
 	{
@@ -1329,6 +1360,8 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFProjectile_Rocket_Spawn,       "CTFProjectile_Rocket::Spawn");
 			MOD_ADD_DETOUR_MEMBER(CBaseEntity_PerformCustomPhysics, "CBaseEntity::PerformCustomPhysics");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFBotMainAction_SelectMoreDangerousThreatInternal, "CTFBotMainAction::SelectMoreDangerousThreatInternal");
 			
 #ifdef ENABLE_BROKEN_STUFF
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ShouldDropAmmoPack, "CTFPlayer::ShouldDropAmmoPack");

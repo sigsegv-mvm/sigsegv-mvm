@@ -357,13 +357,65 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	}
 	
 	
+	static int CollectPlayers_RedAndBlue(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		(void) CollectPlayers(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
+		return CollectPlayers(playerVector, TF_TEAM_BLUE, isAlive, true);
+	}
+	
+	static int CollectPlayers_RedAndBlue_IsBot(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		CUtlVector<CTFPlayer *> tempVector;
+		CollectPlayers(&tempVector, TF_TEAM_RED,  isAlive, true);
+		CollectPlayers(&tempVector, TF_TEAM_BLUE, isAlive, true);
+		
+		if (!shouldAppend) {
+			playerVector->RemoveAll();
+		}
+		
+		for (auto player : tempVector) {
+			if (player->IsBot()) {
+				playerVector->AddToTail(player);
+			}
+		}
+		
+		return playerVector->Count();
+	}
+	
+	static int CollectPlayers_RedAndBlue_NotBot(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
+	{
+		CUtlVector<CTFPlayer *> tempVector;
+		CollectPlayers(&tempVector, TF_TEAM_RED,  isAlive, true);
+		CollectPlayers(&tempVector, TF_TEAM_BLUE, isAlive, true);
+		
+		if (!shouldAppend) {
+			playerVector->RemoveAll();
+		}
+		
+		for (auto player : tempVector) {
+			if (!player->IsBot()) {
+				playerVector->AddToTail(player);
+			}
+		}
+		
+		return playerVector->Count();
+	}
+	
+	
 	DETOUR_DECL_MEMBER(int, CTFGameRules_GetTeamAssignmentOverride, CTFPlayer *pPlayer, int iWantedTeam, bool b1)
 	{
 		/* it's important to let the call happen, because pPlayer->m_nCurrency
 		 * is set to its proper value in the call (stupid, but whatever) */
 		auto iResult = DETOUR_MEMBER_CALL(CTFGameRules_GetTeamAssignmentOverride)(pPlayer, iWantedTeam, b1);
 		
-		if (TFGameRules()->IsMannVsMachineMode() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
+		// debug message for the "sometimes bots don't get put on TEAM_SPECTATOR properly at wave end" situation
+		if (TFGameRules()->IsMannVsMachineMode() && pPlayer->IsBot() && iResult != iWantedTeam) {
+			DevMsg("[CTFGameRules::GetTeamAssignmentOverride] Bot [ent:%d userid:%d name:\"%s\"]: on team %d, wanted %d, forced onto %d!\n",
+				ENTINDEX(pPlayer), pPlayer->GetUserID(), pPlayer->GetPlayerName(), pPlayer->GetTeamNumber(), iWantedTeam, iResult);
+			BACKTRACE();
+		}
+		
+		if (TFGameRules()->IsMannVsMachineMode() && !pPlayer->IsBot() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
 			if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
 				DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",
 					ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
@@ -504,47 +556,12 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	
 	DETOUR_DECL_STATIC(int, CollectPlayers_CTFPlayer, CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
 	{
-		if (rc_CTFGameRules_FireGameEvent__teamplay_round_start > 0 &&
-			(team == TF_TEAM_BLUE && !isAlive && !shouldAppend)) {
+		if (rc_CTFGameRules_FireGameEvent__teamplay_round_start > 0 && (team == TF_TEAM_BLUE && !isAlive && !shouldAppend)) {
 			/* collect players on BOTH teams */
-			(void)DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
-			(void)DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, TF_TEAM_BLUE, isAlive, true);
-			
-			/* remove human players from the list so that only the bots remain */
-			for (int i = 0; i < playerVector->Count(); ++i) {
-				if (!(*playerVector)[i]->IsBot()) {
-					playerVector->FastRemove(i);
-					--i;
-				}
-			}
-			
-			return playerVector->Count();
+			return CollectPlayers_RedAndBlue_IsBot(playerVector, team, isAlive, shouldAppend);
 		}
 		
 		return DETOUR_STATIC_CALL(CollectPlayers_CTFPlayer)(playerVector, team, isAlive, shouldAppend);
-	}
-	
-	
-	static int CollectPlayers_RedAndBlue(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
-	{
-		(void) CollectPlayers(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
-		return CollectPlayers(playerVector, TF_TEAM_BLUE, isAlive, true);
-	}
-	
-	static int CollectPlayers_RedAndBlue_NotBot(CUtlVector<CTFPlayer *> *playerVector, int team, bool isAlive, bool shouldAppend)
-	{
-		(void) CollectPlayers(playerVector, TF_TEAM_RED,  isAlive, shouldAppend);
-		(void) CollectPlayers(playerVector, TF_TEAM_BLUE, isAlive, true);
-		
-		/* remove human players from the list so that only bots remain */
-		for (int i = 0; i < playerVector->Count(); ++i) {
-			if (!(*playerVector)[i]->IsBot()) {
-				playerVector->FastRemove(i);
-				--i;
-			}
-		}
-		
-		return playerVector->Count();
 	}
 	
 	
@@ -573,6 +590,59 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		
 		/* rather than always affecting blue players, affect players on the opposite team of the player with the ability */
 		return CollectPlayers(playerVector, GetEnemyTeam(radius_spy_scan_teamnum), isAlive, shouldAppend);
+	}
+	
+	
+	/* log cases where bots are spawning at weird times (not while the wave is running) */
+	DETOUR_DECL_MEMBER(void, CTFBot_Spawn)
+	{
+		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		DETOUR_MEMBER_CALL(CTFBot_Spawn)();
+		
+		if (TFGameRules()->IsMannVsMachineMode()) {
+			// ========= MANN VS MACHINE MODE ROUND STATE TRANSITIONS ==========
+			// [CPopulationManager::JumpToWave]                     --> PREROUND
+			// [CPopulationManager::StartCurrentWave]               --> RND_RUNNING
+			// [CPopulationManager::WaveEnd]                        --> BETWEEN_RNDS
+			// [CPopulationManager::WaveEnd]                        --> GAME_OVER
+			// -----------------------------------------------------------------
+			// [CTeamplayRoundBasedRules::CTeamplayRoundBasedRules] --> PREGAME
+			// [CTeamplayRoundBasedRules::State_Think_INIT]         --> PREGAME
+			// [CTeamplayRoundBasedRules::State_Think_RND_RUNNING]  --> PREGAME
+			// [CTeamplayRoundBasedRules::State_Think_PREGAME]      --> STARTGAME
+			// [CTeamplayRoundBasedRules::CheckReadyRestart]        --> RESTART
+			// [CTeamplayRoundBasedRules::State_Enter_RESTART]      --> PREROUND
+			// [CTeamplayRoundBasedRules::State_Think_STARTGAME]    --> PREROUND
+			// [CTeamplayRoundBasedRules::CheckWaitingForPlayers]   --> PREROUND
+			// [CTeamplayRoundBasedRules::State_Think_PREROUND]     --> RND_RUNNING
+			// [CTeamplayRoundBasedRules::State_Enter_PREROUND]     --> BETWEEN_RNDS
+			// [CTeamplayRoundBasedRules::State_Think_TEAM_WIN]     --> PREROUND
+			// [CTeamplayRoundBasedRules::State_Think_TEAM_WIN]     --> GAME_OVER
+			// =================================================================
+			
+			bool sketchy;
+			switch (TFGameRules()->State_Get()) {
+				case GR_STATE_INIT:         sketchy = true;
+				case GR_STATE_PREGAME:      sketchy = true;
+				case GR_STATE_STARTGAME:    sketchy = false;
+				case GR_STATE_PREROUND:     sketchy = true;
+				case GR_STATE_RND_RUNNING:  sketchy = false;
+				case GR_STATE_TEAM_WIN:     sketchy = true;
+				case GR_STATE_RESTART:      sketchy = true;
+				case GR_STATE_STALEMATE:    sketchy = true;
+				case GR_STATE_GAME_OVER:    sketchy = true;
+				case GR_STATE_BONUS:        sketchy = true;
+				case GR_STATE_BETWEEN_RNDS: sketchy = true;
+				default:                    sketchy = true;
+			}
+			
+			if (sketchy) {
+				DevMsg("[CTFBot::Spawn] Bot [ent:%d userid:%d name:\"%s\"]: spawned during game state %s!\n",
+					ENTINDEX(bot), bot->GetUserID(), bot->GetPlayerName(), GetRoundStateName(TFGameRules()->State_Get()));
+				BACKTRACE();
+			}
+		}
 	}
 	
 	
@@ -622,6 +692,9 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_RadiusSpyScan, "CTFPlayerShared::RadiusSpyScan");
 			this->AddPatch(new CPatch_CollectPlayers_Caller1<0x0000, 0x0100, TF_TEAM_BLUE, true, false, CollectPlayers_RadiusSpyScan>("CTFPlayerShared::RadiusSpyScan"));
 			this->AddPatch(new CPatch_RadiusSpyScan());
+			
+			/* this is purely for debugging the blue-robots-spawning-between-waves situation */
+			MOD_ADD_DETOUR_MEMBER(CTFBot_Spawn, "CTFBot::Spawn");
 		}
 		
 		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }

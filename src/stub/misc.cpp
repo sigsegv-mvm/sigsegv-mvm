@@ -12,6 +12,14 @@ CRConClient& RCONClient() { return ft_RCONClient(); }
 StaticFuncThunk<void, const Vector&, trace_t&, const Vector&, const Vector&, CBaseEntity *> ft_FindHullIntersection("FindHullIntersection");
 
 
+MemberFuncThunk<      CMapListManager *, void>              CMapListManager::ft_RefreshList("CMapListManager::RefreshList");
+MemberFuncThunk<const CMapListManager *, int>               CMapListManager::ft_GetMapCount("CMapListManager::GetMapCount");
+MemberFuncThunk<const CMapListManager *, int, int>          CMapListManager::ft_IsMapValid ("CMapListManager::IsMapValid");
+MemberFuncThunk<const CMapListManager *, const char *, int> CMapListManager::ft_GetMapName ("CMapListManager::GetMapName");
+
+GlobalThunk<CMapListManager> g_MapListMgr("g_MapListMgr");
+
+
 #if 0
 StaticFuncThunk<const char *, const char *, int> TranslateWeaponEntForClass("TranslateWeaponEntForClass");
 //const char *TranslateWeaponEntForClass(const char *name, int classnum) { return ft_TranslateWeaponEntForClass(name, classnum); }

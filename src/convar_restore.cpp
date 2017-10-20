@@ -61,7 +61,7 @@ namespace ConVar_Restore
 		}
 		
 		if (!kv->SaveToFile(filesystem, "sigsegv_convars.txt", nullptr, true, true, false)) {
-			Warning("ConVar_Restore::Save: Could not save KeyValues to file.\n");
+			Warning("ConVar_Restore::Save: Could not save KeyValues to \"sigsegv_convars.txt\".\n");
 		}
 		
 		kv->deleteThis();
@@ -97,7 +97,7 @@ namespace ConVar_Restore
 				var->SetValue(value);
 			}
 		} else {
-			Warning("ConVar_Restore::Load: COuld not load KeyValues from file.\n");
+			Warning("ConVar_Restore::Load: Could not load KeyValues from \"sigsegv_convars.txt\".\n");
 		}
 		
 		kv->deleteThis();

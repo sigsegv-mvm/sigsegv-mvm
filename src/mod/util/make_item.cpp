@@ -8,10 +8,7 @@
 
 
 // TODO 20170825:
-// - Hell-met wants a command that lets you just remove a weapon (or cosmetic, presumably...)
-//   - maybe make it so you can do it by slot #, or by item def name, or by item def index, or by cosmetic equip region
 // - client message acknowledging a successful give
-// - upgrade station automatic resupply causes normal weapons to be re-equipped
 // - fix integer parsing issue ("1" --> some very big number)
 // - help command
 // - give for players other than self
@@ -51,11 +48,7 @@ namespace Mod_Util_Make_Item
 	public:
 		CEconItemViewWrapper()
 		{
-		//	Msg("[CEconItemViewWrapper ctor | 0x%08x] pre-create\n", (uintptr_t)this);
 			this->m_pEconItemView = CEconItemView::Create();
-		//	Msg("[CEconItemViewWrapper ctor | 0x%08x] CEconItemView ptr:   0x%08x\n", (uintptr_t)this, (uintptr_t)this->m_pEconItemView);
-		//	Msg("[CEconItemViewWrapper ctor | 0x%08x] CEconItemView vtptr: 0x%08x\n", (uintptr_t)this, *(uintptr_t *)this->m_pEconItemView);
-		//	Msg("[CEconItemViewWrapper ctor | 0x%08x] post-create\n", (uintptr_t)this);
 		}
 		~CEconItemViewWrapper()
 		{
@@ -65,11 +58,7 @@ namespace Mod_Util_Make_Item
 		//		attr.GetStaticData()->GetType()->UnloadEconAttributeValue(attr.GetValuePtr());
 		//	}
 			
-		//	Msg("[CEconItemViewWrapper dtor | 0x%08x] pre-destroy\n", (uintptr_t)this);
-		//	Msg("[CEconItemViewWrapper dtor | 0x%08x] CEconItemView ptr:   0x%08x\n", (uintptr_t)this, (uintptr_t)this->m_pEconItemView);
-		//	Msg("[CEconItemViewWrapper dtor | 0x%08x] CEconItemView vtptr: 0x%08x\n", (uintptr_t)this, *(uintptr_t *)this->m_pEconItemView);
 			CEconItemView::Destroy(this->m_pEconItemView);
-		//	Msg("[CEconItemViewWrapper dtor | 0x%08x] post-destroy\n", (uintptr_t)this);
 		}
 		
 		operator CEconItemView *() { return this->m_pEconItemView; }
@@ -166,9 +155,6 @@ namespace Mod_Util_Make_Item
 			return;
 		}
 		
-		// REMOVE ME
-		Msg("[sig_makeitem_add_attr] args[1]=\"%s\" args[2]=\"%s\"\n", args[1], args[2]);
-		
 		auto it = state.find(*steamid);
 		if (it == state.end()) {
 			ClientMsg(player, "[sig_makeitem_add_attr] Error: you need to do sig_makeitem_start before you can do sig_makeitem_add_attr\n");
@@ -191,92 +177,25 @@ namespace Mod_Util_Make_Item
 			return;
 		}
 		
-		// REMOVE ME
-		Msg("[sig_makeitem_add_attr] attr name: \"%s\"\n", attr_def->GetName());
-		
-		// REMOVE ME
-		auto attr_type = attr_def->GetType();
-		if (attr_type != nullptr) {
-			Msg("[sig_makeitem_add_attr] attr_type: %s\n", TypeName(attr_type));
-		}
-		
-		// REMOVE ME!!!
-	//	if (dynamic_cast<CSchemaAttributeType_String *>(attr_type) != nullptr) {
-	//		ClientMsg(player, "[sig_makeitem_add_attr] Error: attributes with type 'string' are temporarily unsupported\n");
-	//		return;
-	//	}
-	//	if (dynamic_cast<CSchemaAttributeType_ItemSlotCriteria *>(attr_type) != nullptr) {
-	//		ClientMsg(player, "[sig_makeitem_add_attr] Error: attributes with type 'item_slot_criteria' are temporarily unsupported\n");
-	//		return;
-	//	}
-	//	if (dynamic_cast<CSchemaAttributeType_DynamicRecipeComponent *>(attr_type) != nullptr) {
-	//		ClientMsg(player, "[sig_makeitem_add_attr] Error: attributes with type 'dynamic_recipe_component_defined_item' are temporarily unsupported\n");
-	//		return;
-	//	}
-	//	if (dynamic_cast<CSchemaAttributeType_WorldItemPlacement *>(attr_type) != nullptr) {
-	//		ClientMsg(player, "[sig_makeitem_add_attr] Error: attributes with type 'item_placement' are temporarily unsupported\n");
-	//		return;
-	//	}
-		
 		const char *value_str = STRING(AllocPooledString(args[2]));
 		
-		// REMOVE ME
-		Msg("[sig_makeitem_add_attr] value_str: \"%s\"\n", value_str);
-		
 		attribute_data_union_t value;
-		
-		// REMOVE ME (as well as the spaces above and below this)
-		Msg("[sig_makeitem_add_attr] value before init: 0x%08x\n", (uintptr_t)value.m_String);
-		
 		// TODO: maybe make a wrapper class for this or something, so that if we return early, we still do the proper
 		// UnloadEconAttributeValue call to avoid leaking memory
 		attr_def->GetType()->InitializeNewEconAttributeValue(&value);
-		
-		// REMOVE ME (as well as the spaces above and below this)
-		Msg("[sig_makeitem_add_attr] value after init: 0x%08x\n", (uintptr_t)value.m_String);
-		
-		{ // REMOVE ME (as well as the spaces above and below this block)
-			std::string temp;
-			attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, &temp);
-			Msg("[sig_makeitem_add_attr] initial attr value as string has length %zu\n", temp.size());
-			Msg("[sig_makeitem_add_attr] initial attr value as string: \"%s\"\n", temp.c_str());
-		}
-		
-		// BConvertStringToEconAttributeValue isn't working:
-		// value->m_String == nullptr by the time we get to CAttribute_String::CopyFrom
 		if (!attr_def->GetType()->BConvertStringToEconAttributeValue(attr_def, value_str, &value, true)) {
 			ClientMsg(player, "[sig_makeitem_add_attr] Error: couldn't parse attribute value \"%s\"\n", args[2]);
 			attr_def->GetType()->UnloadEconAttributeValue(&value);
 			return;
 		}
-		
-		{ // REMOVE ME (as well as the spaces above and below this block)
-			std::string temp;
-			attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, &temp);
-			Msg("[sig_makeitem_add_attr] parsed attr value as string has length %zu\n", temp.size());
-			Msg("[sig_makeitem_add_attr] parsed attr value as string: \"%s\"\n", temp.c_str());
-		}
-		
 		CEconItemAttribute *attr = CEconItemAttribute::Create(attr_def->GetIndex());
 		*attr->GetValuePtr() = value;
 		item_view->GetAttributeList().AddAttribute(attr);
 		CEconItemAttribute::Destroy(attr);
 		
-		// CAttribute_String *CSchemaAttributeType_String::InitializeNewEconAttributeValue(attribute_data_union_t *) const
-		// void CSchemaAttributeType_String::UnloadEconAttributeValue(attribute_data_union_t *) const
-		
-		{ // REMOVE ME (as well as the spaces above and below this block)
-			std::string temp;
-			attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, &temp);
-			Msg("[sig_makeitem_add_attr] final attr value as string has length %zu\n", temp.size());
-			Msg("[sig_makeitem_add_attr] final attr value as string: \"%s\"\n", temp.c_str());
-		}
-		
 		std::string str;
 		attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, &str);
 		ClientMsg(player, "[sig_makeitem_add_attr] Added attribute \"%s\" with value \"%s\"\n", attr_def->GetName(), str.c_str());
-		
-	//	attr_def->GetType()->UnloadEconAttributeValue(&value);
 	}
 	
 	
@@ -320,45 +239,6 @@ namespace Mod_Util_Make_Item
 		
 		CEconItemView *item_view = (*it).second;
 		
-#if 0 // REMOVE ME: dumb, always-slot-based old-item-removal code
-		int slot = item_view->GetStaticData()->GetLoadoutSlot(recipient->GetPlayerClass()->GetClassIndex());
-		
-		CEconEntity *old_econ_entity = nullptr;
-		(void)CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot(recipient, slot, &old_econ_entity);
-		
-		if (old_econ_entity != nullptr) {
-			if (old_econ_entity->IsBaseCombatWeapon()) {
-				auto old_weapon = rtti_cast<CBaseCombatWeapon *>(old_econ_entity);
-				
-				Msg("Removing old weapon from slot %d\n", slot);
-				recipient->Weapon_Detach(old_weapon);
-				old_weapon->Remove();
-			} else if (old_econ_entity->IsWearable()) {
-				auto old_wearable = rtti_cast<CEconWearable *>(old_econ_entity);
-				
-				Msg("Removing old wearable from slot %d\n", slot);
-				recipient->RemoveWearable(old_wearable);
-			} else {
-				Msg("Removing old entity from slot %d\n", slot);
-				old_econ_entity->Remove();
-			}
-		} else {
-			Msg("No old entity in slot %d\n", slot);
-		}
-		
-		CBaseEntity *ent = recipient->GiveNamedItem(item_view->GetStaticData()->GetItemClass(""), 0, item_view, false);
-		if (ent != nullptr) {
-			auto econ_ent = rtti_cast<CEconEntity *>(ent);
-			if (econ_ent != nullptr) {
-				econ_ent->m_bValidatedAttachedEntity = true;
-				econ_ent->GiveTo(recipient);
-			} else {
-				ClientMsg(player, "GiveNamedItem returned a non-CEconEntity\n");
-			}
-		} else {
-			ClientMsg(player, "GiveNamedItem returned nullptr\n");
-		}
-#else
 		int slot = item_view->GetStaticData()->GetLoadoutSlot(recipient->GetPlayerClass()->GetClassIndex());
 		
 		if (IsLoadoutSlot_Cosmetic(slot)) {
@@ -432,7 +312,6 @@ namespace Mod_Util_Make_Item
 		} else {
 			ClientMsg(player, "GiveNamedItem returned nullptr\n");
 		}
-#endif
 		
 		// TODO: display success message like this:
 		//   Created item "<item name>" with the following attributes:

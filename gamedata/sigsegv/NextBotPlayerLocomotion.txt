@@ -23,6 +23,11 @@
 					type "sym"
 					sym  "_ZN16PlayerLocomotion4JumpEv"
 				}
+				"PlayerLocomotion::Approach"
+				{
+					type "sym"
+					sym  "_ZN16PlayerLocomotion8ApproachERK6Vectorf"
+				}
 			}
 		}
 	}

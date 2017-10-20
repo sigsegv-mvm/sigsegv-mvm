@@ -22,7 +22,7 @@ public:
 	
 	void StartPlacement(CTFPlayer *pPlayer)   {        vt_StartPlacement               (this, pPlayer); }
 	bool StartBuilding(CBaseEntity *pBuilder) { return vt_StartBuilding                (this, pBuilder); }
-//	void DetonateObject()                     {        vt_DetonateObject               (this); }
+	void DetonateObject()                     {        vt_DetonateObject               (this); }
 	void InitializeMapPlacedObject()          {        vt_InitializeMapPlacedObject    (this); }
 	void FinishedBuilding()                   {        vt_FinishedBuilding             (this); }
 	int GetMiniBuildingStartingHealth()       { return vt_GetMiniBuildingStartingHealth(this); }
@@ -45,7 +45,7 @@ private:
 	
 	static MemberVFuncThunk<CBaseObject *, void, CTFPlayer *>   vt_StartPlacement;
 	static MemberVFuncThunk<CBaseObject *, bool, CBaseEntity *> vt_StartBuilding;
-//	static MemberVFuncThunk<CBaseObject *, void>                vt_DetonateObject;
+	static MemberVFuncThunk<CBaseObject *, void>                vt_DetonateObject;
 	static MemberVFuncThunk<CBaseObject *, void>                vt_InitializeMapPlacedObject;
 	static MemberVFuncThunk<CBaseObject *, void>                vt_FinishedBuilding;
 	static MemberVFuncThunk<CBaseObject *, int>                 vt_GetMiniBuildingStartingHealth;

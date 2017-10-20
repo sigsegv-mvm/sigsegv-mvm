@@ -17,6 +17,10 @@ MemberVFuncThunk<      CGameRules *, bool, int, int>       CGameRules::vt_Should
 MemberVFuncThunk<CMultiplayRules *, VoiceCommandMenuItem_t *, CBaseMultiplayerPlayer *, int, int> CMultiplayRules::vt_VoiceCommand(TypeName<CMultiplayRules>(), "CMultiplayRules::VoiceCommand");
 
 
+MemberVFuncThunk<CTeamplayRules *, void, int, int, bool, bool, bool, bool> CTeamplayRules::vt_SetWinningTeam(TypeName<CTeamplayRules>(), "CTeamplayRules::SetWinningTeam");
+MemberVFuncThunk<CTeamplayRules *, void, int, bool, bool>                  CTeamplayRules::vt_SetStalemate  (TypeName<CTeamplayRules>(), "CTeamplayRules::SetStalemate");
+
+
 IMPL_SENDPROP(gamerules_roundstate_t, CTeamplayRoundBasedRules, m_iRoundState,  CTeamplayRoundBasedRulesProxy);
 IMPL_SENDPROP(int,                    CTeamplayRoundBasedRules, m_iWinningTeam, CTeamplayRoundBasedRulesProxy);
 IMPL_SENDPROP(bool[33],               CTeamplayRoundBasedRules, m_bPlayerReady, CTeamplayRoundBasedRulesProxy);
@@ -44,3 +48,22 @@ MemberVFuncThunk<CTFGameRules *, bool> CTFGameRules::vt_FlagsMayBeCapped(TypeNam
 
 
 GlobalThunk<CGameRules *> g_pGameRules("g_pGameRules");
+
+
+const char *GetRoundStateName(gamerules_roundstate_t state)
+{
+	switch (state) {
+	case GR_STATE_INIT:         return "INIT";
+	case GR_STATE_PREGAME:      return "PREGAME";
+	case GR_STATE_STARTGAME:    return "STARTGAME";
+	case GR_STATE_PREROUND:     return "PREROUND";
+	case GR_STATE_RND_RUNNING:  return "RND_RUNNING";
+	case GR_STATE_TEAM_WIN:     return "TEAM_WIN";
+	case GR_STATE_RESTART:      return "RESTART";
+	case GR_STATE_STALEMATE:    return "STALEMATE";
+	case GR_STATE_GAME_OVER:    return "GAME_OVER";
+	case GR_STATE_BONUS:        return "BONUS";
+	case GR_STATE_BETWEEN_RNDS: return "BETWEEN_RNDS";
+	default:                    return "???";
+	}
+}

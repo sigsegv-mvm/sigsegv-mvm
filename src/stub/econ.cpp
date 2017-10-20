@@ -210,8 +210,13 @@ MemberFuncThunk<const CEconItemSchema *, CEconItemAttributeDefinition *, const c
 static StaticFuncThunk<CTFItemSchema *> ft_GetItemSchema("GetItemSchema");
 CTFItemSchema *GetItemSchema() { return ft_GetItemSchema(); }
 
+
 static StaticFuncThunk<CItemGeneration *> ft_ItemGeneration("ItemGeneration");
 CItemGeneration *ItemGeneration() { return ft_ItemGeneration(); }
+
+
+static StaticFuncThunk<void, const CAttribute_String *, const char **> ft_CopyStringAttributeValueToCharPointerOutput("CopyStringAttributeValueToCharPointerOutput");
+void CopyStringAttributeValueToCharPointerOutput(const CAttribute_String *attr_str, const char **p_cstr) { ft_CopyStringAttributeValueToCharPointerOutput(attr_str, p_cstr); }
 
 
 GlobalThunk<const char *[NUM_VISUALS_BLOCKS]> g_TeamVisualSections("g_TeamVisualSections");

@@ -40,22 +40,39 @@ struct CExtract_CPopulationManager_m_RespecPoints : public IExtract<CPopulationM
 	virtual T AdjustValue(T val) const override        { return reinterpret_cast<T>((uintptr_t)val - 0x4); }
 };
 
+
+static constexpr uint8_t s_Buf_CPopulationManager_m_bAllocatedBots[] = {
+	0x8b, 0x75, 0x08,                         // +0000  mov esi,[ebp+this]
+	0x80, 0xbe, 0x00, 0x00, 0x00, 0x00, 0x00, // +0003  cmp byte ptr [esi+0xVVVVVVVV],0
+	0x74, 0x00,                               // +000A  jz +0x??
+};
+
+struct CExtract_CPopulationManager_m_bAllocatedBots : public IExtract<bool *>
+{
+	using T = bool *;
+	
+	CExtract_CPopulationManager_m_bAllocatedBots() : IExtract<T>(sizeof(s_Buf_CPopulationManager_m_bAllocatedBots)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CPopulationManager_m_bAllocatedBots);
+		
+		mask.SetRange(0x03 + 2, 2, 0x00);
+		mask.SetRange(0x0a + 1, 1, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CPopulationManager::AllocateBots"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0010; } // @ +0x0006
+	virtual uint32_t GetExtractOffset() const override { return 0x0003 + 2; }
+};
+
 #elif defined _WINDOWS
 
-// TODO
-struct CExtract_CPopulationManager_m_RespecPoints : public IExtract<CPopulationManager::SteamIDMap *>
-{
-	using T = CPopulationManager::SteamIDMap *;
-	
-	CExtract_CPopulationManager_m_RespecPoints() : IExtract<T>(0) {}
-	
-	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
-	
-	virtual const char *GetFuncName() const override   { return "CPopulationManager::ResetRespecPoints"; }
-	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
-	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
-};
+using CExtract_CPopulationManager_m_RespecPoints   = IExtractStub;
+using CExtract_CPopulationManager_m_bAllocatedBots = IExtractStub;
 
 #endif
 
@@ -63,7 +80,10 @@ struct CExtract_CPopulationManager_m_RespecPoints : public IExtract<CPopulationM
 MemberFuncThunk<CPopulationManager *, bool, KeyValues *> CPopulationManager::ft_LoadMvMMission("CPopulationManager::LoadMvMMission");
 MemberFuncThunk<CPopulationManager *, CWave *>           CPopulationManager::ft_GetCurrentWave("CPopulationManager::GetCurrentWave");
 
-IMPL_EXTRACT(CPopulationManager::SteamIDMap, CPopulationManager, m_RespecPoints, new CExtract_CPopulationManager_m_RespecPoints());
+StaticFuncThunk<int, CUtlVector<CTFPlayer *> *> CPopulationManager::ft_CollectMvMBots("CPopulationManager::CollectMvMBots");
+
+IMPL_EXTRACT(CPopulationManager::SteamIDMap, CPopulationManager, m_RespecPoints,   new CExtract_CPopulationManager_m_RespecPoints());
+IMPL_EXTRACT(bool,                           CPopulationManager, m_bAllocatedBots, new CExtract_CPopulationManager_m_bAllocatedBots());
 
 
 GlobalThunk<CPopulationManager *> g_pPopulationManager("g_pPopulationManager");

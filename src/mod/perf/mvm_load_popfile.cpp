@@ -6,6 +6,43 @@
 
 namespace Mod_Perf_MvM_Load_Popfile
 {
+#if 0 // new re-implementation
+	
+	
+	RefCount rc_tf_mvm_popfile;
+	DETOUR_DECL_STATIC(void, tf_mvm_popfile, const CCommand& args)
+	{
+		
+	}
+	
+	DETOUR_DECL_MEMBER(void, CPopulationManager_ResetMap)
+	{
+		
+	}
+	
+	
+	class CMod : public IMod
+	{
+	public:
+		CMod() : IMod("Perf:MvM_Load_Popfile")
+		{
+			MOD_ADD_DETOUR_STATIC(tf_mvm_popfile,              "tf_mvm_popfile");
+			MOD_ADD_DETOUR_MEMBER(CPopulationManager_ResetMap, "CPopulationManager::ResetMap");
+		}
+	};
+	CMod s_Mod;
+	
+	
+	ConVar cvar_enable("sig_perf_mvm_load_popfile", "0", FCVAR_NOTIFY,
+		"Mod: eliminate unnecessary duplication of parsing/init code during tf_mvm_popfile",
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
+			ConVarRef var(pConVar);
+			s_Mod.Toggle(var.GetBool());
+		});
+#endif
+	
+	
+#if 0
 	RefCount rc_tf_mvm_popfile;
 	int tf_mvm_popfile_resets = 0;
 	DETOUR_DECL_STATIC(void, tf_mvm_popfile, const CCommand& args)
@@ -76,25 +113,7 @@ namespace Mod_Perf_MvM_Load_Popfile
 	// BUG: apparently, when this thing is enabled, when joining a server,
 	// - the mission immediately starts
 	// - it uses PvP timers
-	
-	
-	
-	
-	// OLD --------
-	
-	// NOTE: okay, here's what the ACTUAL PROBLEM is:
-	// CPopulationManager::JumpToWave, when called via tf_mvm_popfile, calls CPopulationManager::Initialize
-	// and then JumpToWave also calls CTeamplayRoundBasedRules::State_Enter_PREROUND, which calls CPopulationManager::Initialize
-	
-	// so, we need to block one of those calls
-	
-	
-	ConVar cvar_enable("sig_perf_mvm_load_popfile", "0", FCVAR_NOTIFY,
-		"Mod: eliminate unnecessary duplication of parsing/init code during tf_mvm_popfile",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
-		});
+#endif
 }
 
 /*
@@ -188,3 +207,159 @@ SOLUTION:
   - 
 
 */
+
+#if 0
+
+notes from 20171007
+
+multi-popfile-parse issues:
+- tf_mvm_popfile calls CPopulationManager::ResetMap, but it's a redundant call because CPopulationManager::SetPopulationFilename already calls it
+- CPopulationManager::ResetMap calls CPopulationManager::JumpToWave
+  - JumpToWave calls CPopulationManager::Initialize, which calls CPopulationManager::Parse
+  - JumpToWave calls TFGameRules()->State_Transition(GR_STATE_PREROUND)
+    - which calls TFGameRules()->RoundRespawn
+      - which calls TFGameRules()->SetupOnRoundStart
+        - which calls CPopulationManager::Initialize, which calls CPopulationManager::Parse
+
+
+HOW TO FIX:
+- tf_mvm_popfile's call to CPopulationManager::ResetMap needs to be removed
+- 
+
+QUESTIONS:
+- does this fix the "missing default popfile fucks up the state really badly" issue?
+
+#endif
+
+#if 0
+
+backtraces from 20171007
+
+Thread 1 "srcds_linux" hit Breakpoint 1, 0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#0  0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#1  0xf14ad7b7 in CPopulationManager::Initialize() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#2  0xf14ac203 in CPopulationManager::JumpToWave(unsigned int, float) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#3  0xf14ac4d6 in CPopulationManager::ResetMap() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#4  0xf14ac54a in CPopulationManager::SetPopulationFilename(char const*) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#5  0xf0e3119a in tf_mvm_popfile(CCommand const&) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#6  0xe899f454 in __SourceHook_FHCls_ConCommandDispatchfalse::Func (this=0xf1d9af60 <tf_mvm_popfile_command>, p1=...) at /pool/Game/SourceMod/sourcemod/core/GameHooks.cpp:45
+#7  0xf5d325f7 in Cmd_ExecuteCommand(CCommand const&, cmd_source_t, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#8  0xf5d32702 in Cbuf_ExecuteCommand(CCommand const&, cmd_source_t) [clone .constprop.56] () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#9  0xf5d330a5 in Cbuf_Execute() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#10 0xf5e18f89 in CServerRemoteAccess::WriteDataRequest(CRConServer*, unsigned int, void const*, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#11 0xf5e15c5b in CRConServer::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#12 0xf5dc4393 in NET_RunFrame(double) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#13 0xf5d7f55b in _Host_RunFrame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#14 0xf5d8d477 in CHostState::State_Run(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#15 0xf5d8d7d6 in CHostState::FrameUpdate(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#16 0xf5d8d81d in HostState_Frame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#17 0xf5e249f3 in CEngine::Frame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#18 0xf5e21896 in CDedicatedServerAPI::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#19 0xf6b8d0fa in RunServer() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#20 0xf5e2198d in CModAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#21 0xf5e6c528 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#22 0xf5e2267d in CDedicatedServerAPI::ModInit(ModInfo_t&) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#23 0xf6b8cda3 in CDedicatedAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#24 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#25 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#26 0xf6b3c488 in main () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#27 0x080489cb in main ()
+
+Thread 1 "srcds_linux" hit Breakpoint 1, 0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#0  0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#1  0xf14ad7b7 in CPopulationManager::Initialize() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#2  0xf0e648c9 in CTFGameRules::SetupOnRoundStart() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#3  0xf0ddd163 in CTeamplayRoundBasedRules::RoundRespawn() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#4  0xf0e58876 in CTFGameRules::RoundRespawn() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#5  0xf0dddc94 in CTeamplayRoundBasedRules::State_Enter_PREROUND() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#6  0xf14ac0f8 in CPopulationManager::JumpToWave(unsigned int, float) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#7  0xf14ac4d6 in CPopulationManager::ResetMap() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#8  0xf14ac54a in CPopulationManager::SetPopulationFilename(char const*) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#9  0xf0e3119a in tf_mvm_popfile(CCommand const&) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#10 0xe899f454 in __SourceHook_FHCls_ConCommandDispatchfalse::Func (this=0xf1d9af60 <tf_mvm_popfile_command>, p1=...) at /pool/Game/SourceMod/sourcemod/core/GameHooks.cpp:45
+#11 0xf5d325f7 in Cmd_ExecuteCommand(CCommand const&, cmd_source_t, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#12 0xf5d32702 in Cbuf_ExecuteCommand(CCommand const&, cmd_source_t) [clone .constprop.56] () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#13 0xf5d330a5 in Cbuf_Execute() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#14 0xf5e18f89 in CServerRemoteAccess::WriteDataRequest(CRConServer*, unsigned int, void const*, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#15 0xf5e15c5b in CRConServer::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#16 0xf5dc4393 in NET_RunFrame(double) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#17 0xf5d7f55b in _Host_RunFrame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#18 0xf5d8d477 in CHostState::State_Run(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#19 0xf5d8d7d6 in CHostState::FrameUpdate(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#20 0xf5d8d81d in HostState_Frame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#21 0xf5e249f3 in CEngine::Frame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#22 0xf5e21896 in CDedicatedServerAPI::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#23 0xf6b8d0fa in RunServer() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#24 0xf5e2198d in CModAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#25 0xf5e6c528 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#26 0xf5e2267d in CDedicatedServerAPI::ModInit(ModInfo_t&) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#27 0xf6b8cda3 in CDedicatedAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#28 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#29 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#30 0xf6b3c488 in main () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#31 0x080489cb in main ()
+
+Thread 1 "srcds_linux" hit Breakpoint 1, 0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#0  0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#1  0xf14ad7b7 in CPopulationManager::Initialize() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#2  0xf14ac203 in CPopulationManager::JumpToWave(unsigned int, float) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#3  0xf14ac4d6 in CPopulationManager::ResetMap() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#4  0xf0e311a7 in tf_mvm_popfile(CCommand const&) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#5  0xe899f454 in __SourceHook_FHCls_ConCommandDispatchfalse::Func (this=0xf1d9af60 <tf_mvm_popfile_command>, p1=...) at /pool/Game/SourceMod/sourcemod/core/GameHooks.cpp:45
+#6  0xf5d325f7 in Cmd_ExecuteCommand(CCommand const&, cmd_source_t, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#7  0xf5d32702 in Cbuf_ExecuteCommand(CCommand const&, cmd_source_t) [clone .constprop.56] () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#8  0xf5d330a5 in Cbuf_Execute() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#9  0xf5e18f89 in CServerRemoteAccess::WriteDataRequest(CRConServer*, unsigned int, void const*, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#10 0xf5e15c5b in CRConServer::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#11 0xf5dc4393 in NET_RunFrame(double) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#12 0xf5d7f55b in _Host_RunFrame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#13 0xf5d8d477 in CHostState::State_Run(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#14 0xf5d8d7d6 in CHostState::FrameUpdate(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#15 0xf5d8d81d in HostState_Frame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#16 0xf5e249f3 in CEngine::Frame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#17 0xf5e21896 in CDedicatedServerAPI::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#18 0xf6b8d0fa in RunServer() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#19 0xf5e2198d in CModAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#20 0xf5e6c528 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#21 0xf5e2267d in CDedicatedServerAPI::ModInit(ModInfo_t&) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#22 0xf6b8cda3 in CDedicatedAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#23 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#24 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#25 0xf6b3c488 in main () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#26 0x080489cb in main ()
+
+Thread 1 "srcds_linux" hit Breakpoint 1, 0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#0  0xf14a9256 in CPopulationManager::Parse() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#1  0xf14ad7b7 in CPopulationManager::Initialize() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#2  0xf0e648c9 in CTFGameRules::SetupOnRoundStart() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#3  0xf0ddd163 in CTeamplayRoundBasedRules::RoundRespawn() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#4  0xf0e58876 in CTFGameRules::RoundRespawn() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#5  0xf0dddc94 in CTeamplayRoundBasedRules::State_Enter_PREROUND() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#6  0xf14ac0f8 in CPopulationManager::JumpToWave(unsigned int, float) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#7  0xf14ac4d6 in CPopulationManager::ResetMap() () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#8  0xf0e311a7 in tf_mvm_popfile(CCommand const&) () from /pool/Game/SteamCMD/tf2/tf/bin/server_srv.so
+#9  0xe899f454 in __SourceHook_FHCls_ConCommandDispatchfalse::Func (this=0xf1d9af60 <tf_mvm_popfile_command>, p1=...) at /pool/Game/SourceMod/sourcemod/core/GameHooks.cpp:45
+#10 0xf5d325f7 in Cmd_ExecuteCommand(CCommand const&, cmd_source_t, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#11 0xf5d32702 in Cbuf_ExecuteCommand(CCommand const&, cmd_source_t) [clone .constprop.56] () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#12 0xf5d330a5 in Cbuf_Execute() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#13 0xf5e18f89 in CServerRemoteAccess::WriteDataRequest(CRConServer*, unsigned int, void const*, int) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#14 0xf5e15c5b in CRConServer::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#15 0xf5dc4393 in NET_RunFrame(double) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#16 0xf5d7f55b in _Host_RunFrame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#17 0xf5d8d477 in CHostState::State_Run(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#18 0xf5d8d7d6 in CHostState::FrameUpdate(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#19 0xf5d8d81d in HostState_Frame(float) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#20 0xf5e249f3 in CEngine::Frame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#21 0xf5e21896 in CDedicatedServerAPI::RunFrame() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#22 0xf6b8d0fa in RunServer() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#23 0xf5e2198d in CModAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#24 0xf5e6c528 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#25 0xf5e2267d in CDedicatedServerAPI::ModInit(ModInfo_t&) () from /pool/Game/SteamCMD/tf2/bin/engine_srv.so
+#26 0xf6b8cda3 in CDedicatedAppSystemGroup::Main() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#27 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#28 0xf6c72e28 in CAppSystemGroup::Run() () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#29 0xf6b3c488 in main () from /pool/Game/SteamCMD/tf2/bin/dedicated_srv.so
+#30 0x080489cb in main ()
+
+
+#endif

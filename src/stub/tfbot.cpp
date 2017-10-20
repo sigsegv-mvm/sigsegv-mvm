@@ -229,3 +229,7 @@ MemberFuncThunk<      CTFBot *, bool                                     > CTFBo
 #if 0
 std::map<CHandle<CTFBot>, CTFBot::ExtendedAttr> CTFBot::s_ExtAttrs;
 #endif
+
+
+StaticFuncThunk<CTFBot *, const char *, bool> ft_NextBotCreatePlayerBot_CTFBot("NextBotCreatePlayerBot<CTFBot>");
+template<> CTFBot *NextBotCreatePlayerBot<CTFBot>(const char *name, bool fake_client) { return ft_NextBotCreatePlayerBot_CTFBot(name, fake_client); }

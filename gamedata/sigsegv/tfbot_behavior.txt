@@ -83,6 +83,16 @@
 					type "sym"
 					sym  "_ZN16CTFBotMainAction22InitialContainedActionEP6CTFBot"
 				}
+				"CTFBotMainAction::Dodge"
+				{
+					type "sym"
+					sym  "_ZN16CTFBotMainAction5DodgeEP6CTFBot"
+				}
+				"CTFBotMainAction::SelectCloserThreat"
+				{
+					type "sym"
+					sym  "_ZNK16CTFBotMainAction18SelectCloserThreatEP6CTFBotPK12CKnownEntityS4_"
+				}
 				
 				"CTFBotScenarioMonitor::Update"
 				{

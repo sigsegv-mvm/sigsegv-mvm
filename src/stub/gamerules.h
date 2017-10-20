@@ -47,6 +47,23 @@ enum gamerules_roundstate_t
 };
 
 
+enum
+{
+	WINREASON_NONE                    =  0,
+	WINREASON_ALL_POINTS_CAPTURED     =  1,
+	WINREASON_OPPONENTS_DEAD          =  2,
+	WINREASON_FLAG_CAPTURE_LIMIT      =  3,
+	WINREASON_DEFEND_UNTIL_TIME_LIMIT =  4,
+	WINREASON_STALEMATE               =  5,
+	WINREASON_TIMELIMIT               =  6,
+	WINREASON_WINLIMIT                =  7,
+	WINREASON_WINDIFFLIMIT            =  8,
+	WINREASON_RD_REACTOR_CAPTURED     =  9,
+	WINREASON_RD_CORES_COLLECTED      = 10,
+	WINREASON_RD_REACTOR_RETURNED     = 11,
+};
+
+
 class CBaseMultiplayerPlayer;
 class CTFPlayer;
 struct VoiceCommandMenuItem_t;
@@ -79,8 +96,8 @@ class CTFGameRulesProxy : public CTeamplayRoundBasedRulesProxy {};
 class CGameRules
 {
 public:
-	void NetworkStateChanged(void *pVar) { CGameRulesProxy::NotifyNetworkStateChanged(); }
-	void NetworkStateChanged()           { CGameRulesProxy::NotifyNetworkStateChanged(); }
+	void NetworkStateChanged(void *pVar) { NULL_RET(); CGameRulesProxy::NotifyNetworkStateChanged(); }
+	void NetworkStateChanged()           { NULL_RET(); CGameRulesProxy::NotifyNetworkStateChanged(); }
 	
 	const CViewVectors *GetViewVectors() const;
 	bool ShouldCollide(int collisionGroup0, int collisionGroup1) { NULL_RET(true); return vt_ShouldCollide (this, collisionGroup0, collisionGroup1); }
@@ -99,7 +116,16 @@ private:
 	static MemberVFuncThunk<CMultiplayRules *, VoiceCommandMenuItem_t *, CBaseMultiplayerPlayer *, int, int> vt_VoiceCommand;
 };
 
-class CTeamplayRules : public CMultiplayRules {};
+class CTeamplayRules : public CMultiplayRules
+{
+public:
+	void SetWinningTeam(int team, int iWinReason, bool bForceMapReset = true, bool bSwitchTeams = false, bool bDontAddScore = false, bool bFinal = false) { NULL_RET(); vt_SetWinningTeam(this, team, iWinReason, bForceMapReset, bSwitchTeams, bDontAddScore, bFinal); }
+	void SetStalemate(int iReason, bool bForceMapReset = true, bool bSwitchTeams = false)                                                                 { NULL_RET(); vt_SetStalemate  (this, iReason, bForceMapReset, bSwitchTeams); }
+	
+private:
+	static MemberVFuncThunk<CTeamplayRules *, void, int, int, bool, bool, bool, bool> vt_SetWinningTeam;
+	static MemberVFuncThunk<CTeamplayRules *, void, int, bool, bool>                  vt_SetStalemate;
+};
 
 class CTeamplayRoundBasedRules : public CTeamplayRules
 {
@@ -214,6 +240,9 @@ inline CMultiplayRules          *MultiplayRules()          { return reinterpret_
 inline CTeamplayRules           *TeamplayGameRules()       { return reinterpret_cast<CTeamplayRules           *>(GameRules()); }
 inline CTeamplayRoundBasedRules *TeamplayRoundBasedRules() { return reinterpret_cast<CTeamplayRoundBasedRules *>(GameRules()); }
 inline CTFGameRules             *TFGameRules()             { return reinterpret_cast<CTFGameRules             *>(GameRules()); }
+
+
+const char *GetRoundStateName(gamerules_roundstate_t state);
 
 
 #undef IF_NULL

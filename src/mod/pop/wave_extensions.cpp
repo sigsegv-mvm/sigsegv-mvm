@@ -5,6 +5,8 @@
 #include "stub/entities.h"
 #include "stub/objects.h"
 #include "stub/gamerules.h"
+#include "stub/tfplayer.h"
+#include "stub/team.h"
 #include "util/scope.h"
 #include "util/iterate.h"
 
@@ -13,6 +15,13 @@ namespace Mod_Pop_Wave_Extensions
 {
 	struct SentryGunInfo
 	{
+		~SentryGunInfo()
+		{
+			if (sentry != nullptr) {
+				sentry->DetonateObject();
+			}
+		}
+		
 		bool use_hint = true;
 		std::vector<CHandle<CTFBotHintSentrygun>> hints;
 		Vector origin;
@@ -20,16 +29,40 @@ namespace Mod_Pop_Wave_Extensions
 		
 		int teamnum = TF_TEAM_BLUE;
 		float delay = 0.0f;
-		int level   = -1;
+		int level   = 0;
 		
 		bool spawned = false;
+		CHandle<CObjectSentrygun> sentry;
+	};
+	
+	struct BossInfo
+	{
+		~BossInfo()
+		{
+			if (boss != nullptr) {
+				boss->Remove();
+			}
+		}
+		
+		Vector origin;
+		
+		CHalloweenBaseBoss::HalloweenBossType type = CHalloweenBaseBoss::INVALID;
+		int teamnum = TF_TEAM_HALLOWEEN_BOSS;
+		int health  = -1;
+		float delay = 0.0f;
+		
+		bool spawned = false;
+		CHandle<CHalloweenBaseBoss> boss;
 	};
 	
 	struct WaveData
 	{
-		std::vector<std::string> explanation;
+		std::vector<std::string>   explanation;
 		std::vector<SentryGunInfo> sentryguns;
-		std::vector<std::string> sound_loops;
+		std::vector<BossInfo>      bosses;
+		std::vector<std::string>   sound_loops;
+		
+		bool red_team_wipe_causes_wave_loss = false;
 		
 		IntervalTimer t_wavestart;
 	};
@@ -146,6 +179,75 @@ namespace Mod_Pop_Wave_Extensions
 		waves[wave].sentryguns.push_back(info);
 	}
 	
+	void Parse_HalloweenBoss(CWave *wave, KeyValues *kv)
+	{
+		BossInfo info;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "BossType")) {
+				if (FStrEq(subkey->GetString(), "HHH")) {
+					info.type = CHalloweenBaseBoss::HEADLESS_HATMAN;
+				} else if (FStrEq(subkey->GetString(), "MONOCULUS")) {
+					info.type = CHalloweenBaseBoss::EYEBALL_BOSS;
+				} else if (FStrEq(subkey->GetString(), "Merasmus")) {
+					info.type = CHalloweenBaseBoss::MERASMUS;
+				} else {
+					Warning("Invalid value \'%s\' for BossType key in HalloweenBoss block.\n", subkey->GetString());
+				}
+			//	DevMsg("BossType \"%s\" --> %d\n", subkey->GetString(), info.type);
+			} else if (FStrEq(name, "TeamNum")) {
+				info.teamnum = subkey->GetInt();
+			//	DevMsg("TeamNum \"%s\" --> %d\n", subkey->GetString(), info.teamnum);
+			} else if (FStrEq(name, "Health")) {
+				info.health = Max(1, subkey->GetInt());
+			//	DevMsg("Health \"%s\" --> %d\n", subkey->GetString(), info.health);
+			} else if (FStrEq(name, "Delay")) {
+				info.delay = Max(0.0f, subkey->GetFloat());
+			//	DevMsg("Delay \"%s\" --> %.1f\n", subkey->GetString(), info.delay);
+			} else if (FStrEq(name, "Position")) {
+				FOR_EACH_SUBKEY(subkey, subsub) {
+					const char *name = subsub->GetName();
+					float value      = subsub->GetFloat();
+					
+					if (FStrEq(name, "X")) {
+						info.origin.x = value;
+					} else if (FStrEq(name, "Y")) {
+						info.origin.y = value;
+					} else if (FStrEq(name, "Z")) {
+						info.origin.z = value;
+					} else {
+						Warning("Unknown key \'%s\' in HalloweenBoss Position sub-block.\n", name);
+					}
+				}
+			} else {
+				Warning("Unknown key \'%s\' in HalloweenBoss block.\n", name);
+			}
+		}
+		
+		bool fail = false;
+		if (info.type == CHalloweenBaseBoss::INVALID) {
+			Warning("Missing BossType key in HalloweenBoss block.\n");
+			fail = true;
+		}
+		if (info.teamnum != TF_TEAM_HALLOWEEN_BOSS) {
+			if (info.type == CHalloweenBaseBoss::EYEBALL_BOSS) {
+				if (info.teamnum != TF_TEAM_RED && info.teamnum != TF_TEAM_BLUE) {
+					Warning("Invalid value for TeamNum key in HalloweenBoss block: MONOCULUS must be team 5 or 2 or 3.\n");
+					fail = true;
+				}
+			} else {
+				Warning("Invalid value for TeamNum key in HalloweenBoss block: HHH and Merasmus must be team 5.\n");
+				fail = true;
+			}
+		}
+		if (fail) return;
+		
+		DevMsg("Wave %08x: add HalloweenBoss\n", (uintptr_t)wave);
+		waves[wave].bosses.push_back(info);
+	}
+	
 	void Parse_SoundLoop(CWave *wave, KeyValues *kv)
 	{
 		if (!waves[wave].sound_loops.empty()) {
@@ -179,8 +281,12 @@ namespace Mod_Pop_Wave_Extensions
 				Parse_Explanation(wave, subkey);
 			} else if (FStrEq(name, "SentryGun")) {
 				Parse_SentryGun(wave, subkey);
+			} else if (FStrEq(name, "HalloweenBoss")) {
+				Parse_HalloweenBoss(wave, subkey);
 			} else if (FStrEq(name, "SoundLoop")) {
 				Parse_SoundLoop(wave, subkey);
+			} else if (FStrEq(name, "RedTeamWipeCausesWaveLoss")) {
+				waves[wave].red_team_wipe_causes_wave_loss = subkey->GetBool();
 			} else {
 				del = false;
 			}
@@ -326,12 +432,12 @@ namespace Mod_Pop_Wave_Extensions
 	}
 	
 	
-	void SpawnSentryGun(const Vector& origin, const QAngle& angles, int teamnum, int level)
+	CObjectSentrygun *SpawnSentryGun(const Vector& origin, const QAngle& angles, int teamnum, int level)
 	{
 		auto sentry = rtti_cast<CObjectSentrygun *>(CreateEntityByName("obj_sentrygun"));
 		if (sentry == nullptr) {
 			Warning("SpawnSentryGun: CreateEntityByName(\"obj_sentrygun\") failed\n");
-			return;
+			return nullptr;
 		}
 		
 	//	DevMsg("[%8.3f] SpawnSentryGun: [hint #%d \"%s\"] [teamnum %d] [level %d]\n",
@@ -349,30 +455,106 @@ namespace Mod_Pop_Wave_Extensions
 		
 		DevMsg("SpawnSentryGun: #%d, %08x, level %d, health %d, maxhealth %d\n",
 			ENTINDEX(sentry), (uintptr_t)sentry, level, sentry->GetHealth(), sentry->GetMaxHealth());
+		
+		return sentry;
 	}
 	
-	void SpawnSentryGuns(SentryGunInfo& sg_info)
+	void SpawnSentryGuns(SentryGunInfo& info)
 	{
-		sg_info.spawned = true;
+		info.spawned = true;
 		
-		if (sg_info.use_hint && sg_info.hints.empty()) {
-			Warning("SpawnSentryGuns: sg_info.hints.empty()\n");
+		if (info.use_hint && info.hints.empty()) {
+			Warning("SpawnSentryGuns: info.hints.empty()\n");
 			return;
 		}
 		
-		if (sg_info.use_hint) {
-			for (const auto& hint : sg_info.hints) {
-				SpawnSentryGun(hint->GetAbsOrigin(), hint->GetAbsAngles(), sg_info.teamnum, sg_info.level);
+		if (info.use_hint) {
+			for (const auto& hint : info.hints) {
+				info.sentry = SpawnSentryGun(hint->GetAbsOrigin(), hint->GetAbsAngles(), info.teamnum, info.level);
 			}
 		} else {
-			SpawnSentryGun(sg_info.origin, sg_info.angles, sg_info.teamnum, sg_info.level);
+			info.sentry = SpawnSentryGun(info.origin, info.angles, info.teamnum, info.level);
 		}
+	}
+	
+	
+	void SpawnBoss(BossInfo& info)
+	{
+		info.spawned = true;
+		
+		CHalloweenBaseBoss *boss = CHalloweenBaseBoss::SpawnBossAtPos(info.type, info.origin, info.teamnum, nullptr);
+		if (boss == nullptr) {
+			Warning("SpawnBoss: CHalloweenBaseBoss::SpawnBossAtPos(type %d, teamnum %d) failed\n", info.type, info.teamnum);
+			return;
+		}
+		
+		if (info.health > 0) {
+			boss->SetMaxHealth(info.health);
+			boss->SetHealth   (info.health);
+		}
+		
+		info.boss = boss;
 	}
 	
 	
 	DETOUR_DECL_MEMBER(void, CWave_ActiveWaveUpdate)
 	{
+		auto wave = reinterpret_cast<CWave *>(this);
+		
+		auto it = waves.find(wave);
+		if (it == waves.end()) return;
+		WaveData& data = (*it).second;
+		
+		if (!data.t_wavestart.HasStarted()) {
+			data.t_wavestart.Start();
+		}
+		
+		/* since we are pre-detour and ActiveWaveUpdate only happens in RND_RUNNING, we are safe to skip the check */
+		if (data.red_team_wipe_causes_wave_loss/* && TFGameRules()->State_Get() == GR_STATE_RND_RUNNING*/) {
+			CTFTeam *team_red = TFTeamMgr()->GetTeam(TF_TEAM_RED);
+			if (team_red != nullptr && team_red->GetNumPlayers() != 0) {
+				int num_red_humans       = 0;
+				int num_red_humans_alive = 0;
+				
+				ForEachTFPlayerOnTeam(TFTeamMgr()->GetTeam(TF_TEAM_RED), [&](CTFPlayer *player){
+					if (player->IsBot()) return;
+					
+					++num_red_humans;
+					if (player->IsAlive()) {
+						++num_red_humans_alive;
+					}
+				});
+				
+				/* if red team actually contains zero humans, then don't do anything */
+				if (num_red_humans > 0 && num_red_humans_alive == 0) {
+					/* not entirely sure what effect the win reason parameter has (if it even has an effect at all) */
+					TFGameRules()->SetWinningTeam(TF_TEAM_BLUE, WINREASON_OPPONENTS_DEAD, true, false);
+				}
+			}
+		}
+		
+		// ^^^^   PRE-DETOUR ===================================================
+		
 		DETOUR_MEMBER_CALL(CWave_ActiveWaveUpdate)();
+		
+		// vvvv  POST-DETOUR ===================================================
+		
+		for (auto& info : data.sentryguns) {
+			if (!info.spawned && !data.t_wavestart.IsLessThen(info.delay)) {
+				SpawnSentryGuns(info);
+			}
+		}
+		
+		for (auto& info : data.bosses) {
+			if (!info.spawned && !data.t_wavestart.IsLessThen(info.delay)) {
+				SpawnBoss(info);
+			}
+		}
+	}
+	
+	DETOUR_DECL_MEMBER(bool, CWave_IsDoneWithNonSupportWaves)
+	{
+		bool done = DETOUR_MEMBER_CALL(CWave_IsDoneWithNonSupportWaves)();
 		
 		auto wave = reinterpret_cast<CWave *>(this);
 		
@@ -380,16 +562,14 @@ namespace Mod_Pop_Wave_Extensions
 		if (it != waves.end()) {
 			WaveData& data = (*it).second;
 			
-			if (!data.t_wavestart.HasStarted()) {
-				data.t_wavestart.Start();
-			}
-			
-			for (auto& sg_info : data.sentryguns) {
-				if (!sg_info.spawned && !data.t_wavestart.IsLessThen(sg_info.delay)) {
-					SpawnSentryGuns(sg_info);
+			for (auto& info : data.bosses) {
+				if (info.spawned && info.boss != nullptr && info.boss->IsAlive()) {
+					return false;
 				}
 			}
 		}
+		
+		return done;
 	}
 	
 	
@@ -419,25 +599,6 @@ namespace Mod_Pop_Wave_Extensions
 		if (TFGameRules() != nullptr && filename != "") {
 			TFGameRules()->BroadcastSound(SOUND_FROM_LOCAL_PLAYER, filename.c_str(), SND_NOFLAGS);
 			soundloop_active = filename;
-		}
-	}
-	
-	
-	const char *GetRoundStateName(gamerules_roundstate_t state)
-	{
-		switch (state) {
-		case GR_STATE_INIT:         return "INIT";
-		case GR_STATE_PREGAME:      return "PREGAME";
-		case GR_STATE_STARTGAME:    return "STARTGAME";
-		case GR_STATE_PREROUND:     return "PREROUND";
-		case GR_STATE_RND_RUNNING:  return "RND_RUNNING";
-		case GR_STATE_TEAM_WIN:     return "TEAM_WIN";
-		case GR_STATE_RESTART:      return "RESTART";
-		case GR_STATE_STALEMATE:    return "STALEMATE";
-		case GR_STATE_GAME_OVER:    return "GAME_OVER";
-		case GR_STATE_BONUS:        return "BONUS";
-		case GR_STATE_BETWEEN_RNDS: return "BETWEEN_RNDS";
-		default:                    return "???";
 		}
 	}
 	
@@ -484,7 +645,8 @@ namespace Mod_Pop_Wave_Extensions
 			MOD_ADD_DETOUR_MEMBER(CPopulationManager_WaveEnd,             "CPopulationManager::WaveEnd");
 			MOD_ADD_DETOUR_MEMBER(CMannVsMachineStats_RoundEvent_WaveEnd, "CMannVsMachineStats::RoundEvent_WaveEnd");
 			
-			MOD_ADD_DETOUR_MEMBER(CWave_ActiveWaveUpdate, "CWave::ActiveWaveUpdate");
+			MOD_ADD_DETOUR_MEMBER(CWave_ActiveWaveUpdate,          "CWave::ActiveWaveUpdate");
+			MOD_ADD_DETOUR_MEMBER(CWave_IsDoneWithNonSupportWaves, "CWave::IsDoneWithNonSupportWaves");
 			
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
 		}

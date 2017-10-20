@@ -15,12 +15,17 @@ public:
 	bool LoadMvMMission(KeyValues *kv) { return ft_LoadMvMMission(this, kv); }
 	CWave *GetCurrentWave()            { return ft_GetCurrentWave(this); }
 	
+	static int CollectMvMBots(CUtlVector<CTFPlayer *> *mvm_bots) { return ft_CollectMvMBots(mvm_bots); }
+	
 	using SteamIDMap = CUtlMap<uint64_t, int>;
 	DECL_EXTRACT(SteamIDMap, m_RespecPoints);
+	DECL_EXTRACT(bool,       m_bAllocatedBots);
 	
 private:
 	static MemberFuncThunk<CPopulationManager *, bool, KeyValues *> ft_LoadMvMMission;
 	static MemberFuncThunk<CPopulationManager *, CWave *>           ft_GetCurrentWave;
+	
+	static StaticFuncThunk<int, CUtlVector<CTFPlayer *> *> ft_CollectMvMBots;
 };
 extern GlobalThunk<CPopulationManager *> g_pPopulationManager;
 
@@ -37,8 +42,8 @@ public:
 };
 
 class CRandomPlacementPopulator : public IPopulator {};
-class CPeriodicSpawnPopulator : public IPopulator {};
-class CWaveSpawnPopulator : public IPopulator {};
+class CPeriodicSpawnPopulator   : public IPopulator {};
+class CWaveSpawnPopulator       : public IPopulator {};
 
 class CWave : public IPopulator
 {
@@ -93,7 +98,7 @@ public:
 };
 
 class CSentryGunSpawner : public IPopulationSpawner {};
-class CTankSpawner : public IPopulationSpawner {};
+class CTankSpawner      : public IPopulationSpawner {};
 
 class CTFBotSpawner : public IPopulationSpawner
 {

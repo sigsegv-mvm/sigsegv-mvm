@@ -192,3 +192,6 @@ CTFBotDead *CTFBotDead::New()
 	
 	return action;
 }
+
+
+MemberFuncThunk<const CTFBotMainAction *, const CKnownEntity *, CTFBot *, const CKnownEntity *, const CKnownEntity *> CTFBotMainAction::ft_SelectCloserThreat("CTFBotMainAction::SelectCloserThreat");
