@@ -134,8 +134,8 @@
 					sym  "_Z23RenderWireframeSweptBoxRK6VectorS1_RK6QAngleS1_S1_5Colorb"
 					lib  "engine"
 					seg  "text"
-					seek "558bec81ecc40200008b0d04a56a10578b01ff90900100008bf8897de485ff74078b078bcfff5008a134a56a108bcf807d20008b170f450530a56a1053566a0050ff5224"
-					mask "ffffffffff00000000ffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffff00000000ffffffffffffffffffffff00000000ffffffffffffffff"
+					seek "558bec81ec0000000057e8000000008b0d000000008b01ff90000000008bf8897de485ff74078b078bcfff5008"
+					mask "ffffffffff0000ffffffff00000000ffff00000000ffffffff0000ffffffffffffffffffffffffffffffffffff"
 				}
 				"[client] RenderBox"
 				{
@@ -327,8 +327,8 @@
 					type "pattern"
 					sym  "TODO"
 					seg  "text"
-					seek "558bec81ec5c0100008d85a4feffff568b750868000100005650e8da021e006a2e56e8f9d1250083c41485c0751b6aff68000100008d85a4feffff"
-					mask "ffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000ffffffffff00000000ffffffffffffffffffffffffffffffffffffff"
+					seek "558bec81ec000000008d850000ffff568b750868000100005650e8000000006a2e56e80000000083c41485c075006aff68000100008d850000ffff"
+					mask "ffffffffff0000ffffffff0000ffffffffffffffffffffffffffff00000000ffffffff00000000ffffffffffff00ffffffffffffffffff0000ffff"
 					lib  "engine"
 				}
 				
