@@ -139,14 +139,14 @@ MemberFuncThunk<      CTFPlayerShared *, bool                                > C
 MemberFuncThunk<const CTFPlayerShared *, bool                                > CTFPlayerShared::ft_IsLoserStateStunned ("CTFPlayerShared::IsLoserStateStunned");
 
 
-IMPL_SENDPROP(CTFPlayerShared,      CTFPlayer, m_Shared,           CTFPlayer);
-IMPL_SENDPROP(float,                CTFPlayer, m_flLastDamageTime, CTFPlayer);
-IMPL_RELATIVE(CTFPlayerAnimState *, CTFPlayer, m_PlayerAnimState,  m_hItem, -0x18); // 20170116a
-IMPL_EXTRACT (bool,                 CTFPlayer, m_bFeigningDeath,   new CExtract_CTFPlayer_m_bFeigningDeath());
-IMPL_SENDPROP(CTFPlayerClass,       CTFPlayer, m_PlayerClass,      CTFPlayer);
-IMPL_SENDPROP(CHandle<CTFItem>,     CTFPlayer, m_hItem,            CTFPlayer);
-IMPL_SENDPROP(bool,                 CTFPlayer, m_bIsMiniBoss,      CTFPlayer);
-IMPL_SENDPROP(int,                  CTFPlayer, m_nCurrency,        CTFPlayer);
+IMPL_SENDPROP(CTFPlayerShared,      CTFPlayer, m_Shared,              CTFPlayer);
+IMPL_SENDPROP(float,                CTFPlayer, m_flMvMLastDamageTime, CTFPlayer);
+IMPL_RELATIVE(CTFPlayerAnimState *, CTFPlayer, m_PlayerAnimState,     m_hItem, -0x18); // 20170116a
+IMPL_EXTRACT (bool,                 CTFPlayer, m_bFeigningDeath,      new CExtract_CTFPlayer_m_bFeigningDeath());
+IMPL_SENDPROP(CTFPlayerClass,       CTFPlayer, m_PlayerClass,         CTFPlayer);
+IMPL_SENDPROP(CHandle<CTFItem>,     CTFPlayer, m_hItem,               CTFPlayer);
+IMPL_SENDPROP(bool,                 CTFPlayer, m_bIsMiniBoss,         CTFPlayer);
+IMPL_SENDPROP(int,                  CTFPlayer, m_nCurrency,           CTFPlayer);
 
 MemberFuncThunk<      CTFPlayer *, void, int, bool                 > CTFPlayer::ft_ForceChangeTeam                  ("CTFPlayer::ForceChangeTeam");
 MemberFuncThunk<      CTFPlayer *, void, int, int                  > CTFPlayer::ft_StartBuildingObjectOfType        ("CTFPlayer::StartBuildingObjectOfType");

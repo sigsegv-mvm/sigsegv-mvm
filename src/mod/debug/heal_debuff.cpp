@@ -36,9 +36,9 @@ namespace Mod_Debug_Heal_Debuff
 			if (player == nullptr) return;
 			
 			if (cvar_critheal.GetBool()) {
-				player->m_flLastDamageTime = gpGlobals->curtime - 30.0f;
+				player->m_flMvMLastDamageTime = gpGlobals->curtime - 30.0f;
 			} else {
-				player->m_flLastDamageTime = gpGlobals->curtime;
+				player->m_flMvMLastDamageTime = gpGlobals->curtime;
 			}
 			
 			player->RemoveCustomAttribute("dmg taken increased");

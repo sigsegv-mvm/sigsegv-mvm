@@ -293,7 +293,7 @@ public:
 //	void Taunt(taunts_t, int);
 	
 	DECL_SENDPROP_RW(CTFPlayerShared,      m_Shared);
-	DECL_SENDPROP   (float,                m_flLastDamageTime);
+	DECL_SENDPROP   (float,                m_flMvMLastDamageTime);
 	DECL_RELATIVE   (CTFPlayerAnimState *, m_PlayerAnimState);
 	DECL_EXTRACT    (bool,                 m_bFeigningDeath);
 	
