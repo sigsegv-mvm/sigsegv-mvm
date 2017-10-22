@@ -2086,12 +2086,6 @@
 					sym  "_Z19CheckValveSignaturePKvjS0_j"
 				}
 				
-				"CTFBottle::SwitchBodyGroups"
-				{
-					type "sym"
-					sym  "_ZN9CTFBottle16SwitchBodyGroupsEv"
-				}
-				
 				"CTFWeaponBase::GetViewModel"
 				{
 					type "sym"

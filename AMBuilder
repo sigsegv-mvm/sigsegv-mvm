@@ -133,7 +133,6 @@ sourceFiles += [
   
   'src/mod/demo/stringtable_limit.cpp',
   
-  'src/mod/etc/bottle_break_fix.cpp',
   'src/mod/etc/debug_mission_change_crash.cpp',
   'src/mod/etc/deflect_rocket_spew.cpp',
   'src/mod/etc/heat_seeking_rockets.cpp',
