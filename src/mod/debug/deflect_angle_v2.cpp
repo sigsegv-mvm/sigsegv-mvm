@@ -19,11 +19,11 @@ namespace Mod_Debug_Deflect_Angle_v2
 	
 	RefCount rc_CTFWeaponBase_DeflectEntity;
 	CBaseEntity *deflect_ent = nullptr;
-	DETOUR_DECL_MEMBER(bool, CTFWeaponBase_DeflectEntity, CBaseEntity *ent, CTFPlayer *player, Vector& v1, Vector& v2, Vector& v3)
+	DETOUR_DECL_MEMBER(bool, CTFWeaponBase_DeflectEntity, CBaseEntity *ent, CTFPlayer *player, Vector& v1)
 	{
 		deflect_ent = ent;
 		SCOPED_INCREMENT(rc_CTFWeaponBase_DeflectEntity);
-		return DETOUR_MEMBER_CALL(CTFWeaponBase_DeflectEntity)(ent, player, v1, v2, v3);
+		return DETOUR_MEMBER_CALL(CTFWeaponBase_DeflectEntity)(ent, player, v1);
 	}
 	
 	

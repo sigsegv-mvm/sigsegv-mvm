@@ -938,7 +938,7 @@
 				"CTFWeaponBase::DeflectEntity"
 				{
 					type "sym"
-					sym  "_ZN13CTFWeaponBase13DeflectEntityEP11CBaseEntityP9CTFPlayerR6VectorS5_S5_"
+					sym  "_ZN13CTFWeaponBase13DeflectEntityEP11CBaseEntityP9CTFPlayerR6Vector"
 				}
 				
 				"CTraceFilterSimple::ShouldHitEntity"
