@@ -1520,12 +1520,6 @@
 					sym  "_ZN15CTFFlameThrower12FireAirBlastEi"
 				}
 				
-				"CTFFlameThrower::DeflectPlayer"
-				{
-					type "sym"
-					sym  "_ZN15CTFFlameThrower13DeflectPlayerEP9CTFPlayerS1_R6VectorS3_S3_"
-				}
-				
 				"SetDebugBits"
 				{
 					type "sym"

@@ -3,6 +3,8 @@
 #include "stub/tfweaponbase.h"
 
 
+#if 0 // obsolete as of Inferno Update
+
 namespace Mod_Visualize_Airblast_Cone
 {
 	ConVar cvar_clear("sig_visualize_airblast_cone_clear", "1", FCVAR_NOTIFY,
@@ -290,3 +292,5 @@ namespace Mod_Visualize_Airblast_Cone
 		}
 	}
 }
+
+#endif

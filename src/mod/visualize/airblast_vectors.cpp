@@ -3,6 +3,8 @@
 #include "stub/tfweaponbase.h"
 
 
+#if 0 // obsolete as of Inferno Update
+
 namespace Mod_Visualize_Airblast_Vectors
 {
 	ConVar cvar_eye_r("sig_visualize_airblast_vectors_eye_r", "0x00", FCVAR_NOTIFY, "Visualization: eye vector color (red)");
@@ -125,3 +127,5 @@ namespace Mod_Visualize_Airblast_Vectors
 			s_Mod.Toggle(var.GetBool());
 		});
 }
+
+#endif
