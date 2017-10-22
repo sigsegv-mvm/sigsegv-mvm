@@ -486,13 +486,13 @@ namespace Mod_Pop_PopMgr_Extensions
 	}
 	
 	RefCount rc_CTFSniperRifle_CanFireCriticalShot;
-	DETOUR_DECL_MEMBER(bool, CTFSniperRifle_CanFireCriticalShot, bool bIsHeadshot)
+	DETOUR_DECL_MEMBER(bool, CTFSniperRifle_CanFireCriticalShot, bool bIsHeadshot, CBaseEntity *ent1)
 	{
 		SCOPED_INCREMENT(rc_CTFSniperRifle_CanFireCriticalShot);
-		return DETOUR_MEMBER_CALL(CTFSniperRifle_CanFireCriticalShot)(bIsHeadshot);
+		return DETOUR_MEMBER_CALL(CTFSniperRifle_CanFireCriticalShot)(bIsHeadshot, ent1);
 	}
 	
-	DETOUR_DECL_MEMBER(bool, CTFWeaponBase_CanFireCriticalShot, bool bIsHeadshot)
+	DETOUR_DECL_MEMBER(bool, CTFWeaponBase_CanFireCriticalShot, bool bIsHeadshot, CBaseEntity *ent1)
 	{
 		auto weapon = reinterpret_cast<CTFWeaponBase *>(this);
 		
@@ -503,7 +503,7 @@ namespace Mod_Pop_PopMgr_Extensions
 			}
 		}
 		
-		return DETOUR_MEMBER_CALL(CTFWeaponBase_CanFireCriticalShot)(bIsHeadshot);
+		return DETOUR_MEMBER_CALL(CTFWeaponBase_CanFireCriticalShot)(bIsHeadshot, ent1);
 	}
 	
 	RefCount rc_CTFProjectile_Arrow_StrikeTarget;

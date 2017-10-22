@@ -1704,13 +1704,13 @@
 				"CTFSniperRifle::CanFireCriticalShot"
 				{
 					type "sym"
-					sym  "_ZN14CTFSniperRifle19CanFireCriticalShotEb"
+					sym  "_ZN14CTFSniperRifle19CanFireCriticalShotEbP11CBaseEntity"
 				}
 				
 				"CTFWeaponBase::CanFireCriticalShot"
 				{
 					type "sym"
-					sym  "_ZN13CTFWeaponBase19CanFireCriticalShotEb"
+					sym  "_ZN13CTFWeaponBase19CanFireCriticalShotEbP11CBaseEntity"
 				}
 				
 				"CTFProjectile_Arrow::StrikeTarget"
