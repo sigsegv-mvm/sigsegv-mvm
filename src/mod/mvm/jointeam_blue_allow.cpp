@@ -623,18 +623,18 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 			
 			bool sketchy;
 			switch (TFGameRules()->State_Get()) {
-				case GR_STATE_INIT:         sketchy = true;
-				case GR_STATE_PREGAME:      sketchy = true;
-				case GR_STATE_STARTGAME:    sketchy = false;
-				case GR_STATE_PREROUND:     sketchy = true;
-				case GR_STATE_RND_RUNNING:  sketchy = false;
-				case GR_STATE_TEAM_WIN:     sketchy = true;
-				case GR_STATE_RESTART:      sketchy = true;
-				case GR_STATE_STALEMATE:    sketchy = true;
-				case GR_STATE_GAME_OVER:    sketchy = true;
-				case GR_STATE_BONUS:        sketchy = true;
-				case GR_STATE_BETWEEN_RNDS: sketchy = true;
-				default:                    sketchy = true;
+				case GR_STATE_INIT:         sketchy = true;  break;
+				case GR_STATE_PREGAME:      sketchy = true;  break;
+				case GR_STATE_STARTGAME:    sketchy = false; break;
+				case GR_STATE_PREROUND:     sketchy = true;  break;
+				case GR_STATE_RND_RUNNING:  sketchy = false; break;
+				case GR_STATE_TEAM_WIN:     sketchy = true;  break;
+				case GR_STATE_RESTART:      sketchy = true;  break;
+				case GR_STATE_STALEMATE:    sketchy = true;  break;
+				case GR_STATE_GAME_OVER:    sketchy = true;  break;
+				case GR_STATE_BONUS:        sketchy = true;  break;
+				case GR_STATE_BETWEEN_RNDS: sketchy = true;  break;
+				default:                    sketchy = true;  break;
 			}
 			
 			if (sketchy) {
