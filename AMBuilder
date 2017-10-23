@@ -151,7 +151,6 @@ sourceFiles += [
   'src/mod/etc/suppress_nb_event_messages.cpp',
   'src/mod/etc/target_changegravity_improved.cpp',
   
-  'src/mod/mvm/building_destruction_prevention.cpp',
   'src/mod/mvm/changebotattributes_crash_fix.cpp',
   'src/mod/mvm/changeclass_anytime.cpp',
   'src/mod/mvm/chat_unrestrict.cpp',
