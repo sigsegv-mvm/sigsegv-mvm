@@ -285,6 +285,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/grenade_vphysics.cpp',
     'src/mod/debug/heal_debuff.cpp',
     'src/mod/debug/hurt_float.cpp',
+    'src/mod/debug/insane_health.cpp',
     'src/mod/debug/interp_arrow.cpp',
     'src/mod/debug/ispotentiallytraversable_trace.cpp',
     'src/mod/debug/known_entities.cpp',
