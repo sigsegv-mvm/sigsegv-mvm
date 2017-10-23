@@ -108,6 +108,13 @@ namespace Mod_Pop_PopMgr_Extensions
 	};
 	
 	
+	// TODO: fix problems related to client-side convar tf_medieval_thirdperson:
+	// - players start out in first person, until they taunt or respawn or whatever
+	// - players do not get forced back into first person upon popfile switch if the new pop doesn't have this enabled
+	// see: firstperson/thirdperson client-side concommands are FCVAR_SERVER_CAN_EXECUTE in TF2; might be a solution
+	//      static ConCommand thirdperson( "thirdperson", ::CAM_ToThirdPerson, "Switch to thirdperson camera.", FCVAR_CHEAT | FCVAR_SERVER_CAN_EXECUTE );
+	//      static ConCommand firstperson( "firstperson", ::CAM_ToFirstPerson, "Switch to firstperson camera.", FCVAR_SERVER_CAN_EXECUTE );
+	// also: just generally look at SetAppropriateCamera in the client DLL
 	struct CPopOverride_MedievalMode : public IPopOverride<bool>
 	{
 		virtual bool GetValue() override                { return TFGameRules()->IsInMedievalMode(); }
