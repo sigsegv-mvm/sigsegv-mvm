@@ -7,9 +7,9 @@ namespace Mod_MvM_YER_Unnerf
 	constexpr uint8_t s_Buf[] = {
 		0xa1, 0x00, 0x00, 0x00, 0x00,             // +0000  mov eax,[g_pGameRules]
 		0x85, 0xc0,                               // +0005  test eax,eax
-		0x0f, 0x84, 0x00, 0x00, 0x00, 0x00,       // +0007  jz +0xAAAAAAAA
-		0x80, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x00, // +000D  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x0
-		0x0f, 0x84, 0x00, 0x00, 0x00, 0x00,       // +0014  jz +0xBBBBBBBB
+		0x74, 0x00,                               // +0007  jz +0xAA
+		0x80, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x00, // +0009  cmp byte ptr [eax+m_bPlayingMannVsMachine],0x0
+		0x74, 0x00,                               // +0010  jz +0xBB
 	};
 	
 	struct CPatch_CTFKnife_PrimaryAttack : public CPatch
@@ -18,7 +18,7 @@ namespace Mod_MvM_YER_Unnerf
 		
 		virtual const char *GetFuncName() const override { return "CTFKnife::PrimaryAttack"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x0800; } // @ 0x0680
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0800; } // @ 0x0393
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
@@ -31,10 +31,10 @@ namespace Mod_MvM_YER_Unnerf
 			if (!Prop::FindOffset(off__CTFGameRules_m_bPlayingMannVsMachine, "CTFGameRules", "m_bPlayingMannVsMachine")) return false;
 			
 			buf.SetDword(0x00 + 1, (uint32_t)addr__g_pGameRules);
-			buf.SetDword(0x0d + 2, (uint32_t)off__CTFGameRules_m_bPlayingMannVsMachine);
+			buf.SetDword(0x09 + 2, (uint32_t)off__CTFGameRules_m_bPlayingMannVsMachine);
 			
-			mask.SetRange(0x07 + 2, 4, 0x00);
-			mask.SetRange(0x14 + 2, 4, 0x00);
+			mask.SetRange(0x07 + 1, 1, 0x00);
+			mask.SetRange(0x10 + 1, 1, 0x00);
 			
 			return true;
 		}
@@ -42,13 +42,13 @@ namespace Mod_MvM_YER_Unnerf
 		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
 			/* overwrite the CMP instruction with NOPs */
-			buf.SetRange(0x0d, 7, 0x90);
+			buf.SetRange(0x09, 7, 0x90);
 			
 			/* now drop in a 'cmp eax,eax' so the non-MvM mode jump will always occur */
-			buf[0x0d + 0] = 0x39;
-			buf[0x0d + 1] = 0xc0;
+			buf[0x09 + 0] = 0x39;
+			buf[0x09 + 1] = 0xc0;
 			
-			mask.SetRange(0x0d, 7, 0xff);
+			mask.SetRange(0x09, 7, 0xff);
 			
 			return true;
 		}
