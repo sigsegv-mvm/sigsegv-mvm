@@ -2,6 +2,7 @@
 #include "util/scope.h"
 #include "stub/tfbot.h"
 #include "stub/projectiles.h"
+#include "stub/tf_shareddefs.h"
 
 
 //  0 TAUNTATK_NONE
@@ -74,44 +75,6 @@
 // 0a TAUNTATK_SPY_FENCING_STAB
 // multi target
 // box detection: 48x48x48, 64 HU from your WSC in ? direction
-
-
-/* TODO: put this where it really belongs */
-enum TauntAttack : int
-{
-	TAUNTATK_NONE                          = 0,
-	TAUNTATK_PYRO_HADOUKEN                 = 1,
-	TAUNTATK_HEAVY_EAT                     = 2,
-	TAUNTATK_HEAVY_RADIAL_BUFF             = 3,
-	TAUNTATK_HEAVY_HIGH_NOON               = 4,
-	TAUNTATK_SCOUT_DRINK                   = 5,
-	TAUNTATK_SCOUT_GRAND_SLAM              = 6,
-	TAUNTATK_MEDIC_INHALE                  = 7,
-	TAUNTATK_SPY_FENCING_SLASH_A           = 8,
-	TAUNTATK_SPY_FENCING_SLASH_B           = 9,
-	TAUNTATK_SPY_FENCING_STAB              = 10,
-	TAUNTATK_RPS_KILL                      = 11,
-	TAUNTATK_SNIPER_ARROW_STAB_IMPALE      = 12,
-	TAUNTATK_SNIPER_ARROW_STAB_KILL        = 13,
-	TAUNTATK_SOLDIER_GRENADE_KILL          = 14,
-	TAUNTATK_DEMOMAN_BARBARIAN_SWING       = 15,
-	TAUNTATK_MEDIC_UBERSLICE_IMPALE        = 16,
-	TAUNTATK_MEDIC_UBERSLICE_KILL          = 17,
-	TAUNTATK_FLIP_LAND_PARTICLE            = 18,
-	TAUNTATK_RPS_PARTICLE                  = 19,
-	TAUNTATK_HIGHFIVE_PARTICLE             = 20,
-	TAUNTATK_ENGINEER_GUITAR_SMASH         = 21,
-	TAUNTATK_ENGINEER_ARM_IMPALE           = 22,
-	TAUNTATK_ENGINEER_ARM_KILL             = 23,
-	TAUNTATK_ENGINEER_ARM_BLEND            = 24,
-	TAUNTATK_SOLDIER_GRENADE_KILL_WORMSIGN = 25,
-	TAUNTATK_SHOW_ITEM                     = 26,
-	TAUNTATK_MEDIC_RELEASE_DOVES           = 27,
-	TAUNTATK_PYRO_ARMAGEDDON               = 28,
-	TAUNTATK_PYRO_SCORCHSHOT               = 29,
-	TAUNTATK_ALLCLASS_GUITAR_RIFF          = 30,
-	TAUNTATK_MEDIC_HEROIC_TAUNT            = 31,
-};
 
 
 namespace Mod_Visualize_Taunt_Attacks
@@ -283,12 +246,12 @@ namespace Mod_Visualize_Taunt_Attacks
 	
 	
 	RefCount rc_CTFPlayer_DoTauntAttack;
-	TauntAttack attack = TAUNTATK_NONE;
+	int attack = TAUNTATK_NONE;
 	CTFPlayer *taunt_player = nullptr;
 	DETOUR_DECL_MEMBER(void, CTFPlayer_DoTauntAttack)
 	{
 		/* correct for ServerLinux 20160511a */
-		attack = *(TauntAttack *)((uintptr_t)this + 0x1eec);
+		attack = *(int *)((uintptr_t)this + 0x1eec);
 		
 		taunt_player = reinterpret_cast<CTFPlayer *>(this);
 		

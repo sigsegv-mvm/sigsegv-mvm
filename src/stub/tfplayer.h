@@ -116,7 +116,7 @@ enum ETFCond
 	TF_COND_HALLOWEEN_GHOST_MODE             =  77,
 	TF_COND_MINICRITBOOSTED_ON_KILL          =  78,
 	TF_COND_OBSCURED_SMOKE                   =  79,
-	TF_COND_PARACHUTE_DEPLOYED               =  80,
+	TF_COND_PARACHUTE_ACTIVE                 =  80,
 	TF_COND_BLASTJUMPING                     =  81,
 	TF_COND_HALLOWEEN_KART                   =  82,
 	TF_COND_HALLOWEEN_KART_DASH              =  83,
@@ -156,6 +156,14 @@ enum ETFCond
 	TF_COND_COMPETITIVE_LOSER                = 117,
 	TF_COND_HEALING_DEBUFF                   = 118,
 	TF_COND_PASSTIME_PENALTY_DEBUFF          = 119,
+	TF_COND_GRAPPLED_TO_PLAYER               = 120,
+	TF_COND_GRAPPLED_BY_PLAYER               = 121,
+	TF_COND_PARACHUTE_DEPLOYED               = 122,
+	TF_COND_GAS                              = 123,
+	TF_COND_BURNING_PYRO                     = 124,
+	TF_COND_ROCKETPACK                       = 125,
+	TF_COND_LOST_FOOTING                     = 126,
+	TF_COND_AIR_CURRENT                      = 127,
 	
 	TF_COND_COUNT,
 };

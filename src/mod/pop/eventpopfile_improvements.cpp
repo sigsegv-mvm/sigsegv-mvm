@@ -2,17 +2,12 @@
 #include "stub/tfbot.h"
 #include "stub/tf_objective_resource.h"
 #include "stub/populators.h"
+#include "stub/tf_shareddefs.h"
 #include "util/scope.h"
 
 
 namespace Mod_Pop_EventPopfile_Improvements
 {
-	/* these should be somewhere else, maybe in shareddefs? */
-	constexpr int HOLIDAY_NOHOLIDAY                       =  0;
-	constexpr int HOLIDAY_HALLOWEEN                       =  2;
-	constexpr int HOLIDAY_HALLOWEENORFULLMOONORVALENTINES = 10;
-	
-	
 	RefCount rc_CTFBotSpawner_Spawn;
 	IPopulationSpawner *spawner = nullptr;
 	DETOUR_DECL_MEMBER(int, CTFBotSpawner_Spawn, const Vector& where, CUtlVector<CHandle<CBaseEntity>> *ents)
@@ -41,16 +36,16 @@ namespace Mod_Pop_EventPopfile_Improvements
 		
 		ConVarRef tf_forced_holiday("tf_forced_holiday");
 		if (TFObjectiveResource()->m_nMvMEventPopfileType != 0u) {
-			tf_forced_holiday.SetValue(HOLIDAY_HALLOWEEN);
+			tf_forced_holiday.SetValue(kHoliday_Halloween);
 		} else {
-			tf_forced_holiday.SetValue(HOLIDAY_NOHOLIDAY);
+			tf_forced_holiday.SetValue(kHoliday_None);
 		}
 	}
 	
 	
 	DETOUR_DECL_STATIC(bool, UTIL_IsHolidayActive, int holiday)
 	{
-		if (holiday == HOLIDAY_HALLOWEENORFULLMOONORVALENTINES && rc_CTFBotSpawner_Spawn > 0) {
+		if (holiday == kHoliday_HalloweenOrFullMoonOrValentines && rc_CTFBotSpawner_Spawn > 0) {
 			return true;
 		}
 		

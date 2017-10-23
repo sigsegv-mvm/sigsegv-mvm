@@ -4,9 +4,6 @@
 #include "util/scope.h"
 
 
-enum TFStunFlags {};
-
-
 namespace Mod_MvM_Weapon_AntiGrief
 {
 	ConVar cvar_scorchshot  ("sig_mvm_weapon_antigrief_scorchshot",   "1", FCVAR_NOTIFY, "Disable knockback and stun effects vs giant robots from the Scorch Shot");
@@ -79,7 +76,7 @@ namespace Mod_MvM_Weapon_AntiGrief
 		DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
 	}
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, TFStunFlags flags, CTFPlayer *attacker)
+	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, int flags, CTFPlayer *attacker)
 	{
 		if (ShouldBlock_ScorchShot() || ShouldBlock_LooseCannon()) {
 			auto shared = reinterpret_cast<CTFPlayerShared *>(this);

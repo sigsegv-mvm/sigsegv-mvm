@@ -1,8 +1,5 @@
 #include "mod.h"
-
-
-// TODO: put this somewhere else
-enum { HOLIDAY_NOHOLIDAY = 0 };
+#include "stub/tf_shareddefs.h"
 
 
 namespace Mod_Etc_Holiday_Items_Allow
@@ -10,7 +7,7 @@ namespace Mod_Etc_Holiday_Items_Allow
 	/* the only actual callers of this function are econ-related */
 	DETOUR_DECL_STATIC(int, UTIL_GetHolidayForString, const char *str)
 	{
-		return HOLIDAY_NOHOLIDAY;
+		return kHoliday_None;
 	}
 	
 	

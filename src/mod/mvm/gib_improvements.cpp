@@ -4,9 +4,6 @@
 #include "util/scope.h"
 
 
-enum TFStunFlags {};
-
-
 namespace Mod_MvM_Gib_Improvements
 {
 	constexpr uint8_t s_Buf[] = {
@@ -87,7 +84,7 @@ namespace Mod_MvM_Gib_Improvements
 		DETOUR_MEMBER_CALL(CTFSniperRifle_ExplosiveHeadShot)(pAttacker, pVictim);
 	}
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, TFStunFlags flags, CTFPlayer *attacker)
+	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, int flags, CTFPlayer *attacker)
 	{
 		auto shared = reinterpret_cast<CTFPlayerShared *>(this);
 		

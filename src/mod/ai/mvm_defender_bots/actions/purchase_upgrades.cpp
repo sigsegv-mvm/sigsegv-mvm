@@ -38,49 +38,49 @@ namespace Mod_AI_MvM_Defender_Bots
 		CMannVsMachineUpgrades *upgrade = GetUpgradeByIndex(info.index);
 		
 		if (info.pclass == TF_CLASS_SNIPER) {
-			if (info.slot == TF_LOADOUT_SLOT_PRIMARY &&
+			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "explosive sniper shot") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_MEDIC) {
-			if (info.slot == TF_LOADOUT_SLOT_SECONDARY &&
+			if (info.slot == TF_LOADOUT_POSITION_SECONDARY &&
 				V_stricmp(upgrade->m_szAttribute, "generate rage on heal") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SOLDIER) {
-			if (info.slot == TF_LOADOUT_SLOT_PRIMARY &&
+			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "rocket specialist") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SPY) {
-			if (info.slot == TF_LOADOUT_SLOT_MELEE &&
+			if (info.slot == TF_LOADOUT_POSITION_MELEE &&
 				V_stricmp(upgrade->m_szAttribute, "armor piercing") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_HEAVYWEAPONS) {
-			if (info.slot == TF_LOADOUT_SLOT_PRIMARY &&
+			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "attack projectiles") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SCOUT) {
-			if (info.slot == TF_LOADOUT_SLOT_SECONDARY &&
+			if (info.slot == TF_LOADOUT_POSITION_SECONDARY &&
 				V_stricmp(upgrade->m_szAttribute, "applies snare effect") == 0) {
 				return 100;
 			}
 		}
 		
 		/* low priority for canteen upgrades */
-		if (info.slot == TF_LOADOUT_SLOT_ACTION) {
+		if (info.slot == TF_LOADOUT_POSITION_ACTION) {
 			return -10;
 		}
 		
@@ -145,13 +145,13 @@ namespace Mod_AI_MvM_Defender_Bots
 	void CTFBotPurchaseUpgrades::CollectUpgrades()
 	{
 		for (int slot : {
-			-1,
-			(int)TF_LOADOUT_SLOT_PRIMARY,
-			(int)TF_LOADOUT_SLOT_SECONDARY,
-			(int)TF_LOADOUT_SLOT_MELEE,
-			(int)TF_LOADOUT_SLOT_BUILDING,
-			(int)TF_LOADOUT_SLOT_PDA,
-		//	(int)TF_LOADOUT_SLOT_ACTION,
+			(int)TF_LOADOUT_POSITION_INVALID,
+			(int)TF_LOADOUT_POSITION_PRIMARY,
+			(int)TF_LOADOUT_POSITION_SECONDARY,
+			(int)TF_LOADOUT_POSITION_MELEE,
+			(int)TF_LOADOUT_POSITION_BUILDING,
+			(int)TF_LOADOUT_POSITION_PDA,
+		//	(int)TF_LOADOUT_POSITION_ACTION,
 		}) {
 			ForEachValidUpgrade(this->GetActor(), slot, [=](int index){
 				this->m_Upgrades.emplace_back(this->GetActor()->GetPlayerClass()->GetClassIndex(), slot, index);
