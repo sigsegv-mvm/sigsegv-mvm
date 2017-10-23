@@ -209,7 +209,7 @@ class ExtensionConfig(object):
     ############################################################################
     # C++ COMPILER #############################################################
     ############################################################################
-    cxx.cxxflags += ['-std=c++1z']
+    cxx.cxxflags += ['-std=c++14']
 #   cxx.cxxflags += ['-fno-exceptions']
 #   cxx.cxxflags += ['-fno-threadsafe-statics']
 #   cxx.cxxflags += ['-Wno-non-virtual-dtor']
