@@ -6,7 +6,55 @@ namespace Mod_Sniper_Charge_Uncap
 {
 #if defined _LINUX
 	
-	constexpr uint8_t s_Buf[] = {
+	constexpr uint8_t s_Buf_CTFSniperRifle[] = {
+		0xf3, 0x0f, 0x5f, 0xc1,                         // +0000  maxss xmm0,xmm1
+		0xf3, 0x0f, 0x5d, 0x05, 0x30, 0x97, 0x2a, 0x01, // +0004  minss xmm0,[100.0f]
+		0xf3, 0x0f, 0x11, 0x45, 0xc8,                   // +000C  movss [ebp-0x38],xmm0
+		0xf3, 0x0f, 0x59, 0x40, 0x10,                   // +0011  mulss xmm0,dword ptr [eax+0x10]
+		0x8d, 0x45, 0xd8,                               // +0016  lea eax,[ebp-0x28]
+		0xf3, 0x0f, 0x58, 0x83, 0xd4, 0x07, 0x00, 0x00, // +0019  addss xmm0,dword ptr [ebx+m_flChargedDamage]
+		0x89, 0x44, 0x24, 0x04,                         // +0021  mov [esp+4],eax
+		0x8d, 0x83, 0xd4, 0x07, 0x00, 0x00,             // +0025  lea eax,[ebx+m_flChargedDamage]
+		0x89, 0x04, 0x24,                               // +002B  mov [esp],eax
+		0xf3, 0x0f, 0x5d, 0x05, 0xb0, 0x75, 0x1b, 0x01, // +002E  minss xmm0,[150.0f]
+	};
+	
+	struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch
+	{
+		CPatch_UncapChargeRate_CTFSniperRifle() : CPatch(sizeof(s_Buf_CTFSniperRifle)) {}
+		
+		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			buf.CopyFrom(s_Buf_CTFSniperRifle);
+			
+			int off__CTFSniperRifle_m_flChargedDamage;
+			if (!Prop::FindOffset(off__CTFSniperRifle_m_flChargedDamage, "CTFSniperRifle", "m_flChargedDamage")) return false;
+			
+			buf.SetDword(0x19 + 4, (uint32_t)off__CTFSniperRifle_m_flChargedDamage);
+			buf.SetDword(0x25 + 2, (uint32_t)off__CTFSniperRifle_m_flChargedDamage);
+			
+			mask.SetRange(0x04 + 4, 4, 0x00);
+			mask.SetRange(0x0c + 4, 1, 0x00);
+			mask.SetRange(0x2e + 4, 4, 0x00);
+			
+			return true;
+		}
+		
+		virtual bool GetPatchInfo(ByteBuf& buf, ByteBuf& mask) const override
+		{
+			/* NOP out the MINSS instruction */
+			buf .SetRange(0x04, 8, 0x90);
+			mask.SetRange(0x04, 8, 0xff);
+			
+			return true;
+		}
+		
+		virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
+		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0380; } // @ 0x0279
+	};
+	
+	constexpr uint8_t s_Buf_CTFSniperRifleClassic[] = {
 		0xf3, 0x0f, 0x5f, 0xc1,                         // +0000  maxss xmm0,xmm1
 		0xf3, 0x0f, 0x5d, 0x05, 0x90, 0xad, 0x1f, 0x01, // +0004  minss xmm0,[100.0f]
 		0xf3, 0x0f, 0x11, 0x45, 0xc8,                   // +000C  movss [ebp-0x38],xmm0
@@ -19,13 +67,13 @@ namespace Mod_Sniper_Charge_Uncap
 		0xf3, 0x0f, 0x5d, 0x05, 0xb0, 0x75, 0x1b, 0x01, // +0033  minss xmm0,[150.0f]
 	};
 	
-	struct CPatch_UncapChargeRate_Common : public CPatch
+	struct CPatch_UncapChargeRate_CTFSniperRifleClassic : public CPatch
 	{
-		CPatch_UncapChargeRate_Common() : CPatch(sizeof(s_Buf)) {}
+		CPatch_UncapChargeRate_CTFSniperRifleClassic() : CPatch(sizeof(s_Buf_CTFSniperRifleClassic)) {}
 		
 		virtual bool GetVerifyInfo(ByteBuf& buf, ByteBuf& mask) const override
 		{
-			buf.CopyFrom(s_Buf);
+			buf.CopyFrom(s_Buf_CTFSniperRifleClassic);
 			
 			int off__CTFSniperRifle_m_flChargedDamage;
 			if (!Prop::FindOffset(off__CTFSniperRifle_m_flChargedDamage, "CTFSniperRifle", "m_flChargedDamage")) return false;
@@ -48,20 +96,10 @@ namespace Mod_Sniper_Charge_Uncap
 			
 			return true;
 		}
-	};
-	
-	struct CPatch_UncapChargeRate_CTFSniperRifle : public CPatch_UncapChargeRate_Common
-	{
-		virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
-		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x0380; } // @ 0x026a
-	};
-	
-	struct CPatch_UncapChargeRate_CTFSniperRifleClassic : CPatch_UncapChargeRate_Common
-	{
+		
 		virtual const char *GetFuncName() const override { return "CTFSniperRifleClassic::ItemPostFrame"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x0280; } // @ 0x0146
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0280; } // @ 0x0141
 	};
 	
 #elif defined _WINDOWS
