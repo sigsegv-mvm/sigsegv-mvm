@@ -10,12 +10,12 @@ namespace Mod_Debug_NoKnockback
 	
 	
 	ConVar cvar_airblast("sig_debug_noknockback_airblast", "0", FCVAR_NOTIFY,
-		"Debug: also disable ApplyAirBlastImpulse");
+		"Debug: also disable ApplyGenericPushbackImpulse");
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyGenericPushbackImpulse, const Vector& impulse)
 	{
 		if (!cvar_airblast.GetBool()) {
-			DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
+			DETOUR_MEMBER_CALL(CTFPlayer_ApplyGenericPushbackImpulse)(impulse);
 		}
 	}
 	
@@ -27,7 +27,7 @@ namespace Mod_Debug_NoKnockback
 		{
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyPushFromDamage, "CTFPlayer::ApplyPushFromDamage");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAirBlastImpulse, "CTFPlayer::ApplyAirBlastImpulse");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyGenericPushbackImpulse, "CTFPlayer::ApplyGenericPushbackImpulse");
 		}
 	};
 	CMod s_Mod;

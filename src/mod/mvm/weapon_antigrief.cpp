@@ -63,7 +63,7 @@ namespace Mod_MvM_Weapon_AntiGrief
 	static inline bool ShouldBlock_ScorchShot()  { return (cvar_scorchshot .GetBool() && rc_ScorchShot  > 0); }
 	static inline bool ShouldBlock_LooseCannon() { return (cvar_loosecannon.GetBool() && rc_LooseCannon > 0); }
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyGenericPushbackImpulse, const Vector& impulse)
 	{
 		if (ShouldBlock_ScorchShot() || ShouldBlock_LooseCannon()) {
 			auto player = reinterpret_cast<CTFPlayer *>(this);
@@ -73,7 +73,7 @@ namespace Mod_MvM_Weapon_AntiGrief
 			}
 		}
 		
-		DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
+		DETOUR_MEMBER_CALL(CTFPlayer_ApplyGenericPushbackImpulse)(impulse);
 	}
 	
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_StunPlayer, float duration, float slowdown, int flags, CTFPlayer *attacker)
@@ -104,8 +104,8 @@ namespace Mod_MvM_Weapon_AntiGrief
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyPushFromDamage,     "CTFPlayer::ApplyPushFromDamage");
 			MOD_ADD_DETOUR_STATIC(CanScatterGunKnockBack,            "CanScatterGunKnockBack");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAirBlastImpulse, "CTFPlayer::ApplyAirBlastImpulse");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_StunPlayer,     "CTFPlayerShared::StunPlayer");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyGenericPushbackImpulse, "CTFPlayer::ApplyGenericPushbackImpulse");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayerShared_StunPlayer,            "CTFPlayerShared::StunPlayer");
 		}
 	};
 	CMod s_Mod;

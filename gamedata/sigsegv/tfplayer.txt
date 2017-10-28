@@ -19,10 +19,10 @@
 					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
 					unistr "mult_aiming_knockback_resistance"
 				}
-				"CTFPlayer::ApplyAirBlastImpulse"
+				"CTFPlayer::CTFPlayer::ApplyGenericPushbackImpulse"
 				{
 					type "sym"
-					sym  "_ZN9CTFPlayer20ApplyAirBlastImpulseERK6Vector"
+					sym  "_ZN9CTFPlayer27ApplyGenericPushbackImpulseERK6Vector"
 				}
 				"CTFPlayer::ApplyPushFromDamage"
 				{

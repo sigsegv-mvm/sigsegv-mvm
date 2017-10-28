@@ -98,11 +98,11 @@ namespace Mod_Visualize_Airblast_Vectors
 	}
 	
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyGenericPushbackImpulse, const Vector& impulse)
 	{
-		DevMsg("ApplyAirBlastImpulse: %6.1f [ %+7.1f %+7.1f %+7.1f ]\n",
+		DevMsg("ApplyGenericPushbackImpulse: %6.1f [ %+7.1f %+7.1f %+7.1f ]\n",
 			impulse.Length(), impulse.x, impulse.y, impulse.z);
-		DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
+		DETOUR_MEMBER_CALL(CTFPlayer_ApplyGenericPushbackImpulse)(impulse);
 	}
 	
 	
@@ -114,7 +114,7 @@ namespace Mod_Visualize_Airblast_Vectors
 			MOD_ADD_DETOUR_STATIC(CAttributeManager_AttribHookValue_float, "CAttributeManager::AttribHookValue<float>");
 			MOD_ADD_DETOUR_MEMBER(CTFFlameThrower_DeflectPlayer,           "CTFFlameThrower::DeflectPlayer");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAirBlastImpulse, "CTFPlayer::ApplyAirBlastImpulse");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyGenericPushbackImpulse, "CTFPlayer::ApplyGenericPushbackImpulse");
 		}
 	};
 	CMod s_Mod;

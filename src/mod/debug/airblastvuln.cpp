@@ -42,7 +42,7 @@ namespace Mod_Debug_AirblastVuln
 		"Debug: enable visualizations");
 	
 	
-	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyAirBlastImpulse, const Vector& impulse)
+	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyGenericPushbackImpulse, const Vector& impulse)
 	{
 #if 0
 		auto player = reinterpret_cast<CTFPlayer *>(this);
@@ -73,7 +73,7 @@ namespace Mod_Debug_AirblastVuln
 		Vector vBefore;
 		player->GetVelocity(&vBefore, nullptr);
 		
-		DETOUR_MEMBER_CALL(CTFPlayer_ApplyAirBlastImpulse)(impulse);
+		DETOUR_MEMBER_CALL(CTFPlayer_ApplyGenericPushbackImpulse)(impulse);
 		
 		Vector vAfter;
 		player->GetVelocity(&vAfter, nullptr);
@@ -101,7 +101,7 @@ namespace Mod_Debug_AirblastVuln
 		{
 			MOD_ADD_DETOUR_STATIC(CAttributeManager_AttribHookValue_float, "CAttributeManager::AttribHookValue<float>");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyAirBlastImpulse, "CTFPlayer::ApplyAirBlastImpulse");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_ApplyGenericPushbackImpulse, "CTFPlayer::ApplyGenericPushbackImpulse");
 		}
 	};
 	CMod s_Mod;
