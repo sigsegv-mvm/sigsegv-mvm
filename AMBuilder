@@ -306,7 +306,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/owners.cpp',
     'src/mod/debug/parachute_warp.cpp',
     'src/mod/debug/penetration.cpp',
-    'src/mod/debug/popmgr_exploit.cpp',
+#    'src/mod/debug/popmgr_exploit.cpp',
 #    'src/mod/debug/popmgr_multiparse.cpp',
     'src/mod/debug/proj_energy_ball.cpp',
     'src/mod/debug/projectile_motion.cpp',
