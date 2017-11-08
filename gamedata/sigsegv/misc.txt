@@ -1202,19 +1202,19 @@
 					sym  "_ZN19CUtlConstStringBaseIcE3SetEPKc"
 				}
 				
-				"GlobalAttrModifier_TFHalloweenAttribHookMunger"
-				{
-					type   "func ebpprologue unistr"
-					sym    "_ZL46GlobalAttrModifier_TFHalloweenAttribHookMungerPKcP19CUtlConstStringBaseIcE"
-					unistr "%s__halloween"
-				}
+//				"GlobalAttrModifier_TFHalloweenAttribHookMunger"
+//				{
+//					type   "func ebpprologue unistr"
+//					sym    "_ZL46GlobalAttrModifier_TFHalloweenAttribHookMungerPKcP19CUtlConstStringBaseIcE"
+//					unistr "%s__halloween"
+//				}
 				
-				"GlobalAttrModifier_MvMAttribHookMunger"
-				{
-					type   "func ebpprologue unistr"
-					sym    "_ZL38GlobalAttrModifier_MvMAttribHookMungerPKcP19CUtlConstStringBaseIcE"
-					unistr "%s__mvm"
-				}
+//				"GlobalAttrModifier_MvMAttribHookMunger"
+//				{
+//					type   "func ebpprologue unistr"
+//					sym    "_ZL38GlobalAttrModifier_MvMAttribHookMungerPKcP19CUtlConstStringBaseIcE"
+//					unistr "%s__mvm"
+//				}
 				
 				"V_vsnprintfRet"
 				{

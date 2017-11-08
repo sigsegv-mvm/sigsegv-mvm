@@ -196,7 +196,7 @@ sourceFiles += [
 #  'src/mod/pop/extattr/parse.cpp',
 #  'src/mod/pop/extattr/targetstickies.cpp',
   
-  'src/mod/prof/attr_munge.cpp',
+#  'src/mod/prof/attr_munge.cpp',
   'src/mod/prof/debug_overlay.cpp',
   'src/mod/prof/flame_breakable_collision.cpp',
   'src/mod/prof/mvm_shield_events.cpp',
