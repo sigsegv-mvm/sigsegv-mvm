@@ -2362,13 +2362,8 @@
 				
 				"CheckMedicResist"
 				{
-					type "sym"
-					sym  "_ZL16CheckMedicResist7ETFCondS_P9CTFPlayerfRfbS2_.isra.543"
-					// ugh, this addr is probably gonna break every rebuild
-					
-					// maybe try this:
-				//	type "sym regex"
-				//	sym  ".*CheckMedicResist.*ETFCond.*isra.*"
+					type "sym regex"
+					sym  "_ZL16CheckMedicResist7ETFCondS_P9CTFPlayerfRfbS2_\\.isra\\..*"
 				}
 				
 				"CBaseEntity::GetDamage"
