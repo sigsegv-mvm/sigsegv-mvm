@@ -1057,11 +1057,11 @@
 					sym  "_ZN23CTeamControlPointMaster20PointLastContestedAtEi"
 				}
 				
-				"CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo"
-				{
-					type "sym"
-					sym  "_ZN24CTeamplayRoundBasedRules22GetAllPlayersLobbyInfoER10CUtlVectorI17LobbyPlayerInfo_t10CUtlMemoryIS1_iEEb"
-				}
+//				"CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo"
+//				{
+//					type "sym"
+//					sym  "_ZN24CTeamplayRoundBasedRules22GetAllPlayersLobbyInfoER10CUtlVectorI17LobbyPlayerInfo_t10CUtlMemoryIS1_iEEb"
+//				}
 				
 				"CMannVsMachineStats::RoundEvent_WaveEnd"
 				{

@@ -81,6 +81,7 @@ namespace Mod_AI_MvM_Defender_Bots
 		AddQuirk_IsBot("CTFGameRules::ClientDisconnected");
 		
 		/* QUIRK: bots are skipped when getting lobby members */
-		AddQuirk_IsBot("CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo");
+		// TODO: see if there is a replacement for this function after the lobby code reorganization
+//		AddQuirk_IsBot("CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo");
 	}
 }
