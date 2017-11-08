@@ -199,9 +199,7 @@ public:
 	bool HasAttributes(int bits) const { return ((this->m_attributeFlags & bits) != 0); }
 	CNavArea *GetParent() const        { return this->m_parent; }
 	int GetParentHow() const           { return this->m_parentHow; }
-#if TOOLCHAIN_FIXES
 	float GetCostSoFar() const         { return this->m_costSoFar; }
-#endif
 	
 	void GetExtent(Extent *extent) const                                                            {        ft_GetExtent                            (this, extent); }
 	void GetClosestPointOnArea(const Vector& pos, Vector *close) const                              {        ft_GetClosestPointOnArea                (this, &pos, close); }

@@ -151,13 +151,13 @@ struct CExtract_CNavArea_m_attributeFlags : public IExtract<int *>
 #if defined _LINUX
 
 static constexpr uint8_t s_Buf_CNavArea_m_costSoFar[] = {
-	0xf3, 0x0f, 0x59, 0xc0,       // +0000  mulss xmm0,xmm0
+	0xf3, 0x0f, 0x59, 0xd2,       // +0000  mulss xmm2,xmm2
 	0xf3, 0x0f, 0x59, 0xc9,       // +0004  mulss xmm1,xmm1
 	0xf3, 0x0f, 0x58, 0xc2,       // +0008  addss xmm0,xmm2
 	0xf3, 0x0f, 0x58, 0xc1,       // +000C  addss xmm0,xmm1
 	0xf3, 0x0f, 0x51, 0xc0,       // +0010  sqrtss xmm0,xmm0
-	0xf3, 0x0f, 0x58, 0x47, 0x44, // +0014  addss xmm0,dword ptr [edi+0xVVVVVVVV]
-	0xf3, 0x0f, 0x11, 0x43, 0x44, // +0019  movss dword ptr [ebx+0xVVVVVVVV],xmm0
+	0xf3, 0x0f, 0x58, 0x42, 0x44, // +0014  addss xmm0,dword ptr [edx+0xVVVVVVVV]
+	0xf3, 0x0f, 0x11, 0x46, 0x44, // +0019  movss dword ptr [ebx+0xVVVVVVVV],xmm0
 };
 
 struct CExtract_CNavArea_m_costSoFar : public IExtract<float *>
@@ -177,7 +177,7 @@ struct CExtract_CNavArea_m_costSoFar : public IExtract<float *>
 	}
 	
 	virtual const char *GetFuncName() const override   { return "ISearchSurroundingAreasFunctor::IterateAdjacentAreas"; }
-	virtual uint32_t GetFuncOffMin() const override    { return 0x00a0; } // @ 0x00b5
+	virtual uint32_t GetFuncOffMin() const override    { return 0x00a0; } // @ 0x00ea
 	virtual uint32_t GetFuncOffMax() const override    { return 0x0100; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0014 + 4; }
 	virtual T AdjustValue(T val) const override        { return reinterpret_cast<T>((uintptr_t)val & 0x000000ff); }
