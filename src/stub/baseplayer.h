@@ -139,7 +139,7 @@ private:
 	DECL_DATAMAP(char[32],     m_szNetname);
 	DECL_DATAMAP(bool,         m_bDuckToggled);
 	DECL_DATAMAP(unsigned int, m_afPhysicsFlags);
-	DECL_DATAMAP(int,          m_vphysicsCollisionState);
+	DECL_EXTRACT(int,          m_vphysicsCollisionState);
 	
 	static MemberFuncThunk<CBasePlayer *, void, Vector *, Vector *, Vector *> ft_EyeVectors;
 	static MemberFuncThunk<CBasePlayer *, bool, CSteamID *>                   ft_GetSteamID;

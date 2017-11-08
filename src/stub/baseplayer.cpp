@@ -2,6 +2,40 @@
 #include "stub/tfplayer.h"
 
 
+#if defined _LINUX
+
+static constexpr uint8_t s_Buf_CBasePlayer_SetVCollisionState[] = {
+	0x89, 0x83, 0x8c, 0x0b, 0x00, 0x00, // +0000  mov [ebx+0xVVVVVVVV],eax
+};
+
+struct CExtract_CBasePlayer_SetVCollisionState : public IExtract<int *>
+{
+	using T = int *;
+	
+	CExtract_CBasePlayer_SetVCollisionState() : IExtract<T>(sizeof(s_Buf_CBasePlayer_SetVCollisionState)) {}
+	
+	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override
+	{
+		buf.CopyFrom(s_Buf_CBasePlayer_SetVCollisionState);
+		
+		mask.SetRange(0x00 + 2, 4, 0x00);
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CBasePlayer::SetVCollisionState"; }
+	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0030; } // @ 0x0017
+	virtual uint32_t GetExtractOffset() const override { return 0x0000 + 2; }
+};
+
+#elif defined _WINDOWS
+
+// TODO
+
+#endif
+
+
 IMPL_SENDPROP(CHandle<CBaseCombatWeapon>,              CBaseCombatCharacter, m_hActiveWeapon, CBaseCombatCharacter);
 IMPL_SENDPROP(CHandle<CBaseCombatWeapon>[MAX_WEAPONS], CBaseCombatCharacter, m_hMyWeapons,    CBaseCombatCharacter);
 
@@ -33,7 +67,7 @@ MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   C
 IMPL_DATAMAP(char[32],     CBasePlayer, m_szNetname);
 IMPL_DATAMAP(bool,         CBasePlayer, m_bDuckToggled);
 IMPL_DATAMAP(unsigned int, CBasePlayer, m_afPhysicsFlags);
-IMPL_DATAMAP(int,          CBasePlayer, m_vphysicsCollisionState);
+IMPL_EXTRACT(int,          CBasePlayer, m_vphysicsCollisionState, new CExtract_CBasePlayer_SetVCollisionState());
 
 IMPL_SENDPROP(float,                              CBasePlayer, m_flDeathTime,   CBasePlayer);
 IMPL_SENDPROP(int,                                CBasePlayer, m_iObserverMode, CBasePlayer);
