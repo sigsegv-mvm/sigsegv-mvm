@@ -2000,7 +2000,7 @@
 				"PointInRespawnRoom"
 				{
 					type "sym"
-					sym  "_Z18PointInRespawnRoomP11CBaseEntityRK6Vector"
+					sym  "_Z18PointInRespawnRoomPK11CBaseEntityRK6Vectorb"
 				}
 				
 				"CBaseAnimating::SetBodygroup"

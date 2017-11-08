@@ -329,7 +329,7 @@ public:
 
 
 class CFuncRespawnRoom : public CBaseTrigger {};
-bool PointInRespawnRoom(CBaseEntity *ent, const Vector& vec);
+bool PointInRespawnRoom(const CBaseEntity *ent, const Vector& vec, bool b1);
 
 
 class CTeamControlPointMaster : public CBaseEntity

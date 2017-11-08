@@ -19,7 +19,7 @@ namespace Mod_Bot_Spy_SelectRandomReachableEnemy
 //		FOR_EACH_VEC(alive_enemies, i) {
 //			CTFPlayer *enemy = alive_enemies[i];
 //			
-//			if (!PointInRespawnRoom(enemy, enemy->WorldSpaceCenter())) {
+//			if (!PointInRespawnRoom(enemy, enemy->WorldSpaceCenter(), false)) {
 //				alive_enemies_not_in_spawn.AddToTail(enemy);
 //			}
 //		}

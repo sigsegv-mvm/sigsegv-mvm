@@ -253,8 +253,8 @@ MemberFuncThunk<CCaptureZone *, void, CBaseEntity *> CCaptureZone::ft_Capture("C
 GlobalThunk<CUtlVector<ICaptureZoneAutoList *>> ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList("ICaptureZoneAutoList::m_ICaptureZoneAutoListAutoList");
 
 
-static StaticFuncThunk<bool, CBaseEntity *, const Vector&> ft_PointInRespawnRoom("PointInRespawnRoom");
-bool PointInRespawnRoom(CBaseEntity *ent, const Vector& vec) { return ft_PointInRespawnRoom(ent, vec); }
+static StaticFuncThunk<bool, const CBaseEntity *, const Vector&, bool> ft_PointInRespawnRoom("PointInRespawnRoom");
+bool PointInRespawnRoom(const CBaseEntity *ent, const Vector& vec, bool b1) { return ft_PointInRespawnRoom(ent, vec, b1); }
 
 
 #if TOOLCHAIN_FIXES
