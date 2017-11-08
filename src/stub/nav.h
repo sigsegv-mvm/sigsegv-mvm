@@ -230,9 +230,7 @@ public:
 	TFNavAttributeType GetTFAttributes() const          { return this->m_nAttributes; }
 	bool HasTFAttributes(TFNavAttributeType attr) const { return ((this->m_nAttributes & attr) != 0); }
 	bool IsInCombat() const                             { return (this->GetCombatIntensity() > 0.01f); }
-#if TOOLCHAIN_FIXES
 	float GetIncursionDistance(int team) const          { return this->m_IncursionDistances[team]; }
-#endif
 	
 	bool IsBlocked(int teamID, bool ignoreNavBlockers = false) const { return ft_IsBlocked(this, teamID, ignoreNavBlockers); }
 	float GetCombatIntensity() const                                 { return ft_GetCombatIntensity(this); }

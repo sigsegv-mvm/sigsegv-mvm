@@ -265,9 +265,9 @@ struct CExtract_CTFNavArea_m_nAttributes : public IExtract<TFNavAttributeType *>
 #if defined _LINUX
 
 static constexpr uint8_t s_Buf_CTFNavArea_m_IncursionDistances[] = {
-	0x8b, 0x45, 0x0c,                                     // +0000  mov eax,[ebp+arg_4]
-	0x8b, 0x55, 0x08,                                     // +0003  mov edx,[ebp+this]
-	0xf3, 0x0f, 0x10, 0x84, 0x82, 0x60, 0x01, 0x00, 0x00, // +0006  movss xmm0,dword ptr [edx+eax*4+0xVVVVVVVV]
+	0x8b, 0x45, 0x08,                                     // +0000  mov eax,[ebp+this]
+	0x8b, 0x7d, 0x0c,                                     // +0003  mov edi,[ebp+arg_4]
+	0xf3, 0x0f, 0x10, 0x84, 0xb8, 0x60, 0x01, 0x00, 0x00, // +0006  movss xmm0,dword ptr [eax+edi*4+0xVVVVVVVV]
 };
 
 struct CExtract_CTFNavArea_m_IncursionDistances : public IExtract<float (*)[4]>
