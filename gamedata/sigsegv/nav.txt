@@ -35,11 +35,11 @@
 					type "sym"
 					sym  "_ZNK8CNavMesh17GetNearestNavAreaEP11CBaseEntityif"
 				}
-				"CNavMesh::CollectAreasOverlappingExtent<CTFNavArea>"
-				{
-					type "sym"
-					sym  "_ZN8CNavMesh29CollectAreasOverlappingExtentI10CTFNavAreaEEvRK6ExtentP10CUtlVectorIPT_10CUtlMemoryIS7_iEE"
-				}
+//				"CNavMesh::CollectAreasOverlappingExtent<CTFNavArea>"
+//				{
+//					type "sym"
+//					sym  "_ZN8CNavMesh29CollectAreasOverlappingExtentI10CTFNavAreaEEvRK6ExtentP10CUtlVectorIPT_10CUtlMemoryIS7_iEE"
+//				}
 				"CNavMesh::GetGroundHeight"
 				{
 					type "sym"

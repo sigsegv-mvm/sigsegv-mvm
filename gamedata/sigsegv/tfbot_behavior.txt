@@ -207,11 +207,11 @@
 					sym  "_ZN20CTFBotSeekAndDestroyC1Ef"
 				}
 				
-				"CTFBotMedicHeal::CTFBotMedicHeal [C1]"
-				{
-					type "sym"
-					sym  "_ZN15CTFBotMedicHealC1Ev"
-				}
+//				"CTFBotMedicHeal::CTFBotMedicHeal [C1]"
+//				{
+//					type "sym"
+//					sym  "_ZN15CTFBotMedicHealC1Ev"
+//				}
 				"CTFBotMedicHeal::Update"
 				{
 					type "sym"
@@ -223,11 +223,11 @@
 					sym  "_ZN15CTFBotMedicHeal13SelectPatientEP6CTFBotP9CTFPlayer"
 				}
 				
-				"CTFBotSniperLurk::CTFBotSniperLurk [C1]"
-				{
-					type "sym"
-					sym  "_ZN16CTFBotSniperLurkC1Ev"
-				}
+//				"CTFBotSniperLurk::CTFBotSniperLurk [C1]"
+//				{
+//					type "sym"
+//					sym  "_ZN16CTFBotSniperLurkC1Ev"
+//				}
 				"CTFBotSniperLurk::ShouldAttack"
 				{
 					type "sym"
