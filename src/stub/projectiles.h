@@ -19,13 +19,7 @@ private:
 	static MemberVFuncThunk<const CBaseProjectile *, int> vt_GetProjectileType;
 };
 
-class CBaseGrenade : public CBaseProjectile
-{
-public:
-	DECL_SENDPROP(int,    m_iDeflected);
-	DECL_SENDPROP(bool,   m_bCritical);
-	DECL_SENDPROP(Vector, m_vInitialVelocity);
-};
+class CBaseGrenade : public CBaseProjectile {};
 
 class CThrownGrenade : public CBaseGrenade {};
 class CBaseGrenadeConcussion : public CBaseGrenade {};
@@ -71,17 +65,25 @@ class CTFProjectile_GrapplingHook : public CTFProjectile_Arrow {};
 class CTFWeaponBaseGrenadeProj : public CBaseGrenade
 {
 public:
-	CBaseEntity *GetLauncher() const { return this->m_hLauncher; }
-	
 	int GetWeaponID() const { return vt_GetWeaponID(this); }
 	
-private:
-	DECL_SENDPROP(CHandle<CBaseEntity>, m_hLauncher);
+	DECL_SENDPROP(int,    m_iDeflected);
+	DECL_SENDPROP(bool,   m_bCritical);
+	DECL_SENDPROP(Vector, m_vInitialVelocity);
 	
+private:
 	static MemberVFuncThunk<const CTFWeaponBaseGrenadeProj *, int> vt_GetWeaponID;
 };
 
-class CTFGrenadePipebombProjectile : public CTFWeaponBaseGrenadeProj {};
+class CTFGrenadePipebombProjectile : public CTFWeaponBaseGrenadeProj
+{
+public:
+	CBaseEntity *GetLauncher() const { return this->m_hLauncher; }
+	
+private:
+	DECL_SENDPROP(CHandle<CBaseEntity>, m_hLauncher);
+};
+
 class CTFWeaponBaseMerasmusGrenade : public CTFWeaponBaseGrenadeProj {};
 
 class CTFProjectile_Jar : public CTFGrenadePipebombProjectile {};
