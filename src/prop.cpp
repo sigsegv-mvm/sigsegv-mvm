@@ -17,10 +17,14 @@ void CC_ListProps(const CCommand& cmd)
 	for (auto prop : AutoList<IProp>::List()) {
 		props_sorted.push_back(prop);
 	}
-	std::sort(props_sorted.begin(), props_sorted.end(), [](const IProp *lhs, const IProp *rhs){
+	std::sort(props_sorted.begin(), props_sorted.end(), [](IProp *lhs, IProp *rhs){
 		std::string obj_lhs = lhs->GetObjectName();
 		std::string obj_rhs = rhs->GetObjectName();
 		if (obj_lhs != obj_rhs) return (obj_lhs < obj_rhs);
+		
+		int off_lhs = INT_MAX; lhs->GetOffset(off_lhs);
+		int off_rhs = INT_MAX; rhs->GetOffset(off_rhs);
+		if (off_lhs != off_rhs) return (off_lhs < off_rhs);
 		
 		std::string mem_lhs = lhs->GetMemberName();
 		std::string mem_rhs = rhs->GetMemberName();
