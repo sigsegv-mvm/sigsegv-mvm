@@ -27,9 +27,10 @@ private:
 		ROOT,
 		ADDRS,
 		ADDRS_ENTRY,
+		ADDRS_GROUP,
+		ADDRS_GROUP_COMMON,
 	};
 	ParseSection m_Section;
-	
 	
 	struct
 	{
@@ -37,15 +38,27 @@ private:
 		std::map<std::string, std::string> m_KeyValues;
 	} m_AddrEntry_State;
 	
-	std::list<std::unique_ptr<IAddr>> m_AddrPtrs;
+	struct
+	{
+		std::map<std::string, std::string> m_CommonKV;
+		std::map<std::string, std::string> m_Entries;
+	} m_AddrGroup_State;
 	
 	SMCResult AddrEntry_Start(const char *name);
 	SMCResult AddrEntry_KeyValue(const char *key, const char *value);
 	SMCResult AddrEntry_End();
 	
-	SMCResult AddrEntry_Abbreviated(const char *key, const char *value);
+	SMCResult AddrGroup_Start();
+	SMCResult AddrGroup_KeyValue(const char *key, const char *value);
+	SMCResult AddrGroup_End();
 	
-	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers{
+	SMCResult AddrGroup_Common_Start();
+	SMCResult AddrGroup_Common_KeyValue(const char *key, const char *value);
+	SMCResult AddrGroup_Common_End();
+	
+	std::list<std::unique_ptr<IAddr>> m_AddrPtrs;
+	
+	std::map<std::string, SMCResult (CSigsegvGameConf::*)()> m_AddrParsers {
 		{ "sym",                                   &CSigsegvGameConf::AddrEntry_Load_Sym },
 		{ "sym regex",                             &CSigsegvGameConf::AddrEntry_Load_Sym_Regex },
 		{ "fixed",                                 &CSigsegvGameConf::AddrEntry_Load_Fixed },

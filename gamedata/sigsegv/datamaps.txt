@@ -11,93 +11,28 @@
 		
 		"sigsegv"
 		{
-			"addrs"
+			"addrs_group"
 			{
-				// sorted by class name
-				"CBaseEntity::m_DataMap"
+				"[common]"
 				{
-					type  "datamap"
-					sym   "_ZN11CBaseEntity9m_DataMapE"
-					class "CBaseEntity"
+					type "datamap"
+					lib  "server"
 				}
-				"CBaseObject::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN11CBaseObject9m_DataMapE"
-					class "CBaseObject"
-				}
-				"CBasePlayer::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN11CBasePlayer9m_DataMapE"
-					class "CBasePlayer"
-				}
-				"CBaseTrigger::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN12CBaseTrigger9m_DataMapE"
-					class "CBaseTrigger"
-				}
-				"CEconItemView::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN13CEconItemView9m_DataMapE"
-					class "CEconItemView"
-				}
-				"CFilterTFBotHasTag::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN18CFilterTFBotHasTag9m_DataMapE"
-					class "CFilterTFBotHasTag"
-				}
-				"CFuncNavCost::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN12CFuncNavCost9m_DataMapE"
-					class "CFuncNavCost"
-				}
-				"CFuncNavPrerequisite::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN20CFuncNavPrerequisite9m_DataMapE"
-					class "CFuncNavPrerequisite"
-				}
-				"CItem::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN5CItem9m_DataMapE"
-					class "CItem"
-				}
-				"CPathTrack::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN10CPathTrack9m_DataMapE"
-					class "CPathTrack"
-				}
-				"CSmokeStack::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN11CSmokeStack9m_DataMapE"
-					class "CSmokeStack"
-				}
-				"CSpellPickup::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN12CSpellPickup9m_DataMapE"
-					class "CSpellPickup"
-				}
-				"CTFPowerup::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN10CTFPowerup9m_DataMapE"
-					class "CTFPowerup"
-				}
-				"CTFTeamSpawn::m_DataMap"
-				{
-					type  "datamap"
-					sym   "_ZN12CTFTeamSpawn9m_DataMapE"
-					class "CTFTeamSpawn"
-				}
+				
+				"CBaseEntity"          "_ZN11CBaseEntity9m_DataMapE"
+				"CBaseObject"          "_ZN11CBaseObject9m_DataMapE"
+				"CBasePlayer"          "_ZN11CBasePlayer9m_DataMapE"
+				"CBaseTrigger"         "_ZN12CBaseTrigger9m_DataMapE"
+				"CEconItemView"        "_ZN13CEconItemView9m_DataMapE"
+				"CFilterTFBotHasTag"   "_ZN18CFilterTFBotHasTag9m_DataMapE"
+				"CFuncNavCost"         "_ZN12CFuncNavCost9m_DataMapE"
+				"CFuncNavPrerequisite" "_ZN20CFuncNavPrerequisite9m_DataMapE"
+				"CItem"                "_ZN5CItem9m_DataMapE"
+				"CPathTrack"           "_ZN10CPathTrack9m_DataMapE"
+				"CSmokeStack"          "_ZN11CSmokeStack9m_DataMapE"
+				"CSpellPickup"         "_ZN12CSpellPickup9m_DataMapE"
+				"CTFPowerup"           "_ZN10CTFPowerup9m_DataMapE"
+				"CTFTeamSpawn"         "_ZN12CTFTeamSpawn9m_DataMapE"
 			}
 		}
 	}

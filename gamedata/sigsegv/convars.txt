@@ -11,51 +11,22 @@
 		
 		"sigsegv"
 		{
-			"addrs"
+			"addrs_group"
 			{
-				"con_filter_enable"
+				"[common]"
 				{
 					type "convar"
-					name "con_filter_enable"
-					lib  "engine"
-				}
-				"con_filter_text"
-				{
-					type "convar"
-					name "con_filter_text"
-					lib  "engine"
-				}
-				"con_filter_text_out"
-				{
-					type "convar"
-					name "con_filter_text_out"
 					lib  "engine"
 				}
 				
-				"dtwatchent"
-				{
-					type "convar"
-					name "dtwatchent"
-					lib  "engine"
-				}
-				"dtwatchvar"
-				{
-					type "convar"
-					name "dtwatchvar"
-					lib  "engine"
-				}
-				"dtwatchclass"
-				{
-					type "convar"
-					name "dtwatchclass"
-					lib  "engine"
-				}
-				"dtwarning"
-				{
-					type "convar"
-					name "dtwarning"
-					lib  "engine"
-				}
+				"con_filter_enable"   "con_filter_enable"
+				"con_filter_text"     "con_filter_text"
+				"con_filter_text_out" "con_filter_text_out"
+				
+				"dtwatchent"   "dtwatchent"
+				"dtwatchvar"   "dtwatchvar"
+				"dtwatchclass" "dtwatchclass"
+				"dtwarning"    "dtwarning"
 			}
 		}
 	}

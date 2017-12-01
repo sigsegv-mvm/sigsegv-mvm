@@ -11,323 +11,85 @@
 		
 		"sigsegv"
 		{
-			"addrs"
+			"addrs_group"
 			{
-				"CPopulationManager::Parse"
+				"[common]"
 				{
 					type "sym"
-					sym  "_ZN18CPopulationManager5ParseEv"
-				}
-				"CPopulationManager::UpdateObjectiveResource"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager23UpdateObjectiveResourceEv"
-				}
-				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
-				}
-				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"
-				{
-					type "sym"
-					sym  "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
-				}
-				"CPopulationManager::RemovePlayerAndItemUpgradesFromHistory"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager38RemovePlayerAndItemUpgradesFromHistoryEP9CTFPlayer"
-				}
-				"CPopulationManager::GetNumRespecsAvailableForPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager31GetNumRespecsAvailableForPlayerEP9CTFPlayer"
-				}
-				"CPopulationManager::SetNumRespecsForPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
-				}
-				"CPopulationManager::AddRespecToPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
-				}
-				"CPopulationManager::RemoveRespecFromPlayer"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager22RemoveRespecFromPlayerEP9CTFPlayer"
-				}
-				"CPopulationManager::LoadMvMMission"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager14LoadMvMMissionEP9KeyValues"
-				}
-				"CPopulationManager::ResetRespecPoints"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager17ResetRespecPointsEv"
-				}
-				"CPopulationManager::Initialize"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager10InitializeEv"
-				}
-				"CPopulationManager::JumpToWave"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager10JumpToWaveEjf"
-				}
-				"CPopulationManager::WaveEnd"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager7WaveEndEb"
-				}
-				"CPopulationManager::ClearCheckpoint"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager15ClearCheckpointEv"
-				}
-				"CPopulationManager::RestoreCheckpoint"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager17RestoreCheckpointEv"
-				}
-				"CPopulationManager::GetCurrentWave"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager14GetCurrentWaveEv"
-				}
-				"CPopulationManager::ResetMap"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager8ResetMapEv"
-				}
-				"CPopulationManager::PostInitialize"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager14PostInitializeEv"
-				}
-				"CPopulationManager::RestorePlayerCurrency"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager21RestorePlayerCurrencyEv"
-				}
-				"CPopulationManager::OnCurrencyCollected"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager19OnCurrencyCollectedEibb"
-				}
-				"CPopulationManager::CollectMvMBots"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager14CollectMvMBotsEP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS2_iEE"
-				}
-				"CPopulationManager::AllocateBots"
-				{
-					type "sym"
-					sym  "_ZN18CPopulationManager12AllocateBotsEv"
+					lib  "server"
 				}
 				
-				"CMissionPopulator::Parse"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulator5ParseEP9KeyValues"
-				}
-				"CMissionPopulator::Update"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulator6UpdateEv"
-				}
-				"CMissionPopulator::UpdateMission"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
-				}
-				"CMissionPopulator::UpdateMissionDestroySentries"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulator28UpdateMissionDestroySentriesEv"
-				}
-				"CMissionPopulator::~CMissionPopulator [D0]"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulatorD0Ev"
-				}
-				"CMissionPopulator::~CMissionPopulator [D2]"
-				{
-					type "sym"
-					sym  "_ZN17CMissionPopulatorD2Ev"
-				}
+				"CPopulationManager::AddRespecToPlayer"                           "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
+				"CPopulationManager::AllocateBots"                                "_ZN18CPopulationManager12AllocateBotsEv"
+				"CPopulationManager::ClearCheckpoint"                             "_ZN18CPopulationManager15ClearCheckpointEv"
+				"CPopulationManager::CollectMvMBots"                              "_ZN18CPopulationManager14CollectMvMBotsEP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS2_iEE"
+				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"        "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
+				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]" "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
+				"CPopulationManager::GetCurrentWave"                              "_ZN18CPopulationManager14GetCurrentWaveEv"
+				"CPopulationManager::GetNumRespecsAvailableForPlayer"             "_ZN18CPopulationManager31GetNumRespecsAvailableForPlayerEP9CTFPlayer"
+				"CPopulationManager::Initialize"                                  "_ZN18CPopulationManager10InitializeEv"
+				"CPopulationManager::JumpToWave"                                  "_ZN18CPopulationManager10JumpToWaveEjf"
+				"CPopulationManager::LoadMvMMission"                              "_ZN18CPopulationManager14LoadMvMMissionEP9KeyValues"
+				"CPopulationManager::OnCurrencyCollected"                         "_ZN18CPopulationManager19OnCurrencyCollectedEibb"
+				"CPopulationManager::Parse"                                       "_ZN18CPopulationManager5ParseEv"
+				"CPopulationManager::PostInitialize"                              "_ZN18CPopulationManager14PostInitializeEv"
+				"CPopulationManager::RemovePlayerAndItemUpgradesFromHistory"      "_ZN18CPopulationManager38RemovePlayerAndItemUpgradesFromHistoryEP9CTFPlayer"
+				"CPopulationManager::RemoveRespecFromPlayer"                      "_ZN18CPopulationManager22RemoveRespecFromPlayerEP9CTFPlayer"
+				"CPopulationManager::ResetMap"                                    "_ZN18CPopulationManager8ResetMapEv"
+				"CPopulationManager::ResetRespecPoints"                           "_ZN18CPopulationManager17ResetRespecPointsEv"
+				"CPopulationManager::RestoreCheckpoint"                           "_ZN18CPopulationManager17RestoreCheckpointEv"
+				"CPopulationManager::RestorePlayerCurrency"                       "_ZN18CPopulationManager21RestorePlayerCurrencyEv"
+				"CPopulationManager::SetNumRespecsForPlayer"                      "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
+				"CPopulationManager::UpdateObjectiveResource"                     "_ZN18CPopulationManager23UpdateObjectiveResourceEv"
+				"CPopulationManager::WaveEnd"                                     "_ZN18CPopulationManager7WaveEndEb"
 				
-				"CWave::AddClassType"
-				{
-					type "sym"
-					sym  "_ZN5CWave12AddClassTypeE8string_tij"
-				}
-				"CWave::Parse"
-				{
-					type "sym"
-					sym  "_ZN5CWave5ParseEP9KeyValues"
-				}
-				"CWave::ActiveWaveUpdate"
-				{
-					type "sym"
-					sym  "_ZN5CWave16ActiveWaveUpdateEv"
-				}
-				"CWave::WaveCompleteUpdate"
-				{
-					type "sym"
-					sym  "_ZN5CWave18WaveCompleteUpdateEv"
-				}
-				"CWave::ForceFinish"
-				{
-					type "sym"
-					sym  "_ZN5CWave11ForceFinishEv"
-				}
-				"CWave::IsDoneWithNonSupportWaves"
-				{
-					type "sym"
-					sym  "_ZN5CWave25IsDoneWithNonSupportWavesEv"
-				}
-				"CWave::~CWave [D0]"
-				{
-					type "sym"
-					sym  "_ZN5CWaveD0Ev"
-				}
-				"CWave::~CWave [D2]"
-				{
-					type "sym"
-					sym  "_ZN5CWaveD2Ev"
-				}
+				"CMissionPopulator::~CMissionPopulator [D0]"      "_ZN17CMissionPopulatorD0Ev"
+				"CMissionPopulator::~CMissionPopulator [D2]"      "_ZN17CMissionPopulatorD2Ev"
+				"CMissionPopulator::Parse"                        "_ZN17CMissionPopulator5ParseEP9KeyValues"
+				"CMissionPopulator::Update"                       "_ZN17CMissionPopulator6UpdateEv"
+				"CMissionPopulator::UpdateMission"                "_ZN17CMissionPopulator13UpdateMissionEN6CTFBot11MissionTypeE"
+				"CMissionPopulator::UpdateMissionDestroySentries" "_ZN17CMissionPopulator28UpdateMissionDestroySentriesEv"
 				
-				"CWaveSpawnPopulator::Parse"
-				{
-					type "sym"
-					sym  "_ZN19CWaveSpawnPopulator5ParseEP9KeyValues"
-				}
-				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D0]"
-				{
-					type "sym"
-					sym  "_ZN19CWaveSpawnPopulatorD0Ev"
-				}
-				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D2]"
-				{
-					type "sym"
-					sym  "_ZN19CWaveSpawnPopulatorD2Ev"
-				}
+				"CWave::~CWave [D0]"               "_ZN5CWaveD0Ev"
+				"CWave::~CWave [D2]"               "_ZN5CWaveD2Ev"
+				"CWave::ActiveWaveUpdate"          "_ZN5CWave16ActiveWaveUpdateEv"
+				"CWave::AddClassType"              "_ZN5CWave12AddClassTypeE8string_tij"
+				"CWave::ForceFinish"               "_ZN5CWave11ForceFinishEv"
+				"CWave::IsDoneWithNonSupportWaves" "_ZN5CWave25IsDoneWithNonSupportWavesEv"
+				"CWave::Parse"                     "_ZN5CWave5ParseEP9KeyValues"
+				"CWave::WaveCompleteUpdate"        "_ZN5CWave18WaveCompleteUpdateEv"
 				
-				"IPopulationSpawner::GetClassIcon"
-				{
-					type "sym"
-					sym  "_ZN18IPopulationSpawner12GetClassIconEi"
-				}
-				"IPopulationSpawner::IsMiniBoss"
-				{
-					type "sym"
-					sym  "_ZN18IPopulationSpawner10IsMiniBossEi"
-				}
-				"IPopulationSpawner::HasAttribute"
-				{
-					type "sym"
-					sym  "_ZN18IPopulationSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
-				}
+				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D0]" "_ZN19CWaveSpawnPopulatorD0Ev"
+				"CWaveSpawnPopulator::~CWaveSpawnPopulator [D2]" "_ZN19CWaveSpawnPopulatorD2Ev"
+				"CWaveSpawnPopulator::Parse"                     "_ZN19CWaveSpawnPopulator5ParseEP9KeyValues"
 				
-				"CTankSpawner::~CTankSpawner [D0]"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawnerD0Ev"
-				}
-				"CTankSpawner::~CTankSpawner [D2]"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawnerD2Ev"
-				}
-				"CTankSpawner::GetClassIcon"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawner12GetClassIconEi"
-				}
-				"CTankSpawner::IsMiniBoss"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawner10IsMiniBossEi"
-				}
-				"CTankSpawner::Parse"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawner5ParseEP9KeyValues"
-				}
-				"CTankSpawner::Spawn"
-				{
-					type "sym"
-					sym  "_ZN12CTankSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
-				}
+				"IPopulationSpawner::GetClassIcon" "_ZN18IPopulationSpawner12GetClassIconEi"
+				"IPopulationSpawner::HasAttribute" "_ZN18IPopulationSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
+				"IPopulationSpawner::IsMiniBoss"   "_ZN18IPopulationSpawner10IsMiniBossEi"
 				
-				"CTFBotSpawner::~CTFBotSpawner [D0]"
-				{
-					type "sym"
-					sym  "_ZN13CTFBotSpawnerD0Ev"
-				}
-				"CTFBotSpawner::~CTFBotSpawner [D2]"
-				{
-					type "sym"
-					sym  "_ZN13CTFBotSpawnerD2Ev"
-				}
-				"CTFBotSpawner::Parse"
-				{
-					type "sym"
-					sym  "_ZN13CTFBotSpawner5ParseEP9KeyValues"
-				}
-				"CTFBotSpawner::Spawn"
-				{
-					type "sym"
-					sym  "_ZN13CTFBotSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
-				}
+				"CTankSpawner::~CTankSpawner [D0]" "_ZN12CTankSpawnerD0Ev"
+				"CTankSpawner::~CTankSpawner [D2]" "_ZN12CTankSpawnerD2Ev"
+				"CTankSpawner::GetClassIcon"       "_ZN12CTankSpawner12GetClassIconEi"
+				"CTankSpawner::IsMiniBoss"         "_ZN12CTankSpawner10IsMiniBossEi"
+				"CTankSpawner::Parse"              "_ZN12CTankSpawner5ParseEP9KeyValues"
+				"CTankSpawner::Spawn"              "_ZN12CTankSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
 				
-				"CSquadSpawner::GetClassIcon"
-				{
-					type "sym"
-					sym  "_ZN13CSquadSpawner12GetClassIconEi"
-				}
-				"CSquadSpawner::IsMiniBoss"
-				{
-					type "sym"
-					sym  "_ZN13CSquadSpawner10IsMiniBossEi"
-				}
-				"CSquadSpawner::HasAttribute"
-				{
-					type "sym"
-					sym  "_ZN13CSquadSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
-				}
+				"CTFBotSpawner::~CTFBotSpawner [D0]" "_ZN13CTFBotSpawnerD0Ev"
+				"CTFBotSpawner::~CTFBotSpawner [D2]" "_ZN13CTFBotSpawnerD2Ev"
+				"CTFBotSpawner::Parse"               "_ZN13CTFBotSpawner5ParseEP9KeyValues"
+				"CTFBotSpawner::Spawn"               "_ZN13CTFBotSpawner5SpawnERK6VectorP10CUtlVectorI7CHandleI11CBaseEntityE10CUtlMemoryIS6_iEE"
 				
-				"CRandomChoiceSpawner::GetClassIcon"
-				{
-					type "sym"
-					sym  "_ZN20CRandomChoiceSpawner12GetClassIconEi"
-				}
-				"CRandomChoiceSpawner::IsMiniBoss"
-				{
-					type "sym"
-					sym  "_ZN20CRandomChoiceSpawner10IsMiniBossEi"
-				}
-				"CRandomChoiceSpawner::HasAttribute"
-				{
-					type "sym"
-					sym  "_ZN20CRandomChoiceSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
-				}
+				"CSquadSpawner::GetClassIcon" "_ZN13CSquadSpawner12GetClassIconEi"
+				"CSquadSpawner::IsMiniBoss"   "_ZN13CSquadSpawner10IsMiniBossEi"
+				"CSquadSpawner::HasAttribute" "_ZN13CSquadSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
 				
-				"CSpawnLocation::Parse"
-				{
-					type "sym"
-					sym  "_ZN14CSpawnLocation5ParseEP9KeyValues"
-				}
+				"CRandomChoiceSpawner::GetClassIcon" "_ZN20CRandomChoiceSpawner12GetClassIconEi"
+				"CRandomChoiceSpawner::IsMiniBoss"   "_ZN20CRandomChoiceSpawner10IsMiniBossEi"
+				"CRandomChoiceSpawner::HasAttribute" "_ZN20CRandomChoiceSpawner12HasAttributeEN6CTFBot13AttributeTypeEi"
 				
-				"ParseDynamicAttributes"
-				{
-					type "sym"
-					sym  "_ZL22ParseDynamicAttributesRN6CTFBot23EventChangeAttributes_tEP9KeyValues"
-				}
+				"CSpawnLocation::Parse" "_ZN14CSpawnLocation5ParseEP9KeyValues"
+				
+				"ParseDynamicAttributes" "_ZL22ParseDynamicAttributesRN6CTFBot23EventChangeAttributes_tEP9KeyValues"
 			}
 		}
 	}

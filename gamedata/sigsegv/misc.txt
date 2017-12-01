@@ -2801,20 +2801,29 @@
 					type "sym"
 					sym  "_ZN11CBasePlayer10ChangeTeamEibbb"
 				}
+			}
+			
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "sym"
+					lib  "server"
+				}
 				
-				"CTeam::GetNumPlayers" "_ZNK5CTeam13GetNumPlayersEv"
 				"CTeam::GetName"       "_ZNK5CTeam7GetNameEv"
+				"CTeam::GetNumPlayers" "_ZNK5CTeam13GetNumPlayersEv"
 				"CTeam::GetPlayer"     "_ZNK5CTeam9GetPlayerEi"
 				"CTeam::GetTeamNumber" "_ZNK5CTeam13GetTeamNumberEv"
 				
 				"CTFTeam::GetNumObjects" "_ZN7CTFTeam13GetNumObjectsEi"
 				"CTFTeam::GetObject"     "_ZN7CTFTeam9GetObjectEi"
 				
-				"CTFTeamManager::IsValidTeam" "_ZN14CTFTeamManager11IsValidTeamEi"
 				"CTFTeamManager::GetTeam"     "_ZN14CTFTeamManager7GetTeamEi"
+				"CTFTeamManager::IsValidTeam" "_ZN14CTFTeamManager11IsValidTeamEi"
 				
-				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				"CTeamplayRules::SetStalemate"   "_ZN14CTeamplayRules12SetStalemateEibb"
+				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				
 				"CBasePlayer::SetVCollisionState" "_ZN11CBasePlayer18SetVCollisionStateERK6VectorS2_i"
 			}

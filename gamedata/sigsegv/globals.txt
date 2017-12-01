@@ -11,212 +11,82 @@
 		
 		"sigsegv"
 		{
-			"addrs"
+			"addrs_group"
 			{
-				"gpGlobals"
+				"[common]"
 				{
 					type "sym"
-					sym  "gpGlobals"
+					lib  "server"
 				}
 				
-				"debugoverlay"
-				{
-					type "sym"
-					sym  "debugoverlay"
-				}
+				"gpGlobals" "gpGlobals"
 				
-				"usermessages"
-				{
-					type "sym"
-					sym  "usermessages"
-				}
+				"debugoverlay" "debugoverlay"
 				
-				"TheNavMesh"
-				{
-					type "sym"
-					sym  "TheNavMesh"
-				}
-				"TheNavAreas"
-				{
-					type "sym"
-					sym  "TheNavAreas"
-				}
+				"usermessages" "usermessages"
 				
-				"g_pObjectiveResource"
-				{
-					type "sym"
-					sym  "g_pObjectiveResource"
-				}
+				"TheNavMesh"  "TheNavMesh"
+				"TheNavAreas" "TheNavAreas"
 				
-				"CGameRulesProxy::s_pGameRulesProxy"
-				{
-					type "sym"
-					sym  "_ZN15CGameRulesProxy17s_pGameRulesProxyE"
-				}
+				"g_pObjectiveResource" "g_pObjectiveResource"
 				
-				"g_hUpgradeEntity"
-				{
-					type "sym"
-					sym  "g_hUpgradeEntity"
-				}
+				"CGameRulesProxy::s_pGameRulesProxy" "_ZN15CGameRulesProxy17s_pGameRulesProxyE"
 				
-				"g_MannVsMachineUpgrades"
-				{
-					type "sym"
-					sym  "g_MannVsMachineUpgrades"
-				}
+				"g_hUpgradeEntity" "g_hUpgradeEntity"
 				
-				"g_hControlPointMasters"
-				{
-					type "sym"
-					sym  "g_hControlPointMasters"
-				}
+				"g_MannVsMachineUpgrades" "g_MannVsMachineUpgrades"
 				
-				"g_pPopulationManager"
-				{
-					type "sym"
-					sym  "g_pPopulationManager"
-				}
+				"g_hControlPointMasters" "g_hControlPointMasters"
 				
-//				"s_pszNextPopfile"
-//				{
-//					type "sym"
-//					sym  "s_pszNextPopfile"
-//				}
+				"g_pPopulationManager" "g_pPopulationManager"
 				
-				"lagcompensation"
-				{
-					type "sym"
-					sym  "lagcompensation"
-				}
+//				"s_pszNextPopfile" "s_pszNextPopfile"
 				
-				"s_pTokenBuf"
-				{
-					type "sym"
-					sym  "_ZL11s_pTokenBuf"
-				}
+				"lagcompensation" "lagcompensation"
 				
-				"g_aTeamNames"
-				{
-					type "sym"
-					sym  "g_aTeamNames"
-				}
-				"g_aTeamColors"
-				{
-					type "sym"
-					sym  "g_aTeamColors"
-				}
+				"s_pTokenBuf" "_ZL11s_pTokenBuf"
+				
+				"g_aTeamNames"  "g_aTeamNames"
+				"g_aTeamColors" "g_aTeamColors"
 
-				"g_aClassNames"
-				{
-					type "sym"
-					sym  "g_aClassNames"
-				}
-				"g_aPlayerClassNames"
-				{
-					type "sym"
-					sym  "g_aPlayerClassNames"
-				}
-				"g_aPlayerClassNames_NonLocalized"
-				{
-					type "sym"
-					sym  "g_aPlayerClassNames_NonLocalized"
-				}
-				"g_aRawPlayerClassNames"
-				{
-					type "sym"
-					sym  "g_aRawPlayerClassNames"
-				}
-				"g_aRawPlayerClassNamesShort"
-				{
-					type "sym"
-					sym  "g_aRawPlayerClassNamesShort"
-				}
+				"g_aClassNames"                    "g_aClassNames"
+				"g_aPlayerClassNames"              "g_aPlayerClassNames"
+				"g_aPlayerClassNames_NonLocalized" "g_aPlayerClassNames_NonLocalized"
+				"g_aRawPlayerClassNames"           "g_aRawPlayerClassNames"
+				"g_aRawPlayerClassNamesShort"      "g_aRawPlayerClassNamesShort"
 				
-				"g_aWeaponNames"
-				{
-					type "sym"
-					sym  "g_aWeaponNames"
-				}
+				"g_aWeaponNames" "g_aWeaponNames"
 				
-				"g_aConditionNames"
-				{
-					type "sym"
-					sym  "_ZL17g_aConditionNames"
-				}
+				"g_aConditionNames" "_ZL17g_aConditionNames"
 				
-				"g_szLoadoutStrings"
-				{
-					type "sym"
-					sym  "g_szLoadoutStrings"
-				}
-				"g_szLoadoutStringsForDisplay"
-				{
-					type "sym"
-					sym  "g_szLoadoutStringsForDisplay"
-				}
+				"g_szLoadoutStrings"           "g_szLoadoutStrings"
+				"g_szLoadoutStringsForDisplay" "g_szLoadoutStringsForDisplay"
 				
-				"g_szBotModels"
-				{
-					type "sym"
-					sym  "g_szBotModels"
-				}
-				"g_szBotBossModels"
-				{
-					type "sym"
-					sym  "g_szBotBossModels"
-				}
-				"g_szPlayerRobotModels"
-				{
-					type "sym"
-					sym  "g_szPlayerRobotModels"
-				}
-				"g_szBotBossSentryBusterModel"
-				{
-					type "sym"
-					sym  "g_szBotBossSentryBusterModel"
-				}
+				"g_szBotModels"                "g_szBotModels"
+				"g_szBotBossModels"            "g_szBotBossModels"
+				"g_szPlayerRobotModels"        "g_szPlayerRobotModels"
+				"g_szBotBossSentryBusterModel" "g_szBotBossSentryBusterModel"
 				
-				"s_TankModel"
-				{
-					type "sym"
-					sym  "_ZL11s_TankModel"
-				}
-				"s_TankModelRome"
-				{
-					type "sym"
-					sym  "_ZL15s_TankModelRome"
-				}
+				"s_TankModel"     "_ZL11s_TankModel"
+				"s_TankModelRome" "_ZL15s_TankModelRome"
 				
-				"g_szRomePromoItems_Hat"
-				{
-					type "sym"
-					sym  "g_szRomePromoItems_Hat"
-				}
-				"g_szRomePromoItems_Misc"
-				{
-					type "sym"
-					sym  "g_szRomePromoItems_Misc"
-				}
+				"g_szRomePromoItems_Hat"  "g_szRomePromoItems_Hat"
+				"g_szRomePromoItems_Misc" "g_szRomePromoItems_Misc"
 				
-				"g_TeamVisualSections"
-				{
-					type "sym"
-					sym  "g_TeamVisualSections"
-				}
+				"g_TeamVisualSections" "g_TeamVisualSections"
 				
-				"g_MapListMgr"
+				"s_TFTeamManager" "s_TFTeamManager"
+			}
+			
+			"addrs_group"
+			{
+				"[common]"
 				{
 					type "sym"
-					sym  "g_MapListMgr"
 					lib  "engine"
 				}
 				
-				"s_TFTeamManager"
-				{
-					type "sym"
-					sym  "s_TFTeamManager"
-				}
+				"g_MapListMgr" "g_MapListMgr"
 			}
 		}
 	}
