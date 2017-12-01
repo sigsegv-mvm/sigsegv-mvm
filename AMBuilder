@@ -234,6 +234,7 @@ sourceFiles += [
   'src/mod/util/dtwarning_use_cvar.cpp',
   'src/mod/util/dtwatch.cpp',
   'src/mod/util/entity_overlays.cpp',
+  'src/mod/util/heap_ksm.cpp',
 #  'src/mod/util/jumboframes.cpp',
   'src/mod/util/listenserverhost.cpp',
   'src/mod/util/make_item.cpp',
