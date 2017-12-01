@@ -340,8 +340,8 @@ public:
 		REL_BEFORE,
 	};
 	
-	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int diff = 0) :
-		IPropTyped<T>(obj, mem), m_RelProp(prop)
+	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, int diff = 0) :
+		IPropTyped<T>(obj, mem), m_RelProp(prop), m_Method(method), m_iAlign(align)
 	{
 		switch (method) {
 		default:
@@ -366,10 +366,30 @@ private:
 		}
 		
 		off = base_off + this->m_iDiff;
+		
+		if (this->m_iAlign != 0) {
+			int rem;
+			switch (this->m_Method) {
+			case REL_MANUAL:
+				assert(false); // not supported
+				break;
+			case REL_AFTER:
+				rem = (off % this->m_iAlign);
+				if (rem != 0) off += (this->m_iAlign - rem);
+				break;
+			case REL_BEFORE:
+				rem = (off % this->m_iAlign);
+				if (rem != 0) off -= rem;
+				break;
+			}
+		}
+		
 		return true;
 	}
 	
 	IProp *m_RelProp;
+	RelativeMethod m_Method;
+	int m_iAlign;
 	int m_iDiff;
 };
 
@@ -594,13 +614,19 @@ template<typename U, T_PARAMS> struct CPropAccessor<CHandle<U>, T_ARGS> : public
 	CProp_Extract<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, EXTRACTOR)
 #define IMPL_RELATIVE(TYPE, CLASSNAME, PROPNAME, RELPROP, DIFF) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_MANUAL, DIFF)
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_MANUAL, 0, DIFF)
 #define IMPL_REL_AFTER(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, ##__VA_ARGS__)
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, 0, ##__VA_ARGS__)
 #define IMPL_REL_BEFORE(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, ##__VA_ARGS__)
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, 0, ##__VA_ARGS__)
+#define IMPL_REL_AFTER_ALIGN(TYPE, CLASSNAME, PROPNAME, RELPROP, ALIGN, ...) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, ALIGN, ##__VA_ARGS__)
+#define IMPL_REL_BEFORE_ALIGN(TYPE, CLASSNAME, PROPNAME, RELPROP, ALIGN, ...) \
+	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
+	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, ALIGN, ##__VA_ARGS__)
 
 
 #endif
