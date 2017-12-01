@@ -417,10 +417,23 @@ binary.compiler.includes += [
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
 ]
 
-# TODO: find a better way to handle NASM inputs
-binary.compiler.linkflags += [
-  '../wrapper.o',
-]
+# use NASM to assemble src/mem/wrapper.s into wrapper.o
+# (TODO: find a better way to do this that's less of an ugly hack)
+wrapper_src = os.path.join(builder.currentSourcePath, 'src', 'mem', 'wrapper.s')
+wrapper_obj = 'wrapper.o'
+_, wrapper = builder.AddCommand(
+  inputs  = [wrapper_src],
+  outputs = [wrapper_obj],
+  argv    = ['nasm',
+             '-f', 'elf32',
+             '-g', '-F', 'dwarf',
+             '-Wall',
+             '-Ox',
+             '-o', wrapper_obj,
+             wrapper_src]
+)
+binary.compiler.sourcedeps += wrapper
+binary.compiler.linkflags  += [os.path.join('..', wrapper_obj)]
 
 
 Extension.extensions = builder.Add(project)

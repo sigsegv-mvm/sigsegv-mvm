@@ -2,6 +2,7 @@
 #include "addr/addr.h"
 #include "mem/protect.h"
 #include "mem/opcode.h"
+#include "mem/wrapper.h"
 #include "util/backtrace.h"
 #include "util/demangle.h"
 
@@ -429,17 +430,6 @@ void CDetouredFunc::RemoveAllDetours()
 }
 
 
-extern "C"
-{
-	extern uint8_t Wrapper_begin;
-	extern uint8_t Wrapper_end;
-	extern uint8_t Wrapper_push_func_addr_1;
-	extern uint8_t Wrapper_call_wrapper_pre;
-	extern uint8_t Wrapper_call_actual_func;
-	extern uint8_t Wrapper_push_func_addr_2;
-	extern uint8_t Wrapper_call_wrapper_post;
-}
-
 void CDetouredFunc::CreateWrapper()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
@@ -456,10 +446,10 @@ void CDetouredFunc::CreateWrapper()
 	auto func_addr_2  = (uintptr_t)this->m_pWrapper + (&Wrapper_push_func_addr_2  - &Wrapper_begin);
 	auto wrapper_post = (uintptr_t)this->m_pWrapper + (&Wrapper_call_wrapper_post - &Wrapper_begin);
 	
-	PushImm32::Write(   (void *)func_addr_1,  (uint32_t)this->m_pFunc);
+	PushImm32   ::Write((void *)func_addr_1,  (uint32_t)this->m_pFunc);
 	CallAbsMem32::Write((void *)wrapper_pre,  (uint32_t)&this->m_pWrapperPre);
 	CallAbsMem32::Write((void *)actual_func,  (uint32_t)&this->m_pWrapperInner);
-	PushImm32::Write(   (void *)func_addr_2,  (uint32_t)this->m_pFunc);
+	PushImm32   ::Write((void *)func_addr_2,  (uint32_t)this->m_pFunc);
 	CallAbsMem32::Write((void *)wrapper_post, (uint32_t)&this->m_pWrapperPost);
 #endif
 }
