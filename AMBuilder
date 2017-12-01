@@ -276,6 +276,7 @@ if 'mods_debug' not in Extension.exclude:
     'src/mod/debug/deflect_angle.cpp',
     'src/mod/debug/deflect_angle_v2.cpp',
     'src/mod/debug/draw_cphyscollide.cpp',
+    'src/mod/debug/energyring_knockback.cpp',
     'src/mod/debug/feigndeath_ragdoll.cpp',
     'src/mod/debug/flamethrower_impulse_101.cpp',
     'src/mod/debug/flamethrower_misc.cpp',
