@@ -54,6 +54,7 @@ public:
 	
 	int GetOffsetAssert();
 	bool GetOffset(int& off);
+	bool GetOffsetConst(int& off) const;
 	
 	State GetState() const { return this->m_State; }
 	
@@ -78,19 +79,21 @@ inline int IProp::GetOffsetAssert()
 
 inline bool IProp::GetOffset(int& off)
 {
-	State state = this->m_State;
-	
-	if (state == State::INITIAL) {
+	if (this->m_State == State::INITIAL) {
 		this->DoCalcOffset();
-		state = this->m_State;
 	}
 	
-	if (state != State::OK) {
+	return this->GetOffsetConst(off);
+}
+
+inline bool IProp::GetOffsetConst(int& off) const
+{
+	if (this->m_State == State::OK) {
+		off = this->m_Offset;
+		return true;
+	} else {
 		return false;
 	}
-	
-	off = this->m_Offset;
-	return true;
 }
 
 inline void IProp::DoCalcOffset()
