@@ -31,7 +31,7 @@ struct CExtract_CBasePlayer_SetVCollisionState : public IExtract<int *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CBasePlayer_SetVCollisionState = IExtractStub;
 
 #endif
 
