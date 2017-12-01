@@ -10,7 +10,6 @@ class CBaseCombatWeapon;
 class CEconWearable;
 class CBaseViewModel;
 
-
 class CBaseCombatCharacter : public CBaseFlex
 {
 public:
@@ -37,6 +36,7 @@ public:
 	int GiveAmmo(int iCount, int iAmmoIndex, bool bSuppressSound = false)  { return vt_GiveAmmo           (this, iCount, iAmmoIndex, bSuppressSound); }
 	int GetAmmoCount(int iAmmoIndex) const                                 { return vt_GetAmmoCount       (this, iAmmoIndex); }
 	bool ShouldGib(const CTakeDamageInfo& info)                            { return vt_ShouldGib          (this, info); }
+	int GetBossType()                                                      { return vt_GetBossType        (this); }
 	
 private:
 	DECL_SENDPROP(CHandle<CBaseCombatWeapon>,              m_hActiveWeapon);
@@ -58,15 +58,16 @@ private:
 	static MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            vt_GiveAmmo;
 	static MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       vt_GetAmmoCount;
 	static MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   vt_ShouldGib;
+	static MemberVFuncThunk<      CBaseCombatCharacter *, int>                            vt_GetBossType;
 };
 
 
 class CPlayerLocalData
 {
 public:
-	DECL_SENDPROP(bool, m_bDucked);
-	DECL_SENDPROP(bool, m_bDucking);
-	DECL_SENDPROP(bool, m_bInDuckJump);
+	DECL_SENDPROP(bool,  m_bDucked);
+	DECL_SENDPROP(bool,  m_bDucking);
+	DECL_SENDPROP(bool,  m_bInDuckJump);
 	DECL_SENDPROP(float, m_flDucktime);
 	DECL_SENDPROP(float, m_flDuckJumpTime);
 };

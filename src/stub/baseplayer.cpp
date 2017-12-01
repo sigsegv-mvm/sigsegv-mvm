@@ -55,6 +55,7 @@ MemberVFuncThunk<      CBaseCombatCharacter *, void>                           C
 MemberVFuncThunk<      CBaseCombatCharacter *, int, int, int, bool>            CBaseCombatCharacter::vt_GiveAmmo           (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GiveAmmo");
 MemberVFuncThunk<const CBaseCombatCharacter *, int, int>                       CBaseCombatCharacter::vt_GetAmmoCount       (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetAmmoCount");
 MemberVFuncThunk<      CBaseCombatCharacter *, bool, const CTakeDamageInfo&>   CBaseCombatCharacter::vt_ShouldGib          (TypeName<CTFPlayer>(),            "CTFPlayer::ShouldGib");
+MemberVFuncThunk<      CBaseCombatCharacter *, int>                            CBaseCombatCharacter::vt_GetBossType        (TypeName<CBaseCombatCharacter>(), "CBaseCombatCharacter::GetBossType");
 
 
 //IMPL_SENDPROP(bool,  CPlayerLocalData, m_bDucked,        CBasePlayer);

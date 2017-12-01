@@ -2811,6 +2811,8 @@
 					lib  "server"
 				}
 				
+				"CBaseCombatCharacter::GetBossType" "_ZNK20CBaseCombatCharacter11GetBossTypeEv"
+				
 				"CTeam::GetName"       "_ZNK5CTeam7GetNameEv"
 				"CTeam::GetNumPlayers" "_ZNK5CTeam13GetNumPlayersEv"
 				"CTeam::GetPlayer"     "_ZNK5CTeam9GetPlayerEi"
