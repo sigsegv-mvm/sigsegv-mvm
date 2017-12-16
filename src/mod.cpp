@@ -45,9 +45,9 @@ void IHasPatches::AddPatch(IPatch *patch)
 }
 
 
-void IHasPatches::ToggleAllPatches(bool enable)
+bool IHasPatches::ToggleAllPatches(bool enable)
 {
-	if (!this->CanTogglePatches()) return;
+	if (!this->CanTogglePatches()) return false;
 	
 //	DevMsg("IHasPatches::ToggleAllPatches: \"%s\" %s\n", this->GetName(),
 //		(enable ? "ON" : "OFF"));
@@ -59,6 +59,8 @@ void IHasPatches::ToggleAllPatches(bool enable)
 			patch->UnApply();
 		}
 	}
+	
+	return true;
 }
 
 
@@ -112,20 +114,22 @@ void IHasDetours::AddDetour(IDetour *detour)
 }
 
 
-void IHasDetours::ToggleDetour(const char *name, bool enable)
+bool IHasDetours::ToggleDetour(const char *name, bool enable)
 {
-	if (!this->CanToggleDetours()) return;
+	if (!this->CanToggleDetours()) return false;
 	
 //	DevMsg("IHasDetours::ToggleDetour: \"%s\" \"%s\" %s\n", this->GetName(), name,
 //		(enable ? "ON" : "OFF"));
 	
 	this->m_Detours.at(name)->Toggle(enable);
+	
+	return true;
 }
 
 
-void IHasDetours::ToggleAllDetours(bool enable)
+bool IHasDetours::ToggleAllDetours(bool enable)
 {
-	if (!this->CanToggleDetours()) return;
+	if (!this->CanToggleDetours()) return false;
 	
 //	DevMsg("IHasDetours::ToggleAllDetours: \"%s\" %s\n", this->GetName(),
 //		(enable ? "ON" : "OFF"));
@@ -134,6 +138,8 @@ void IHasDetours::ToggleAllDetours(bool enable)
 		IDetour *detour = pair.second;
 		detour->Toggle(enable);
 	}
+	
+	return true;
 }
 
 
@@ -172,10 +178,20 @@ void IMod::InvokeUnload()
 
 void IMod::Toggle(bool enable)
 {
-	DevMsg("IMod::Toggle: \"%s\" %s\n", this->GetName(), (enable ? "ON" : "OFF"));
+	// TODO: if m_bFailed, patches and detours will not toggle on; however, if
+	// a mod has IFrameUpdateListener logic that is enabled when the mod is in
+	// the enabled state, it may end up being PARTIALLY turned on (eek!)
 	
+	if (this->m_bFailed && enable) {
+		Msg("IMod::Toggle: \"%s\" %s [WARNING: mod is in FAILED state, so patches/detours will NOT be enabled!\n", this->GetName(), (enable ? "ON" : "OFF"));
+	} else {
+		DevMsg("IMod::Toggle: \"%s\" %s\n", this->GetName(), (enable ? "ON" : "OFF"));
+	}
+	
+	/* call OnEnable/OnDisable, set enabled state, etc */
 	IToggleable::Toggle(enable);
 	
+	/* actually toggle enable/detour all of the mod's patches and detours */
 	this->ToggleAllPatches(enable);
 	this->ToggleAllDetours(enable);
 }

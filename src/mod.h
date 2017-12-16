@@ -52,9 +52,9 @@ public:
 	
 	void AddPatch(IPatch *patch);
 	
-	void ToggleAllPatches(bool enable);
-	void EnableAllPatches()  { this->ToggleAllPatches(true); }
-	void DisableAllPatches() { this->ToggleAllPatches(false); }
+	bool ToggleAllPatches(bool enable);
+	bool EnableAllPatches()  { return this->ToggleAllPatches(true); }
+	bool DisableAllPatches() { return this->ToggleAllPatches(false); }
 	
 	size_t GetNumPatches() const     { return this->m_Patches.size(); }
 	std::vector<IPatch *>& Patches() { return this->m_Patches; }
@@ -82,13 +82,13 @@ public:
 	
 	void AddDetour(IDetour *detour);
 	
-	void ToggleDetour(const char *name, bool enable);
-	void EnableDetour(const char *name)  { this->ToggleDetour(name, true); }
-	void DisableDetour(const char *name) { this->ToggleDetour(name, false); }
+	bool ToggleDetour(const char *name, bool enable);
+	bool EnableDetour(const char *name)  { return this->ToggleDetour(name, true); }
+	bool DisableDetour(const char *name) { return this->ToggleDetour(name, false); }
 	
-	void ToggleAllDetours(bool enable);
-	void EnableAllDetours()  { this->ToggleAllDetours(true); }
-	void DisableAllDetours() { this->ToggleAllDetours(false); }
+	bool ToggleAllDetours(bool enable);
+	bool EnableAllDetours()  { return this->ToggleAllDetours(true); }
+	bool DisableAllDetours() { return this->ToggleAllDetours(false); }
 	
 	size_t GetNumDetours() const                 { return this->m_Detours.size(); }
 	std::map<const char *, IDetour *>& Detours() { return this->m_Detours; }
