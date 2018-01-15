@@ -124,7 +124,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/MP</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>..\src;..\src\sdk;$(SOURCEMOD18);$(SOURCEMOD18)\public;$(SOURCEMOD18)\public\amtl;$(SOURCEMOD18)\public\amtl\amtl;$(SOURCEMOD18)\public\extensions;$(SOURCEMOD18)\sourcepawn\include;$(HL2SDKOBVALVE)\common;$(HL2SDKOBVALVE)\game\shared;$(HL2SDKOBVALVE)\public;$(HL2SDKOBVALVE)\public\engine;$(HL2SDKOBVALVE)\public\game\server;$(HL2SDKOBVALVE)\public\tier0;$(HL2SDKOBVALVE)\public\tier1;$(HL2SDKOBVALVE)\public\toolframework;$(HL2SDKOBVALVE)\public\vstdlib;$(MMSOURCE110)\core;$(MMSOURCE110)\core\sourcehook;..\libs\boost_1_62_0_b2;..\libs\lz4\lib;..\libs\lodepng;..\libs\distorm\include;..\libs\capstone\include;..\libs\udis86;..\libs\ann\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;SDK_EXPORTS;_CRT_SECURE_NO_DEPRECATE;SOURCEMOD_BUILD;SOURCE_ENGINE=7;SE_EPISODEONE=1;SE_DARKMESSIAH=2;SE_ORANGEBOX=3;SE_BLOODYGOODTIME=4;SE_EYE=5;SE_CSS=6;SE_ORANGEBOXVALVE=7;SE_LEFT4DEAD=8;SE_LEFT4DEAD2=9;SE_ALIENSWARM=10;SE_PORTAL2=11;SE_CSGO=12;%(PreprocessorDefinitions)</PreprocessorDefinitions>
