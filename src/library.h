@@ -76,6 +76,9 @@ public:
 	uintptr_t AddrBegin() const { return this->m_BaseAddr; }
 	uintptr_t AddrEnd() const   { return this->m_BaseAddr + this->m_Length; }
 	
+	bool HaveSeg(Segment seg_type) const     { return (this->m_SegmentsByType.count(seg_type) != 0); }
+	bool HaveSeg(const char *seg_name) const { return (this->m_SegmentsByName.count(seg_name) != 0); }
+	
 	const SegInfo& GetSeg(Segment seg_type) const
 	{
 		auto it = this->m_SegmentsByType.find(seg_type);
