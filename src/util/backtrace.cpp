@@ -20,9 +20,7 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 	}
 	
 	static Symbol *best = nullptr;
-	LibMgr::ForEachSym(lib,
-	[](Symbol *sym)
-	{
+	LibMgr::ForEachSym(lib, [](Symbol *sym) {
 		if (r_ip > (uintptr_t)sym->address) {
 			if (best == nullptr || (r_ip - (uintptr_t)best->address) > (r_ip - (uintptr_t)sym->address)) {
 				best = sym;
@@ -30,8 +28,7 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 		}
 		
 		return true;
-	}
-	);
+	});
 	
 	if (best != nullptr) {
 		snprintf(bufp, len, "%*s", best->length, best->buffer());

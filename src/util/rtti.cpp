@@ -27,9 +27,7 @@ namespace RTTI
 #if defined __GNUC__
 		
 		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0}) {
-			LibMgr::ForEachSym(lib,
-			[](Symbol *sym)
-			{
+			LibMgr::ForEachSym(lib, [](Symbol *sym){
 				const char *buf = sym->buffer();
 				char name[4096];
 				
@@ -69,8 +67,7 @@ namespace RTTI
 				}
 				
 				return true;
-			}
-			);
+			});
 		}
 
 		
