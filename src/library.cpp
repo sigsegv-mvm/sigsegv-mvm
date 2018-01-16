@@ -76,7 +76,10 @@ void LibMgr::Unload()
 
 void *LibMgr::GetPtr(Library lib)
 {
-	return s_LibPtrs.at(lib);
+	const auto it = s_LibPtrs.find(lib);
+	if (it == s_LibPtrs.end()) return nullptr;
+	
+	return (*it).second;
 }
 
 
