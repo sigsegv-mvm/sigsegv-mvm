@@ -13,10 +13,16 @@ CLibBounds::CLibBounds(Library lib)
 
 CLibSegBounds::CLibSegBounds(Library lib, Segment seg)
 {
-	const SegInfo& seg_info = LibMgr::GetInfo(lib).GetSeg(seg);
-	
-	this->m_AddrLow  = reinterpret_cast<const void *>(seg_info.AddrBegin());
-	this->m_AddrHigh = reinterpret_cast<const void *>(seg_info.AddrEnd());
+	if (LibMgr::HaveLib(lib)) {
+		const LibInfo& lib_info = LibMgr::GetInfo(lib);
+		
+		if (lib_info.HaveSeg(seg)) {
+			const SegInfo& seg_info = lib_info.GetSeg(seg);
+			
+			this->m_AddrLow  = reinterpret_cast<const void *>(seg_info.AddrBegin());
+			this->m_AddrHigh = reinterpret_cast<const void *>(seg_info.AddrEnd());
+		}
+	}
 }
 
 
