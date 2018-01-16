@@ -83,6 +83,15 @@ void *LibMgr::GetPtr(Library lib)
 }
 
 
+bool LibMgr::HaveLib(Library lib)
+{
+	if (GetPtr(lib) == nullptr)       return false;
+	if (s_LibHandles.count(lib) == 0) return false;
+	
+	return true;
+}
+
+
 const LibInfo& LibMgr::GetInfo(Library lib)
 {
 	if (s_LibInfos.find(lib) == s_LibInfos.end()) {

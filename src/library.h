@@ -126,6 +126,7 @@ public:
 		s_LibPtrs[lib] = reinterpret_cast<void *>(ptr);
 	}
 	
+	static bool HaveLib(Library lib);
 	
 	static const LibInfo& GetInfo(Library lib);
 	
