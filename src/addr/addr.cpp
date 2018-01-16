@@ -10,7 +10,15 @@ void IAddr::Init()
 	
 	this->m_State = State::LOADING;
 	
-	if (this->FindAddrCommon(this->m_iAddr)) {
+	bool result;
+	if (LibMgr::HaveLib(this->GetLibrary())) {
+		result = this->FindAddrCommon(this->m_iAddr);
+	} else {
+		DevMsg("IAddr: \"%s\": library not available: %s\n", this->GetName(), LibMgr::Lib_ToString(this->GetLibrary()));
+		result = false;
+	}
+	
+	if (result) {
 		this->m_State = State::OK;
 //		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
 	} else {
