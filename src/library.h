@@ -76,6 +76,9 @@ public:
 	uintptr_t AddrBegin() const { return this->m_BaseAddr; }
 	uintptr_t AddrEnd() const   { return this->m_BaseAddr + this->m_Length; }
 	
+	bool HaveSeg(Segment seg_type) const     { return (this->m_SegmentsByType.count(seg_type) != 0); }
+	bool HaveSeg(const char *seg_name) const { return (this->m_SegmentsByName.count(seg_name) != 0); }
+	
 	const SegInfo& GetSeg(Segment seg_type) const
 	{
 		auto it = this->m_SegmentsByType.find(seg_type);
@@ -126,7 +129,7 @@ public:
 		s_LibPtrs[lib] = reinterpret_cast<void *>(ptr);
 	}
 	
-	static void *GetPtr(Library lib);
+	static bool HaveLib(Library lib);
 	
 	static const LibInfo& GetInfo(Library lib);
 	
@@ -136,6 +139,8 @@ public:
 	template<typename FUNCTOR>
 	static void ForEachSym(Library lib, FUNCTOR&& functor)
 	{
+		if (!HaveLib(lib)) return;
+		
 		void *handle = s_LibHandles.at(lib);
 		assert(handle != nullptr);
 		g_MemUtils.ForEachSymbol(handle, std::forward<FUNCTOR>(functor));
@@ -153,6 +158,8 @@ public:
 	
 private:
 	LibMgr() {}
+	
+	static void *GetPtr(Library lib);
 	
 	static void FindInfo(Library lib);
 	

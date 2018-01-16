@@ -55,6 +55,8 @@ void LibMgr::Load()
 		Library lib = pair.first;
 		if (lib == Library::INVALID) continue;
 		
+		if (GetPtr(lib) == nullptr) continue;
+		
 		void *handle = OpenLibHandle(lib);
 		if (handle != nullptr) {
 			s_LibHandles[lib] = handle;
@@ -76,7 +78,19 @@ void LibMgr::Unload()
 
 void *LibMgr::GetPtr(Library lib)
 {
-	return s_LibPtrs.at(lib);
+	const auto it = s_LibPtrs.find(lib);
+	if (it == s_LibPtrs.end()) return nullptr;
+	
+	return (*it).second;
+}
+
+
+bool LibMgr::HaveLib(Library lib)
+{
+	if (GetPtr(lib) == nullptr)       return false;
+	if (s_LibHandles.count(lib) == 0) return false;
+	
+	return true;
 }
 
 
@@ -147,16 +161,17 @@ void LibMgr::FindInfo(Library lib)
 
 void *LibMgr::FindSym(Library lib, const char *sym)
 {
-	if (s_LibHandles.count(lib) == 0) return nullptr;
+	if (!HaveLib(lib)) return nullptr;
 	
-	void *handle = s_LibHandles.at(lib);
-	if (handle == nullptr) return nullptr;
-	
-	return g_MemUtils.ResolveSymbol(handle, sym);
+	return g_MemUtils.ResolveSymbol(s_LibHandles.at(lib), sym);
 }
 
 std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern)
 {
+	if (!HaveLib(lib)) {
+		return std::make_tuple(false, "", nullptr);
+	}
+	
 #ifndef _MSC_VER
 	#warning NEED try/catch for std::regex ctor!
 #endif
@@ -247,8 +262,7 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 		if (lib == Library::INVALID) continue;
 		
 		const LibInfo& lib_info = GetInfo(lib);
-		
-		if (GetInfo(lib).ContainsAddr(addr, 1)) {
+		if (lib_info.ContainsAddr(addr, 1)) {
 			return lib;
 		}
 	}

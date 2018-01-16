@@ -171,6 +171,11 @@ bool IDetour_SymRegex::DoLoad()
 		return false;
 	}
 	
+	if (!LibMgr::HaveLib(this->m_Library)) {
+		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": library not available: %s\n", this->GetName(), LibMgr::Lib_ToString(this->m_Library));
+		return false;
+	}
+	
 	const SegInfo& info_seg_text = LibMgr::GetInfo(this->m_Library).GetSeg(Segment::TEXT);
 	auto text_begin = reinterpret_cast<const void *>(info_seg_text.AddrBegin());
 	auto text_end   = reinterpret_cast<const void *>(info_seg_text.AddrEnd());
