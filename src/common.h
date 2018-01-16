@@ -198,6 +198,7 @@ extern IClientMode *g_pClientMode;
 #include <chrono>
 #include <condition_variable>
 #include <functional>
+#include <iterator>
 #include <memory>
 #include <mutex>
 #include <numeric>
