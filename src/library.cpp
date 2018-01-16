@@ -55,6 +55,8 @@ void LibMgr::Load()
 		Library lib = pair.first;
 		if (lib == Library::INVALID) continue;
 		
+		if (GetPtr(lib) == nullptr) continue;
+		
 		void *handle = OpenLibHandle(lib);
 		if (handle != nullptr) {
 			s_LibHandles[lib] = handle;
