@@ -126,7 +126,6 @@ public:
 		s_LibPtrs[lib] = reinterpret_cast<void *>(ptr);
 	}
 	
-	static void *GetPtr(Library lib);
 	
 	static const LibInfo& GetInfo(Library lib);
 	
@@ -153,6 +152,8 @@ public:
 	
 private:
 	LibMgr() {}
+	
+	static void *GetPtr(Library lib);
 	
 	static void FindInfo(Library lib);
 	
