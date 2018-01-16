@@ -161,16 +161,17 @@ void LibMgr::FindInfo(Library lib)
 
 void *LibMgr::FindSym(Library lib, const char *sym)
 {
-	if (s_LibHandles.count(lib) == 0) return nullptr;
+	if (!HaveLib(lib)) return nullptr;
 	
-	void *handle = s_LibHandles.at(lib);
-	if (handle == nullptr) return nullptr;
-	
-	return g_MemUtils.ResolveSymbol(handle, sym);
+	return g_MemUtils.ResolveSymbol(s_LibHandles.at(lib), sym);
 }
 
 std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const char *pattern)
 {
+	if (!HaveLib(lib)) {
+		return std::make_tuple(false, "", nullptr);
+	}
+	
 #ifndef _MSC_VER
 	#warning NEED try/catch for std::regex ctor!
 #endif

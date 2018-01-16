@@ -139,6 +139,8 @@ public:
 	template<typename FUNCTOR>
 	static void ForEachSym(Library lib, FUNCTOR&& functor)
 	{
+		if (!HaveLib(lib)) return;
+		
 		void *handle = s_LibHandles.at(lib);
 		assert(handle != nullptr);
 		g_MemUtils.ForEachSymbol(handle, std::forward<FUNCTOR>(functor));
