@@ -247,8 +247,7 @@ Library LibMgr::WhichLibAtAddr(void *ptr)
 		if (lib == Library::INVALID) continue;
 		
 		const LibInfo& lib_info = GetInfo(lib);
-		
-		if (GetInfo(lib).ContainsAddr(addr, 1)) {
+		if (lib_info.ContainsAddr(addr, 1)) {
 			return lib;
 		}
 	}
