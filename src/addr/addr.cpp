@@ -10,17 +10,7 @@ void IAddr::Init()
 	
 	this->m_State = State::LOADING;
 	
-#if defined _LINUX
-	bool result = this->FindAddrLinux(this->m_iAddr);
-#elif defined _OSX
-	bool result = this->FindAddrOSX(this->m_iAddr);
-#elif defined _WINDOWS
-	bool result = this->FindAddrWin(this->m_iAddr);
-#else
-	bool result = false;
-#endif
-	
-	if (result) {
+	if (this->FindAddrCommon(this->m_iAddr)) {
 		this->m_State = State::OK;
 //		DevMsg("IAddr::Init \"%s\" OK 0x%08x\n", this->GetName(), this->m_iAddr);
 	} else {
