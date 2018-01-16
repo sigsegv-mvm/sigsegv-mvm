@@ -49,18 +49,7 @@ struct CExtract_perteamvisuals_t_m_Sounds : public IExtract<const_char_ptr (*)[N
 
 #elif defined _WINDOWS
 
-// TODO
-struct CExtract_perteamvisuals_t_m_Sounds : public IExtract<const_char_ptr (*)[NUM_SHOOT_SOUND_TYPES]>
-{
-	CExtract_perteamvisuals_t_m_Sounds() : IExtract<const_char_ptr (*)[NUM_SHOOT_SOUND_TYPES]>(0) {}
-	
-	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
-	
-	virtual const char *GetFuncName() const override   { return "CTFWeaponBase::GetShootSound"; }
-	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
-	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
-};
+using CExtract_perteamvisuals_t_m_Sounds = IExtractStub;
 
 #endif
 
@@ -97,18 +86,7 @@ struct CExtract_CEconItemDefinition_m_Visuals : public IExtract<perteamvisuals_t
 
 #elif defined _WINDOWS
 
-// TODO
-struct CExtract_CEconItemDefinition_m_Visuals : public IExtract<perteamvisuals_t_ptr (*)[NUM_VISUALS_BLOCKS]>
-{
-	CExtract_CEconItemDefinition_m_Visuals() : IExtract<perteamvisuals_t_ptr (*)[NUM_VISUALS_BLOCKS]>(0) {}
-	
-	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
-	
-	virtual const char *GetFuncName() const override   { return "CEconItemDefinition::BInitVisualBlockFromKV"; }
-	virtual uint32_t GetFuncOffMin() const override    { return 0xffffffff; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0xffffffff; }
-	virtual uint32_t GetExtractOffset() const override { return 0xffffffff; }
-};
+using CExtract_CEconItemDefinition_m_Visuals = IExtractStub;
 
 #endif
 

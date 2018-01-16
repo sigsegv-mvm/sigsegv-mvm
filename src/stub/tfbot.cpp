@@ -106,7 +106,7 @@ struct CExtract_CTFBot_m_Tags : public IExtract<CUtlVector<CFmtStr> *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CTFBot_m_Tags = IExtractStub;
 
 #endif
 
@@ -148,7 +148,7 @@ struct CExtract_CTFBot_m_nBotAttrs : public IExtract<CTFBot::AttributeType *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CTFBot_m_nBotAttrs = IExtractStub;
 
 #endif
 

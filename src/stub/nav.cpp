@@ -46,7 +46,7 @@ struct CExtract_CNavArea_m_funcNavCostVector : public IExtract<CUtlVector<CHandl
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CNavArea_m_funcNavCostVector = IExtractStub;
 
 #endif
 
@@ -101,7 +101,7 @@ struct CExtract_CNavArea_m_center : public IExtract<Vector *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CNavArea_m_center = IExtractStub;
 
 #endif
 
@@ -143,7 +143,7 @@ struct CExtract_CNavArea_m_attributeFlags : public IExtract<int *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CNavArea_m_attributeFlags = IExtractStub;
 
 #endif
 
@@ -185,7 +185,7 @@ struct CExtract_CNavArea_m_costSoFar : public IExtract<float *>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CNavArea_m_costSoFar = IExtractStub;
 
 #endif
 
@@ -291,7 +291,7 @@ struct CExtract_CTFNavArea_m_IncursionDistances : public IExtract<float (*)[4]>
 
 #elif defined _WINDOWS
 
-// TODO
+using CExtract_CTFNavArea_m_IncursionDistances = IExtractStub;
 
 #endif
 

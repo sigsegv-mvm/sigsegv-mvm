@@ -46,18 +46,7 @@ struct CExtract_CTFProjectile_Arrow_ArrowTouch : public IExtract<float *>
 
 #elif defined _WINDOWS
 
-// TODO: actually implement this
-struct CExtract_CTFProjectile_Arrow_ArrowTouch : public IExtract<float *>
-{
-	CExtract_CTFProjectile_Arrow_ArrowTouch() : IExtract<float *>(1) {}
-	
-	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const override { return false; }
-	
-	virtual const char *GetFuncName() const override   { return "CTFProjectile_Arrow::ArrowTouch"; }
-	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { return 0x0000; }
-};
+using CExtract_CTFProjectile_Arrow_ArrowTouch = IExtractStub;
 
 #endif
 
