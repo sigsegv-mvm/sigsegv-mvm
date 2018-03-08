@@ -1095,7 +1095,7 @@ namespace Mod_Pop_PopMgr_Extensions
 	}
 	
 	
-	class CMod : public IMod, public IFrameUpdateListener
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
 		CMod() : IMod("Pop:PopMgr_Extensions")
@@ -1140,7 +1140,17 @@ namespace Mod_Pop_PopMgr_Extensions
 			state.Reset();
 		}
 		
-		virtual bool ShouldReceiveFrameEvents() const override { return this->IsEnabled(); }
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPreEntity() override
+		{
+			state.Reset();
+		}
+		
+		virtual void LevelShutdownPostEntity() override
+		{
+			state.Reset();
+		}
 		
 		virtual void FrameUpdatePostEntityThink() override
 		{

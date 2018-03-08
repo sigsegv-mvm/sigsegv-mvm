@@ -105,7 +105,7 @@ namespace Mod_Pop_Mission_Extensions
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
 		CMod() : IMod("Pop:Mission_Extensions")
@@ -126,6 +126,18 @@ namespace Mod_Pop_Mission_Extensions
 		}
 		
 		virtual void OnDisable() override
+		{
+			missions.clear();
+		}
+		
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPreEntity() override
+		{
+			missions.clear();
+		}
+		
+		virtual void LevelShutdownPostEntity() override
 		{
 			missions.clear();
 		}

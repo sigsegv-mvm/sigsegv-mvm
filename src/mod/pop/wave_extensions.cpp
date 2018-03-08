@@ -631,7 +631,7 @@ namespace Mod_Pop_Wave_Extensions
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
 		CMod() : IMod("Pop:Wave_Extensions")
@@ -658,6 +658,20 @@ namespace Mod_Pop_Wave_Extensions
 		}
 		
 		virtual void OnDisable() override
+		{
+			waves.clear();
+			StopSoundLoop();
+		}
+		
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPreEntity() override
+		{
+			waves.clear();
+			StopSoundLoop();
+		}
+		
+		virtual void LevelShutdownPostEntity() override
 		{
 			waves.clear();
 			StopSoundLoop();

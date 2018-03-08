@@ -83,7 +83,7 @@ namespace Mod_Pop_WaveSpawn_Extensions
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
 		CMod() : IMod("Pop:WaveSpawn_Extensions")
@@ -100,6 +100,18 @@ namespace Mod_Pop_WaveSpawn_Extensions
 		}
 		
 		virtual void OnDisable() override
+		{
+			wavespawns.clear();
+		}
+		
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPreEntity() override
+		{
+			wavespawns.clear();
+		}
+		
+		virtual void LevelShutdownPostEntity() override
 		{
 			wavespawns.clear();
 		}

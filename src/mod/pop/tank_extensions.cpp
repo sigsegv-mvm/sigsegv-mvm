@@ -348,7 +348,7 @@ namespace Mod_Pop_Tank_Extensions
 	}
 	
 	
-	class CMod : public IMod
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
 		CMod() : IMod("Pop:Tank_Extensions")
@@ -378,6 +378,18 @@ namespace Mod_Pop_Tank_Extensions
 		}
 		
 		virtual void OnDisable() override
+		{
+			spawners.clear();
+		}
+		
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPreEntity() override
+		{
+			spawners.clear();
+		}
+		
+		virtual void LevelShutdownPostEntity() override
 		{
 			spawners.clear();
 		}
