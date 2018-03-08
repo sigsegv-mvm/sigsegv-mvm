@@ -502,7 +502,10 @@ namespace Mod_Pop_Wave_Extensions
 		auto wave = reinterpret_cast<CWave *>(this);
 		
 		auto it = waves.find(wave);
-		if (it == waves.end()) return;
+		if (it == waves.end()) {
+			DETOUR_MEMBER_CALL(CWave_ActiveWaveUpdate)();
+			return;
+		}
 		WaveData& data = (*it).second;
 		
 		if (!data.t_wavestart.HasStarted()) {
