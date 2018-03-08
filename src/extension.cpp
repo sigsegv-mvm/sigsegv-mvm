@@ -13,7 +13,6 @@
 #include "re/nextbot.h"
 #include "version.h"
 #include "convar_restore.h"
-#include "stub/igamesystem.h"
 //#include "entity.h"
 
 
@@ -114,12 +113,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	g_ModManager.Load();
 	
-	if (IGameSystem_IsLinked()) {
-		IGameSystem::Add(this);
-		this->m_bGameSystemAdded = true;
-	} else {
-		Warning("Skipping IGameSystem::Add (not linked)!\n");
-	}
+	IGameSystem::Add(this);
 	
 //	for (int i = 0; i < 255; ++i) {
 //		ConColorMsg(Color(0xff, i, 0x00), "%02x%02x%02x\n", 0xff, i, 0x00);
@@ -136,9 +130,7 @@ void CExtSigsegv::SDK_OnUnload()
 {
 	ConVar_Restore::Save();
 	
-	if (this->m_bGameSystemAdded) {
-		IGameSystem::Remove(this);
-	}
+	IGameSystem::Remove(this);
 	
 	IHotplugAction::UnloadAll();
 //	IHotplugEntity::UninstallAll();
@@ -289,33 +281,6 @@ bool CExtSigsegv::RegisterConCommandBase(ConCommandBase *pCommand)
 void CExtSigsegv::LevelInitPreEntity()
 {
 	this->LoadSoundOverrides();
-	
-	g_ModManager.LevelInitPreEntity();
-}
-
-void CExtSigsegv::LevelInitPostEntity()
-{
-	g_ModManager.LevelInitPostEntity();
-}
-
-void CExtSigsegv::LevelShutdownPreEntity()
-{
-	g_ModManager.LevelShutdownPreEntity();
-}
-
-void CExtSigsegv::LevelShutdownPostEntity()
-{
-	g_ModManager.LevelShutdownPostEntity();
-}
-
-void CExtSigsegv::FrameUpdatePreEntityThink()
-{
-	g_ModManager.FrameUpdatePreEntityThink();
-}
-
-void CExtSigsegv::FrameUpdatePostEntityThink()
-{
-	g_ModManager.FrameUpdatePostEntityThink();
 }
 
 

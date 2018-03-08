@@ -28,16 +28,11 @@ public:
 	virtual bool RegisterConCommandBase(ConCommandBase *pCommand) override;
 	
 private:
+	// CBaseGameSystemPerFrame
+	virtual const char *Name() override { return "CExtSigsegv"; }
 	virtual void LevelInitPreEntity() override;
-	virtual void LevelInitPostEntity() override;
-	virtual void LevelShutdownPreEntity() override;
-	virtual void LevelShutdownPostEntity() override;
-	virtual void FrameUpdatePreEntityThink() override;
-	virtual void FrameUpdatePostEntityThink() override;
 	
 	void LoadSoundOverrides();
-	
-	bool m_bGameSystemAdded = false;
 };
 extern CExtSigsegv g_Ext;
 

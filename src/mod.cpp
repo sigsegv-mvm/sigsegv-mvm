@@ -204,6 +204,8 @@ void CModManager::Load()
 {
 	DevMsg("CModManager::Load\n");
 	
+	IGameSystem::Add(this);
+	
 	for (auto mod : AutoList<IMod>::List()) {
 		mod->InvokeLoad();
 	}
@@ -216,6 +218,8 @@ void CModManager::Unload()
 	for (auto mod : AutoList<IMod>::List()) {
 		mod->InvokeUnload();
 	}
+	
+	IGameSystem::Remove(this);
 }
 
 

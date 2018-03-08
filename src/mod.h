@@ -148,14 +148,17 @@ public:
 	void Load();
 	void Unload();
 	
+	static void CC_ListMods(const CCommand& cmd);
+	
+private:
+	// CBaseGameSystemPerFrame
+	virtual const char *Name() override { return "CModManager"; }
 	virtual void LevelInitPreEntity() override;
 	virtual void LevelInitPostEntity() override;
 	virtual void LevelShutdownPreEntity() override;
 	virtual void LevelShutdownPostEntity() override;
 	virtual void FrameUpdatePreEntityThink() override;
 	virtual void FrameUpdatePostEntityThink() override;
-	
-	static void CC_ListMods(const CCommand& cmd);
 };
 extern CModManager g_ModManager;
 
