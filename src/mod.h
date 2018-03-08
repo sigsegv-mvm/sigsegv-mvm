@@ -159,17 +159,46 @@ private:
 	virtual void LevelShutdownPostEntity() override;
 	virtual void FrameUpdatePreEntityThink() override;
 	virtual void FrameUpdatePostEntityThink() override;
+	virtual void PreClientUpdate() override;
 };
 extern CModManager g_ModManager;
 
 
-class IFrameUpdateListener : public AutoList<IFrameUpdateListener>
+class IModCallbackListener : public AutoList<IModCallbackListener>
 {
 public:
-	virtual bool ShouldReceiveFrameEvents() const = 0;
+	virtual bool ShouldReceiveCallbacks() const = 0;
 	
+	virtual void LevelInitPreEntity() {}
+	virtual void LevelInitPostEntity() {}
+	
+	virtual void LevelShutdownPreEntity() {}
+	virtual void LevelShutdownPostEntity() {}
+	
+	// NOTE: these frame-based callbacks are for the SERVER SIDE only; see IGameSystemPerFrame definition for details!
 	virtual void FrameUpdatePreEntityThink() {}
 	virtual void FrameUpdatePostEntityThink() {}
+	virtual void PreClientUpdate() {}
+	
+protected:
+	IModCallbackListener() {}
+};
+
+// DEPRECATED: use IModCallbackListener instead!
+class IFrameUpdateListener : public IModCallbackListener
+{
+public:
+	virtual bool ShouldReceiveCallbacks() const override final { return this->ShouldReceiveFrameEvents(); }
+	
+	// implementing these callbacks is disallowed
+	virtual void LevelInitPreEntity() override final {}
+	virtual void LevelInitPostEntity() override final {}
+	
+	// implementing these callbacks is disallowed
+	virtual void LevelShutdownPreEntity() override final {}
+	virtual void LevelShutdownPostEntity() override final {}
+	
+	virtual bool ShouldReceiveFrameEvents() const = 0;
 	
 protected:
 	IFrameUpdateListener() {}

@@ -179,7 +179,7 @@ void IMod::InvokeUnload()
 void IMod::Toggle(bool enable)
 {
 	// TODO: if m_bFailed, patches and detours will not toggle on; however, if
-	// a mod has IFrameUpdateListener logic that is enabled when the mod is in
+	// a mod has IModCallbackListener logic that is enabled when the mod is in
 	// the enabled state, it may end up being PARTIALLY turned on (eek!)
 	
 	if (this->m_bFailed && enable) {
@@ -223,43 +223,20 @@ void CModManager::Unload()
 }
 
 
-void CModManager::LevelInitPreEntity()
-{
-	// TODO
-}
-
-void CModManager::LevelInitPostEntity()
-{
-	// TODO
-}
-
-void CModManager::LevelShutdownPreEntity()
-{
-	// TODO
-}
-
-void CModManager::LevelShutdownPostEntity()
-{
-	// TODO
-}
-
-void CModManager::FrameUpdatePreEntityThink()
-{
-	for (auto listener : AutoList<IFrameUpdateListener>::List()) {
-		if (listener->ShouldReceiveFrameEvents()) {
-			listener->FrameUpdatePreEntityThink();
-		}
+#define INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(CALLBACK) \
+	for (auto listener : AutoList<IModCallbackListener>::List()) { \
+		if (listener->ShouldReceiveCallbacks()) { \
+			listener->CALLBACK(); \
+		} \
 	}
-}
 
-void CModManager::FrameUpdatePostEntityThink()
-{
-	for (auto listener : AutoList<IFrameUpdateListener>::List()) {
-		if (listener->ShouldReceiveFrameEvents()) {
-			listener->FrameUpdatePostEntityThink();
-		}
-	}
-}
+void CModManager::LevelInitPreEntity()         { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(LevelInitPreEntity);         }
+void CModManager::LevelInitPostEntity()        { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(LevelInitPostEntity);        }
+void CModManager::LevelShutdownPreEntity()     { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(LevelShutdownPreEntity);     }
+void CModManager::LevelShutdownPostEntity()    { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(LevelShutdownPostEntity);    }
+void CModManager::FrameUpdatePreEntityThink()  { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(FrameUpdatePreEntityThink);  }
+void CModManager::FrameUpdatePostEntityThink() { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(FrameUpdatePostEntityThink); }
+void CModManager::PreClientUpdate()            { INVOKE_CALLBACK_FOR_ALL_ELIGIBLE_MODS(PreClientUpdate);            }
 
 
 static ConCommand ccmd_list_mods("sig_list_mods", &CModManager::CC_ListMods,
