@@ -123,6 +123,8 @@ protected:
 	virtual bool OnLoad()   { return true; }
 	virtual void OnUnload() {}
 	
+	virtual bool EnableByDefault() { return false; }
+	
 private:
 	void InvokeLoad();
 	void InvokeUnload();

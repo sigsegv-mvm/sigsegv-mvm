@@ -37,11 +37,7 @@ namespace Mod_Pop_KV_Conditional
 			MOD_ADD_DETOUR_STATIC(EvaluateConditional, "EvaluateConditional");
 		}
 		
-		bool OnLoad()
-		{
-			this->Enable();
-			return true;
-		}
+		virtual bool EnableByDefault() override { return true; }
 	};
 	CMod s_Mod;
 }
