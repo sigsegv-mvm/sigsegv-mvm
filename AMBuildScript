@@ -190,6 +190,7 @@ class ExtensionConfig(object):
     cxx.cflags += ['-Wno-array-bounds']
     cxx.cflags += ['-msse']
     cxx.cflags += ['-m32']
+    cxx.cflags += ['-fpic']
     cxx.cflags += ['-fvisibility=hidden']
     cxx.cflags += ['-fdiagnostics-color=always']
     cxx.cflags += ['-fno-omit-frame-pointer']
@@ -227,9 +228,10 @@ class ExtensionConfig(object):
     # LINKER ###################################################################
     ############################################################################
     cxx.linkflags += ['-m32']
+    cxx.linkflags += ['-fpic']
     cxx.linkflags += ['-pthread']
-#    cxx.linkflags += ['-fuse-ld=gold']
-    cxx.linkflags += ['-fno-use-linker-plugin'] # ?????
+    cxx.linkflags += ['-fuse-ld=gold']
+    cxx.linkflags += ['-fuse-linker-plugin']
     cxx.linkflags += ['-Wl,--no-undefined']
 #    cxx.linkflags += ['-Wl,--threads'] # crashy
     cxx.linkflags += ['-Wl,--wrap,__assert_fail']
