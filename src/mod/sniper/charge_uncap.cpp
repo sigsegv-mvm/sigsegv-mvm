@@ -51,7 +51,7 @@ namespace Mod_Sniper_Charge_Uncap
 		
 		virtual const char *GetFuncName() const override { return "CTFSniperRifle::ItemPostFrame"; }
 		virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-		virtual uint32_t GetFuncOffMax() const override  { return 0x0380; } // @ 0x0279
+		virtual uint32_t GetFuncOffMax() const override  { return 0x0480; } // @ 0x0421
 	};
 	
 	constexpr uint8_t s_Buf_CTFSniperRifleClassic[] = {
