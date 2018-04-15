@@ -153,7 +153,7 @@ namespace ColorSpew
 		~ColorMap_ANSI256()
 		{
 			delete this->m_Colors;
-			delete this->m_ColorData;
+			annDeallocPts(this->m_ColorData);
 			annClose();
 		}
 		
