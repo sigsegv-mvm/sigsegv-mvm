@@ -40,11 +40,11 @@
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"sigsegv MvM"
 #define SMEXT_CONF_DESCRIPTION	"sigsegv's Mann vs Machine mods"
-#define SMEXT_CONF_VERSION		"2017.10.22"
+#define SMEXT_CONF_VERSION		"2018.04.16"
 #define SMEXT_CONF_AUTHOR		"sigsegv"
 #define SMEXT_CONF_URL			"http://sigpipe.info/"
 #define SMEXT_CONF_LOGTAG		"SIGSEGV"
-#define SMEXT_CONF_LICENSE		"GPL"
+#define SMEXT_CONF_LICENSE		"Simplified BSD"
 #define SMEXT_CONF_DATESTRING	__DATE__
 
 /** 
