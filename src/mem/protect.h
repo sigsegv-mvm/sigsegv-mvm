@@ -2,192 +2,131 @@
 #define _INCLUDE_SIGSEGV_MEM_PROTECT_H_
 
 
-// TODO: deal with edge cases where the requested address range consists of
-// multiple pages which do not all share the exact same flags
-
-// TODO: get rid of asserts as much as possible
-
-// TODO: figure out a way to query the page flags on Linux/OSX
-// (for Linux, libprocps looks like a somewhat reasonable option)
-
-// another option would be to check which executable segment the address range
-// is in and to then use that as a heuristic:
-//  .text is normally RX
-//  .data is normally RW
-// etc.
-
-
-class MemUnprotector
+template<MemProtModifier::Flags F_OLD, MemProtModifier::Flags F_NEW>
+class MemProtModifier
 {
 public:
-	MemUnprotector(const void *addr, size_t len) :
+	MemProtModifier(const void *addr, size_t len) :
 		m_pAddr(addr), m_nLen(len)
 	{
-		this->m_nOldFlags = this->GetFlags();
-		
-		if (!this->IsWritable()) {
-			this->MakeWritable();
-			this->m_bShouldReprotect = true;
-		}
+		this->ApplyNewFlags();
 	}
-	~MemUnprotector()
+	~MemProtModifier()
 	{
-		if (this->m_bShouldReprotect) {
-			this->RestoreFlags();
-		}
+		this->ApplyOldFlags();
 	}
+	
+	enum Flags : unsigned int
+	{
+		PROT_NONE = 0b000,
+		
+		PROT_R = 0b001,
+		PROT_W = 0b010,
+		PROT_X = 0b100,
+		
+		PROT_RW = (PROT_R | PROT_W),
+		PROT_RX = (PROT_R | PROT_X),
+		PROT_WX = (PROT_W | PROT_X),
+		
+		PROT_RWX = (PROT_R | PROT_W | PROT_X),
+	};
 	
 private:
-#if defined _WINDOWS
-	typedef DWORD pageflags_t;
-#else
-	typedef long pageflags_t;
+#if !defined _WINDOWS
+	static size_t GetPageSize();
 #endif
 	
-	pageflags_t GetFlags();
-	void SetFlags(pageflags_t flags);
+#if defined _WINDOWS
+	DWORD TranslateFlags(Flags flags) const;
+#else
+	int TranslateFlags(Flags flags) const;
+#endif
 	
-	bool IsWritable();
-	void MakeWritable();
-	void RestoreFlags();
+	void ApplyFlags(Flags flags) const;
+	
+	void ApplyOldFlags() const { this->ApplyFlags(F_OLD); }
+	void ApplyNewFlags() const { this->ApplyFlags(F_NEW); }
 	
 	const void *m_pAddr;
 	size_t m_nLen;
-	
-	bool m_bShouldReprotect = false;
-	pageflags_t m_nOldFlags;
 };
 
 
 #if defined _WINDOWS
 
-inline MemUnprotector::pageflags_t MemUnprotector::GetFlags()
+inline DWORD MemProtModifier::TranslateFlags(MemProtModifier::Flags flags) const
 {
-	MEMORY_BASIC_INFORMATION info;
-	assert(VirtualQuery(this->m_pAddr, &info, sizeof(info)) != 0);
-	return info.Protect;
-}
-
-inline void MemUnprotector::SetFlags(pageflags_t flags)
-{
-	pageflags_t old_flags;
-	assert(VirtualProtect((LPVOID)this->m_pAddr, this->m_nLen, flags, &old_flags) != 0);
-}
-
-
-inline bool MemUnprotector::IsWritable()
-{
-	if ((this->m_nOldFlags & PAGE_READWRITE) != 0)         return true;
-	if ((this->m_nOldFlags & PAGE_WRITECOPY) != 0)         return true;
-	if ((this->m_nOldFlags & PAGE_EXECUTE_READWRITE) != 0) return true;
-	if ((this->m_nOldFlags & PAGE_EXECUTE_WRITECOPY) != 0) return true;
+	using Flags = MemProtModifier::Flags;
 	
-	return false;
-}
-
-inline void MemUnprotector::MakeWritable()
-{
-	if ((this->m_nOldFlags & PAGE_READONLY) != 0) {
-		this->SetFlags(PAGE_READWRITE);
-	} else if ((this->m_nOldFlags & (PAGE_EXECUTE | PAGE_EXECUTE_READ)) != 0) {
-		this->SetFlags(PAGE_EXECUTE_READWRITE);
+	assert((flags & ~Flags::RWX) == 0);
+	
+	switch (flags) {
+	case Flags::PROT_NONE: return PAGE_NOACCESS;
+	case Flags::PROT_R:    return PAGE_READONLY;
+	case Flags::PROT_W:    return PAGE_READWRITE;         // closest approximation
+	case Flags::PROT_X:    return PAGE_EXECUTE;
+	case Flags::PROT_RW:   return PAGE_READWRITE;
+	case Flags::PROT_RX:   return PAGE_EXECUTE_READ;
+	case Flags::PROT_WX:   return PAGE_EXECUTE_READWRITE; // closest approximation
+	case Flags::PROT_RWX:  return PAGE_EXECUTE_READWRITE;
 	}
 }
 
-inline void MemUnprotector::RestoreFlags()
+inline void MemProtModifier::ApplyFlags(MemProtModifier::Flags flags) const
 {
-	this->SetFlags(this->m_nOldFlags);
+	DWORD old_prot;
+	DWORD new_prot = this->TranslateFlags(flags);
+	
+	assert(VirtualProtect((LPVOID)this->m_pAddr, this->m_nLen, new_prot, &old_prot) == 0);
 }
 
 #else
 
-inline long GetPageSize()
+inline size_t MemProtModifier::GetPageSize()
 {
-	long page_size = sysconf(_SC_PAGESIZE);
-	assert(page_size != -1L);
+	static size_t page_size = []{
+		long sc_pagesize = sysconf(_SC_PAGESIZE);
+		assert(sc_pagesize != -1L);
+		return sc_pagesize;
+	}();
 	return page_size;
 }
 
-/* Posix annoyingly lacks an easy way to query page flags, so we'll just have to
- * change everything to RWX and leave it that way permanently... */
-
-inline MemUnprotector::pageflags_t MemUnprotector::GetFlags()
+inline int MemProtModifier::TranslateFlags(MemProtModifier::Flags flags) const
 {
-	return 0L;
-}
-
-inline void MemUnprotector::SetFlags(pageflags_t flags)
-{
-}
-
-
-inline bool MemUnprotector::IsWritable()
-{
-	return false;
-}
-
-inline void MemUnprotector::MakeWritable()
-{
-	static long page_size = GetPageSize();
+	using Flags = MemProtModifier::Flags;
 	
-	long adj = (long)this->m_pAddr & (page_size - 1L);
+	assert((flags & ~Flags::RWX) == 0);
 	
-	void *addr = (void *)((uintptr_t)this->m_pAddr - adj);
-	size_t len = this->m_nLen + adj;
-	
-	assert(mprotect(addr, len, PROT_READ | PROT_WRITE | PROT_EXEC) == 0);
+	int prot = PROT_NONE;
+	if ((flags & Flags::R) != 0) prot |= PROT_READ;
+	if ((flags & Flags::W) != 0) prot |= PROT_WRITE;
+	if ((flags & Flags::X) != 0) prot |= PROT_EXEC;
+	return prot;
 }
 
-inline void MemUnprotector::RestoreFlags()
+inline void MemProtModifier::ApplyFlags(MemProtModifier::Flags flags) const
 {
+	int new_prot = this->TranslateFlags(flags);
+	
+	uintptr_t addr_begin = (uintptr_t)this->m_pAddr;
+	uintptr_t addr_end   = (uintptr_t)this->m_pAddr + this->m_nLen;
+	
+	RoundDownToPowerOfTwo(addr_begin, GetPageSize());
+	RoundUpToPowerOfTwo  (addr_end,   GetPageSize());
+	
+	assert(mprotect((void *)addr_begin, (addr_end - addr_begin), new_prot) == 0);
 }
 
 #endif
 
 
-
-#if 0
-
-#if defined _WINDOWS
-
-#define MEM_WRITABLE(addr, len) \
-	...
-#define MEM_REVERT(addr, len) \
-	...
-
-
-inline void MemProtect(void *addr, size_t len, bool protect)
-{
-	DWORD old;
-	DWORD prot = (protect ? PAGE_EXECUTE_READ : PAGE_EXECUTE_READWRITE);
-	VirtualProtect(addr, len, prot, &old);
-}
-
-#else
-
-inline long GetPageSize()
-{
-	long page_size = sysconf(_SC_PAGESIZE);
-	assert(page_size != -1);
-	return page_size;
-}
-
-inline void MemProtect(void *addr, size_t len, bool protect)
-{
-	static long page_size = GetPageSize();
-	
-	long adj = (long)addr & (page_size - 1);
-	
-	addr = (void *)((uintptr_t)addr - adj);
-	len += adj;
-	
-	int prot = PROT_READ | PROT_EXEC | (protect ? 0 : PROT_WRITE);
-	mprotect(addr, len, prot);
-}
-
-#endif
-
-#endif
+/* convenience aliases */
+using MemProtModifier_RO_RW  = MemProtModifier<MemProtModifier::R,  MemProtModifier::RW>;
+using MemProtModifier_RO_RX  = MemProtModifier<MemProtModifier::R,  MemProtModifier::RX>;
+using MemProtModifier_RO_RWX = MemProtModifier<MemProtModifier::R,  MemProtModifier::RWX>;
+using MemProtModifier_RW_RWX = MemProtModifier<MemProtModifier::RW, MemProtModifier::RWX>;
+using MemProtModifier_RX_RWX = MemProtModifier<MemProtModifier::RX, MemProtModifier::RWX>;
 
 
 #endif

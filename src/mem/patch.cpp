@@ -98,18 +98,21 @@ void CPatch::Apply()
 	}
 	
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
-	MemUnprotector prot(ptr, this->m_iLength);
 	
-	for (int i = 0; i < this->m_iLength; ++i) {
-		uint8_t *mem = ptr + i;
+	{
+		MemProtModifier_RX_RWX prot(ptr, this->m_iLength);
 		
-		this->m_BufRestore[i] = *mem;
-		
-		uint8_t p_byte = this->m_BufPatch[i];
-		uint8_t p_mask = this->m_MaskPatch[i];
-		
-		*mem &= ~p_mask;
-		*mem |= (p_byte & p_mask);
+		for (int i = 0; i < this->m_iLength; ++i) {
+			uint8_t *mem = ptr + i;
+			
+			this->m_BufRestore[i] = *mem;
+			
+			uint8_t p_byte = this->m_BufPatch[i];
+			uint8_t p_mask = this->m_MaskPatch[i];
+			
+			*mem &= ~p_mask;
+			*mem |= (p_byte & p_mask);
+		}
 	}
 	
 	this->m_bApplied = true;
@@ -133,16 +136,19 @@ void CPatch::UnApply()
 	}
 	
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
-	MemUnprotector prot(ptr, this->m_iLength);
 	
-	for (int i = 0; i < this->m_iLength; ++i) {
-		uint8_t *mem = ptr + i;
+	{
+		MemProtModifier_RX_RWX prot(ptr, this->m_iLength);
 		
-		uint8_t r_byte = this->m_BufRestore[i];
-		uint8_t p_mask = this->m_MaskPatch[i];
-		
-		*mem &= ~p_mask;
-		*mem |= (r_byte & p_mask);
+		for (int i = 0; i < this->m_iLength; ++i) {
+			uint8_t *mem = ptr + i;
+			
+			uint8_t r_byte = this->m_BufRestore[i];
+			uint8_t p_mask = this->m_MaskPatch[i];
+			
+			*mem &= ~p_mask;
+			*mem |= (r_byte & p_mask);
+		}
 	}
 	
 	this->m_bApplied = false;
