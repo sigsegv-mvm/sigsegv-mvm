@@ -42,6 +42,53 @@ constexpr std::enable_if_t<std::is_integral_v<T>, int> NumDigits(T val)
 }
 
 
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToMultiple(T val, T mult)
+{
+	/* avoid divide-by-zero */
+	assert(mult != 0);
+	
+	return ((val / mult) * mult);
+}
+
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToMultiple(T val, T mult)
+{
+	/* avoid divide-by-zero and integer underflow */
+	assert(mult != 0);
+	/* avoid integer overflow */
+	assert(val <= std::numeric_limits<T>::max() - (mult - 1));
+	
+	val += (mult - 1);
+	return ((val / mult) * mult);
+}
+
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToPowerOfTwo(T val, T mult)
+{
+	/* avoid integer underflow */
+	assert(mult != 0);
+	/* verify that mult is actually a power-of-2 */
+	assert((mult & (mult - 1)) == 0);
+	
+	return (val & ~(mult - 1));
+}
+
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToPowerOfTwo(T val, T mult)
+{
+	/* avoid integer underflow */
+	assert(mult != 0);
+	/* avoid integer overflow */
+	assert(val <= std::numeric_limits<T>::max() - (mult - 1));
+	/* verify that mult is actually a power-of-2 */
+	assert((mult & (mult - 1)) == 0);
+	
+	val += (mult - 1);
+	return (val & ~(mult - 1));
+}
+
+
 /* use this when you want to do e.g. multiple calls to console spew functions
  * and don't want mat_queue_mode 2 to mess up the ordering */
 class MatSingleThreadBlock
