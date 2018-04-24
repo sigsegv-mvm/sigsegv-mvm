@@ -60,15 +60,28 @@ static void IGameSystem_SafeRemove(IGameSystem *pSys)
 }
 
 
-void IGameSystem::Add(IGameSystem *pSys)    { IGameSystem_SafeAdd(pSys); }
+void IGameSystem::Add(IGameSystem *pSys)    { IGameSystem_SafeAdd(pSys);    }
 void IGameSystem::Remove(IGameSystem *pSys) { IGameSystem_SafeRemove(pSys); }
 
 
 CAutoGameSystem::CAutoGameSystem(const char *name)                 : m_pszName(name) { Add(this); }
 CAutoGameSystemPerFrame::CAutoGameSystemPerFrame(const char *name) : m_pszName(name) { Add(this); }
 
+
+// having global/static objects derived from IGameSystem, which automatically call Remove(this) in their dtor, which
+// then check an ALSO-global/static vector to see whether the game system is registered, is inherently problematic due
+// to static (de)initialization ordering uncertainty: this vector may well be destructed before the game system is
+
+// so instead, be careful and make sure to call Remove(this) in a de-initialization function; the object dtor is NOT a
+// safe choice for where to put this, if the object instance will be global/static
+
+IGameSystem::~IGameSystem()                 {}
+IGameSystemPerFrame::~IGameSystemPerFrame() {}
+
+#if 0
 IGameSystem::~IGameSystem()                 { Remove(this); }
 IGameSystemPerFrame::~IGameSystemPerFrame() { Remove(this); }
+#endif
 
 // NOT IMPLEMENTED
 // void IGameSystem::RemoveAll(IGameSystem *pSys)
