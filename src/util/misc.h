@@ -25,6 +25,23 @@ constexpr size_t countof()
 #define countof(x) countof<decltype(x)>()
 
 
+template<typename T, T BASE = 10>
+constexpr std::enable_if_t<std::is_integral_v<T>, int> NumDigits(T val)
+{
+	if (val == 0) return 1;
+	
+	int digits = 0;
+	if (val < 0) ++digits;
+	
+	do {
+		val /= BASE;
+		++digits;
+	} while (val != 0);
+	
+	return digits;
+}
+
+
 /* use this when you want to do e.g. multiple calls to console spew functions
  * and don't want mat_queue_mode 2 to mess up the ordering */
 class MatSingleThreadBlock
