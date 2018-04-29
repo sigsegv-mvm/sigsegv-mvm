@@ -5,6 +5,11 @@
 ConVar r_visualizetraces( "r_visualizetraces", "0", FCVAR_CHEAT );
 
 
+/* some vprof-related code needs these to be defined... so we'll pretend to define them here */
+CL2Cache::CL2Cache()  { assert(false); }
+CL2Cache::~CL2Cache() { assert(false); }
+
+
 static StaticFuncThunk<CRConClient&> ft_RCONClient("RCONClient");
 CRConClient& RCONClient() { return ft_RCONClient(); }
 
