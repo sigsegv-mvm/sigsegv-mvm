@@ -1,13 +1,27 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Utility functions for using debug overlays to visualize information
 //			in the world.  Uses the IVDebugOverlay interface.
 //
 //=============================================================================//
 
+// game/shared/debugoverlay_shared.cpp
+// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders 0ef5d3d4 20171105]
+// - modify GetLocalPlayer and GetDebugPlayer with an ugly hack for networked overlay forwarding
+// - remove some moronic color-handling code in EntityText
+// - fix format string vulnerability in EntityText
+// - remove line-of-sight text clipping in Text       (can't remember why...)
+// - disable definition of DrawTickMarkedLine         (can't remember why...)
+// - disable definition of DrawGroundCrossHairOverlay (can't remember why...)
+// - fix type conversion warnings in DrawTickMarkedLine, Circle
+// - fix missing debugoverlay nullptr check in Circle
+// - add extra functions
+
+//#include "cbase.h"
 #include "debugoverlay_shared.h"
 #include "mathlib/mathlib.h"
 
+// sigsegv: needed for our listen-server-host hackery to work properly
 #include "stub/baseplayer.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -20,6 +34,9 @@
 //-----------------------------------------------------------------------------
 CBasePlayer *GetLocalPlayer( void )
 {
+	// sigsegv: horrendously ugly hack!
+	static ConVarRef player_index("sig_util_listenserverhost_index");
+	return UTIL_PlayerByIndex(player_index.GetInt());
 #if 0
 #if defined( CLIENT_DLL)
 	return C_BasePlayer::GetLocalPlayer();
@@ -27,10 +44,6 @@ CBasePlayer *GetLocalPlayer( void )
 	return UTIL_GetListenServerHost();
 #endif
 #endif
-	
-	/* ugly */
-	static ConVarRef index("sig_util_listenserverhost_index");
-	return UTIL_PlayerByIndex(index.GetInt());
 }
 
 //-----------------------------------------------------------------------------
@@ -38,6 +51,8 @@ CBasePlayer *GetLocalPlayer( void )
 //-----------------------------------------------------------------------------
 CBasePlayer *GetDebugPlayer( void )
 {
+	// sigsegv: just do the same thing as GetLocalPlayer
+	return GetLocalPlayer();
 #if 0
 #if defined( CLIENT_DLL )
 	//NOTENOTE: This doesn't necessarily make sense on the client
@@ -46,7 +61,6 @@ CBasePlayer *GetDebugPlayer( void )
 	return UTIL_PlayerByIndex(CBaseEntity::m_nDebugPlayer);
 #endif
 #endif
-	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -183,8 +197,8 @@ void NDebugOverlay::EntityText( int entityID, int text_offset, const char *text,
 {
 	if ( debugoverlay )
 	{
-		// FIX: whoever wrote this thought that rgba were floats
-		// FIX: prevent format string crashes
+		// sigsegv: remove moronic code treating r/g/b/a as [0.0f,1.0f] float values
+		// sigsegv: fix format string vulnerability
 		debugoverlay->AddEntityTextOverlay( entityID, text_offset, duration, r, g, b, a, "%s", text );
 	}
 }
@@ -196,7 +210,6 @@ void NDebugOverlay::EntityTextAtPosition( const Vector &origin, int text_offset,
 {
 	if ( debugoverlay )
 	{
-		// FIX: prevent format string crashes
 		debugoverlay->AddTextOverlayRGB( origin, text_offset, duration, r, g, b, a, "%s", text );
 	}
 }
@@ -236,6 +249,7 @@ void NDebugOverlay::Text( const Vector &origin, const char *text, bool bViewChec
 	if (dotPr < 0) 
 		return;
 
+	// sigsegv: skip this check
 #if 0
 	// Clip text that is obscured
 	if (bViewCheck)
@@ -250,7 +264,6 @@ void NDebugOverlay::Text( const Vector &origin, const char *text, bool bViewChec
 
 	if ( debugoverlay )
 	{
-		// FIX: prevent format string crashes
 		debugoverlay->AddTextOverlay( origin, duration, "%s", text );
 	}	
 }
@@ -680,6 +693,7 @@ void NDebugOverlay::Sphere( const Vector &position, const QAngle &angles, float 
 }
 
 
+// sigsegv: convenience function
 void NDebugOverlay::Clear()
 {
 	if (debugoverlay != nullptr) {
@@ -687,6 +701,7 @@ void NDebugOverlay::Clear()
 	}
 }
 
+// sigsegv: exactly the same as Line, but with an alpha argument, and we call AddLineOverlayAlpha instead
 void NDebugOverlay::LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration)
 {
 	// --------------------------------------------------------------
@@ -724,17 +739,17 @@ void NDebugOverlay::LineAlpha(const Vector& origin, const Vector& target, int r,
 	}
 }
 
+// sigsegv: only implemented in overlay recv mod
 void NDebugOverlay::ScreenRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration)
 {
-	/* only implemented in overlay recv mod */
 }
 
+// sigsegv: only implemented in overlay recv mod
 void NDebugOverlay::ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& cFrom, const Color& cTo, float flDuration)
 {
-	/* only implemented in overlay recv mod */
 }
 
+// sigsegv: only implemented in overlay recv mod
 void NDebugOverlay::ScreenLine(float xFrom, float yFrom, float xTo, float yTo, const Color& color, float flDuration)
 {
-	/* only implemented in overlay recv mod */
 }

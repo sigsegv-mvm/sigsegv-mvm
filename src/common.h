@@ -66,8 +66,6 @@
 #endif
 
 
-
-
 class IVEngineServer;
 class IServerGameDLL;
 class IFileSystem;
@@ -186,10 +184,17 @@ extern IDedicatedExports *dedicated;
 
 extern IMDLCache *mdlcache;
 
-extern SourcePawn::ISourcePawnEngine *g_pSourcePawn;
 extern SourceMod::IExtensionManager *smexts;
 
 extern IClientMode *g_pClientMode;
+
+
+/* C standard library */
+#include <cstdlib>
+#include <cstdint>
+#include <cinttypes>
+#include <cmath>
+#include <cfloat>
 
 
 /* C++ standard library */
@@ -199,6 +204,7 @@ extern IClientMode *g_pClientMode;
 #include <condition_variable>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <numeric>
@@ -209,7 +215,6 @@ extern IClientMode *g_pClientMode;
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
-#include <cinttypes>
 using namespace std::literals;
 
 
@@ -299,16 +304,21 @@ class IVideoRecorder;
 #define RAD_TELEMETRY_DISABLED
 #undef   NO_STRING_T
 #undef WEAK_STRING_T
-#include <commonmacros.h>
-#include <basetypes.h>
-#include <platform.h>
+#include "sdk2013/platform.h"
+#include "sdk2013/commonmacros.h"
+#include "sdk2013/basetypes.h"
 WARN_IGNORE__ADDRESS()
 #include <dbg.h>
 WARN_RESTORE()
+#undef COMPILE_TIME_ASSERT
+#define COMPILE_TIME_ASSERT(pred) static_assert(pred)
 #include "sdk2013/Color.h"
+#include "sdk2013/vector2d.h"
+#include "sdk2013/vector.h"
+#include "sdk2013/vector4d.h"
+#include "sdk2013/mathlib.h"
 #include <string_t.h>
 #include <annotations.h>
-#include <mathlib/vector.h>
 #include <utlmemory.h>
 #include <utlstring.h>
 #include <utlvector.h>
@@ -435,6 +445,22 @@ WARN_RESTORE()
 // so we'll just put what we need here... sigh
 #define INVALID_PARTICLE_ATTACHMENT -1
 
+/* the order in which headers include each other can be tricky; so for the SDK2013 headers we've messed with, we'll
+ * always put a special preprocessor definition INSIDE of the already-included check in our modified version; that way,
+ * we can verify that OUR version of the header was encountered first and took precedence, not the original one
+ * (if our version did not take precedence, then these static_assert's won't even fail per se, they'll just encounter an
+ * undefined name that they can't deal with and the compiler will become angry) */
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER0_PLATFORM_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER0_COMMONMACROS_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER0_BASETYPES_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_COLOR_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATHLIB_VECTOR2D_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATHLIB_VECTOR_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATHLIB_VECTOR4D_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATHLIB_MATHLIB_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER1_CONVAR_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__GAME_SHARED_DEBUGOVERLAY_SHARED_H);
+static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H);
 
 
 /* AMTL */

@@ -176,6 +176,7 @@ class ExtensionConfig(object):
 #   cxx.defines += ['_snprintf=snprintf']
 #   cxx.defines += ['_vsnprintf=vsnprintf']
     cxx.defines += ['HAVE_STDINT_H']
+    cxx.defines += ['HAVE_STRING_H']
     cxx.defines += ['GNUC']
     
     ############################################################################

@@ -1,8 +1,3 @@
-// Valve made incompatible changes in IMaterialSystem in TF2's Meet Your Match
-// update. I convinced them to bump the interface string afterwards, but the
-// vtable is still screwed up from what the SDK2013 headers show. So here's this
-// horrible hack. Woohoo.
-
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
@@ -17,6 +12,13 @@
 #ifdef _WIN32
 #pragma once
 #endif
+
+// public/materialsystem/imaterialsystem.h
+#define _SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H 1
+// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders 0ef5d3d4 20171105]
+// - update MATERIAL_SYSTEM_INTERFACE_VERSION from "VMaterialSystem080" to "VMaterialSystem081"
+// - add stubs to fixup the IMaterialSystem vtable after Valve's binary-incompatible changes in TF2's MYM Update
+//   (they seriously added new functions to the MIDDLE of it, and didn't bump the interface version until I bugged them)
 
 #define OVERBRIGHT 2.0f
 #define OO_OVERBRIGHT ( 1.0f / 2.0f )
@@ -71,7 +73,6 @@ typedef uint64 VertexFormat_t;
 
 // NOTE NOTE NOTE!!!!  If you up this, grep for "NEW_INTERFACE" to see if there is anything
 // waiting to be enabled during an interface revision.
-//#define MATERIAL_SYSTEM_INTERFACE_VERSION "VMaterialSystem080"
 #define MATERIAL_SYSTEM_INTERFACE_VERSION "VMaterialSystem081"
 
 #ifdef POSIX
@@ -804,8 +805,9 @@ public:
 	virtual int					StencilBufferBits( void ) = 0; //number of bits per pixel in the stencil buffer
 
 
-	virtual void ValveMadeIncompatibleChangesToThisInterface_0x0104() = 0;
-	virtual void ValveMadeIncompatibleChangesToThisInterface_0x0108() = 0;
+	// sigsegv: Valve inserted a couple new functions right into the middle of the vtable
+	virtual void ThanksValveForBreakingBinaryCompatibility__0x0104() = 0;
+	virtual void ThanksValveForBreakingBinaryCompatibility__0x0108() = 0;
 
 
 	//---------------------------------------------------------

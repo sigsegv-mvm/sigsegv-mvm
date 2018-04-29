@@ -16,6 +16,13 @@
 #pragma once
 #endif
 
+// public/tier1/convar.h
+#define _SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER1_CONVAR_H 1
+// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders 0ef5d3d4 20171105]
+// - fix size of ConCommand to match changes in recent TF2 binaries
+// - fix size of ConVar to match changes in recent TF2 binaries
+// - add some direct-reference-access functions to ConVarRef
+
 #include "tier0/dbg.h"
 #include "tier1/iconvar.h"
 #include "tier1/utlvector.h"
@@ -131,6 +138,11 @@ public:
 	// Deal with next pointer
 	const ConCommandBase		*GetNext( void ) const;
 	ConCommandBase				*GetNext( void );
+
+	inline void SetNext(ConCommandBase *pBase)
+	{
+		m_pNext = pBase;
+	}
 	
 	virtual bool				IsRegistered( void ) const;
 
@@ -312,9 +324,10 @@ private:
 	bool m_bUsingNewCommandCallback : 1;
 	bool m_bUsingCommandCallbackInterface : 1;
 	
-	uint32_t PAD_0x24[0x7];
+	uint32_t __PAD_0x24[0x7];
 };
-static_assert(sizeof(ConCommand) == 0x40, "");
+// sigsegv: this size is correct as of TF2 20180426a
+static_assert(sizeof(ConCommand) == 0x40);
 
 
 //-----------------------------------------------------------------------------
@@ -417,14 +430,15 @@ private:
 	bool						m_bHasMax;
 	float						m_fMaxVal;
 	
-	uint32_t PAD_0x44[0x5];
+	uint32_t __PAD_0x44[0x5];
 	
 	// Call this function when ConVar changes
 	FnChangeCallback_t			m_fnChangeCallback;
 	
-	uint32_t PAD_0x5c[0x1];
+	uint32_t __PAD_0x5c[0x1];
 };
-static_assert(sizeof(ConVar) == 0x60, "");
+// sigsegv: this size is correct as of TF2 20180426a
+static_assert(sizeof(ConVar) == 0x60);
 
 
 //-----------------------------------------------------------------------------
@@ -589,7 +603,9 @@ void ConVar_PrintDescription( const ConCommandBase *pVar );
 //-----------------------------------------------------------------------------
 // Purpose: Utility class to quickly allow ConCommands to call member methods
 //-----------------------------------------------------------------------------
+#ifdef _WIN32
 #pragma warning (disable : 4355 )
+#endif
 
 template< class T >
 class CConCommandMemberAccessor : public ConCommand, public ICommandCallback, public ICommandCompletionCallback
@@ -636,8 +652,9 @@ private:
 	FnMemberCommandCompletionCallback_t m_CompletionFunc;
 };
 
+#ifdef _WIN32
 #pragma warning ( default : 4355 )
-
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Utility macros to quicky generate a simple console command

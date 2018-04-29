@@ -10,6 +10,11 @@
 #pragma once
 #endif
 
+// game/shared/debugoverlay_shared.h
+#define _SIGSEGV_SDK2013_OVERRIDE__GAME_SHARED_DEBUGOVERLAY_SHARED_H 1
+// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders 0ef5d3d4 20171105]
+// - add extra function prototypes
+
 #include "engine/ivdebugoverlay.h"
 #include "mathlib/vector.h"
 
@@ -46,7 +51,8 @@ namespace NDebugOverlay
 	void	Circle( const Vector &position, const QAngle &angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration );
 	void	Circle( const Vector &position, const Vector &xAxis, const Vector &yAxis, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration );
 	void	Sphere( const Vector &position, const QAngle &angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration );
-	
+
+	// sigsegv: extra stuff added over in debugoverlay_shared.cpp
 	void Clear();
 	void LineAlpha(const Vector& origin, const Vector& target, int r, int g, int b, int a, bool noDepthTest, float flDuration);
 	void ScreenRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge, float flDuration);
