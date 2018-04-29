@@ -1,4 +1,4 @@
-/* selected parts of game/shared/util_shared.cpp */
+/* implementations for some functions from game/shared/util_shared.cpp */
 
 
 float UTIL_VecToYaw( const Vector &vec )
@@ -28,13 +28,11 @@ Vector UTIL_YawToVector( float yaw )
 }
 
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
 float IntervalTimer::Now( void ) const
 {
 	return gpGlobals->curtime;
 }
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
 float CountdownTimer::Now( void ) const
 {
 	return gpGlobals->curtime;

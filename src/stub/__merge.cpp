@@ -26,4 +26,5 @@
 #include "stub/trace.cpp"
 #include "stub/upgrades.cpp"
 #include "stub/usermessages.cpp"
+#include "stub/util_shared.cpp"
 #include "stub/vgui.cpp"

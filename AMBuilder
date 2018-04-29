@@ -19,7 +19,6 @@ sourceFiles += [
   'src/se2007/meshutils.cpp',
   
   'src/sdk2013/debugoverlay_shared.cpp',
-  'src/sdk2013/util_shared.cpp',
 ]
 
 sourceFiles += [
