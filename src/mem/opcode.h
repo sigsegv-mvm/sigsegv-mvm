@@ -2,79 +2,168 @@
 #define _INCLUDE_SIGSEGV_MEM_OPCODE_H_
 
 
-class JmpRelImm32
+class X86Instr
 {
 public:
-	static constexpr size_t Size() { return 5; }
-	
 	/* is this atomic? no
-	 * do we care?     no */
-	static void Write(void *buf, uint32_t target)
+	 * do we care?  ...no */
+	void Write() const
 	{
-		uint32_t reltgt = target - ((uintptr_t)buf + Size());
-		
-		*(uint8_t  *)((uintptr_t)buf + 0x00) = 0xe9;
-		*(uint32_t *)((uintptr_t)buf + 0x01) = reltgt;
-		
-	//	TRACE("[%08x -> %08x]: %02x %02x %02x %02x %02x",
-	//		(uintptr_t)buf, target,
-	//		((uint8_t *)buf)[0],
-	//		((uint8_t *)buf)[1],
-	//		((uint8_t *)buf)[2],
-	//		((uint8_t *)buf)[3],
-	//		((uint8_t *)buf)[4]);
+		std::copy_n(this->m_Buf, this->m_nSize, this->m_pWhere);
 	}
 	
-	/* pad out the empty space with NOP's to avoid confusing the disassembler */
-	static void WritePadded(void *buf, uint32_t target, size_t len)
+	/* pad out extra space with NOP's to avoid confusing the disassembler */
+	void WritePadded(size_t len) const
 	{
-		Write(buf, target);
+		assert(len >= this->m_nSize);
+		std::copy_n(this->m_Buf, this->m_nSize, this->m_pWhere);
+		std::fill_n(this->m_pWhere + this->m_nSize, len - this->m_nSize, OP_NOP);
+	}
+	
+	enum OpCode : uint8_t
+	{
+		OP_PUSH_IMM32        = 0x68,
+		OP_NOP               = 0x90,
+		OP_MOV_REG32_IMM32   = 0xb8, // b8~bf [b8+reg]
+		OP_INT3              = 0xcc,
+		OP_CALL_REL_IMM32    = 0xe8,
+		OP_JMP_REL_IMM32     = 0xe9,
+		OP_FF                = 0xff, // opcode ext in modrm.reg
+	};
+	
+	enum Mod : uint8_t
+	{
+		MOD_INDIRECT        = 0b00,
+		MOD_INDIRECT_DISP8  = 0b01,
+		MOD_INDIRECT_DISP32 = 0b10,
+		MOD_DIRECT          = 0b11,
 		
-		for (size_t i = Size(); i < len; ++i) {
-			*(uint8_t *)((uintptr_t)buf + i) = 0x90;
-		}
+		MOD_MASK            = 0b11,
+	};
+	
+	enum Reg : uint8_t
+	{
+		REG_AX   = 0b000,
+		REG_CX   = 0b001,
+		REG_DX   = 0b010,
+		REG_BX   = 0b011,
+		REG_SP   = 0b100,
+		REG_BP   = 0b101,
+		REG_SI   = 0b110,
+		REG_DI   = 0b111,
+		
+		OP_FF_INC_RM32   = 0b000,
+		OP_FF_DEC_RM32   = 0b001,
+		OP_FF_CALL_RM32  = 0b010,
+		OP_FF_CALL_FAR   = 0b011,
+		OP_FF_JMP_RM32   = 0b100,
+		OP_FF_JMP_FAR    = 0b101,
+		OP_FF_PUSH_RM32  = 0b110,
+		
+		REG_MASK = 0b111,
+	};
+	
+	enum RM : uint8_t
+	{
+		RM_AX     = 0b000,
+		RM_CX     = 0b001,
+		RM_DX     = 0b010,
+		RM_BX     = 0b011,
+		RM_SIB    = 0b100,
+		RM_DISP32 = 0b101,
+		RM_SI     = 0b110,
+		RM_DI     = 0b111,
+		
+		RM_MASK   = 0b111,
+	};
+	
+	enum Scale : uint8_t
+	{
+		SCALE_1    = 0b00,
+		SCALE_2    = 0b01,
+		SCALE_4    = 0b10,
+		SCALE_8    = 0b11,
+		
+		SCALE_MASK = 0b11,
+	};
+	
+	struct ModRM
+	{
+		Mod mod : 2;
+		Reg reg : 3;
+		RM  rm  : 3;
+		
+		operator uint8_t() const { return *reinterpret_cast<const uint8_t *>(this); }
+	};
+	static_assert(sizeof(ModRM) == 1);
+	
+	struct SIB
+	{
+		Scale scale : 2;
+		Reg   index : 3;
+		Reg   base  : 3;
+		
+		operator uint8_t() const { return *reinterpret_cast<const uint8_t *>(this); }
+	};
+	static_assert(sizeof(SIB) == 1);
+	
+protected:
+	X86Instr(size_t size, uint8_t *where) : m_nSize(size), m_pWhere(where) {}
+	
+	size_t m_nSize;
+	uint8_t *m_pWhere = nullptr;
+	uint8_t m_Buf[15];
+};
+
+
+template<size_t SIZE>
+class X86InstrSized : public X86Instr
+{
+public:
+	X86InstrSized(uint8_t *where) : X86Instr(Size(), where) {}
+	
+	static constexpr size_t Size() { return SIZE; }
+};
+
+
+class PushImm32 : public X86InstrSized<5>
+{
+public:
+	PushImm32(uint8_t *where, uint32_t value) : X86InstrSized(where)
+	{
+		this->m_Buf[0] = OP_PUSH_IMM32;
+		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = value;
 	}
 };
 
-class CallAbsMem32
+class MovRegImm32 : public X86InstrSized<5>
 {
 public:
-	static constexpr size_t Size() { return 6; }
-	
-	static void Write(void *buf, uint32_t target)
+	MovRegImm32(uint8_t *where, Reg dst, uint32_t value) : X86InstrSized(where)
 	{
-		*(uint8_t  *)((uintptr_t)buf + 0x00) = 0xff;
-		*(uint8_t  *)((uintptr_t)buf + 0x01) = 0x15;
-		*(uint32_t *)((uintptr_t)buf + 0x02) = target;
-		
-	//	TRACE("[%08x -> %08x]: %02x %02x %02x %02x %02x %02x",
-	//		(uintptr_t)buf, target,
-	//		((uint8_t *)buf)[0],
-	//		((uint8_t *)buf)[1],
-	//		((uint8_t *)buf)[2],
-	//		((uint8_t *)buf)[3],
-	//		((uint8_t *)buf)[4],
-	//		((uint8_t *)buf)[5]);
+		assert(dst == (dst & REG_MASK));
+		this->m_Buf[0] = (OP_MOV_REG32_IMM32 + (dst & REG_MASK));
 	}
 };
 
-class PushImm32
+class JmpRelImm32 : public X86InstrSized<5>
 {
 public:
-	static constexpr size_t Size() { return 5; }
-	
-	static void Write(void *buf, uint32_t val)
+	JmpRelImm32(uint8_t *where, uint32_t target) : X86InstrSized(where)
 	{
-		*(uint8_t  *)((uintptr_t)buf + 0x00) = 0x68;
-		*(uint32_t *)((uintptr_t)buf + 0x01) = val;
-		
-	//	TRACE("[%08x: %08x]: %02x %02x %02x %02x %02x",
-	//		(uintptr_t)buf, val,
-	//		((uint8_t *)buf)[0],
-	//		((uint8_t *)buf)[1],
-	//		((uint8_t *)buf)[2],
-	//		((uint8_t *)buf)[3],
-	//		((uint8_t *)buf)[4]);
+		this->m_Buf[0] = OP_JMP_REL_IMM32;
+		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)where + Size()));
+	}
+};
+
+class CallIndirectMem32 : public X86InstrSized<6>
+{
+public:
+	CallIndirectMem32(uint8_t *where, uint32_t target) : X86InstrSized(where)
+	{
+		this->m_Buf[0] = OP_FF;
+		this->m_Buf[1] = ModRM{ MOD_INDIRECT, OP_FF_CALL_RM32, RM_DISP32 };
+		*reinterpret_cast<uint32_t *>(this->m_Buf + 2) = target;
 	}
 };
 
