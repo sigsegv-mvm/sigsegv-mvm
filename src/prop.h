@@ -275,7 +275,8 @@ private:
 //			return false;
 //		}
 		
-		off = GetTypeDescOffs(info.prop);
+		typedescription_t *td = info.prop;
+		off = td->fieldOffset[TD_OFFSET_NORMAL];
 		return true;
 	}
 };
