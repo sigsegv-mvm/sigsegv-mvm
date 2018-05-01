@@ -7,6 +7,13 @@ projectName = 'sigsegv'
 sourceFiles = []
 
 sourceFiles += [
+  'libs/udis86/libudis86/decode.c',
+  'libs/udis86/libudis86/itab.c',
+  'libs/udis86/libudis86/syn-att.c',
+  'libs/udis86/libudis86/syn-intel.c',
+  'libs/udis86/libudis86/syn.c',
+  'libs/udis86/libudis86/udis86.c',
+  
   'libs/lz4/lib/lz4.c',
   
   'libs/lodepng/lodepng.cpp',
@@ -410,6 +417,7 @@ binary.compiler.linkflags += [
 
 binary.compiler.includes += [
   os.path.join(builder.buildPath), # for autogen.h
+  os.path.join(builder.currentSourcePath, 'libs', 'udis86'),
   os.path.join(builder.currentSourcePath, 'libs', 'lz4', 'lib'),
   os.path.join(builder.currentSourcePath, 'libs', 'lodepng'),
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
