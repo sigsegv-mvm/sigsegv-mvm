@@ -200,17 +200,18 @@ class ExtensionConfig(object):
 #   cxx.cflags += ['-masm=intel']
 #   cxx.cflags += ['-Q']
     cxx.cflags += ['-Winvalid-pch']
-    cxx.cflags += ['-gsplit-dwarf']
-    cxx.cflags += ['-pthread']
-#   cxx.cflags += ['-Wa,--compress-debug-sections=zlib']
     cxx.cflags += ['-Wno-unknown-pragmas']
+    cxx.cflags += ['-pthread']
+    cxx.cflags += ['-gsplit-dwarf']
+#   cxx.cflags += ['-feliminate-dwarf2-dups']
+    cxx.cflags += ['-gz']
     if use_gold:
       cxx.cflags += ['-fpic']
     
     # C++ modules!!!
     if cxx.version >= 'clang-3.7':
       cxx.cflags += ['-fmodules']
-#      cxx.cflags += ['-fbuiltin-module-map'] # invalid in clang-3.9 and possibly other versions
+#     cxx.cflags += ['-fbuiltin-module-map'] # invalid in clang-3.9 and possibly other versions
     
     ############################################################################
     # C++ COMPILER #############################################################
@@ -238,8 +239,8 @@ class ExtensionConfig(object):
     cxx.linkflags += ['-Wl,--no-undefined']
     cxx.linkflags += ['-Wl,--wrap,__assert_fail']
     cxx.linkflags += ['-Wl,--export-dynamic']
-#   cxx.linkflags += ['-Wa,--compress-debug-sections=zlib']
-#   cxx.linkflags += ['-Wl,--compress-debug-sections=zlib']
+#   cxx.linkflags += ['-feliminate-dwarf2-dups']
+    cxx.linkflags += ['-gz']
 #   if builder.options.opt != '1':
 #     cxx.linkflags += ['-Wl,-Ur'] # incremental link
     
