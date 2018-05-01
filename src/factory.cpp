@@ -97,13 +97,11 @@ CreateInterfaceFn GetFactory_NoExt(const char *name)
 #define DEF_GET_FACTORY(name, libname) \
 	CreateInterfaceFn name ## Factory() \
 	{ \
-		static bool init = false; \
-		static CreateInterfaceFn factory = nullptr; \
-		if (!init) { \
-			factory = GetFactory_NoExt(libname); \
-			if (factory == nullptr) DevWarning("Factory is nullptr: " #name "\n"); \
-			init = true; \
-		} \
+		static CreateInterfaceFn factory = []{ \
+			CreateInterfaceFn result = GetFactory_NoExt(libname); \
+			if (result == nullptr) DevWarning("Can't find factory for module: " #name "\n"); \
+			return result; \
+		}(); \
 		return factory; \
 	}
 
