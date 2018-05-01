@@ -404,7 +404,7 @@ binary.compiler.linkflags += [
   '-liberty',
   '-lunwind',
   '-lunwind-x86',
-  os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'libcapstone.a'),
+#  os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'libcapstone.a'),
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'lib', 'libANN.a'),
 ]
 
