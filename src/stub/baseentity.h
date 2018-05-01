@@ -6,6 +6,10 @@
 #include "prop.h"
 
 
+// TODO
+class CGlobalEntityList : public CBaseEntityList {};
+
+
 using BASEPTR       = void (CBaseEntity::*)();
 using ENTITYFUNCPTR = void (CBaseEntity::*)(CBaseEntity *pOther);
 using USEPTR        = void (CBaseEntity::*)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);

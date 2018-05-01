@@ -105,6 +105,7 @@ namespace vgui {
 class IMatSystemSurface;
 
 class CGlobalVars;
+class CGlobalEntityList;
 class CBaseEntityList;
 
 class IVEngineClient;
@@ -168,6 +169,7 @@ extern vgui::ISurface *g_pVGuiSurface;
 extern IMatSystemSurface *g_pMatSystemSurface;
 
 extern CGlobalVars *gpGlobals;
+extern CGlobalEntityList *gEntList;
 extern CBaseEntityList *g_pEntityList;
 
 extern IVEngineClient *engineclient;

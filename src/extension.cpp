@@ -54,6 +54,7 @@ vgui::ISurface *g_pVGuiSurface         = nullptr;
 IMatSystemSurface *g_pMatSystemSurface = nullptr;
 
 CGlobalVars *gpGlobals         = nullptr;
+CGlobalEntityList *gEntList    = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
 
 IVEngineClient *engineclient     = nullptr;
@@ -85,8 +86,6 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	}
 	
 	this->LoadSoundOverrides();
-	
-	g_pEntityList = reinterpret_cast<CBaseEntityList *>(gamehelpers->GetGlobalEntityList());
 	
 	PreScan::DoScans();
 	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
@@ -171,12 +170,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	GET_IFACE_REQUIRED(FileSystem, filesystem,        FILESYSTEM_INTERFACE_VERSION);
 	GET_IFACE_REQUIRED(Server,     serverGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	
-	sv = engine->GetIServer();
-	
-	GET_IFACE_REQUIRED(Engine, icvar, CVAR_INTERFACE_VERSION);
-	g_pCVar = icvar;
-	ConVar_Register(0, this);
-	
+	GET_IFACE_REQUIRED(Engine, icvar,              CVAR_INTERFACE_VERSION);
 	GET_IFACE_REQUIRED(Engine, partition,          INTERFACEVERSION_SPATIALPARTITION);
 	GET_IFACE_REQUIRED(Engine, enginetrace,        INTERFACEVERSION_ENGINETRACE_SERVER);
 	GET_IFACE_REQUIRED(Engine, staticpropmgr,      INTERFACEVERSION_STATICPROPMGR_SERVER);
@@ -235,7 +229,14 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	
 	GET_IFACE_REQUIRED(Engine, vprofexport, "VProfExport001");
 	
-	gpGlobals = ismm->GetCGlobals();
+	sv = engine->GetIServer();
+	
+	g_pCVar = icvar;
+	ConVar_Register(0, this);
+	
+	gpGlobals     = ismm->GetCGlobals();
+	gEntList      = servertools->GetEntityList();
+	g_pEntityList = gEntList;
 	
 	LibMgr::SetPtr(Library::THIS,               this);
 	LibMgr::SetPtr(Library::SERVER,             ServerFactory());
