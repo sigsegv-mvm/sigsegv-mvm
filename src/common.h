@@ -227,8 +227,6 @@ using namespace std::literals;
 
 
 /* Boost */
-//#include <boost/asio.hpp>
-//#include <boost/thread.hpp>
 
 
 /* Posix specific */
@@ -462,7 +460,6 @@ static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H
 
 
 /* AMTL */
-//#include <amtl/am-string.h>
 
 
 /* MetaMod */
