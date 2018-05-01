@@ -414,6 +414,7 @@ binary.compiler.includes += [
   os.path.join(builder.currentSourcePath, 'libs', 'lodepng'),
   os.path.join(builder.currentSourcePath, 'libs', 'capstone', 'include'),
   os.path.join(builder.currentSourcePath, 'libs', 'ann', 'include'),
+  os.path.join(builder.currentSourcePath, 'libs', 'fmt', 'include'),
 ]
 
 # use NASM to assemble src/mem/wrapper.s into wrapper.o
