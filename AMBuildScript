@@ -256,10 +256,10 @@ class ExtensionConfig(object):
       cxx.cflags += ['-gdwarf-4']
       if builder.options.opt == 1:
         cxx.cflags += ['-g1']
-        if have_gcc:
-          cxx.cflags += ['-fvar-tracking-assignments']
       else:
         cxx.cflags += ['-g2']
+        if have_gcc:
+          cxx.cflags += ['-fvar-tracking-assignments']
     
     ############################################################################
     # OPTIMIZE #################################################################
