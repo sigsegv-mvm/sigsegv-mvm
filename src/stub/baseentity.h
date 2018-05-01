@@ -419,7 +419,7 @@ inline CBaseEntity *CreateEntityByName(const char *szClassname)
 
 inline void DispatchSpawn(CBaseEntity *pEntity)
 {
-	return servertools->DispatchSpawn(pEntity);
+	servertools->DispatchSpawn(pEntity);
 }
 
 
