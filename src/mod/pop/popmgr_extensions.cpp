@@ -673,6 +673,13 @@ namespace Mod_Pop_PopMgr_Extensions
 	}
 	
 	
+	RefCount rc_CTFGameRules_ctor;
+	DETOUR_DECL_MEMBER(void, CTFGameRules_ctor)
+	{
+		SCOPED_INCREMENT(rc_CTFGameRules_ctor);
+		DETOUR_MEMBER_CALL(CTFGameRules_ctor)();
+	}
+	
 #if 0
 	DETOUR_DECL_MEMBER(void, CTFGameRules_SetWinningTeam, int team, int iWinReason, bool bForceMapReset, bool bSwitchTeams, bool bDontAddScore, bool bFinal)
 	{
@@ -698,38 +705,42 @@ namespace Mod_Pop_PopMgr_Extensions
 	
 	DETOUR_DECL_MEMBER(void, CTeamplayRoundBasedRules_State_Enter, gamerules_roundstate_t newState)
 	{
-		gamerules_roundstate_t oldState = TFGameRules()->State_Get();
-		
-	//	ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[State] MvM:%d Reverse:%d oldState:%d newState:%d\n",
-	//		TFGameRules()->IsMannVsMachineMode(), state.m_bReverseWinConditions, oldState, newState);
-		
-		if (TFGameRules()->IsMannVsMachineMode() && state.m_bReverseWinConditions && oldState == GR_STATE_TEAM_WIN && newState == GR_STATE_PREROUND) {
-			ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "GR_STATE_TEAM_WIN --> GR_STATE_PREROUND\n");
+		/* the CTeamplayRoundBasedRules ctor calls State_Enter BEFORE the CTFGameRules ctor has had a chance to run yet
+		 * and initialize stuff like m_bPlayingMannVsMachine etc; so don't do any of this stuff in that case! */
+		if (rc_CTFGameRules_ctor <= 0) {
+			gamerules_roundstate_t oldState = TFGameRules()->State_Get();
 			
-			CWave *wave = g_pPopulationManager->GetCurrentWave();
+		//	ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "[State] MvM:%d Reverse:%d oldState:%d newState:%d\n",
+		//		TFGameRules()->IsMannVsMachineMode(), state.m_bReverseWinConditions, oldState, newState);
 			
-			// TODO(?): find all TFBots not on TEAM_SPECTATOR and switch them to TEAM_SPECTATOR
-			
-			/* call this twice to ensure all wavespawns get to state DONE */
-			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ForceFinish\n");
-			wave->ForceFinish();
-			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "MID  CWave::ForceFinish\n");
-			wave->ForceFinish();
-			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ForceFinish\n");
-			
-			// is this necessary or not? unsure...
-			// TODO: if enabled, need to block CTFPlayer::CommitSuicide call from ActiveWaveUpdate
-		//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ActiveWaveUpdate\n");
-		//	wave->ActiveWaveUpdate();
-		//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ActiveWaveUpdate\n");
-			
-			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::WaveCompleteUpdate\n");
-			wave->WaveCompleteUpdate();
-			ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::WaveCompleteUpdate\n");
-			
-			// TODO(?): for all human players on TF_TEAM_BLUE: if !IsAlive(), then call ForceRespawn()
-			
-			return;
+			if (TFGameRules()->IsMannVsMachineMode() && state.m_bReverseWinConditions && oldState == GR_STATE_TEAM_WIN && newState == GR_STATE_PREROUND) {
+				ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "GR_STATE_TEAM_WIN --> GR_STATE_PREROUND\n");
+				
+				CWave *wave = g_pPopulationManager->GetCurrentWave();
+				
+				// TODO(?): find all TFBots not on TEAM_SPECTATOR and switch them to TEAM_SPECTATOR
+				
+				/* call this twice to ensure all wavespawns get to state DONE */
+				ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ForceFinish\n");
+				wave->ForceFinish();
+				ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "MID  CWave::ForceFinish\n");
+				wave->ForceFinish();
+				ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ForceFinish\n");
+				
+				// is this necessary or not? unsure...
+				// TODO: if enabled, need to block CTFPlayer::CommitSuicide call from ActiveWaveUpdate
+			//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::ActiveWaveUpdate\n");
+			//	wave->ActiveWaveUpdate();
+			//	ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::ActiveWaveUpdate\n");
+				
+				ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "PRE  CWave::WaveCompleteUpdate\n");
+				wave->WaveCompleteUpdate();
+				ConColorMsg(Color(0xff, 0xff, 0x00, 0xff), "POST CWave::WaveCompleteUpdate\n");
+				
+				// TODO(?): for all human players on TF_TEAM_BLUE: if !IsAlive(), then call ForceRespawn()
+				
+				return;
+			}
 		}
 		
 		DETOUR_MEMBER_CALL(CTeamplayRoundBasedRules_State_Enter)(newState);
@@ -1119,6 +1130,7 @@ namespace Mod_Pop_PopMgr_Extensions
 		//	MOD_ADD_DETOUR_MEMBER(CTFPlayer_ItemIsAllowed,                       "CTFPlayer::ItemIsAllowed");
 			MOD_ADD_DETOUR_MEMBER(CCaptureFlag_GetMaxReturnTime,                 "CCaptureFlag::GetMaxReturnTime");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ctor,                    "CTFGameRules::CTFGameRules [C1]");
 		//	MOD_ADD_DETOUR_MEMBER(CTFGameRules_SetWinningTeam,          "CTFGameRules::SetWinningTeam");
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
 		//	MOD_ADD_DETOUR_MEMBER(CTFGameRules_FireGameEvent,           "CTFGameRules::FireGameEvent");

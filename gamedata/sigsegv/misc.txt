@@ -2829,6 +2829,8 @@
 				"CTeamplayRules::SetStalemate"   "_ZN14CTeamplayRules12SetStalemateEibb"
 				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				
+				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
+				
 				"CBasePlayer::SetVCollisionState" "_ZN11CBasePlayer18SetVCollisionStateERK6VectorS2_i"
 			}
 		}
