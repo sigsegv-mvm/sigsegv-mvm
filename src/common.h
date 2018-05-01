@@ -184,8 +184,6 @@ extern IDedicatedExports *dedicated;
 
 extern IMDLCache *mdlcache;
 
-extern SourceMod::IExtensionManager *smexts;
-
 extern IClientMode *g_pClientMode;
 
 
@@ -471,10 +469,7 @@ static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H
 
 
 /* SourceMod */
-#include <ISDKTools.h>
 #include "sm/MemoryUtils.h"
-
-//extern SourceMod::ISDKTools *g_pSDKTools;
 
 
 /* this extension */

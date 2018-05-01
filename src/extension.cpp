@@ -61,9 +61,6 @@ IBaseClientDLL *clientdll        = nullptr;
 IClientEntityList *cl_entitylist = nullptr;
 
 SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
-SourceMod::IExtensionManager *smexts         = nullptr;
-
-//ISDKTools *g_pSDKTools = nullptr;
 
 IEngineTool *enginetools  = nullptr;
 IServerTools *servertools = nullptr;
@@ -81,12 +78,7 @@ IClientMode *g_pClientMode = nullptr;
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
 	g_pSourcePawn = g_pSM->GetScriptingEngine();
-	SM_FIND_IFACE_OR_FAIL(EXTENSIONMANAGER, smexts, error, maxlen);
-	
 	ColorSpew::Enable();
-	
-//	sharesys->AddDependency(myself, "sdktools.ext", true, true);
-//	SM_GET_IFACE(SDKTOOLS, g_pSDKTools);
 	
 	if (gameeventmanager != nullptr) {
 		gameeventmanager->LoadEventsFromFile("resource/sigsegv_events.res");
@@ -150,8 +142,6 @@ void CExtSigsegv::SDK_OnAllLoaded()
 
 bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 {
-//	SM_CHECK_IFACE(SDKTOOLS, g_pSDKTools);
-	
 	return true;
 }
 
