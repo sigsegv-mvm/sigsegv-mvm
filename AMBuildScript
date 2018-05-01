@@ -168,6 +168,9 @@ class ExtensionConfig(object):
     have_gcc   = ('gcc'   in cxx.version.vendor_name)
     have_clang = ('clang' in cxx.version.vendor_name)
     
+    # use GOLD instead of GNU LD
+    use_gold = False
+    
     ############################################################################
     # PREPROCESSOR #############################################################
     ############################################################################
@@ -191,7 +194,6 @@ class ExtensionConfig(object):
     cxx.cflags += ['-Wno-array-bounds']
     cxx.cflags += ['-msse']
     cxx.cflags += ['-m32']
-    cxx.cflags += ['-fpic']
     cxx.cflags += ['-fvisibility=hidden']
     cxx.cflags += ['-fdiagnostics-color=always']
     cxx.cflags += ['-fno-omit-frame-pointer']
@@ -202,6 +204,8 @@ class ExtensionConfig(object):
     cxx.cflags += ['-pthread']
 #   cxx.cflags += ['-Wa,--compress-debug-sections=zlib']
     cxx.cflags += ['-Wno-unknown-pragmas']
+    if use_gold:
+      cxx.cflags += ['-fpic']
     
     # C++ modules!!!
     if cxx.version >= 'clang-3.7':
@@ -229,18 +233,21 @@ class ExtensionConfig(object):
     # LINKER ###################################################################
     ############################################################################
     cxx.linkflags += ['-m32']
-    cxx.linkflags += ['-fpic']
     cxx.linkflags += ['-pthread']
-    cxx.linkflags += ['-fuse-ld=gold']
     cxx.linkflags += ['-fuse-linker-plugin']
     cxx.linkflags += ['-Wl,--no-undefined']
-#    cxx.linkflags += ['-Wl,--threads'] # crashy
     cxx.linkflags += ['-Wl,--wrap,__assert_fail']
     cxx.linkflags += ['-Wl,--export-dynamic']
 #   cxx.linkflags += ['-Wa,--compress-debug-sections=zlib']
 #   cxx.linkflags += ['-Wl,--compress-debug-sections=zlib']
 #   if builder.options.opt != '1':
 #     cxx.linkflags += ['-Wl,-Ur'] # incremental link
+    
+    if use_gold:
+      cxx.linkflags += ['-fuse-ld=gold']
+      cxx.linkflags += ['-fpic'] # keep synced with cflags above
+      cxx.linkflags += ['-Wl,--gdb-index']
+#     cxx.linkflags += ['-Wl,--threads'] # crashy
     
     ############################################################################
     # DEBUG ####################################################################
