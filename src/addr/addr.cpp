@@ -28,10 +28,6 @@ void IAddr::Init()
 }
 
 
-std::map<std::string, IAddr *> AddrManager::s_Addrs;
-bool AddrManager::s_bLoading = false;
-
-
 void AddrManager::Load()
 {
 	DevMsg("AddrManager::Load BEGIN\n");

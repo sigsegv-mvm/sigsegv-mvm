@@ -3,11 +3,6 @@
 #include <regex>
 
 
-std::map<Library, void *> LibMgr::s_LibPtrs;
-std::map<Library, LibInfo> LibMgr::s_LibInfos;
-std::map<Library, void *> LibMgr::s_LibHandles;
-
-
 static std::map<Library, const char *> libnames{
 	{ Library::INVALID,            "invalid"            },
 	{ Library::THIS,               "sigsegv"            },

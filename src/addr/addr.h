@@ -20,8 +20,8 @@ public:
 private:
 	AddrManager() {}
 	
-	static std::map<std::string, IAddr *> s_Addrs;
-	static bool s_bLoading;
+	static inline std::map<std::string, IAddr *> s_Addrs;
+	static inline bool s_bLoading = false;
 };
 
 

@@ -36,10 +36,10 @@ public:
 	}
 	
 private:
-	static bool s_bFail;
-	static LARGE_INTEGER s_Freq;
-	static LARGE_INTEGER s_Count1;
-	static LARGE_INTEGER s_Count2;
+	static inline bool s_bFail;
+	static inline LARGE_INTEGER s_Freq;
+	static inline LARGE_INTEGER s_Count1;
+	static inline LARGE_INTEGER s_Count2;
 };
 #endif
 

@@ -82,9 +82,8 @@ private:
 	
 	typename std::multimap<K, T *>::iterator m_It;
 	
-	static std::multimap<K, T *> *s_MultiMap;
+	static inline std::multimap<K, T *> *s_MultiMap = nullptr;
 };
-template<typename T, typename K> std::multimap<K, T *> *AutoMultiMap<T, K>::s_MultiMap = nullptr;
 
 
 template<typename T>
@@ -129,9 +128,8 @@ private:
 		}
 	}
 	
-	static std::map<std::string, T *> *s_Map;
+	static inline std::map<std::string, T *> *s_Map = nullptr;
 };
-template<typename T> std::map<std::string, T *> *AutoNameMap<T>::s_Map = nullptr;
 
 
 #endif

@@ -29,13 +29,6 @@ extern "C" int copy_bytes(unsigned char *func, unsigned char *dest, int required
 // TODO: stop using copy_bytes and find a way to make capstone do what we need
 
 
-std::list<CDetour *> CDetour::s_LoadedDetours;
-std::list<CDetour *> CDetour::s_ActiveDetours;
-
-
-std::map<void *, CDetouredFunc> CDetouredFunc::s_FuncMap;
-
-
 bool IDetour::Load()
 {
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());

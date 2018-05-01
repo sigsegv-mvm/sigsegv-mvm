@@ -143,6 +143,7 @@ public:
 		
 		void *handle = s_LibHandles.at(lib);
 		assert(handle != nullptr);
+		
 		g_MemUtils.ForEachSymbol(handle, std::forward<FUNCTOR>(functor));
 	}
 	
@@ -166,9 +167,9 @@ private:
 	static void *OpenLibHandle(Library lib);
 	static void CloseLibHandle(void *handle);
 	
-	static std::map<Library, void *> s_LibPtrs;
-	static std::map<Library, LibInfo> s_LibInfos;
-	static std::map<Library, void *> s_LibHandles;
+	static inline std::map<Library, void *>  s_LibPtrs;
+	static inline std::map<Library, LibInfo> s_LibInfos;
+	static inline std::map<Library, void *>  s_LibHandles;
 };
 
 

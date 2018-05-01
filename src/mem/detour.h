@@ -109,8 +109,8 @@ private:
 	void *m_pCallback;
 	void **m_pInner;
 	
-	static std::list<CDetour *> s_LoadedDetours;
-	static std::list<CDetour *> s_ActiveDetours;
+	static inline std::list<CDetour *> s_LoadedDetours;
+	static inline std::list<CDetour *> s_ActiveDetours;
 	
 	friend class CDetouredFunc;
 };
@@ -256,7 +256,7 @@ private:
 	 * __cxa_thread_atexit_impl */
 	static /*thread_local*/ std::vector<uint32_t> s_SaveEIP;
 	
-	static std::map<void *, CDetouredFunc> s_FuncMap;
+	static inline std::map<void *, CDetouredFunc> s_FuncMap;
 };
 
 

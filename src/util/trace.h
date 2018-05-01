@@ -15,7 +15,7 @@ public:
 	static void Decrement() { --s_Level; }
 	
 private:
-	static int s_Level;
+	static inline int s_Level = 0;
 };
 
 
