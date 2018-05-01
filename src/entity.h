@@ -5,6 +5,7 @@
 #error TODO: MUST call IHotplugEntityFactory::UninstallAll from CExtSigsegv::SDK_OnUnload!!!
 
 
+#include <../extensions/sdktools/util.h>
 #include "util/autolist.h"
 
 

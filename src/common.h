@@ -473,7 +473,6 @@ static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H
 /* SourceMod */
 #include <ISDKTools.h>
 #include "sm/MemoryUtils.h"
-#include <../extensions/sdktools/util.h>
 
 //extern SourceMod::ISDKTools *g_pSDKTools;
 
