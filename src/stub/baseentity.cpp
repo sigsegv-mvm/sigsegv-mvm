@@ -55,6 +55,9 @@ MemberFuncThunk<      CBaseEntity *, void, int, const char *, float, int, int, i
 MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&                            > CBaseEntity::ft_TakeDamage          ("CBaseEntity::TakeDamage");
 MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t                        > CBaseEntity::ft_SetMoveType         ("CBaseEntity::SetMoveType");
 MemberFuncThunk<      CBaseEntity *, model_t *                                              > CBaseEntity::ft_GetModel            ("CBaseEntity::GetModel");
+MemberFuncThunk<      CBaseEntity *, void, float, const char *                              > CBaseEntity::ft_SetNextThink_name   ("CBaseEntity::SetNextThink [name]");
+MemberFuncThunk<      CBaseEntity *, void, int, float                                       > CBaseEntity::ft_SetNextThink_index  ("CBaseEntity::SetNextThink [index]");
+MemberFuncThunk<      CBaseEntity *, BASEPTR, BASEPTR, float, const char *                  > CBaseEntity::ft_ThinkSet            ("CBaseEntity::ThinkSet");
 
 MemberVFuncThunk<      CBaseEntity *, Vector                                                          > CBaseEntity::vt_EyePosition              (TypeName<CBaseEntity>(), "CBaseEntity::EyePosition");
 MemberVFuncThunk<      CBaseEntity *, const QAngle&                                                   > CBaseEntity::vt_EyeAngles                (TypeName<CBaseEntity>(), "CBaseEntity::EyeAngles");

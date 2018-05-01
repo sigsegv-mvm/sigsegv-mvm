@@ -6,6 +6,11 @@
 #include "prop.h"
 
 
+using BASEPTR       = void (CBaseEntity::*)();
+using ENTITYFUNCPTR = void (CBaseEntity::*)(CBaseEntity *pOther);
+using USEPTR        = void (CBaseEntity::*)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+
 struct inputdata_t
 {
 	CBaseEntity *pActivator;
@@ -128,6 +133,8 @@ public:
 	int TakeDamage(const CTakeDamageInfo& info)                                                                             { return ft_TakeDamage               (this, info); }
 	void SetMoveType(MoveType_t val, MoveCollide_t moveCollide = MOVECOLLIDE_DEFAULT)                                       {        ft_SetMoveType              (this, val, moveCollide); }
 	model_t *GetModel()                                                                                                     { return ft_GetModel                 (this); }
+	void SetNextThink(float nextThinkTime, const char *szContext = nullptr)                                                 {        ft_SetNextThink_name        (this, nextThinkTime, szContext); }
+	void SetNextThink(int nContextIndex, float thinkTime)                                                                   {        ft_SetNextThink_index       (this, nContextIndex, thinkTime); }
 	Vector EyePosition()                                                                                                    { return vt_EyePosition              (this); }
 	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                (this); }
 	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity           (this, pOwner); }
@@ -169,6 +176,9 @@ public:
 	bool IsCombatCharacter() { return (this->MyCombatCharacterPointer() != nullptr); }
 	bool IsPlayer() const;
 	bool IsBaseObject() const;
+	
+	/* also a hack */
+	template<typename DERIVEDPTR> BASEPTR ThinkSet(DERIVEDPTR func, float flNextThinkTime = 0.0f, const char *szContext = nullptr);
 	
 	/* network vars */
 	void NetworkStateChanged();
@@ -230,6 +240,9 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, int, const CTakeDamageInfo&>                             ft_TakeDamage;
 	static MemberFuncThunk<      CBaseEntity *, void, MoveType_t, MoveCollide_t>                         ft_SetMoveType;
 	static MemberFuncThunk<      CBaseEntity *, model_t *>                                               ft_GetModel;
+	static MemberFuncThunk<      CBaseEntity *, void, float, const char *>                               ft_SetNextThink_name;
+	static MemberFuncThunk<      CBaseEntity *, void, int, float>                                        ft_SetNextThink_index;
+	static MemberFuncThunk<      CBaseEntity *, BASEPTR, BASEPTR, float, const char *>                   ft_ThinkSet;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                                                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
@@ -377,6 +390,14 @@ inline void CBaseEntity::SetModel(const char *szModelName)
 inline bool CBaseEntity::ClassMatches(const char *pszClassOrWildcard)
 {
 	return (IDENT_STRINGS(this->m_iClassname, pszClassOrWildcard) || this->ClassMatchesComplex(pszClassOrWildcard));
+}
+
+
+/* like those stupid SetThink and SetContextThink macros, but way better! */
+template<typename DERIVEDPTR>
+BASEPTR CBaseEntity::ThinkSet(DERIVEDPTR func, float flNextThinkTime, const char *szContext)
+{
+	return ft_ThinkSet(this, static_cast<BASEPTR>(func), flNextThinkTime, szContext);
 }
 
 

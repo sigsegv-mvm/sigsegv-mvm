@@ -14,7 +14,6 @@
 
 
 /* from CBaseEntity */
-typedef void (CBaseEntity::*BASEPTR)();
 enum thinkmethods_t
 {
 	THINK_FIRE_ALL_FUNCTIONS,
