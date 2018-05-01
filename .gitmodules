@@ -32,3 +32,10 @@
 	branch                 = master
 	fetchRecurseSubmodules = true
 #	ignore                 = ???
+
+[submodule "libs/fmt"]
+	path                   = libs/fmt
+	url                    = https://github.com/fmtlib/fmt.git
+	branch                 = master
+	fetchRecurseSubmodules = true
+#	ignore                 = ???
