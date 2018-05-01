@@ -42,6 +42,27 @@ constexpr std::enable_if_t<std::is_integral_v<T>, int> NumDigits(T val)
 }
 
 
+// NOTE: sadly, this conflicts with a same-named function in tier0/commonmacros.h
+#if 0
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, bool> IsPowerOfTwo(T val)
+{
+	if (val == 0) return false;
+	return (val & (val - 1)) == 0;
+}
+#endif
+
+template<typename T>
+constexpr std::enable_if_t<std::is_unsigned_v<T>, bool> IsMultipleOf(T val, T mult)
+{
+	/* avoid divide-by-zero */
+	assert(mult != 0);
+	
+	if (val == 0) return false;
+	return (val % mult == 0);
+}
+
+
 template<typename T>
 [[nodiscard]] constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToMultiple(T val, T mult)
 {
@@ -68,8 +89,8 @@ template<typename T>
 {
 	/* avoid integer underflow */
 	assert(mult != 0);
-	/* verify that mult is actually a power-of-2 */
-	assert((mult & (mult - 1)) == 0);
+	/* verify that mult is actually a power-of-two */
+	assert(IsPowerOfTwo(mult));
 	
 	return (val & ~(mult - 1));
 }
@@ -81,8 +102,8 @@ template<typename T>
 	assert(mult != 0);
 	/* avoid integer overflow */
 	assert(val <= std::numeric_limits<T>::max() - (mult - 1));
-	/* verify that mult is actually a power-of-2 */
-	assert((mult & (mult - 1)) == 0);
+	/* verify that mult is actually a power-of-two */
+	assert(IsPowerOfTwo(mult));
 	
 	val += (mult - 1);
 	return (val & ~(mult - 1));
