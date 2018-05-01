@@ -43,7 +43,7 @@ constexpr std::enable_if_t<std::is_integral_v<T>, int> NumDigits(T val)
 
 
 template<typename T>
-constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToMultiple(T val, T mult)
+[[nodiscard]] constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToMultiple(T val, T mult)
 {
 	/* avoid divide-by-zero */
 	assert(mult != 0);
@@ -52,7 +52,7 @@ constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToMultiple(T val, 
 }
 
 template<typename T>
-constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToMultiple(T val, T mult)
+[[nodiscard]] constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToMultiple(T val, T mult)
 {
 	/* avoid divide-by-zero and integer underflow */
 	assert(mult != 0);
@@ -64,7 +64,7 @@ constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToMultiple(T val, T 
 }
 
 template<typename T>
-constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToPowerOfTwo(T val, T mult)
+[[nodiscard]] constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToPowerOfTwo(T val, T mult)
 {
 	/* avoid integer underflow */
 	assert(mult != 0);
@@ -75,7 +75,7 @@ constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundDownToPowerOfTwo(T val
 }
 
 template<typename T>
-constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToPowerOfTwo(T val, T mult)
+[[nodiscard]] constexpr std::enable_if_t<std::is_unsigned_v<T>, T> RoundUpToPowerOfTwo(T val, T mult)
 {
 	/* avoid integer underflow */
 	assert(mult != 0);
