@@ -307,27 +307,13 @@ IServerGameDLL *gamedll = NULL;				/**< IServerGameDLL pointer */
 #endif
 
 /** Exposes the extension to Metamod */
-SMM_API void *PL_EXPOSURE(const char *name, int *code)
+SMM_API ISmmPlugin *CreateInterface_MMS(const MetamodVersionInfo *mvi, const MetamodLoaderInfo *mli)
 {
-#if defined METAMOD_PLAPI_VERSION
-	if (name && !strcmp(name, METAMOD_PLAPI_NAME))
-#else
-	if (name && !strcmp(name, PLAPI_NAME))
-#endif
-	{
-		if (code)
-		{
-			*code = META_IFACE_OK;
-		}
-		return static_cast<void *>(g_pExtensionIface);
-	}
+	return g_pExtensionIface;
+}
 
-	if (code)
-	{
-		*code = META_IFACE_FAILED;
-	}
-
-	return NULL;
+SMM_API void UnloadInterface_MMS()
+{
 }
 
 bool SDKExtension::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)

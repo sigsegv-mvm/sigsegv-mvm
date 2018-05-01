@@ -305,6 +305,7 @@ class IVideoRecorder;
 #undef   NO_STRING_T
 #undef WEAK_STRING_T
 #include "sdk2013/platform.h"
+#include <interface.h>
 #include "sdk2013/commonmacros.h"
 #include "sdk2013/basetypes.h"
 WARN_IGNORE__ADDRESS()
@@ -363,7 +364,6 @@ WARN_RESTORE()
 #include <inetchannel.h>
 #include <irecipientfilter.h>
 //#include <usermessages.h>
-#include <interface.h>
 #include <cdll_int.h>
 #include <iclientnetworkable.h>
 #include <utldict.h>

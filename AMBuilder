@@ -434,22 +434,5 @@ _, wrapper = builder.AddCommand(
 binary.compiler.sourcedeps += wrapper
 binary.compiler.linkflags  += [os.path.join('..', wrapper_obj)]
 
-# generate a modified version of tier1.a that rips out its CreateInterface def
-# (since apparently `-Wl,--exclude-libs,ALL` isn't sufficient for some reason)
-for dep in binary.compiler.postlink:
-  if not 'tier1' in dep.text: continue
-  tier1_shitty   = dep.text
-  tier1_improved = os.path.basename(dep.text)
-  _, tier1 = builder.AddCommand(
-    inputs  = [tier1_shitty],
-    outputs = [tier1_improved],
-    argv    = ['objcopy',
-               '--redefine-sym', 'CreateInterface=CreateInterface_tier1',
-               tier1_shitty,
-               tier1_improved]
-  )
-  binary.compiler.sourcedeps += tier1
-  dep.text = os.path.join(builder.buildPath, tier1_improved)
-
 
 Extension.extensions = builder.Add(project)
