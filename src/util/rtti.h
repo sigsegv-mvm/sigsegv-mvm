@@ -40,11 +40,11 @@ inline TO rtti_cast(const FROM ptr)
 		return nullptr;
 	}
 	
-	static_assert(std::is_pointer<FROM>::value, "rtti_cast FROM parameter isn't a pointer type");
-	static_assert(std::is_pointer<TO>  ::value, "rtti_cast TO parameter isn't a pointer type");
+	static_assert(std::is_pointer_v<FROM>, "rtti_cast FROM parameter isn't a pointer type");
+	static_assert(std::is_pointer_v<TO>,   "rtti_cast TO parameter isn't a pointer type");
 	
-	auto rtti_from = RTTI::GetRTTI<typename std::remove_pointer<FROM>::type>();
-	auto rtti_to   = RTTI::GetRTTI<typename std::remove_pointer<TO>::type>();
+	auto rtti_from = RTTI::GetRTTI<std::remove_pointer_t<FROM>>();
+	auto rtti_to   = RTTI::GetRTTI<std::remove_pointer_t<TO>>();
 	
 	assert(rtti_from != nullptr);
 	assert(rtti_to   != nullptr);

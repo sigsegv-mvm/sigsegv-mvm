@@ -24,7 +24,7 @@ inline bool IterateInternals<bool>::CallFunc(const FUNCTOR& func, ARGS... args)
 {
 	return func(std::forward<ARGS>(args)...);
 }
-#define CALL_FUNCTOR(...) IterateInternals<typename std::result_of<FUNCTOR(__VA_ARGS__)>::type>::CallFunc
+#define CALL_FUNCTOR(...) IterateInternals<std::result_of_t<FUNCTOR(__VA_ARGS__)>>::CallFunc
 
 
 template<typename FUNCTOR>

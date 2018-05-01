@@ -407,14 +407,14 @@ private:
 	/* reference typedefs */
 	using RefRO_t = const T&;
 	using RefRW_t =       T&;
-//	using Ref_t   = typename std::conditional<ReadOnly(), RefRO_t, RefRW_t>::type;
-	using Ref_t   = typename std::conditional<(NET && !RW), RefRO_t, RefRW_t>::type;
+//	using Ref_t   = std::conditional_t<ReadOnly(), RefRO_t, RefRW_t>;
+	using Ref_t   = std::conditional_t<(NET && !RW), RefRO_t, RefRW_t>;
 	
 	/* pointer typedefs */
 	using PtrRO_t = const T*;
 	using PtrRW_t =       T*;
-//	using Ptr_t   = typename std::conditional<ReadOnly(), PtrRO_t, PtrRW_t>::type;
-	using Ptr_t   = typename std::conditional<(NET && !RW), PtrRO_t, PtrRW_t>::type;
+//	using Ptr_t   = std::conditional_t<ReadOnly(), PtrRO_t, PtrRW_t>;
+	using Ptr_t   = std::conditional_t<(NET && !RW), PtrRO_t, PtrRW_t>;
 	
 public:
 	CPropAccessorBase()                                    = delete;
@@ -425,8 +425,8 @@ public:
 	/* conversion operators */
 	operator Ref_t() const { return this->Get(); }
 	
-//	template<typename A, bool RW2 = (!NET || RW)> operator typename std::enable_if<( RW2 && std::is_convertible<T, A>::value),       A&>::type() const { return static_cast<      A&>(this->GetRW()); }
-//	template<typename A, bool RW2 = (!NET || RW)> operator typename std::enable_if<(!RW2 && std::is_convertible<T, A>::value), const A&>::type() const { return static_cast<const A&>(this->GetRO()); }
+//	template<typename A, bool RW2 = (!NET || RW)> operator std::enable_if_t<( RW2 && std::is_convertible_v<T, A>),       A&>() const { return static_cast<      A&>(this->GetRW()); }
+//	template<typename A, bool RW2 = (!NET || RW)> operator std::enable_if_t<(!RW2 && std::is_convertible_v<T, A>), const A&>() const { return static_cast<const A&>(this->GetRO()); }
 	
 	/* assignment */
 	template<typename A> const T& operator=(const CPropAccessorBase<A, T_ARGS>& val) { return this->Set(static_cast<const T>(val.GetRO())); }
@@ -490,8 +490,8 @@ public:
 	const T& operator--() { return this->Set(this->GetRO() - 1); }
 	
 	/* post-increment */
-	template<typename T2 = T> typename std::enable_if<!std::is_abstract<T2>::value, T2>::type operator++(int) { T copy = this->GetRO(); this->Set(this->GetRO() + 1); return copy; }
-	template<typename T2 = T> typename std::enable_if<!std::is_abstract<T2>::value, T2>::type operator--(int) { T copy = this->GetRO(); this->Set(this->GetRO() - 1); return copy; }
+	template<typename T2 = T> std::enable_if_t<!std::is_abstract_v<T2>, T2> operator++(int) { T copy = this->GetRO(); this->Set(this->GetRO() + 1); return copy; }
+	template<typename T2 = T> std::enable_if_t<!std::is_abstract_v<T2>, T2> operator--(int) { T copy = this->GetRO(); this->Set(this->GetRO() - 1); return copy; }
 	
 	/* indexing */
 	#ifdef __GNUC__
@@ -499,12 +499,12 @@ public:
 	#endif
 	template<typename A> auto operator[](const A& idx) const { return this->Get()[idx]; }
 	
-//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<( RW2 && std::is_array<T2>::value),       T&/* remove extent */>::type operator[](/* TODO */) const/*?*/ { /* TODO */ }
-//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<(!RW2 && std::is_array<T2>::value), const T&/* remove extent */>::type operator[](/* TODO */) const/*?*/ { /* TODO */ }
-//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<( RW2 && std::is_array<T2>::value),       decltype(std::declval<T>()[0])&>::type operator[](ptrdiff_t idx) const { return this->Get_RW()[idx]; }
-//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if<(!RW2 && std::is_array<T2>::value), const decltype(std::declval<T>()[0])&>::type operator[](ptrdiff_t idx) const { return this->Get_RO()[idx]; }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<( RW2 && std::is_array_v<T2>),       T&/* remove extent */> operator[](/* TODO */) const/*?*/ { /* TODO */ }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<(!RW2 && std::is_array_v<T2>), const T&/* remove extent */> operator[](/* TODO */) const/*?*/ { /* TODO */ }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<( RW2 && std::is_array_v<T2>),       decltype(std::declval<T>()[0])&> operator[](ptrdiff_t idx) const { return this->Get_RW()[idx]; }
+//	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<(!RW2 && std::is_array_v<T2>), const decltype(std::declval<T>()[0])&> operator[](ptrdiff_t idx) const { return this->Get_RO()[idx]; }
 	// only const for now
-//	template<typename T2 = T> typename std::enable_if<std::is_function<std::declval<T>()[0]>::value, >::type 
+//	template<typename T2 = T> std::enable_if_t<std::is_function_v<std::declval<T>()[0]>, > 
 	// maybe abuse begin() / end() iterator stuff?
 	
 	/* begin() and end() passthru */
@@ -579,18 +579,18 @@ template<typename U, T_PARAMS> struct CPropAccessor<CHandle<U>, T_ARGS> : public
 
 /* some sanity checks to ensure zero-size, no ctors, no vtable, etc */
 #define CHECK_ACCESSOR(ACCESSOR) \
-	static_assert( std::is_empty                <ACCESSOR>::value, "NOT GOOD: Prop accessor isn't an empty type"     ); \
-	static_assert(!std::is_polymorphic          <ACCESSOR>::value, "NOT GOOD: Prop accessor has virtual functions"   ); \
-	static_assert(!std::is_default_constructible<ACCESSOR>::value, "NOT GOOD: Prop accessor is default-constructible"); \
-	static_assert(!std::is_copy_constructible   <ACCESSOR>::value, "NOT GOOD: Prop accessor is copy-constructible"   ); \
-	static_assert(!std::is_move_constructible   <ACCESSOR>::value, "NOT GOOD: Prop accessor is move-constructible"   )
+	static_assert( std::is_empty_v                <ACCESSOR>, "NOT GOOD: Prop accessor isn't an empty type"     ); \
+	static_assert(!std::is_polymorphic_v          <ACCESSOR>, "NOT GOOD: Prop accessor has virtual functions"   ); \
+	static_assert(!std::is_default_constructible_v<ACCESSOR>, "NOT GOOD: Prop accessor is default-constructible"); \
+	static_assert(!std::is_copy_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is copy-constructible"   ); \
+	static_assert(!std::is_move_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is move-constructible"   )
 
 
 #define DECL_PROP(TYPE, PROPNAME, VARIANT, NET, RW) \
-	typedef CProp_##VARIANT<TYPE> _type_prop_##PROPNAME; \
+	using _type_prop_##PROPNAME = CProp_##VARIANT<TYPE>; \
 	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
 	static const size_t _adj_##PROPNAME; \
-	typedef CPropAccessor<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW> _type_accessor_##PROPNAME; \
+	using _type_accessor_##PROPNAME = CPropAccessor<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW>; \
 	_type_accessor_##PROPNAME PROPNAME; \
 	CHECK_ACCESSOR(_type_accessor_##PROPNAME)
 
