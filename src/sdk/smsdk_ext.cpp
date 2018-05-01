@@ -459,6 +459,8 @@ bool SDKExtension::SDK_OnMetamodPauseChange(bool paused, char *error, size_t max
 
 #endif
 
+/* we can handle libstdc++ compat ourselves just fine, thankyouverymuch */
+#if 0
 /* Overload a few things to prevent libstdc++ linking */
 #if defined __linux__ || defined __APPLE__
 void *operator new(size_t size)
@@ -481,4 +483,4 @@ void operator delete[](void * ptr)
 	free(ptr);
 }
 #endif
-
+#endif
