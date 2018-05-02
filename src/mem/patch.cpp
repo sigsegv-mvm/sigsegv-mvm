@@ -100,7 +100,7 @@ void CPatch::Apply()
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
 	
 	{
-		MemProtModifier_RX_RWX prot(ptr, this->m_iLength);
+		MemProtModifier_RX_RWX(ptr, this->m_iLength);
 		
 		for (int i = 0; i < this->m_iLength; ++i) {
 			uint8_t *mem = ptr + i;
@@ -138,7 +138,7 @@ void CPatch::UnApply()
 	uint8_t *ptr = (uint8_t *)((uintptr_t)this->m_pFuncAddr + this->m_iFuncOffActual);
 	
 	{
-		MemProtModifier_RX_RWX prot(ptr, this->m_iLength);
+		MemProtModifier_RX_RWX(ptr, this->m_iLength);
 		
 		for (int i = 0; i < this->m_iLength; ++i) {
 			uint8_t *mem = ptr + i;

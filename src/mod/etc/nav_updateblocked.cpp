@@ -41,12 +41,12 @@ namespace Mod_Etc_Nav_UpdateBlocked
 		
 		virtual void OnEnable() override
 		{
-			MemProtModifier_RO_RW prot(vt_CTFNavArea, 0x1000);
+			MemProtModifier_RO_RW(vt_CTFNavArea, 0x1000);
 			vt_CTFNavArea[VTIDX_UpdateBlocked] = ptr_CNavArea_UpdateBlocked;
 		}
 		virtual void OnDisable() override
 		{
-			MemProtModifier_RO_RW prot(vt_CTFNavArea, 0x1000);
+			MemProtModifier_RO_RW(vt_CTFNavArea, 0x1000);
 			vt_CTFNavArea[VTIDX_UpdateBlocked] = ptr_CTFNavArea_UpdateBlocked;
 		}
 		

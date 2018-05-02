@@ -2,34 +2,36 @@
 #define _INCLUDE_SIGSEGV_MEM_PROTECT_H_
 
 
-template<MemProtModifier::Flags F_OLD, MemProtModifier::Flags F_NEW>
+#include "util/misc.h"
+
+
 class MemProtModifier
 {
 public:
-	MemProtModifier(const void *addr, size_t len) :
-		m_pAddr(addr), m_nLen(len)
+	enum Flags : unsigned int
 	{
-		this->ApplyNewFlags();
+		MPROT_NONE = 0b000,
+		
+		MPROT_R = 0b001,
+		MPROT_W = 0b010,
+		MPROT_X = 0b100,
+		
+		MPROT_RW = (MPROT_R | MPROT_W),
+		MPROT_RX = (MPROT_R | MPROT_X),
+		MPROT_WX = (MPROT_W | MPROT_X),
+		
+		MPROT_RWX = (MPROT_R | MPROT_W | MPROT_X),
+	};
+	
+	MemProtModifier(const void *addr, size_t len, Flags f_old, Flags f_new) :
+		m_pAddr(addr), m_nLen(len), m_nOldFlags(f_old), m_nNewFlags(f_new)
+	{
+		this->ApplyFlags(this->m_nNewFlags);
 	}
 	~MemProtModifier()
 	{
-		this->ApplyOldFlags();
+		this->ApplyFlags(this->m_nOldFlags);
 	}
-	
-	enum Flags : unsigned int
-	{
-		PROT_NONE = 0b000,
-		
-		PROT_R = 0b001,
-		PROT_W = 0b010,
-		PROT_X = 0b100,
-		
-		PROT_RW = (PROT_R | PROT_W),
-		PROT_RX = (PROT_R | PROT_X),
-		PROT_WX = (PROT_W | PROT_X),
-		
-		PROT_RWX = (PROT_R | PROT_W | PROT_X),
-	};
 	
 private:
 #if !defined _WINDOWS
@@ -44,11 +46,10 @@ private:
 	
 	void ApplyFlags(Flags flags) const;
 	
-	void ApplyOldFlags() const { this->ApplyFlags(F_OLD); }
-	void ApplyNewFlags() const { this->ApplyFlags(F_NEW); }
-	
 	const void *m_pAddr;
 	size_t m_nLen;
+	Flags m_nOldFlags;
+	Flags m_nNewFlags;
 };
 
 
@@ -56,19 +57,17 @@ private:
 
 inline DWORD MemProtModifier::TranslateFlags(MemProtModifier::Flags flags) const
 {
-	using Flags = MemProtModifier::Flags;
-	
-	assert((flags & ~Flags::RWX) == 0);
+	assert((flags & ~MPROT_RWX) == 0);
 	
 	switch (flags) {
-	case Flags::PROT_NONE: return PAGE_NOACCESS;
-	case Flags::PROT_R:    return PAGE_READONLY;
-	case Flags::PROT_W:    return PAGE_READWRITE;         // closest approximation
-	case Flags::PROT_X:    return PAGE_EXECUTE;
-	case Flags::PROT_RW:   return PAGE_READWRITE;
-	case Flags::PROT_RX:   return PAGE_EXECUTE_READ;
-	case Flags::PROT_WX:   return PAGE_EXECUTE_READWRITE; // closest approximation
-	case Flags::PROT_RWX:  return PAGE_EXECUTE_READWRITE;
+	case MPROT_NONE: return PAGE_NOACCESS;
+	case MPROT_R:    return PAGE_READONLY;
+	case MPROT_W:    return PAGE_READWRITE;         // closest approximation
+	case MPROT_X:    return PAGE_EXECUTE;
+	case MPROT_RW:   return PAGE_READWRITE;
+	case MPROT_RX:   return PAGE_EXECUTE_READ;
+	case MPROT_WX:   return PAGE_EXECUTE_READWRITE; // closest approximation
+	case MPROT_RWX:  return PAGE_EXECUTE_READWRITE;
 	}
 }
 
@@ -94,14 +93,12 @@ inline size_t MemProtModifier::GetPageSize()
 
 inline int MemProtModifier::TranslateFlags(MemProtModifier::Flags flags) const
 {
-	using Flags = MemProtModifier::Flags;
-	
-	assert((flags & ~Flags::RWX) == 0);
+	assert((flags & ~MPROT_RWX) == 0);
 	
 	int prot = PROT_NONE;
-	if ((flags & Flags::R) != 0) prot |= PROT_READ;
-	if ((flags & Flags::W) != 0) prot |= PROT_WRITE;
-	if ((flags & Flags::X) != 0) prot |= PROT_EXEC;
+	if ((flags & MPROT_R) != 0) prot |= PROT_READ;
+	if ((flags & MPROT_W) != 0) prot |= PROT_WRITE;
+	if ((flags & MPROT_X) != 0) prot |= PROT_EXEC;
 	return prot;
 }
 
@@ -112,8 +109,8 @@ inline void MemProtModifier::ApplyFlags(MemProtModifier::Flags flags) const
 	uintptr_t addr_begin = (uintptr_t)this->m_pAddr;
 	uintptr_t addr_end   = (uintptr_t)this->m_pAddr + this->m_nLen;
 	
-	RoundDownToPowerOfTwo(addr_begin, GetPageSize());
-	RoundUpToPowerOfTwo  (addr_end,   GetPageSize());
+	addr_begin = RoundDownToPowerOfTwo(addr_begin, GetPageSize());
+	addr_end   = RoundUpToPowerOfTwo  (addr_end,   GetPageSize());
 	
 	assert(mprotect((void *)addr_begin, (addr_end - addr_begin), new_prot) == 0);
 }
@@ -121,12 +118,29 @@ inline void MemProtModifier::ApplyFlags(MemProtModifier::Flags flags) const
 #endif
 
 
+template<MemProtModifier::Flags F_OLD, MemProtModifier::Flags F_NEW>
+class MemProtModifierTmpl : public MemProtModifier
+{
+public:
+	MemProtModifierTmpl(const void *addr, size_t len) :
+		MemProtModifier(addr, len, F_OLD, F_NEW) {}
+};
+
+
 /* convenience aliases */
-using MemProtModifier_RO_RW  = MemProtModifier<MemProtModifier::R,  MemProtModifier::RW>;
-using MemProtModifier_RO_RX  = MemProtModifier<MemProtModifier::R,  MemProtModifier::RX>;
-using MemProtModifier_RO_RWX = MemProtModifier<MemProtModifier::R,  MemProtModifier::RWX>;
-using MemProtModifier_RW_RWX = MemProtModifier<MemProtModifier::RW, MemProtModifier::RWX>;
-using MemProtModifier_RX_RWX = MemProtModifier<MemProtModifier::RX, MemProtModifier::RWX>;
+using MemProtModifier_RO_RW  = MemProtModifierTmpl<MemProtModifier::MPROT_R,  MemProtModifier::MPROT_RW>;
+using MemProtModifier_RO_RX  = MemProtModifierTmpl<MemProtModifier::MPROT_R,  MemProtModifier::MPROT_RX>;
+using MemProtModifier_RO_RWX = MemProtModifierTmpl<MemProtModifier::MPROT_R,  MemProtModifier::MPROT_RWX>;
+using MemProtModifier_RW_RWX = MemProtModifierTmpl<MemProtModifier::MPROT_RW, MemProtModifier::MPROT_RWX>;
+using MemProtModifier_RX_RWX = MemProtModifierTmpl<MemProtModifier::MPROT_RX, MemProtModifier::MPROT_RWX>;
+
+
+/* automatic scope block thingies that won't be destructed before the scope ends */
+#define MemProtModifier_RO_RW( ADDR, LEN) const auto& _mpm__##__COUNTER__ = MemProtModifier_RO_RW( ADDR, LEN)
+#define MemProtModifier_RO_RX( ADDR, LEN) const auto& _mpm__##__COUNTER__ = MemProtModifier_RO_RX( ADDR, LEN)
+#define MemProtModifier_RO_RWX(ADDR, LEN) const auto& _mpm__##__COUNTER__ = MemProtModifier_RO_RWX(ADDR, LEN)
+#define MemProtModifier_RW_RWX(ADDR, LEN) const auto& _mpm__##__COUNTER__ = MemProtModifier_RW_RWX(ADDR, LEN)
+#define MemProtModifier_RX_RWX(ADDR, LEN) const auto& _mpm__##__COUNTER__ = MemProtModifier_RX_RWX(ADDR, LEN)
 
 
 #endif
