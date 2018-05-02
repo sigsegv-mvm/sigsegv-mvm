@@ -122,9 +122,6 @@ class IDedicatedExports;
 
 class IMDLCache;
 
-namespace SourcePawn {
-	class ISourcePawnEngine;
-}
 namespace SourceMod {
 	class IExtensionManager;
 }
@@ -223,6 +220,7 @@ using namespace std::literals;
 #include <list>
 #include <map>
 #include <set>
+#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>

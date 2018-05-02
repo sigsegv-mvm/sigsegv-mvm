@@ -20,7 +20,6 @@ sourceFiles += [
 ]
 
 sourceFiles += [
-  os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c'),
   'src/sm/MemoryUtils.cpp',
   
   'src/se2007/meshutils.cpp',

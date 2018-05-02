@@ -1,10 +1,13 @@
 #include "mem/detour.h"
 #include "addr/addr.h"
+#include "mem/alloc.h"
 #include "mem/protect.h"
 #include "mem/opcode.h"
 #include "mem/wrapper.h"
 #include "util/backtrace.h"
 #include "util/demangle.h"
+
+#include <udis86.h>
 
 #include <regex>
 
@@ -24,9 +27,195 @@
 #include "util/trace.h"
 
 
-/* literally all I want from asm.h is copy_bytes */
-extern "C" int copy_bytes(unsigned char *func, unsigned char *dest, int required_len);
-// TODO: stop using copy_bytes and find a way to make capstone do what we need
+/* get number of instruction operands */
+static unsigned int UD86_num_operands(struct ud *ud)
+{
+	for (unsigned int i = 0; i < 4; ++i) {
+		if (ud_insn_opr(ud, i) == nullptr) return i;
+	}
+	return 4;
+}
+
+
+/* detect instruction: '(jmp|call) <rel_imm32>' */
+static bool UD86_insn_is_jmpcall_rel_imm32(struct ud *ud, uint8_t *opcode_byte = nullptr, int32_t *rel_offset = nullptr)
+{
+	auto mnemonic = ud_insn_mnemonic(ud);
+	if (mnemonic != UD_Ijmp && mnemonic != UD_Icall) return false;
+	
+	if (ud_insn_len(ud) != 5)       return false;
+	if (UD86_num_operands(ud) != 1) return false;
+	
+	const auto *op0 = ud_insn_opr(ud, 0);
+	if (op0->type != UD_OP_JIMM) return false;
+	if (op0->size != 32)         return false;
+	
+	/* optional parameter: write out the main opcode byte */
+	if (opcode_byte != nullptr) {
+		*opcode_byte = ud_insn_ptr(ud)[0];
+	}
+	
+	/* optional parameter: write out the relative jmp/call offset */
+	if (rel_offset != nullptr) {
+		*rel_offset = op0->lval.sdword;
+	}
+	
+	return true;
+}
+
+/* detect instruction: 'call <rel_imm32>' */
+static bool UD86_insn_is_call_rel_imm32(struct ud *ud, const uint8_t **call_target = nullptr)
+{
+	auto mnemonic = ud_insn_mnemonic(ud);
+	if (mnemonic != UD_Icall) return false;
+	
+	if (ud_insn_len(ud) != 5)       return false;
+	if (UD86_num_operands(ud) != 1) return false;
+	
+	const auto *op0 = ud_insn_opr(ud, 0);
+	if (op0->type != UD_OP_JIMM) return false;
+	if (op0->size != 32)         return false;
+	
+	/* optional parameter: write out the call destination address */
+	if (call_target != nullptr) {
+		*call_target = (const uint8_t *)(ud_insn_off(ud) + ud_insn_len(ud) + op0->lval.udword);
+	}
+	
+	return true;
+}
+
+/* detect instruction: 'mov e[acdb]x,[esp]' */
+static bool UD86_insn_is_mov_r32_rtnval(struct ud *ud, X86Instr::Reg *dest_reg = nullptr)
+{
+	auto mnemonic = ud_insn_mnemonic(ud);
+	if (mnemonic != UD_Imov) return false;
+	
+	if (ud_insn_len(ud) != 3)       return false;
+	if (UD86_num_operands(ud) != 2) return false;
+	
+	const auto *op0 = ud_insn_opr(ud, 0);
+	if (op0->type != UD_OP_REG) return false;
+	if (op0->size != 32)        return false;
+	
+	X86Instr::Reg reg;
+	switch (op0->base) {
+	case UD_R_EAX: reg = X86Instr::REG_AX; break;
+	case UD_R_ECX: reg = X86Instr::REG_CX; break;
+	case UD_R_EDX: reg = X86Instr::REG_DX; break;
+	case UD_R_EBX: reg = X86Instr::REG_BX; break;
+	default: return false;
+	}
+	
+	const auto *op1 = ud_insn_opr(ud, 1);
+	if (op1->type   != UD_OP_MEM) return false;
+	if (op1->size   != 32)        return false;
+	if (op1->base   != UD_R_ESP)  return false;
+	if (op1->index  != UD_NONE)   return false;
+	if (op1->scale  != UD_NONE)   return false;
+	if (op1->offset != 0)         return false;
+	
+	/* optional parameter: write out the first operand base register */
+	if (dest_reg != nullptr) {
+		*dest_reg = reg;
+	}
+	
+	return true;
+}
+
+/* detect instruction: 'ret' */
+static bool UD86_insn_is_ret(struct ud *ud)
+{
+	auto mnemonic = ud_insn_mnemonic(ud);
+	if (mnemonic != UD_Iret) return false;
+	
+	if (ud_insn_len(ud) != 1)       return false;
+	if (UD86_num_operands(ud) != 0) return false;
+	
+	return true;
+}
+
+
+/* detect whether an instruction is a call to __i686.get_pc_thunk.(ax|cx|dx|bx) */
+static bool UD86_insn_is_call_to_get_pc_thunk(struct ud *ud, X86Instr::Reg *dest_reg = nullptr)
+{
+	const uint8_t *call_target;
+	if (!UD86_insn_is_call_rel_imm32(ud, &call_target)) return false;
+	
+	ud_t ux;
+	ud_init(&ux);
+	ud_set_mode(&ux, 32);
+	ud_set_pc(&ux, (uint64_t)call_target);
+	ud_set_input_buffer(&ux, call_target, 0x100);
+	
+	if (ud_decode(&ux) == 0) return false;
+	if (!UD86_insn_is_mov_r32_rtnval(&ux, dest_reg)) return false;
+	
+	if (ud_decode(&ux) == 0) return false;
+	if (!UD86_insn_is_ret(&ux)) return false;
+	
+	return true;
+}
+
+
+/* analogous to asm.c copy_bytes() when dest == nullptr */
+static size_t Trampoline_CalcNumBytesToCopy(size_t len_min, const uint8_t *func)
+{
+	ud_t ud;
+	ud_init(&ud);
+	ud_set_mode(&ud, 32);
+	ud_set_pc(&ud, (uint64_t)func);
+	ud_set_input_buffer(&ud, func, 0x100);
+	
+	size_t len_actual = 0;
+	while (len_actual < len_min) {
+		size_t len_decoded = ud_decode(&ud);
+		assert(len_decoded != 0);
+		len_actual += len_decoded;
+	}
+	return len_actual;
+}
+
+/* analogous to asm.c copy_bytes() when dest != nullptr */
+static size_t Trampoline_CopyAndFixUpFuncBytes(size_t len_min, const uint8_t *func, uint8_t *trampoline)
+{
+	uint8_t *dest = trampoline;
+	
+	ud_t ud;
+	ud_init(&ud);
+	ud_set_mode(&ud, 32);
+	ud_set_pc(&ud, (uint64_t)func);
+	ud_set_input_buffer(&ud, func, 0x100);
+	
+	size_t len_actual = 0;
+	while (len_actual < len_min) {
+		size_t len_decoded = ud_decode(&ud);
+		assert(len_decoded != 0);
+		len_actual += len_decoded;
+		
+		/* detect calls to __i686.get_pc_thunk.(ax|cx|dx|bx);
+		 * convert them into direct-register-load operations */
+		X86Instr::Reg reg;
+		if (UD86_insn_is_call_to_get_pc_thunk(&ud, &reg)) {
+			uint32_t pc_value = (ud_insn_off(&ud) + ud_insn_len(&ud) + (trampoline - func));
+			MovRegImm32(dest, reg, pc_value).Write();
+		} else {
+			/* fixup jmp and call relative offsets */
+			uint8_t opcode_byte;
+			int32_t rel_offset;
+			if (UD86_insn_is_jmpcall_rel_imm32(&ud, &opcode_byte, &rel_offset)) {
+				rel_offset += (trampoline - func);
+				*dest = opcode_byte;
+				*reinterpret_cast<int32_t *>(dest + 1) = rel_offset;
+			} else {
+				memcpy(dest, (uint8_t *)ud_insn_off(&ud), len_decoded);
+			}
+		}
+		
+		dest += len_decoded;
+	}
+	return len_actual;
+}
+#warning ALL OF THIS NEEDS TESTING!
 
 
 bool IDetour::Load()
@@ -124,7 +313,7 @@ bool IDetour_SymNormal::DoLoad()
 	TRACE("[this: %08x \"%s\"]", (uintptr_t)this, this->GetName());
 	
 	if (this->m_bFuncByName) {
-		this->m_pFunc = AddrManager::GetAddr(this->m_strFuncName.c_str());
+		this->m_pFunc = reinterpret_cast<uint8_t *>(AddrManager::GetAddr(this->m_strFuncName.c_str()));
 		if (this->m_pFunc == nullptr) {
 			DevMsg("IDetour_SymNormal::DoLoad: \"%s\": addr lookup failed for \"%s\"\n", this->GetName(), this->m_strFuncName.c_str());
 			return false;
@@ -191,7 +380,7 @@ bool IDetour_SymRegex::DoLoad()
 	});
 	
 	if (syms.size() != 1) {
-		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": symbol lookup failed (%u matches):\n", this->GetName(), syms.size());
+		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": symbol lookup failed (%zu matches):\n", this->GetName(), syms.size());
 		for (auto sym : syms) {
 			std::string name(sym->buffer(), sym->length);
 			DevMsg("  %s\n", name.c_str());
@@ -200,7 +389,7 @@ bool IDetour_SymRegex::DoLoad()
 	}
 	
 	this->m_strSymbol = std::string(syms[0]->buffer(), syms[0]->length);
-	this->m_pFunc     = syms[0]->address;
+	this->m_pFunc     = reinterpret_cast<uint8_t *>(syms[0]->address);
 	
 	DemangleName(this->m_strSymbol.c_str(), this->m_strDemangled);
 	
@@ -258,6 +447,7 @@ bool CDetour::EnsureUniqueInnerPtrs()
 	TRACE("[this: %08x \"%s\"] %08x", (uintptr_t)this, this->GetName(), (uintptr_t)this->m_pInner);
 	
 	for (auto detour : s_LoadedDetours) {
+		if (detour == this) continue;
 		if (detour->m_pInner == this->m_pInner) {
 			Warning("Found two CDetour instances with the same inner function pointer!\n"
 				"this: %08x \"%s\"\n"
@@ -340,11 +530,10 @@ void CFuncVProf::TracePost()
 
 
 CDetouredFunc::CDetouredFunc(void *func_ptr) :
-	m_pFunc(func_ptr)
+	m_pFunc(reinterpret_cast<uint8_t *>(func_ptr))
 {
 	TRACE("[this: %08x] [func: %08x]", (uintptr_t)this, (uintptr_t)func_ptr);
 	
-	this->StorePrologue();
 	this->CreateWrapper();
 	this->CreateTrampoline();
 }
@@ -372,6 +561,19 @@ CDetouredFunc& CDetouredFunc::Find(void *func_ptr)
 	return (*it).second;
 	
 //	TRACE_EXIT("%s", (result.second ? "inserted" : "existing"));
+}
+
+
+void CDetouredFunc::CleanUp()
+{
+	for (auto it = s_FuncMap.begin(); it != s_FuncMap.end(); ) {
+		const CDetouredFunc& df = (*it).second;
+		if (df.m_Detours.empty() && df.m_Traces.empty()) {
+			it = s_FuncMap.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 
@@ -433,22 +635,24 @@ void CDetouredFunc::CreateWrapper()
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
 #if !defined _WINDOWS
-	size_t size = (&Wrapper_end - &Wrapper_begin);
-	this->m_pWrapper = g_pSourcePawn->AllocatePageMemory(size);
-	
-	memcpy(this->m_pWrapper, &Wrapper_begin, size);
-	
-	auto func_addr_1  = (uintptr_t)this->m_pWrapper + (&Wrapper_push_func_addr_1  - &Wrapper_begin);
-	auto wrapper_pre  = (uintptr_t)this->m_pWrapper + (&Wrapper_call_wrapper_pre  - &Wrapper_begin);
-	auto actual_func  = (uintptr_t)this->m_pWrapper + (&Wrapper_call_actual_func  - &Wrapper_begin);
-	auto func_addr_2  = (uintptr_t)this->m_pWrapper + (&Wrapper_push_func_addr_2  - &Wrapper_begin);
-	auto wrapper_post = (uintptr_t)this->m_pWrapper + (&Wrapper_call_wrapper_post - &Wrapper_begin);
-	
-	PushImm32   ::Write((void *)func_addr_1,  (uint32_t)this->m_pFunc);
-	CallAbsMem32::Write((void *)wrapper_pre,  (uint32_t)&this->m_pWrapperPre);
-	CallAbsMem32::Write((void *)actual_func,  (uint32_t)&this->m_pWrapperInner);
-	PushImm32   ::Write((void *)func_addr_2,  (uint32_t)this->m_pFunc);
-	CallAbsMem32::Write((void *)wrapper_post, (uint32_t)&this->m_pWrapperPost);
+	this->m_pWrapper = TheExecMemManager()->AllocWrapper();
+	{
+		MemProtModifier_RX_RWX(this->m_pWrapper, Wrapper::Size());
+		
+		memcpy(this->m_pWrapper, Wrapper::Base(), Wrapper::Size());
+		
+		auto p_mov_funcaddr_1 = this->m_pWrapper + Wrapper::Offset_MOV_FuncAddr_1();
+		auto p_call_pre       = this->m_pWrapper + Wrapper::Offset_CALL_Pre();
+		auto p_call_inner     = this->m_pWrapper + Wrapper::Offset_CALL_Inner();
+		auto p_mov_funcaddr_2 = this->m_pWrapper + Wrapper::Offset_MOV_FuncAddr_2();
+		auto p_call_post      = this->m_pWrapper + Wrapper::Offset_CALL_Post();
+		
+		MovRegImm32      (p_mov_funcaddr_1, X86Instr::REG_CX, (uint32_t)this->m_pFunc)         .Write();
+		CallIndirectMem32(p_call_pre,                         (uint32_t)&this->m_pWrapperPre)  .Write();
+		CallIndirectMem32(p_call_inner,                       (uint32_t)&this->m_pWrapperInner).Write();
+		MovRegImm32      (p_mov_funcaddr_2, X86Instr::REG_CX, (uint32_t)this->m_pFunc)         .Write();
+		CallIndirectMem32(p_call_post,                        (uint32_t)&this->m_pWrapperPost) .Write();
+	}
 #endif
 }
 
@@ -456,10 +660,12 @@ void CDetouredFunc::DestroyWrapper()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
+#if !defined _WINDOWS
 	if (this->m_pWrapper != nullptr) {
-		g_pSourcePawn->FreePageMemory(this->m_pWrapper);
+		TheExecMemManager()->FreeWrapper(this->m_pWrapper);
 		this->m_pWrapper = nullptr;
 	}
+#endif
 }
 
 
@@ -467,18 +673,25 @@ void CDetouredFunc::CreateTrampoline()
 {
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
-	assert(this->IsPrologueValid());
+	size_t len_prologue = Trampoline_CalcNumBytesToCopy(JmpRelImm32::Size(), this->m_pFunc);
+	TRACE_MSG("len_prologue = %zu\n", len_prologue);
+	assert(len_prologue >= JmpRelImm32::Size());
 	
-	size_t size = this->m_Prologue.size() + JmpRelImm32::Size();
-	TRACE_MSG("size = %u\n", size);
+	size_t len_trampoline = len_prologue + JmpRelImm32::Size();
+	TRACE_MSG("len_trampoline = %zu\n", len_trampoline);
 	
-	this->m_pTrampoline = g_pSourcePawn->AllocatePageMemory(size);
+	this->m_pTrampoline = TheExecMemManager()->AllocTrampoline(len_trampoline);
 	TRACE_MSG("trampoline @ %08x\n", (uintptr_t)this->m_pTrampoline);
-	memcpy(this->m_pTrampoline, this->m_Prologue.data(), this->m_Prologue.size());
 	
-	void *where = (void *)((uintptr_t)this->m_pTrampoline + this->m_Prologue.size());
-	uint32_t target = (uint32_t)this->m_pFunc + this->m_Prologue.size();
-	JmpRelImm32::Write(where, target);
+	assert(!this->IsPrologueValid());
+	this->m_Prologue.resize(len_prologue);
+	memcpy(this->m_Prologue.data(), this->m_pFunc, len_prologue);
+	
+	{
+		MemProtModifier_RX_RWX(this->m_pTrampoline, len_trampoline);
+		assert(Trampoline_CopyAndFixUpFuncBytes(JmpRelImm32::Size(), this->m_pFunc, this->m_pTrampoline) == len_prologue);
+		JmpRelImm32(this->m_pTrampoline + len_prologue, (uint32_t)this->m_pFunc + len_prologue).Write();
+	}
 }
 
 void CDetouredFunc::DestroyTrampoline()
@@ -486,32 +699,15 @@ void CDetouredFunc::DestroyTrampoline()
 	TRACE("[this: %08x]", (uintptr_t)this);
 	
 	if (this->m_pTrampoline != nullptr) {
-		g_pSourcePawn->FreePageMemory(this->m_pTrampoline);
+		TheExecMemManager()->FreeTrampoline(this->m_pTrampoline);
 		this->m_pTrampoline = nullptr;
 	}
 }
 
 
-void CDetouredFunc::StorePrologue()
-{
-	TRACE("[this: %08x]", (uintptr_t)this);
-	
-	assert(!this->IsPrologueValid());
-	
-	size_t n_bytes = copy_bytes((unsigned char *)this->m_pFunc, nullptr, JmpRelImm32::Size());
-	assert(n_bytes >= JmpRelImm32::Size());
-	// this assert will fail in some cases if you've set a breakpoint in gdb on
-	// the function in question, because copy_bytes stops early if it hits an
-	// int3 instruction
-	
-	this->m_Prologue.resize(n_bytes);
-	memcpy(this->m_Prologue.data(), this->m_pFunc, n_bytes);
-}
-
-
 void CDetouredFunc::Reconfigure()
 {
-	TRACE("[this: %08x] with %u detour(s)", (uintptr_t)this, this->m_Detours.size());
+	TRACE("[this: %08x] with %zu detour(s)", (uintptr_t)this, this->m_Detours.size());
 	
 	this->UninstallJump();
 	
@@ -533,6 +729,11 @@ void CDetouredFunc::Reconfigure()
 				d1->GetName(), (uintptr_t)d1->m_pInner,
 				d2->GetName(), (uintptr_t)d2->m_pCallback);
 			*d1->m_pInner = d2->m_pCallback;
+		}
+		
+		/* just to make sure... */
+		for (auto detour : this->m_Detours) {
+			assert(detour->EnsureUniqueInnerPtrs());
 		}
 		
 		jump_to = first->m_pCallback;
@@ -564,8 +765,10 @@ void CDetouredFunc::InstallJump(void *target)
 {
 	TRACE("[this: %08x] [target: %08x]", (uintptr_t)this, (uintptr_t)target);
 	
-	MemUnprotector prot(this->m_pFunc, this->m_Prologue.size());
-	JmpRelImm32::WritePadded(this->m_pFunc, (uint32_t)target, this->m_Prologue.size());
+	{
+		MemProtModifier_RX_RWX(this->m_pFunc, this->m_Prologue.size());
+		JmpRelImm32(this->m_pFunc, (uint32_t)target).WritePadded(this->m_Prologue.size());
+	}
 }
 
 void CDetouredFunc::UninstallJump()
@@ -574,10 +777,14 @@ void CDetouredFunc::UninstallJump()
 	
 	assert(this->IsPrologueValid());
 	
-	MemUnprotector prot(this->m_pFunc, this->m_Prologue.size());
-	memcpy(this->m_pFunc, this->m_Prologue.data(), this->m_Prologue.size());
+	{
+		MemProtModifier_RX_RWX(this->m_pFunc, this->m_Prologue.size());
+		memcpy(this->m_pFunc, this->m_Prologue.data(), this->m_Prologue.size());
+	}
 }
 
+
+#if !defined _WINDOWS
 
 void CDetouredFunc::FuncPre()
 {
@@ -594,29 +801,38 @@ void CDetouredFunc::FuncPost()
 }
 
 
-/*thread_local*/ std::vector<uint32_t> CDetouredFunc::s_SaveEIP;
-
-
-void CDetouredFunc::WrapperPre(void *func_ptr, uint32_t *eip)
+__fastcall void CDetouredFunc::WrapperPre(void *func_ptr, const uint32_t *retaddr_save)
 {
-//	DevMsg("WrapperPre [func: %08x] [eip: %08x]\n", (uintptr_t)func_ptr, (uintptr_t)eip);
+//	DevMsg("WrapperPre [func: %08x] [retaddr_save: %08x]\n", (uintptr_t)func_ptr, (uintptr_t)retaddr_save);
 	
+	/* use the func_ptr arg to locate the correct CDetouredFunc instance */
 	auto it = s_FuncMap.find(func_ptr);
 	assert(it != s_FuncMap.end());
-	(*it).second.FuncPre();
+	CDetouredFunc& inst = (*it).second;
 	
-	s_SaveEIP.push_back(*eip);
+	/* do the pre-function stuff for this function (traces etc) */
+	inst.FuncPre();
+	
+	/* save the wrapper's return address, for restoration later */
+	s_WrapperCallerRetAddrs.push(*retaddr_save);
 }
 
-void CDetouredFunc::WrapperPost(void *func_ptr, uint32_t *eip)
+__fastcall void CDetouredFunc::WrapperPost(void *func_ptr, uint32_t *retaddr_restore)
 {
-//	DevMsg("WrapperPost [func: %08x] [eip: %08x]\n", (uintptr_t)func_ptr, (uintptr_t)eip);
+//	DevMsg("WrapperPost [func: %08x] [retaddr_restore: %08x]\n", (uintptr_t)func_ptr, (uintptr_t)retaddr_restore);
 	
-	assert(s_SaveEIP.size() >= 1);
-	*eip = s_SaveEIP.back();
-	s_SaveEIP.pop_back();
+	/* restore the wrapper's return address, which we saved earlier */
+	assert(!s_WrapperCallerRetAddrs.empty());
+	*retaddr_restore = s_WrapperCallerRetAddrs.top();
+	s_WrapperCallerRetAddrs.pop();
 	
+	/* use the func_ptr arg to locate the correct CDetouredFunc instance */
 	auto it = s_FuncMap.find(func_ptr);
 	assert(it != s_FuncMap.end());
-	(*it).second.FuncPost();
+	CDetouredFunc& inst = (*it).second;
+	
+	/* do the post-function stuff for this function (traces etc) */
+	inst.FuncPost();
 }
+
+#endif

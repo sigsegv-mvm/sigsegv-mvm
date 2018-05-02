@@ -62,8 +62,6 @@ IVEngineClient *engineclient     = nullptr;
 IBaseClientDLL *clientdll        = nullptr;
 IClientEntityList *cl_entitylist = nullptr;
 
-SourcePawn::ISourcePawnEngine *g_pSourcePawn = nullptr;
-
 IEngineTool *enginetools  = nullptr;
 IServerTools *servertools = nullptr;
 IClientTools *clienttools = nullptr;
@@ -79,7 +77,6 @@ IClientMode *g_pClientMode = nullptr;
 
 bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 {
-	g_pSourcePawn = g_pSM->GetScriptingEngine();
 	ColorSpew::Enable();
 	
 	if (gameeventmanager != nullptr) {
@@ -129,6 +126,7 @@ void CExtSigsegv::SDK_OnUnload()
 //	IHotplugEntity::UninstallAll();
 	
 	g_ModManager.Unload();
+	CDetouredFunc::CleanUp();
 	IExecMemManager::Unload();
 	
 	LibMgr::Unload();

@@ -209,6 +209,8 @@ public:
 	
 	static CDetouredFunc& Find(void *func_ptr);
 	
+	static void CleanUp();
+	
 	void AddDetour(CDetour *detour);
 	void RemoveDetour(CDetour *detour);
 	
@@ -232,29 +234,31 @@ private:
 	void InstallJump(void *target);
 	void UninstallJump();
 	
+#if !defined _WINDOWS
 	void FuncPre();
 	void FuncPost();
+#endif
 	
-	void *m_pFunc;
+	uint8_t *m_pFunc;
 	
 	std::vector<CDetour *> m_Detours;
 	std::vector<ITrace *> m_Traces;
 	
 	std::vector<uint8_t> m_Prologue;
 	
-	void *m_pWrapper    = nullptr;
-	void *m_pTrampoline = nullptr;
+	uint8_t *m_pWrapper    = nullptr;
+	uint8_t *m_pTrampoline = nullptr;
 	
+#if !defined _WINDOWS
 	void *m_pWrapperPre   = reinterpret_cast<void *>(&WrapperPre);
 	void *m_pWrapperPost  = reinterpret_cast<void *>(&WrapperPost);
 	void *m_pWrapperInner = nullptr;
 	
-	static void WrapperPre(void *func_ptr, uint32_t *eip);
-	static void WrapperPost(void *func_ptr, uint32_t *eip);
-	/* TODO: should be thread_local, but our statically linked libstdc++ thinks
-	 * it has recent glibc, and it may not, which breaks
-	 * __cxa_thread_atexit_impl */
-	static /*thread_local*/ std::vector<uint32_t> s_SaveEIP;
+	/* we use this to store the actual-func's caller's return address */
+	static inline thread_local std::stack<uint32_t> s_WrapperCallerRetAddrs;
+	__fastcall static void WrapperPre(void *func_ptr, const uint32_t *retaddr_save);
+	__fastcall static void WrapperPost(void *func_ptr, uint32_t *retaddr_restore);
+#endif
 	
 	static inline std::map<void *, CDetouredFunc> s_FuncMap;
 };
