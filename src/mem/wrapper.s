@@ -1,136 +1,150 @@
-STACK_ALIGN equ 0x10
-
-LOCAL_GPREGS  equ 0x004
-LOCAL_FPSTATE equ 0x220
-LOCAL_TOTAL   equ 0x240
-
-
-struc GPREGS
-	.eax: resd 1
-	.ecx: resd 1
-	.edx: resd 1
-	.ebx: resd 1
-	.esi: resd 1
-	.edi: resd 1
-endstruc
-
+; memory layout used by FXSAVE/FXRSTOR
 struc FPUSTATE
-	.fcw:  resw 1
-	.fsw:  resw 1
-	.ftw:  resw 1
-	.fop:  resw 1
-	.ip:   resd 1
-	.cs:   resw 1
-	       resw 1
-	.st0:  reso 1
-	.st1:  reso 1
-	.st2:  reso 1
-	.st3:  reso 1
-	.st4:  reso 1
-	.st5:  reso 1
-	.st6:  reso 1
-	.st7:  reso 1
-	.xmm0: reso 1
-	.xmm1: reso 1
-	.xmm2: reso 1
-	.xmm3: reso 1
-	.xmm4: reso 1
-	.xmm5: reso 1
-	.xmm6: reso 1
-	.xmm7: reso 1
-	       reso 14
+	.fcw:   resw 1
+	.fsw:   resw 1
+	.ftw:   resb 1
+	        resb 1
+	.fop:   resw 1
+	.fip:   resd 1
+	.fcs:   resw 1
+	        resw 1
+	.fdp:   resd 1
+	.fds:   resw 1
+	        resw 1
+	.mxcsr: resd 2
+	
+	.st0:   reso 1
+	.st1:   reso 1
+	.st2:   reso 1
+	.st3:   reso 1
+	.st4:   reso 1
+	.st5:   reso 1
+	.st6:   reso 1
+	.st7:   reso 1
+	
+	.xmm0:  reso 1
+	.xmm1:  reso 1
+	.xmm2:  reso 1
+	.xmm3:  reso 1
+	.xmm4:  reso 1
+	.xmm5:  reso 1
+	.xmm6:  reso 1
+	.xmm7:  reso 1
+	
+	        reso 14
 endstruc
+FPUSTATE_align equ 0x10
+%if FPUSTATE_size != 0x200
+	%error
+%endif
 
 
-%macro prologue 1
+%macro prologue 0
 	push ebp
 	mov ebp,esp
-	sub esp,%1
 %endmacro
 
 %macro epilogue 0
-	mov esp,ebp
-	pop ebp
+	leave
 %endmacro
 
-%macro saveregs 0
-	mov [ebp-(LOCAL_GPREGS+GPREGS.eax)],eax
-	mov [ebp-(LOCAL_GPREGS+GPREGS.ecx)],ecx
-	mov [ebp-(LOCAL_GPREGS+GPREGS.edx)],edx
-	mov [ebp-(LOCAL_GPREGS+GPREGS.ebx)],ebx
-	mov [ebp-(LOCAL_GPREGS+GPREGS.esi)],esi
-	mov [ebp-(LOCAL_GPREGS+GPREGS.edi)],edi
+
+%macro savestate 0
+	prologue
 	
-	lea ebx,[ebp-LOCAL_FPSTATE]
-	and ebx,~(STACK_ALIGN-1)
-	fxsave [ebx]
-%endmacro
-
-%macro restregs 0
-	lea ebx,[ebp-LOCAL_FPSTATE]
-	and ebx,~(STACK_ALIGN-1)
-	fxrstor [ebx]
+	sub esp,FPUSTATE_size
+	and esp,~(FPUSTATE_align-1)
+	fxsave [esp]
 	
-	mov edi,[ebp-(LOCAL_GPREGS+GPREGS.edi)]
-	mov esi,[ebp-(LOCAL_GPREGS+GPREGS.esi)]
-	mov ebx,[ebp-(LOCAL_GPREGS+GPREGS.ebx)]
-	mov edx,[ebp-(LOCAL_GPREGS+GPREGS.edx)]
-	mov ecx,[ebp-(LOCAL_GPREGS+GPREGS.ecx)]
-	mov eax,[ebp-(LOCAL_GPREGS+GPREGS.eax)]
+	push eax
+	push ecx
+	push edx
+	push ebx
+	push esi
+	push edi
+%endmacro
+
+%macro reststate 0
+	pop edi
+	pop esi
+	pop ebx
+	pop edx
+	pop ecx
+	pop eax
+	
+	fxrstor [esp]
+	
+	epilogue
 %endmacro
 
 
-global Wrapper_begin
-global Wrapper_push_func_addr_1
-global Wrapper_call_wrapper_pre
-global Wrapper_call_actual_func
-global Wrapper_push_func_addr_2
-global Wrapper_call_wrapper_post
-global Wrapper_end
+; global symbols: for access from C++
+global __wrapper_Begin
+global __wrapper_MOV_FuncAddr_1
+global __wrapper_CALL_Pre
+global __wrapper_CALL_Inner
+global __wrapper_MOV_FuncAddr_2
+global __wrapper_CALL_Post
+global __wrapper_End
 
-Wrapper_begin             equ Wrapper
-Wrapper_push_func_addr_1  equ Wrapper.A
-Wrapper_call_wrapper_pre  equ Wrapper.B
-Wrapper_call_actual_func  equ Wrapper.C
-Wrapper_push_func_addr_2  equ Wrapper.D
-Wrapper_call_wrapper_post equ Wrapper.E
-Wrapper_end               equ Wrapper.F
+__wrapper_Begin          equ Wrapper.BEGIN
+__wrapper_MOV_FuncAddr_1 equ Wrapper.A
+__wrapper_CALL_Pre       equ Wrapper.B
+__wrapper_CALL_Inner     equ Wrapper.C
+__wrapper_MOV_FuncAddr_2 equ Wrapper.D
+__wrapper_CALL_Post      equ Wrapper.E
+__wrapper_End            equ Wrapper.END
 
 
-PLACEHOLDER1 equ 0x00001111
-PLACEHOLDER2 equ 0x00002222
-PLACEHOLDER3 equ 0x00003333
-PLACEHOLDER4 equ 0x00004444
-PLACEHOLDER5 equ 0x00005555
+; these placeholder values are intentionally in low memory so they're basically
+; guaranteed to segfault if they aren't initialized but are then dereferenced
+XX_FUNCADDR_1 equ 0x00000111
+XX_CALL_PRE   equ 0x00000222
+XX_CALL_INNER equ 0x00000333
+XX_FUNCADDR_2 equ 0x00000444
+XX_CALL_POST  equ 0x00000555
+XX_RETADDR    equ 0x00000FFF
+
+
+; calling convention: [[gnu::regparm(3)]]
+%define REGP1 eax
+%define REGP2 edx
+%define REGP3 ecx
+
+; calling convention: [[gnu::fastcall]] / __fastcall
+%define FAST1 ecx
+%define FAST2 edx
+
+; ensure that NASM doesn't optimize any of our placeholder instructions into
+; versions that use smaller-than-dword immediate values
+%define strict4 strict dword
 
 
 section .rodata
 
 Wrapper:
-	prologue LOCAL_TOTAL
-	saveregs
+.BEGIN:
+	; WRAPPER-PRE BLOCK ================================================================================================
+	savestate                       ; allocate a temporary stack frame and save all GP+FP register state
+.A: mov FAST1,strict4 XX_FUNCADDR_1 ; wrapper-pre func arg 1: actual func addr
+	lea FAST2,[ebp+0x4]             ; wrapper-pre func arg 2: ptr to our retaddr (i.e. actual func's caller)
+.B:	call strict4 [XX_CALL_PRE]      ; call the wrapper-pre func: do pre things and save our retaddr
+	reststate                       ; restore the GP+FP register state and tear down the temporary stack frame
+	; WRAPPER-PRE BLOCK ================================================================================================
 	
-	lea eax,[ebp+0x4]
-	push eax
-.A:	push strict dword PLACEHOLDER1
-.B:	call strict dword [PLACEHOLDER2]
-	add esp,8
+	; WRAPPER-INNER BLOCK ==============================================================================================
+	add esp,4                       ; since we are calling rather than jumping, our retaddr needs to go away
+.C:	call strict4 [XX_CALL_INNER]    ; call the actual func (or detour(s) thereof), with original reg+stack state
+	push XX_RETADDR                 ; make a spot for our retaddr again (to be filled in by the wrapper-post func)
+	; WRAPPER-INNER BLOCK ==============================================================================================
 	
-	restregs
-	epilogue
-	add esp,4
-.C:	call strict dword [PLACEHOLDER3]
-	push 0
-	prologue LOCAL_TOTAL
-	saveregs
+	; WRAPPER-POST BLOCK ===============================================================================================
+	savestate                       ; allocate a temporary stack frame and save all GP+FP register state
+.D: mov FAST1,strict4 XX_FUNCADDR_2 ; wrapper-post func arg 1: actual func addr
+	lea FAST2,[ebp+0x4]             ; wrapper-post func arg 2: ptr to our retaddr (i.e. actual func's caller)
+.E:	call strict4 [XX_CALL_POST]     ; call the wrapper-ost func: do post things and restore our retaddr
+	reststate                       ; restore the GP+FP register state and tear down the temporary stack frame
+	; WRAPPER-POST BLOCK ===============================================================================================
 	
-	lea eax,[ebp+0x4]
-	push eax
-.D:	push strict dword PLACEHOLDER4
-.E:	call strict dword [PLACEHOLDER5]
-	add esp,8
-	
-	restregs
-	epilogue
-	ret
-.F:
+	ret                             ; we can safely return to the actual func's caller now
+.END:
