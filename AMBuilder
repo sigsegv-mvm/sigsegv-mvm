@@ -49,6 +49,7 @@ sourceFiles += [
   'src/addr/prescan.cpp',
   'src/addr/standard.cpp',
   
+  'src/mem/alloc.cpp',
   'src/mem/detour.cpp',
   'src/mem/hook.cpp',
   'src/mem/patch.cpp',

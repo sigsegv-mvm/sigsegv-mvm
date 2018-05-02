@@ -1,6 +1,7 @@
 #include "extension.h"
 #include "library.h"
 #include "link/link.h"
+#include "mem/alloc.h"
 #include "mod.h"
 #include "addr/addr.h"
 #include "addr/prescan.h"
@@ -102,6 +103,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	
 	Prop::PreloadAll();
 	
+	IExecMemManager::Load();
 	g_ModManager.Load();
 	
 	IGameSystem::Add(this);
@@ -127,6 +129,7 @@ void CExtSigsegv::SDK_OnUnload()
 //	IHotplugEntity::UninstallAll();
 	
 	g_ModManager.Unload();
+	IExecMemManager::Unload();
 	
 	LibMgr::Unload();
 	
