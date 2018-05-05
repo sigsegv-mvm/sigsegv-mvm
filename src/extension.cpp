@@ -75,7 +75,7 @@ IMDLCache *mdlcache = nullptr;
 IClientMode *g_pClientMode = nullptr;
 
 
-bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
+bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
 	ColorSpew::Enable();
 	
@@ -86,7 +86,7 @@ bool CExtSigsegv::SDK_OnLoad(char *error, size_t maxlen, bool late)
 	this->LoadSoundOverrides();
 	
 	PreScan::DoScans();
-	if (!g_GCHook.LoadAll(error, maxlen)) goto fail;
+	if (!g_GCHook.LoadAll(error, maxlength)) goto fail;
 	
 	LibMgr::Load();
 //	g_Disasm.Load();
@@ -140,7 +140,7 @@ void CExtSigsegv::SDK_OnAllLoaded()
 {
 }
 
-bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
+bool CExtSigsegv::QueryRunning(char *error, size_t maxlength)
 {
 	return true;
 }
@@ -155,14 +155,14 @@ bool CExtSigsegv::QueryRunning(char *error, size_t maxlen)
 #define GET_IFACE_REQUIRED(factory, var, name) \
 	var = reinterpret_cast<decltype(var)>(ismm->VInterfaceMatch(factory##Factory(), name, -1)); \
 	if (var == nullptr) { \
-		if (error != nullptr && maxlen != 0) { \
-			ismm->Format(error, maxlen, "Could not find required interface: %s", name); \
+		if (error != nullptr && maxlength != 0) { \
+			ismm->Format(error, maxlength, "Could not find required interface: %s", name); \
 		} \
 		return false; \
 	}
 
 
-bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, bool late)
+bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlength, bool late)
 {
 	DevMsg("CExtSigsegv: compiled @ %s %s\n", GetBuildDate(), GetBuildTime());
 	
@@ -255,7 +255,7 @@ bool CExtSigsegv::SDK_OnMetamodLoad(ISmmAPI *ismm, char *error, size_t maxlen, b
 	return true;
 }
 
-bool CExtSigsegv::SDK_OnMetamodUnload(char *error, size_t maxlen)
+bool CExtSigsegv::SDK_OnMetamodUnload(char *error, size_t maxlength)
 {
 	return true;
 }
