@@ -65,6 +65,12 @@
 	#define WARN_IGNORE__NULL_DEREFERENCE()
 #endif
 
+#if defined __GNUC__ || defined __clang__
+	#define WARN_IGNORE__CLASS_MEMACCESS() WARN_IGNORE("-Wclass-memaccess")
+#else
+	#define WARN_IGNORE__CLASS_MEMACCESS()
+#endif
+
 
 class IVEngineServer;
 class IServerGameDLL;
@@ -316,7 +322,9 @@ WARN_RESTORE()
 #include "sdk2013/mathlib.h"
 #include <string_t.h>
 #include <annotations.h>
+WARN_IGNORE__CLASS_MEMACCESS()
 #include <utlmemory.h>
+WARN_RESTORE()
 #include <utlstring.h>
 #include <utlvector.h>
 WARN_IGNORE__REORDER()
@@ -375,6 +383,9 @@ WARN_RESTORE()
 #include <IEngineSound.h>
 #include <igamesystem.h>
 #include <vphysics_interface.h>
+WARN_IGNORE__CLASS_MEMACCESS()
+#include <studio.h>
+WARN_RESTORE()
 WARN_IGNORE__REORDER()
 #include <istudiorender.h>
 WARN_RESTORE()

@@ -76,7 +76,7 @@ void UTIL_TraceModel( const Vector &vecStart, const Vector &vecEnd, const Vector
 	}
 	else
 	{
-		memset( ptr, 0, sizeof(trace_t) );
+		memset( (void *)ptr, 0, sizeof(trace_t) );
 		ptr->fraction = 1.0f;
 	}
 }
