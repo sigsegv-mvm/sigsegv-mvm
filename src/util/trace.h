@@ -132,25 +132,8 @@ inline std::string GetTheActualFunctionName(const std::string& func, const std::
 //	DevMsg("%s(\"%s\", \"%s\")\n", __FUNCTION__, func.c_str(), pretty.c_str());
 	
 	size_t l_func  = pretty.find(func);
-	
-	// NOTE: the new code below had a problem: an infinite loop.
-	// I've since added the ' + 1' to the l_func assignment, but that didn't help.
-#if 1
-	size_t l_begin = l_func;
-	while (true) {
-		/* work backwards from the start of the func name to find a space */
-		size_t l = pretty.rfind(' ', l_func);
-		if (l == pretty.npos) break;
-		l_func = l + 1;
-		
-		/* if the space is preceded by a comma, then keep going (we're in a template arg list) */
-		if (l == 0 || pretty[l - 1] != ',') break;
-	}
-#else
 	size_t l_begin = pretty.rfind(" ", l_func) + 1;
-#endif
-	
-	size_t l_end = pretty.find("(", l_func + func.length());
+	size_t l_end   = pretty.find("(", l_func + func.length());
 	
 	return pretty.substr(l_begin, l_end - l_begin);
 }
