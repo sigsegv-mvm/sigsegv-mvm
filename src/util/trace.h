@@ -2,8 +2,19 @@
 #define _INCLUDE_SIGSEGV_UTIL_TRACE_H_
 
 
-//#define TRACE_ENABLE 0
-//#define TRACE_TERSE  0
+/* defaults */
+
+#ifndef TRACE_ENABLE
+#define TRACE_ENABLE 0
+#endif
+
+#ifndef TRACE_TERSE
+#define TRACE_TERSE 0
+#endif
+
+#ifndef TRACE_FNAME_MANUAL
+#define TRACE_FNAME_MANUAL 0
+#endif
 
 
 class TraceLevel
@@ -36,8 +47,8 @@ inline void IndentMsg(const char *format, ...)
 class ScopedTrace
 {
 public:
-	ScopedTrace(const char *func_name, bool disable) :
-		m_strFuncName(func_name), m_bDisabled(disable)
+	ScopedTrace(const std::string *func_name, bool enable = true) :
+		m_strFuncName(func_name), m_bEnabled(enable)
 	{
 		this->m_szEnterMsg[0] = '\0';
 		this->m_szExitMsg[0]  = '\0';
@@ -50,6 +61,8 @@ public:
 	[[gnu::format(printf, 2, 3)]]
 	void PrintEnterMsg(const char *format = nullptr, ...)
 	{
+		if (!this->m_bEnabled) return;
+		
 		if (format != nullptr) {
 			va_list va;
 			va_start(va, format);
@@ -63,6 +76,8 @@ public:
 	[[gnu::format(printf, 2, 3)]]
 	void SetExitMsg(const char *format = nullptr, ...)
 	{
+		if (!this->m_bEnabled) return;
+		
 		if (format != nullptr) {
 			va_list va;
 			va_start(va, format);
@@ -74,7 +89,7 @@ public:
 private:
 	void Enter()
 	{
-		if (this->m_bDisabled) return;
+		if (!this->m_bEnabled) return;
 		
 		assert(!this->m_bEntered);
 		this->m_bEntered = true;
@@ -87,7 +102,7 @@ private:
 		
 		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "%*s%s",
 			2 * TraceLevel::Get(), "", strEnter);
-		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "%s", this->m_strFuncName.c_str());
+		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "%s", this->m_strFuncName->c_str());
 		DevMsg(" %s\n", this->m_szEnterMsg);
 		
 		TraceLevel::Increment();
@@ -95,7 +110,7 @@ private:
 	
 	void Exit()
 	{
-		if (this->m_bDisabled) return;
+		if (!this->m_bEnabled) return;
 		
 		assert(this->m_bEntered);
 		this->m_bEntered = false;
@@ -105,22 +120,20 @@ private:
 #if !TRACE_TERSE
 		ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "%*s%s",
 			2 * TraceLevel::Get(), "", "EXIT  ");
-		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "%s", this->m_strFuncName.c_str());
+		ConColorMsg(Color(0x00, 0xff, 0x00, 0xff), "%s", this->m_strFuncName->c_str());
 		DevMsg(" %s\n", this->m_szExitMsg);
 #endif
 	}
 	
-	std::string m_strFuncName;
+	const std::string *m_strFuncName;
 	
 	char m_szEnterMsg[1024];
 	char m_szExitMsg[1024];
 	
-	bool m_bEntered  = false;
-	bool m_bDisabled = false;
+	bool m_bEnabled;
+	bool m_bEntered = false;
 };
 
-
-#if TRACE_ENABLE
 
 #if defined __GNUC__
 
@@ -138,7 +151,7 @@ inline std::string GetTheActualFunctionName(const std::string& func, const std::
 	return pretty.substr(l_begin, l_end - l_begin);
 }
 
-#define TRACE_FUNC_NAME GetTheActualFunctionName(__FUNCTION__, __PRETTY_FUNCTION__).c_str()
+#define TRACE_FUNC_NAME GetTheActualFunctionName(__FUNCTION__, __PRETTY_FUNCTION__)
 
 #else
 
@@ -147,19 +160,40 @@ inline std::string GetTheActualFunctionName(const std::string& func, const std::
 
 #endif
 
-// TRACE_ENABLE = 1
-#define TRACE(...)          ScopedTrace _trace(TRACE_FUNC_NAME, false);   _trace.PrintEnterMsg(__VA_ARGS__)
-#define TRACE_IF(pred, ...) ScopedTrace _trace(TRACE_FUNC_NAME, !(pred)); _trace.PrintEnterMsg(__VA_ARGS__)
-#define TRACE_EXIT(...)     _trace.SetExitMsg(__VA_ARGS__)
-#define TRACE_MSG(...)      IndentMsg(__VA_ARGS__)
+
+/* don't even build the CFmtStr if !TRACE_ENABLE or !TRACE_FNAME_MANUAL */
+#if TRACE_ENABLE && TRACE_FNAME_MANUAL
+#define TR_FNAME(fmt, ...) CFmtStrN<256>(fmt, ##__VA_ARGS__).Get()
+#else
+#define TR_FNAME(...)
+#endif
+
+
+#if TRACE_ENABLE
+
+/* static string means that manual fnames should NOT vary for a given func */
+#define _TRACE(fname, pred, ...) \
+	static std::string _trace_fname = (fname); \
+	ScopedTrace _trace(&_trace_fname, (pred)); \
+	_trace.PrintEnterMsg(__VA_ARGS__)
+
+#if TRACE_FNAME_MANUAL
+#define TRACE(fname, ...)           _TRACE((fname), true,   ##__VA_ARGS__)
+#define TRACE_IF(fname, pred, ...)  _TRACE((fname), (pred), ##__VA_ARGS__)
+#else
+#define TRACE(...)          _TRACE(TRACE_FUNC_NAME, true,   ##__VA_ARGS__)
+#define TRACE_IF(pred, ...) _TRACE(TRACE_FUNC_NAME, (pred), ##__VA_ARGS__)
+#endif
+
+#define TRACE_MSG(...)          IndentMsg(__VA_ARGS__)
+#define TRACE_EXIT(...) _trace.SetExitMsg(__VA_ARGS__)
 
 #else
 
-// TRACE_ENABLE = 0
 #define TRACE(...)
 #define TRACE_IF(...)
-#define TRACE_EXIT(...)
 #define TRACE_MSG(...)
+#define TRACE_EXIT(...)
 
 #endif
 
