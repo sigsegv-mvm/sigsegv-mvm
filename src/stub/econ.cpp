@@ -96,8 +96,9 @@ using CExtract_CEconItemDefinition_m_Visuals = IExtractStub;
 static constexpr uint8_t s_Buf_CEconItemDefinition_EquipRegionMasks[] = {
 	0xe8, 0x00, 0x00, 0x00, 0x00,       // +0000  call CEconItemSchema::GetEquipRegionBitMaskByName
 	0x09, 0x83, 0x00, 0x00, 0x00, 0x00, // +0005  or [ebx+m_nEquipRegionBitMask],eax
-	0x83, 0xc7, 0x01,                   // +000B  add edi,1
-	0x09, 0xb3, 0x00, 0x00, 0x00, 0x00, // +000E  or [ebx+m_nEquipRegionMask],esi
+	0x83, 0xc6, 0x01,                   // +000B  add esi,1
+	0x8b, 0x85, 0x00, 0x00, 0x00, 0x00, // +000E  mov eax,[ebp+0xXXXXXXXX]
+	0x09, 0x83, 0x00, 0x00, 0x00, 0x00, // +0014  or [ebx+m_nEquipRegionMask],eax
 };
 
 struct CExtract_CEconItemDefinition_EquipRegionMasks : public IExtract<unsigned int *>
@@ -111,13 +112,14 @@ struct CExtract_CEconItemDefinition_EquipRegionMasks : public IExtract<unsigned 
 		mask.SetDword(0x0000 + 1, 0x00000000);
 		mask.SetDword(0x0005 + 2, 0x00000000);
 		mask.SetDword(0x000e + 2, 0x00000000);
+		mask.SetDword(0x0014 + 2, 0x00000000);
 		
 		return true;
 	}
 	
 	virtual const char *GetFuncName() const override { return "CEconItemDefinition::BInitFromKV"; }
 	virtual uint32_t GetFuncOffMin() const override  { return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override  { return 0x2000; } // @ +0x14a2
+	virtual uint32_t GetFuncOffMax() const override  { return 0x2000; } // @ +0x13da
 };
 
 struct CExtract_CEconItemDefinition_m_nEquipRegionBitMask : public CExtract_CEconItemDefinition_EquipRegionMasks
@@ -127,7 +129,7 @@ struct CExtract_CEconItemDefinition_m_nEquipRegionBitMask : public CExtract_CEco
 
 struct CExtract_CEconItemDefinition_m_nEquipRegionMask : public CExtract_CEconItemDefinition_EquipRegionMasks
 {
-	virtual uint32_t GetExtractOffset() const override { return 0x000e + 2; }
+	virtual uint32_t GetExtractOffset() const override { return 0x0014 + 2; }
 };
 
 #elif defined _WINDOWS
