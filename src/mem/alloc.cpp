@@ -7,8 +7,9 @@
 
 
 #if 1
-#define TRACE_ENABLE 1
-#define TRACE_TERSE  1
+#define TRACE_ENABLE       1
+#define TRACE_TERSE        1
+#define TRACE_FNAME_MANUAL 1
 #endif
 #include "util/trace.h"
 
@@ -21,6 +22,7 @@ constexpr size_t CHUNK_SIZE_TRAMPOLINE = 0x20;
 constexpr size_t CHUNK_SIZE_WRAPPER = 0x80;
 
 
+#define TRACE_ExecMemBlockAllocator(func, ...) TRACE(TR_FNAME("ExecMemBlockAllocator<0x%zX,0x%zX>::" #func, BLOCK_SIZE, CHUNK_SIZE), ##__VA_ARGS__)
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 class ExecMemBlockAllocator
 {
@@ -94,7 +96,7 @@ private:
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 [[nodiscard]] uint8_t *ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Alloc()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Alloc);
 	
 	Block *block = nullptr;
 	
@@ -128,7 +130,7 @@ template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Free(const uint8_t *chunk_ptr)
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Free);
 	
 	auto block_ptr = (const uint8_t *)((uintptr_t)chunk_ptr & ~(BLOCK_SIZE - 1));
 	auto it = this->m_Blocks.find(block_ptr);
@@ -155,7 +157,7 @@ void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Free(const uint8_t *chunk_pt
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::PostUpdate()
 {
-	TRACE("[%zu blocks]", this->m_Blocks.size());
+	TRACE_ExecMemBlockAllocator(PostUpdate, "[%zu block(s)]", this->m_Blocks.size());
 #if TRACE_ENABLE
 	for (Block *block : this->m_BlocksByUsage) {
 		TRACE_MSG("[0x%08X] %*zu/%*zu\n", (uintptr_t)block->BaseAddr(),
@@ -180,7 +182,7 @@ void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::PostUpdate()
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Block()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::Block);
 	
 	this->Map();
 }
@@ -188,7 +190,7 @@ ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Block()
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::~Block()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::~Block);
 	
 	/* leak check! */
 	assert(this->FreeSlots() == TotalSlots());
@@ -200,7 +202,7 @@ ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::~Block()
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 [[nodiscard]] uint8_t *ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Alloc()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::Alloc);
 	
 	for (size_t chunk_idx = 0; chunk_idx < TotalSlots(); ++chunk_idx) {
 		if (!this->m_AllocMask.test(chunk_idx)) {
@@ -218,7 +220,7 @@ template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Free(const uint8_t *chunk_ptr)
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::Free);
 	
 	size_t chunk_idx = this->PtrToIdx(chunk_ptr);
 	
@@ -233,7 +235,7 @@ void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Free(const uint8_t *c
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Map()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::Map);
 	
 	assert(this->m_Base == nullptr);
 	
@@ -249,7 +251,7 @@ void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::Map()
 template<size_t BLOCK_SIZE, size_t CHUNK_SIZE>
 void ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::UnMap()
 {
-	TRACE();
+	TRACE_ExecMemBlockAllocator(Block::UnMap);
 	
 	assert(this->m_Base != nullptr);
 	
@@ -292,6 +294,8 @@ constexpr size_t ExecMemBlockAllocator<BLOCK_SIZE, CHUNK_SIZE>::Block::PtrToIdx(
 }
 
 
+#define TRACE_IExecMemManager(func, ...) TRACE("IExecMemManager::" #func, ##__VA_ARGS__)
+#define TRACE_CExecMemManager(func, ...) TRACE("CExecMemManager::" #func, ##__VA_ARGS__)
 class CExecMemManager : public IExecMemManager
 {
 public:
@@ -325,7 +329,7 @@ IExecMemManager *TheExecMemManager()
 
 void IExecMemManager::Load()
 {
-	TRACE();
+	TRACE_IExecMemManager(Load);
 	
 	assert(pTheExecMemManager == nullptr);
 	pTheExecMemManager = new CExecMemManager();
@@ -333,7 +337,7 @@ void IExecMemManager::Load()
 
 void IExecMemManager::Unload()
 {
-	TRACE();
+	TRACE_IExecMemManager(Unload);
 	
 	assert(pTheExecMemManager != nullptr);
 	delete pTheExecMemManager;
@@ -343,7 +347,7 @@ void IExecMemManager::Unload()
 
 CExecMemManager::CExecMemManager()
 {
-	TRACE();
+	TRACE_CExecMemManager(CExecMemManager);
 	
 	TRACE_MSG("Base 0x%08X\n", (uint32_t)Wrapper::Base());
 	TRACE_MSG("Size 0x%08X\n", (uint32_t)Wrapper::Size());
@@ -359,7 +363,7 @@ CExecMemManager::CExecMemManager()
 
 CExecMemManager::~CExecMemManager()
 {
-	TRACE("[m_nAllocsTrampoline: %zu] [m_nAllocsWrapper: %zu]", this->m_nAllocsTrampoline, this->m_nAllocsWrapper);
+	TRACE_CExecMemManager(~CExecMemManager, "[m_nAllocsTrampoline: %zu] [m_nAllocsWrapper: %zu]", this->m_nAllocsTrampoline, this->m_nAllocsWrapper);
 	
 	/* leak check! */
 	assert(this->m_nAllocsTrampoline == 0);
@@ -371,7 +375,7 @@ CExecMemManager::~CExecMemManager()
 
 [[nodiscard]] uint8_t *CExecMemManager::AllocTrampoline(size_t len)
 {
-	TRACE("[CHUNK_SIZE_TRAMPOLINE: %zu] [len: %zu]", CHUNK_SIZE_TRAMPOLINE, len);
+	TRACE_CExecMemManager(AllocTrampoline, "[CHUNK_SIZE_TRAMPOLINE: %zu] [len: %zu]", CHUNK_SIZE_TRAMPOLINE, len);
 	
 	/* ensure that our arbitrary upper limit on possible trampoline sizes is always appropriate */
 	assert(len <= CHUNK_SIZE_TRAMPOLINE);
@@ -386,7 +390,7 @@ CExecMemManager::~CExecMemManager()
 
 void CExecMemManager::FreeTrampoline(const uint8_t *ptr)
 {
-	TRACE("[ptr: 0x%08x] [m_nAllocsTrampoline: %zu]", (uintptr_t)ptr, this->m_nAllocsTrampoline);
+	TRACE_CExecMemManager(FreeTrampoline, "[ptr: 0x%08x] [m_nAllocsTrampoline: %zu]", (uintptr_t)ptr, this->m_nAllocsTrampoline);
 	
 	assert(this->m_nAllocsTrampoline > 0);
 	--this->m_nAllocsTrampoline;
@@ -397,7 +401,7 @@ void CExecMemManager::FreeTrampoline(const uint8_t *ptr)
 
 [[nodiscard]] uint8_t *CExecMemManager::AllocWrapper()
 {
-	TRACE("[CHUNK_SIZE_WRAPPER: %zu]", CHUNK_SIZE_WRAPPER);
+	TRACE_CExecMemManager(AllocWrapper, "[CHUNK_SIZE_WRAPPER: %zu]", CHUNK_SIZE_WRAPPER);
 	
 	++this->m_nAllocsWrapper;
 	
@@ -409,7 +413,7 @@ void CExecMemManager::FreeTrampoline(const uint8_t *ptr)
 
 void CExecMemManager::FreeWrapper(const uint8_t *ptr)
 {
-	TRACE("[ptr: 0x%08x] [m_nAllocsWrapper: %zu]", (uintptr_t)ptr, this->m_nAllocsWrapper);
+	TRACE_CExecMemManager(FreeWrapper, "[ptr: 0x%08x] [m_nAllocsWrapper: %zu]", (uintptr_t)ptr, this->m_nAllocsWrapper);
 	
 	assert(this->m_nAllocsWrapper > 0);
 	--this->m_nAllocsWrapper;
