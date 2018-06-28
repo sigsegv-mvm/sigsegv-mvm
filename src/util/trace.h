@@ -15,7 +15,7 @@ public:
 	static void Decrement() { --s_Level; }
 	
 private:
-	static inline int s_Level = 0;
+	static inline thread_local int s_Level = 0;
 };
 
 
