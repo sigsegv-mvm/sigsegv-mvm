@@ -109,13 +109,16 @@ public:
 
 template<typename T> class CSchemaAttributeTypeBase : public ISchemaAttributeTypeBase<T> {};
 
-class CSchemaAttributeType_Default                           : public CSchemaAttributeTypeBase<unsigned int>                      {};
-class CSchemaAttributeType_Float                             : public CSchemaAttributeTypeBase<float>                             {};
-class CSchemaAttributeType_UInt64                            : public CSchemaAttributeTypeBase<uint64>                            {};
-class CSchemaAttributeType_String                            : public CSchemaAttributeTypeBase<CAttribute_String>                 {};
-class CSchemaAttributeType_ItemSlotCriteria                  : public CSchemaAttributeTypeBase<CAttribute_ItemSlotCriteria>       {};
-class CSchemaAttributeType_DynamicRecipeComponentDefinedItem : public CSchemaAttributeTypeBase<CAttribute_DynamicRecipeComponent> {};
-class CSchemaAttributeType_WorldItemPlacement                : public CSchemaAttributeTypeBase<CAttribute_WorldItemPlacement>     {};
+class CSchemaAttributeType_Default : public CSchemaAttributeTypeBase<unsigned int> {};
+class CSchemaAttributeType_Float   : public CSchemaAttributeTypeBase<float>        {};
+class CSchemaAttributeType_UInt64  : public CSchemaAttributeTypeBase<uint64>       {};
+
+template<typename T> class CSchemaAttributeTypeProtobufBase : public CSchemaAttributeTypeBase<T> {};
+
+class CSchemaAttributeType_String                            : public CSchemaAttributeTypeProtobufBase<CAttribute_String>                 {};
+class CSchemaAttributeType_ItemSlotCriteria                  : public CSchemaAttributeTypeProtobufBase<CAttribute_ItemSlotCriteria>       {};
+class CSchemaAttributeType_DynamicRecipeComponentDefinedItem : public CSchemaAttributeTypeProtobufBase<CAttribute_DynamicRecipeComponent> {};
+class CSchemaAttributeType_WorldItemPlacement                : public CSchemaAttributeTypeProtobufBase<CAttribute_WorldItemPlacement>     {};
 
 
 struct attr_type_t
