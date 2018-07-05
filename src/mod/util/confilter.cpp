@@ -167,6 +167,7 @@ namespace Mod_Util_ConFilter
 	}
 	
 	
+	#warning __gcc_regcall detours considered harmful!
 	// POTENTIAL ISSUE: stupid code may call spew funcs with only partial lines
 	DETOUR_DECL_STATIC_CALL_CONVENTION(__gcc_regcall, SpewRetval_t, D__SpewMessage, SpewType_t spewType, const char *pGroupName, int nLevel, const Color *pColor, const char *pMsgFormat, va_list args)
 	{

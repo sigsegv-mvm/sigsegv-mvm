@@ -4,6 +4,7 @@
 
 namespace Mod_Pop_ExtAttr_Parse
 {
+	#warning __gcc_regcall detours considered harmful!
 	DETOUR_DECL_STATIC_CALL_CONVENTION(__gcc_regcall, bool, ParseDynamicAttributes, void *ecattr, KeyValues *kv)
 	{
 		DevMsg("ParseDynamicAttributes: \"%s\" \"%s\"\n", kv->GetName(), kv->GetString());
