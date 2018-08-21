@@ -7,6 +7,12 @@
 #include "util/misc.h"
 
 
+namespace Mod_Util_Admin_Abuse_Mode
+{
+	bool IsPlayerAllowed(CBasePlayer *player);
+}
+
+
 namespace Mod_Util_Client_Cmds
 {
 	// TODO: another version that allows setting a different player's scale...?
@@ -473,8 +479,13 @@ namespace Mod_Util_Client_Cmds
 		if (player != nullptr) {
 			auto it = cmds.find(args[0]);
 			if (it != cmds.end()) {
-				auto func = (*it).second;
-				(*func)(player, args);
+				if (Mod_Util_Admin_Abuse_Mode::IsPlayerAllowed(player)) {
+					auto func = (*it).second;
+					(*func)(player, args);
+				} else {
+					ClientMsg(player, "[%s] Admin abuse mode is enabled, so you are not authorized to use this command. Sorry.\n", (*it).first);
+				}
+				
 				return true;
 			}
 		}

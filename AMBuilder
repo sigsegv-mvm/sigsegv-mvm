@@ -227,6 +227,7 @@ sourceFiles += [
   'src/mod/tank/gunslinger_combo.cpp',
   
   'src/mod/util/add_item.cpp',
+  'src/mod/util/admin_abuse_mode.cpp',
   'src/mod/util/client_cmds.cpp',
   'src/mod/util/confilter.cpp',
   'src/mod/util/console_recv.cpp',

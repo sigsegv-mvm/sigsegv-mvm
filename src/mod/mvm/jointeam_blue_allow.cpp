@@ -10,6 +10,12 @@
 #include <in_buttons.h>
 
 
+namespace Mod_Util_Admin_Abuse_Mode
+{
+	bool IsPlayerAllowed(CBasePlayer *player);
+}
+
+
 namespace Mod_MvM_JoinTeam_Blue_Allow
 {
 	using CollectPlayersFunc_t = int (*)(CUtlVector<CTFPlayer *> *, int, bool, bool);
@@ -416,14 +422,18 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		}
 		
 		if (TFGameRules()->IsMannVsMachineMode() && !pPlayer->IsBot() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
-			if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
-				DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",
-					ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
-				iResult = iWantedTeam;
+			if (Mod_Util_Admin_Abuse_Mode::IsPlayerAllowed(pPlayer)) {
+				if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
+					DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",
+						ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
+					iResult = iWantedTeam;
+				} else {
+					DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; would have overridden to allow joining team %d but limit has been met.\n",
+						ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
+					ClientMsg(pPlayer, "Cannot join team blue: the maximum number of human players on blue team has already been met.\n");
+				}
 			} else {
-				DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; would have overridden to allow joining team %d but limit has been met.\n",
-					ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
-				ClientMsg(pPlayer, "Cannot join team blue: the maximum number of human players on blue team has already been met.\n");
+				ClientMsg(pPlayer, "Admin abuse mode is enabled, so you are not authorized to use this command. Sorry.\n");
 			}
 		}
 		
