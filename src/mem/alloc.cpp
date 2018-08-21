@@ -6,7 +6,7 @@
 #include <bitset>
 
 
-#if 1
+#if 0
 #define TRACE_ENABLE       1
 #define TRACE_TERSE        1
 #define TRACE_FNAME_MANUAL 1
