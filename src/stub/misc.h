@@ -14,6 +14,7 @@ class CFlaggedEntitiesEnum;
 class CRConClient;
 
 class CBaseEntity;
+class CBasePlayer;
 
 
 CRConClient& RCONClient();
@@ -27,6 +28,16 @@ CRConClient& RCONClient();
 
 extern StaticFuncThunk<void, const Vector&, trace_t&, const Vector&, const Vector&, CBaseEntity *> ft_FindHullIntersection;
 DECL_FT_WRAPPER(FindHullIntersection);
+
+
+extern StaticFuncThunk<int> ft_UTIL_GetCommandClientIndex;
+DECL_FT_WRAPPER(UTIL_GetCommandClientIndex);
+
+extern StaticFuncThunk<CBasePlayer *> ft_UTIL_GetCommandClient;
+DECL_FT_WRAPPER(UTIL_GetCommandClient);
+
+extern StaticFuncThunk<bool> ft_UTIL_IsCommandIssuedByServerAdmin;
+DECL_FT_WRAPPER(UTIL_IsCommandIssuedByServerAdmin);
 
 
 #if 0

@@ -17,6 +17,11 @@ CRConClient& RCONClient() { return ft_RCONClient(); }
 StaticFuncThunk<void, const Vector&, trace_t&, const Vector&, const Vector&, CBaseEntity *> ft_FindHullIntersection("FindHullIntersection");
 
 
+StaticFuncThunk<int>           ft_UTIL_GetCommandClientIndex       ("UTIL_GetCommandClientIndex");
+StaticFuncThunk<CBasePlayer *> ft_UTIL_GetCommandClient            ("UTIL_GetCommandClient");
+StaticFuncThunk<bool>          ft_UTIL_IsCommandIssuedByServerAdmin("UTIL_IsCommandIssuedByServerAdmin");
+
+
 MemberFuncThunk<      CMapListManager *, void>              CMapListManager::ft_RefreshList("CMapListManager::RefreshList");
 MemberFuncThunk<const CMapListManager *, int>               CMapListManager::ft_GetMapCount("CMapListManager::GetMapCount");
 MemberFuncThunk<const CMapListManager *, int, int>          CMapListManager::ft_IsMapValid ("CMapListManager::IsMapValid");
