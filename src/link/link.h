@@ -42,6 +42,7 @@ template<typename RET, typename... PARAMS>
 class StaticFuncThunk : public ILinkage
 {
 public:
+	using RetType = RET;
 	using FPtr = RET (*)(PARAMS...);
 	
 	StaticFuncThunk(const char *n_func) :
@@ -81,6 +82,8 @@ template<class C, typename RET, typename... PARAMS>
 class MemberFuncThunkBase : public ILinkage
 {
 public:
+	using RetType = RET;
+	
 	MemberFuncThunkBase(const char *n_func) :
 		m_pszFuncName(n_func) {}
 	
@@ -127,12 +130,12 @@ public:
 		MemberFuncThunkBase<C, RET, PARAMS...>(n_func) {}
 	
 	RET operator()(const C *obj, PARAMS... args) const = delete;
-	RET operator()(C *obj, PARAMS... args) const
+	RET operator()(      C *obj, PARAMS... args) const
 	{
 		FPtr pFunc = MakePtrToMemberFunc<C, RET, PARAMS...>(this->GetFuncPtr());
 		
 		assert(pFunc != nullptr);
-		assert(obj != nullptr);
+		assert(obj   != nullptr);
 		
 		return (obj->*pFunc)(args...);
 	}
@@ -147,13 +150,13 @@ public:
 	MemberFuncThunk(const char *n_func) :
 		MemberFuncThunkBase<C, RET, PARAMS...>(n_func) {}
 	
-	RET operator()(C *obj, PARAMS... args) const = delete;
+	RET operator()(      C *obj, PARAMS... args) const = delete;
 	RET operator()(const C *obj, PARAMS... args) const
 	{
 		FPtr pFunc = MakePtrToConstMemberFunc<C, RET, PARAMS...>(this->GetFuncPtr());
 		
 		assert(pFunc != nullptr);
-		assert(obj != nullptr);
+		assert(obj   != nullptr);
 		
 		return (obj->*pFunc)(args...);
 	}
@@ -168,7 +171,7 @@ public:
 	
 	virtual bool Link() override
 	{
-		const void **pVT = nullptr;
+		const void **pVT  = nullptr;
 		const void *pFunc = nullptr;
 		
 		if (this->m_iVTIndex == -1) {
@@ -219,6 +222,8 @@ template<class C, typename RET, typename... PARAMS>
 class MemberVFuncThunk : public MemberVFuncThunkBase
 {
 public:
+	using RetType = RET;
+	
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
 		MemberVFuncThunkBase(n_vtable, n_func) {}
 };
@@ -227,6 +232,7 @@ template<class C, typename RET, typename... PARAMS>
 class MemberVFuncThunk<C *, RET, PARAMS...> : public MemberVFuncThunkBase
 {
 public:
+	using RetType = RET;
 	using FPtr = RET (C::*)(PARAMS...);
 	
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :
@@ -250,6 +256,7 @@ template<class C, typename RET, typename... PARAMS>
 class MemberVFuncThunk<const C *, RET, PARAMS...> : public MemberVFuncThunkBase
 {
 public:
+	using RetType = RET;
 	using FPtr = RET (C::*)(PARAMS...) const;
 	
 	MemberVFuncThunk(const char *n_vtable, const char *n_func) :

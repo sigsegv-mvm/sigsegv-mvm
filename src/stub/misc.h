@@ -19,12 +19,14 @@ class CBaseEntity;
 CRConClient& RCONClient();
 
 
-#define DECL_FT_WRAPPER(ret, name) \
-	template<typename... ARGS> ret name(ARGS&&... args) { return ft_ ## name(std::forward<ARGS>(args)...); }
+#define DECL_FT_WRAPPER(name) \
+	template<typename... ARGS> \
+	decltype(ft_##name)::RetType name(ARGS&&... args) \
+	{ return ft_##name(std::forward<ARGS>(args)...); }
 
 
 extern StaticFuncThunk<void, const Vector&, trace_t&, const Vector&, const Vector&, CBaseEntity *> ft_FindHullIntersection;
-DECL_FT_WRAPPER(void, FindHullIntersection);
+DECL_FT_WRAPPER(FindHullIntersection);
 
 
 #if 0
