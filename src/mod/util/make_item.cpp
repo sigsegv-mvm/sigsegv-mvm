@@ -360,6 +360,8 @@ namespace Mod_Util_Make_Item
 	}
 	
 	
+#warning TEMPORARILY DISABLED MOD: sig_util_make_item
+#if 0
 	class CMod : public IMod
 	{
 	public:
@@ -370,13 +372,13 @@ namespace Mod_Util_Make_Item
 	};
 	CMod s_Mod;
 	
-	
 	ConVar cvar_enable("sig_util_make_item", "0", FCVAR_NOTIFY,
 		"Utility: enable sig_makeitem_* client commands",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
+#endif
 	
 	
 #if 0 // REMOVE THIS CODE (OR MOVE IT ELSEWHERE) ===============================
