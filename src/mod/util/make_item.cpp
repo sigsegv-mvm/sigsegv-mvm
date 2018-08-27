@@ -7,6 +7,8 @@
 #include "util/clientmsg.h"
 #include "util/admin.h"
 
+#include <strcompat.h>
+
 
 // TODO 20170825:
 // - client message acknowledging a successful give
@@ -194,9 +196,13 @@ namespace Mod_Util_Make_Item
 		item_view->GetAttributeList().AddAttribute(attr);
 		CEconItemAttribute::Destroy(attr);
 		
-		std::string str;
-		attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, &str);
-		ClientMsg(player, "[sig_makeitem_add_attr] Added attribute \"%s\" with value \"%s\"\n", attr_def->GetName(), str.c_str());
+		void *str = strcompat_alloc();
+		attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, reinterpret_cast<std::string *>(str));
+		char buf[1024];
+		strcompat_get(str, buf, sizeof(buf));
+		strcompat_free(str);
+		
+		ClientMsg(player, "[sig_makeitem_add_attr] Added attribute \"%s\" with value \"%s\"\n", attr_def->GetName(), buf);
 	}
 	
 	
@@ -355,8 +361,6 @@ namespace Mod_Util_Make_Item
 	}
 	
 	
-#warning TEMPORARILY DISABLED MOD: sig_util_make_item
-#if 0
 	class CMod : public IMod
 	{
 	public:
@@ -375,7 +379,6 @@ namespace Mod_Util_Make_Item
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
-#endif
 	
 	
 #if 0 // REMOVE THIS CODE (OR MOVE IT ELSEWHERE) ===============================

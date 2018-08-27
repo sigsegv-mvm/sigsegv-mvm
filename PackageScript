@@ -106,3 +106,12 @@ for cxx_task in Extension.extensions:
     outputs = [ dst ],
   )
 #  builder.AddCopy(cxx_task.binary, folder_map['addons/sourcemod/extensions'])
+
+# Copy libstrcompat
+src = os.path.join(builder.sourcePath, 'libs', 'strcompat', 'libstrcompat.so')
+dst = os.path.join('addons', 'sourcemod', 'extensions', 'libstrcompat.so')
+builder.AddCommand(
+  inputs  = [ src ],
+  argv    = [ 'cp', '--remove-destination', src, dst ],
+  outputs = [ dst ],
+)
