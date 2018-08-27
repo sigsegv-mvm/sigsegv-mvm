@@ -5,6 +5,7 @@
 #include "stub/misc.h"
 #include "util/misc.h"
 #include "util/clientmsg.h"
+#include "util/admin.h"
 
 
 // TODO 20170825:
@@ -23,12 +24,6 @@
 //   - if we do this by adding our own attr defs to the schema, then we may need to hack the networking code for
 //     CAttributeList so that the client doesn't see our custom-made ones
 // - maybe: user restriction functionality (so everyone doesn't use this mod willy-nilly)
-
-
-namespace Mod_Util_Admin_Abuse_Mode
-{
-	bool IsPlayerAllowed(CBasePlayer *player);
-}
 
 
 namespace Mod_Util_Make_Item
@@ -345,11 +340,11 @@ namespace Mod_Util_Make_Item
 		if (player != nullptr) {
 			auto it = cmds.find(args[0]);
 			if (it != cmds.end()) {
-				if (Mod_Util_Admin_Abuse_Mode::IsPlayerAllowed(player)) {
+				if (PlayerIsSMAdminOrBot(player)) {
 					auto func = (*it).second;
 					(*func)(player, args);
 				} else {
-					ClientMsg(player, "[%s] Admin abuse mode is enabled, so you are not authorized to use this command. Sorry.\n", (*it).first);
+					ClientMsg(player, "[%s] You are not authorized to use this command because you are not a SourceMod admin. Sorry.\n", (*it).first);
 				}
 				
 				return true;
@@ -372,7 +367,9 @@ namespace Mod_Util_Make_Item
 	};
 	CMod s_Mod;
 	
-	ConVar cvar_enable("sig_util_make_item", "0", FCVAR_NOTIFY,
+	/* by way of incredibly annoying persistent requests from Hell-met,
+	 * I've acquiesced and made this mod convar non-notifying (sigh) */
+	ConVar cvar_enable("sig_util_make_item", "0", /*FCVAR_NOTIFY*/FCVAR_NONE,
 		"Utility: enable sig_makeitem_* client commands",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);

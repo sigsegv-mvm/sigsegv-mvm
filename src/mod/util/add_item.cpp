@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "stub/tfbot.h"
+#include "util/admin.h"
 #include "util/iterate.h"
 
 

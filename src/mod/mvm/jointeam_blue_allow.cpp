@@ -3,17 +3,12 @@
 #include "stub/tfbot.h"
 #include "stub/tf_shareddefs.h"
 #include "util/clientmsg.h"
+#include "util/admin.h"
 #include "util/iterate.h"
 
 // TODO: move to common.h
 #include <igamemovement.h>
 #include <in_buttons.h>
-
-
-namespace Mod_Util_Admin_Abuse_Mode
-{
-	bool IsPlayerAllowed(CBasePlayer *player);
-}
 
 
 namespace Mod_MvM_JoinTeam_Blue_Allow
@@ -422,7 +417,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		}
 		
 		if (TFGameRules()->IsMannVsMachineMode() && !pPlayer->IsBot() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
-			if (Mod_Util_Admin_Abuse_Mode::IsPlayerAllowed(pPlayer)) {
+			if (PlayerIsSMAdmin(pPlayer)) {
 				if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
 					DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",
 						ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
@@ -433,7 +428,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 					ClientMsg(pPlayer, "Cannot join team blue: the maximum number of human players on blue team has already been met.\n");
 				}
 			} else {
-				ClientMsg(pPlayer, "Admin abuse mode is enabled, so you are not authorized to use this command. Sorry.\n");
+				ClientMsg(pPlayer, "You are not authorized to use this command because you are not a SourceMod admin. Sorry.\n");
 			}
 		}
 		
@@ -749,7 +744,9 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	CMod s_Mod;
 	
 	
-	ConVar cvar_enable("sig_mvm_jointeam_blue_allow", "0", FCVAR_NOTIFY,
+	/* by way of incredibly annoying persistent requests from Hell-met,
+	 * I've acquiesced and made this mod convar non-notifying (sigh) */
+	ConVar cvar_enable("sig_mvm_jointeam_blue_allow", "0", /*FCVAR_NOTIFY*/FCVAR_NONE,
 		"Mod: permit client command 'jointeam blue' from human players",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
