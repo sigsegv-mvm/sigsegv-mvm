@@ -245,6 +245,13 @@ namespace Mod_Util_Download_Manager
 	}
 	
 	
+	// is FCVAR_NOTIFY even a valid thing for commands...?
+	CON_COMMAND_F(sig_util_download_manager_reload, "Utility: reload the configuration file", FCVAR_NOTIFY)
+	{
+		ReloadConfigIfModEnabled();
+	}
+	
+	
 	ConVar cvar_kvpath("sig_util_download_manager_kvpath", "cfg/downloads.kv", FCVAR_NOTIFY,
 		"Utility: specify the path to the configuration file",
 		[](IConVar *pConVar, const char *pOldValue, float fOldValue) {
