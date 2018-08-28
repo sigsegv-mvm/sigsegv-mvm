@@ -237,10 +237,18 @@ namespace Mod_Util_Download_Manager
 	// TODO: AUTOMATIC download entry generation by scanning directories!
 	
 	
+	static void ReloadConfigIfModEnabled()
+	{
+		if (s_Mod.IsEnabled()) {
+			LoadDownloadsFile();
+		}
+	}
+	
+	
 	ConVar cvar_kvpath("sig_util_download_manager_kvpath", "cfg/downloads.kv", FCVAR_NOTIFY,
 		"Utility: specify the path to the configuration file",
 		[](IConVar *pConVar, const char *pOldValue, float fOldValue) {
-			LoadDownloadsFile();
+			ReloadConfigIfModEnabled();
 		});
 	
 	
