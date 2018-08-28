@@ -1,3 +1,8 @@
+#if !defined(__GNUC__) || __GNUC__ != 4 || __GNUC_MINOR__ != 8
+#error The strcompat library must be built with GCC 4.8.x! That's the whole point!
+#endif
+
+
 #include <cassert>
 #include <string>
 #include <bsd/string.h>
