@@ -39,6 +39,7 @@ size_t strcompat_get(const void *ptr, char *dst, size_t dst_len)
 extern "C" [[gnu::visibility("default")]]
 void strcompat_set(void *ptr, const char *src)
 {
+	assert(ptr != nullptr);
 	assert(src != nullptr);
 	
 	std::string *str = reinterpret_cast<std::string *>(ptr);
