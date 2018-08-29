@@ -18,7 +18,7 @@ public:
 	CBaseCombatWeapon *GetActiveWeapon() const { return this->m_hActiveWeapon; }
 	int WeaponCount() const                    { return MAX_WEAPONS; }
 	CBaseCombatWeapon *GetWeapon(int i) const  { return this->m_hMyWeapons[i]; }
-	static_assert(MAX_WEAPONS == 48, "");
+	static_assert(MAX_WEAPONS == 48);
 	
 	void AddGlowEffect()                                                        {        ft_AddGlowEffect     (this); }
 	void RemoveGlowEffect()                                                     {        ft_RemoveGlowEffect  (this); }

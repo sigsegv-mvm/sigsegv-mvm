@@ -75,7 +75,7 @@ struct OverlayScreenRect_t : public OverlayBase_t
 	// int a
 	int _int_min;
 };
-static_assert(sizeof(OverlayScreenRect_t) == sizeof(OverlayBox_t), "OverlayScreenRect_t must match size of OverlayBox_t");
+static_assert(sizeof(OverlayScreenRect_t) == sizeof(OverlayBox_t));
 
 
 /* hacky re-use of OverlayBox_t for ScreenLine */
@@ -105,7 +105,7 @@ struct OverlayScreenLine_t : public OverlayBase_t
 	// int a
 	int _int_min;
 };
-static_assert(sizeof(OverlayScreenLine_t) == sizeof(OverlayBox_t), "OverlayScreenLine_t must match size of OverlayBox_t");
+static_assert(sizeof(OverlayScreenLine_t) == sizeof(OverlayBox_t));
 
 
 

@@ -70,14 +70,14 @@ union attribute_data_union_t
 	CAttribute_WorldItemPlacement     *m_WorldItemPlacement;
 };
 #endif
-static_assert(sizeof(attribute_data_union_t) == 0x4, "");
+static_assert(sizeof(attribute_data_union_t) == 0x4);
 
 struct static_attrib_t
 {
 	unsigned short m_iAttrIndex;    // +0x00
 	attribute_data_union_t m_Value; // +0x04
 };
-static_assert(sizeof(static_attrib_t) == 0x8, "");
+static_assert(sizeof(static_attrib_t) == 0x8);
 
 
 class CEconItemAttributeDefinition;
@@ -126,7 +126,7 @@ struct attr_type_t
 	CUtlConstString m_strName;
 	ISchemaAttributeType *m_pType;
 };
-static_assert(sizeof(attr_type_t) == 0x8, "");
+static_assert(sizeof(attr_type_t) == 0x8);
 
 
 class CEconItemAttribute;
@@ -145,7 +145,7 @@ private:
 	
 	static MemberFuncThunk<CAttributeList *, void, CEconItemAttribute *> ft_AddAttribute;
 };
-static_assert(sizeof(CAttributeList) == 0x1c, "");
+static_assert(sizeof(CAttributeList) == 0x1c);
 
 
 constexpr int NUM_SHOOT_SOUND_TYPES = 15;
@@ -311,7 +311,7 @@ private:
 	attribute_data_union_t m_iRawValue32;
 	int m_nRefundableCurrency;
 };
-static_assert(sizeof(CEconItemAttribute) == 0x10, "");
+static_assert(sizeof(CEconItemAttribute) == 0x10);
 
 
 class CAttributeContainer : public CAttributeManager

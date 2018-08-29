@@ -68,7 +68,7 @@ public:
 	x86_avx_bcast AVX_Broadcast () const { return this->avx_bcast;       }
 	bool          AVX_ZeroOpMask() const { return this->avx_zero_opmask; }
 };
-static_assert(sizeof(Operand) == sizeof(cs_x86_op), "");
+static_assert(sizeof(Operand) == sizeof(cs_x86_op));
 
 ////////////////////////////////////////////////////////////////////////////////
 // Non-detailed instruction info ///////////////////////////////////////////////

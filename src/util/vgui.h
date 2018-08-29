@@ -29,7 +29,7 @@ private:
 	
 	// disallowed: non-static data members
 };
-static_assert(sizeof(FrameWrapper) == sizeof(vgui::Frame), "");
+static_assert(sizeof(FrameWrapper) == sizeof(vgui::Frame));
 
 
 class CustomFrame : public AutoList<CustomFrame>

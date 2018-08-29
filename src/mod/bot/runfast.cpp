@@ -19,7 +19,7 @@ namespace Mod_Bot_RunFast
 		0x90, 0x90, 0x90, 0x90, 0x90, // +0011  nop nop nop nop nop
 		0x90, 0x90, 0x90,             // +0016  nop nop nop
 	};
-	static_assert(sizeof(s_Buf_Verify) == sizeof(s_Buf_Patch), "size mismatch");
+	static_assert(sizeof(s_Buf_Verify) == sizeof(s_Buf_Patch));
 	
 	struct CPatch_CTFBotPushToCapturePoint_Update : public CPatch
 	{

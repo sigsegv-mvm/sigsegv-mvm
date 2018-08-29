@@ -16,7 +16,7 @@ namespace Mod_Prof_Attr_Munge
 		void SetCurrentNode(CVProfNode *pNode) { this->m_pCurNode = pNode; }
 		void SetAtRoot(bool bAtRoot)           { this->m_fAtRoot = bAtRoot; }
 	};
-	static_assert(sizeof(CVProfile2) == sizeof(CVProfile), "");
+	static_assert(sizeof(CVProfile2) == sizeof(CVProfile));
 	
 	
 	bool ShouldEnterScope(const char *name, const char *group)

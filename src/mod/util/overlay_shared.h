@@ -43,7 +43,7 @@ enum OverlayType : uint8_t
 	OV_MAX,
 };
 constexpr int OVERLAY_TYPE_BITS = 5;
-static_assert((1 << OVERLAY_TYPE_BITS) >= OV_MAX, "OVERLAY_TYPE_BITS insufficient");
+static_assert((1 << OVERLAY_TYPE_BITS) >= OV_MAX);
 
 constexpr int ENTITY_ID_BITS = 12;
 
