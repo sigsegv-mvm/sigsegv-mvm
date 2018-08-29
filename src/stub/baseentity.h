@@ -89,11 +89,9 @@ public:
 	ICollideable *GetCollideable() const          { return &this->m_Collision; }
 	CCollisionProperty *CollisionProp() const     { return &this->m_Collision; }
 	int GetTeamNumber() const                     { return this->m_iTeamNum; }
-	int GetMaxHealth() const                      { return this->m_iMaxHealth; }
 	void SetMaxHealth(int amt)                    { this->m_iMaxHealth = amt; }
 	int GetHealth() const                         { return this->m_iHealth; }
 	void SetHealth(int amt)                       { this->m_iHealth = amt; }
-	bool IsAlive() const                          { return (this->m_lifeState == LIFE_ALIVE); }
 	CBaseEntity *GetGroundEntity() const          { return this->m_hGroundEntity; }
 	CBaseEntity *GetOwnerEntity() const           { return this->m_hOwnerEntity; }
 	IPhysicsObject *VPhysicsGetObject() const     { return this->m_pPhysicsObject; }
@@ -166,6 +164,8 @@ public:
 	void Touch(CBaseEntity *pOther)                                                                                         {        vt_Touch                    (this, pOther); }
 	INextBot *MyNextBotPointer()                                                                                            { return vt_MyNextBotPointer         (this); }
 	void Teleport(const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity)                            {        vt_Teleport                 (this, newPosition, newAngles, newVelocity); }
+	int GetMaxHealth() const                                                                                                { return vt_GetMaxHealth             (this); }
+	bool IsAlive()                                                                                                          { return vt_IsAlive                  (this); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)                                                                                                                                      { return ft_PrecacheModel      (name, bPreload); }
@@ -276,6 +276,8 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *>                                              vt_Touch;
 	static MemberVFuncThunk<      CBaseEntity *, INextBot *>                                                       vt_MyNextBotPointer;
 	static MemberVFuncThunk<      CBaseEntity *, void, const Vector *, const QAngle *, const Vector *>             vt_Teleport;
+	static MemberVFuncThunk<const CBaseEntity *, int>                                                              vt_GetMaxHealth;
+	static MemberVFuncThunk<      CBaseEntity *, bool>                                                             vt_IsAlive;
 	
 	static StaticFuncThunk<int, const char *, bool>                                                                         ft_PrecacheModel;
 	static StaticFuncThunk<bool, const char *>                                                                              ft_PrecacheSound;

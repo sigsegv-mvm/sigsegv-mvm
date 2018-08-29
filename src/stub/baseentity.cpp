@@ -87,6 +87,8 @@ MemberVFuncThunk<      CBaseEntity *, bool, const Vector&, int, CBaseEntity **  
 MemberVFuncThunk<      CBaseEntity *, void, CBaseEntity *                                             > CBaseEntity::vt_Touch                    (TypeName<CBaseEntity>(), "CBaseEntity::Touch");
 MemberVFuncThunk<      CBaseEntity *, INextBot *                                                      > CBaseEntity::vt_MyNextBotPointer         (TypeName<CBaseEntity>(), "CBaseEntity::MyNextBotPointer");
 MemberVFuncThunk<      CBaseEntity *, void, const Vector *, const QAngle *, const Vector *            > CBaseEntity::vt_Teleport                 (TypeName<CBaseEntity>(), "CBaseEntity::Teleport");
+MemberVFuncThunk<const CBaseEntity *, int                                                             > CBaseEntity::vt_GetMaxHealth             (TypeName<CBaseEntity>(), "CBaseEntity::GetMaxHealth");
+MemberVFuncThunk<      CBaseEntity *, bool                                                            > CBaseEntity::vt_IsAlive                  (TypeName<CBaseEntity>(), "CBaseEntity::IsAlive");
 
 StaticFuncThunk<int, const char *, bool>                                                                         CBaseEntity::ft_PrecacheModel      ("CBaseEntity::PrecacheModel");
 StaticFuncThunk<bool, const char *>                                                                              CBaseEntity::ft_PrecacheSound      ("CBaseEntity::PrecacheSound");
