@@ -222,10 +222,10 @@ class ExtensionConfig(object):
 #   cxx.cxxflags += ['-Wno-non-virtual-dtor']
     cxx.cxxflags += ['-fvisibility-inlines-hidden']
     cxx.cxxflags += ['-Wno-invalid-offsetof']
-    cxx.cxxflags += ['-Wabi']
-    cxx.cxxflags += ['-Wabi-tag']
-#   cxx.cxxflags += ['-fabi-version=0']
-#   cxx.cxxflags += ['-fabi-compat-version=2'] # GCC 4.6.1
+#   cxx.cxxflags += ['-Wabi']
+#   cxx.cxxflags += ['-Wabi-tag']
+#   cxx.cxxflags += ['-fabi-version=0']        # always latest
+#   cxx.cxxflags += ['-fabi-compat-version=7'] # GCC 4.8.x
     if have_gcc:
       cxx.cxxflags += ['-no-integrated-cpp'] # otherwise, diagnostic pragmas are broken-ish in C++, especially for PCHs
       cxx.cxxflags += ['-D_GLIBCXX_USE_CXX11_ABI=1'] # WAS: =0 (prevent GCC 5.1+ ABI incompatibility with std::string)
