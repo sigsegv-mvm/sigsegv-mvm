@@ -228,7 +228,10 @@ class ExtensionConfig(object):
 #   cxx.cxxflags += ['-fabi-compat-version=2'] # GCC 4.6.1
     if have_gcc:
       cxx.cxxflags += ['-no-integrated-cpp'] # otherwise, diagnostic pragmas are broken-ish in C++, especially for PCHs
-      cxx.cxxflags += ['-D_GLIBCXX_USE_CXX11_ABI=0'] # prevent GCC 5.1+ ABI incompatibility with std::string
+      cxx.cxxflags += ['-D_GLIBCXX_USE_CXX11_ABI=1'] # WAS: =0 (prevent GCC 5.1+ ABI incompatibility with std::string)
+    # probably don't need _GLIBCXX_USE_CXX11_ABI=0 anymore, given that libstrcompat is a thing now
+    # don't need to worry about exceptions ABI garbage because -fno-exceptions
+    # uhh... I guess just don't try to do cross-library interop with std::list and we'll be fine
     
     ############################################################################
     # LINKER ###################################################################
