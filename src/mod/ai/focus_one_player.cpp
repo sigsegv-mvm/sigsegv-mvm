@@ -74,7 +74,7 @@ namespace Mod_AI_Focus_One_Player
 	
 	
 	ConVar cvar_enable("sig_ai_focus_one_player", "0", FCVAR_NOTIFY,
-		"Mod: make bots relentlessly attack one player and ignore everyone else",
+		"Mod: make bots relentlessly attack one player and ignore everyone else",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
