@@ -455,6 +455,105 @@ namespace Mod_Util_Client_Cmds
 	}
 	
 	
+	// TODO: another version that allows affecting other players?
+	void CC_SetHealth(CTFPlayer *player, const CCommand& args)
+	{
+		if (args.ArgC() != 2) {
+			ClientMsg(player, "[sig_sethealth] Usage: any of the following:\n"
+				"  sig_sethealth <hp_value>    | set your health to the given HP value\n"
+				"  sig_sethealth <percent>%%max | set your health to the given percentage of your max health\n"
+				"  sig_sethealth <percent>%%cur | set your health to the given percentage of your current health\n");
+			return;
+		}
+		
+		int hp;
+		
+		float value;
+		size_t pos;
+		if (sscanf(args[1], "%f%%max%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetMaxHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%%cur%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt(value);
+		} else {
+			ClientMsg(player, "[sig_sethealth] Error: '%s' is not a HP value or max-health/current-health percentage\n", args[1]);
+			return;
+		}
+		
+		ClientMsg(player, "[sig_sethealth] Setting health of player %s to %d (previous health: %d).\n",
+			player->GetPlayerName(), hp, player->GetHealth());
+		
+		player->SetHealth(hp);
+	}
+	
+	
+	// TODO: another version that allows affecting other players?
+	void CC_AddHealth(CTFPlayer *player, const CCommand& args)
+	{
+		if (args.ArgC() != 2) {
+			ClientMsg(player, "[sig_addhealth] Usage: any of the following:\n"
+				"  sig_addhealth <hp_value>    | increase your health by the given HP value\n"
+				"  sig_addhealth <percent>%%max | increase your health by the given percentage of your max health\n"
+				"  sig_addhealth <percent>%%cur | increase your health by the given percentage of your current health\n");
+			return;
+		}
+		
+		int hp;
+		
+		float value;
+		size_t pos;
+		if (sscanf(args[1], "%f%%max%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetMaxHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%%cur%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt(value);
+		} else {
+			ClientMsg(player, "[sig_addhealth] Error: '%s' is not a HP value or max-health/current-health percentage\n", args[1]);
+			return;
+		}
+		
+		ClientMsg(player, "[sig_addhealth] Increasing health of player %s by %d (previous health: %d).\n",
+			player->GetPlayerName(), hp, player->GetHealth());
+		
+		player->SetHealth(player->GetHealth() + hp);
+	}
+	
+	
+	// TODO: another version that allows affecting other players?
+	void CC_SubHealth(CTFPlayer *player, const CCommand& args)
+	{
+		if (args.ArgC() != 2) {
+			ClientMsg(player, "[sig_subhealth] Usage: any of the following:\n"
+				"  sig_subhealth <hp_value>    | decrease your health by the given HP value\n"
+				"  sig_subhealth <percent>%%max | decrease your health by the given percentage of your max health\n"
+				"  sig_subhealth <percent>%%cur | decrease your health by the given percentage of your current health\n");
+			return;
+		}
+		
+		int hp;
+		
+		float value;
+		size_t pos;
+		if (sscanf(args[1], "%f%%max%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetMaxHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%%cur%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt((float)player->GetHealth() * (value / 100.0f));
+		} else if (sscanf(args[1], "%f%zn", &value, &pos) == 1 && (pos == strlen(args[1]))) {
+			hp = RoundFloatToInt(value);
+		} else {
+			ClientMsg(player, "[sig_subhealth] Error: '%s' is not a HP value or max-health/current-health percentage\n", args[1]);
+			return;
+		}
+		
+		ClientMsg(player, "[sig_subhealth] Decreasing health of player %s by %d (previous health: %d).\n",
+			player->GetPlayerName(), hp, player->GetHealth());
+		
+		player->SetHealth(player->GetHealth() - hp);
+	}
+	
+	
 	// TODO: use an std::unordered_map so we don't have to do any V_stricmp's at all for lookups
 	// (also make this change in Util:Make_Item)
 	static const std::map<const char *, void (*)(CTFPlayer *, const CCommand&), VStricmpLess> cmds {
@@ -465,6 +564,9 @@ namespace Mod_Util_Client_Cmds
 		{ "sig_addcond",          CC_AddCond          },
 		{ "sig_removecond",       CC_RemoveCond       },
 		{ "sig_listconds",        CC_ListConds        },
+		{ "sig_sethealth",        CC_SetHealth        },
+		{ "sig_addhealth",        CC_AddHealth        },
+		{ "sig_subhealth",        CC_SubHealth        },
 	};
 	
 	
