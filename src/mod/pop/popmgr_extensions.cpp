@@ -55,15 +55,8 @@ namespace Mod_Pop_PopMgr_Extensions
 		T m_Backup;
 	};
 	
-	template<typename T> T ConVar_GetValue(const ConVarRef& cvar);
-	template<> bool        ConVar_GetValue<bool>       (const ConVarRef& cvar) { return cvar.GetBool();   }
-	template<> int         ConVar_GetValue<int>        (const ConVarRef& cvar) { return cvar.GetInt();    }
-	template<> float       ConVar_GetValue<float>      (const ConVarRef& cvar) { return cvar.GetFloat();  }
-	template<> std::string ConVar_GetValue<std::string>(const ConVarRef& cvar) { return cvar.GetString(); }
 	
-	template<typename T> void ConVar_SetValue(ConVarRef& cvar, const T& val) { cvar.SetValue(val); }
-	template<> void ConVar_SetValue(ConVarRef& cvar, const std::string& val) { cvar.SetValue(val.c_str()); }
-	
+	// TODO: consider rewriting this in terms of IConVarOverride from util/misc.h
 	template<typename T>
 	class CPopOverride_ConVar : public IPopOverride<T>
 	{

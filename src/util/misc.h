@@ -256,4 +256,14 @@ std::string CFmtStdStr(ARGS... args)
 }
 
 
+template<typename T> T ConVar_GetValue(const ConVarRef& cvar);
+template<> inline bool        ConVar_GetValue<bool>       (const ConVarRef& cvar) { return cvar.GetBool();   }
+template<> inline int         ConVar_GetValue<int>        (const ConVarRef& cvar) { return cvar.GetInt();    }
+template<> inline float       ConVar_GetValue<float>      (const ConVarRef& cvar) { return cvar.GetFloat();  }
+template<> inline std::string ConVar_GetValue<std::string>(const ConVarRef& cvar) { return cvar.GetString(); }
+
+template<typename T> void ConVar_SetValue(ConVarRef& cvar, const T& val) { cvar.SetValue(val); }
+template<> inline void ConVar_SetValue(ConVarRef& cvar, const std::string& val) { cvar.SetValue(val.c_str()); }
+
+
 #endif
