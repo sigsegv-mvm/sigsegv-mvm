@@ -147,6 +147,8 @@ void IMod::InvokeLoad()
 {
 	DevMsg("IMod::InvokeLoad: \"%s\"\n", this->GetName());
 	
+	this->PreLoad();
+	
 	bool ok_patch  = this->LoadPatches();
 	bool ok_detour = this->LoadDetours();
 	
