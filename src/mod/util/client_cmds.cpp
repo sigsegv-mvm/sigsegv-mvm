@@ -474,7 +474,8 @@ namespace Mod_Util_Client_Cmds
 		if (player != nullptr) {
 			auto it = cmds.find(args[0]);
 			if (it != cmds.end()) {
-				if (PlayerIsSMAdminOrBot(player)) {
+				extern ConVar cvar_adminonly;
+				if (!cvar_adminonly.GetBool() || PlayerIsSMAdminOrBot(player)) {
 					auto func = (*it).second;
 					(*func)(player, args);
 				} else {
@@ -508,4 +509,8 @@ namespace Mod_Util_Client_Cmds
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
+	
+	/* default: admin-only mode ENABLED */
+	ConVar cvar_adminonly("sig_util_client_cmds_adminonly", "1", /*FCVAR_NOTIFY*/FCVAR_NONE,
+		"Utility: restrict this mod's functionality to SM admins only");
 }

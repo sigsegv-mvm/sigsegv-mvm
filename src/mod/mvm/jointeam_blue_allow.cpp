@@ -11,6 +11,13 @@
 #include <in_buttons.h>
 
 
+/* HACK */
+namespace Mod_Pop_PopMgr_Extensions
+{
+	bool PopFileIsOverridingJoinTeamBlueConVarOn();
+}
+
+
 namespace Mod_MvM_JoinTeam_Blue_Allow
 {
 	using CollectPlayersFunc_t = int (*)(CUtlVector<CTFPlayer *> *, int, bool, bool);
@@ -327,6 +334,10 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		"Blue humans in MvM: enable infinite spy cloak meter (Dead Ringer)");
 	
 	
+	// TODO: probably need to add in a check for TF_COND_REPROGRAMMED here and:
+	// - exclude humans on TF_TEAM_BLUE who are in TF_COND_REPROGRAMMED
+	// - include humans on TF_TEAM_RED who are in TF_COND_REPROGRAMMED
+	
 	bool IsMvMBlueHuman(CTFPlayer *player)
 	{
 		if (player == nullptr)                       return false;
@@ -417,7 +428,10 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		}
 		
 		if (TFGameRules()->IsMannVsMachineMode() && !pPlayer->IsBot() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
-			if (PlayerIsSMAdmin(pPlayer)) {
+			// NOTE: if the pop file had custom param 'AllowJoinTeamBlue 1', then disregard admin-only restrictions
+			extern ConVar cvar_adminonly;
+			if (Mod_Pop_PopMgr_Extensions::PopFileIsOverridingJoinTeamBlueConVarOn() ||
+				!cvar_adminonly.GetBool() || PlayerIsSMAdmin(pPlayer)) {
 				if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
 					DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",
 						ENTINDEX(pPlayer), pPlayer->GetPlayerName(), iWantedTeam, iResult, iWantedTeam);
@@ -653,6 +667,10 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 	
 	// TODO: fix fast engie re-deploy only working on red
 	
+	// TODO: on mod disable, force blue humans back onto red team
+	// - use IsMvMBlueHuman
+	// - beware of the call order between IMod::OnDisable and when the patches/detours are actually disabled...
+	
 	
 	class CMod : public IMod, public IFrameUpdateListener
 	{
@@ -752,4 +770,9 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
+	
+	/* default: admin-only mode ENABLED */
+	ConVar cvar_adminonly("sig_mvm_jointeam_blue_allow_adminonly", "1", /*FCVAR_NOTIFY*/FCVAR_NONE,
+		"Mod: restrict this mod's functionality to SM admins only"
+		" [NOTE: missions with WaveSchedule param AllowJoinTeamBlue 1 will OVERRIDE this and allow non-admins for the duration of the mission]");
 }

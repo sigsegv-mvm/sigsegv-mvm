@@ -346,7 +346,8 @@ namespace Mod_Util_Make_Item
 		if (player != nullptr) {
 			auto it = cmds.find(args[0]);
 			if (it != cmds.end()) {
-				if (PlayerIsSMAdminOrBot(player)) {
+				extern ConVar cvar_adminonly;
+				if (!cvar_adminonly.GetBool() || PlayerIsSMAdminOrBot(player)) {
 					auto func = (*it).second;
 					(*func)(player, args);
 				} else {
@@ -371,6 +372,7 @@ namespace Mod_Util_Make_Item
 	};
 	CMod s_Mod;
 	
+	
 	/* by way of incredibly annoying persistent requests from Hell-met,
 	 * I've acquiesced and made this mod convar non-notifying (sigh) */
 	ConVar cvar_enable("sig_util_make_item", "0", /*FCVAR_NOTIFY*/FCVAR_NONE,
@@ -379,6 +381,10 @@ namespace Mod_Util_Make_Item
 			ConVarRef var(pConVar);
 			s_Mod.Toggle(var.GetBool());
 		});
+	
+	/* default: admin-only mode ENABLED */
+	ConVar cvar_adminonly("sig_util_make_item_adminonly", "1", /*FCVAR_NOTIFY*/FCVAR_NONE,
+		"Utility: restrict this mod's functionality to SM admins only");
 	
 	
 #if 0 // REMOVE THIS CODE (OR MOVE IT ELSEWHERE) ===============================

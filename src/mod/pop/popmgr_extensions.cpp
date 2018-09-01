@@ -18,6 +18,8 @@ namespace Mod_Pop_PopMgr_Extensions
 	public:
 		virtual ~IPopOverride() {}
 		
+		bool IsOverridden() const { return this->m_bOverridden; }
+		
 		void Reset()
 		{
 			if (this->m_bOverridden) {
@@ -402,6 +404,14 @@ namespace Mod_Pop_PopMgr_Extensions
 		std::vector<ExtraTankPath> m_ExtraTankPaths;
 	};
 	PopState state;
+	
+	
+	/* HACK: allow MvM:JoinTeam_Blue_Allow to force-off its admin-only functionality if the pop file explicitly set
+	 * 'AllowJoinTeamBlue 1' (rather than someone manually setting 'sig_mvm_jointeam_blue_allow 1' via rcon) */
+	bool PopFileIsOverridingJoinTeamBlueConVarOn()
+	{
+		return (state.m_AllowJoinTeamBlue.IsOverridden() && state.m_AllowJoinTeamBlue.Get());
+	}
 	
 	
 	RefCount rc_CTFGameRules_PlayerKilled;
