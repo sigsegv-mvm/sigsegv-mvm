@@ -6,7 +6,6 @@
 #include "prop.h"
 
 
-class IEconItemAttributeIterator;
 class CEconItem;
 
 
@@ -82,6 +81,22 @@ static_assert(sizeof(static_attrib_t) == 0x8);
 
 class CEconItemAttributeDefinition;
 
+
+class IEconItemAttributeIterator
+{
+public:
+	virtual ~IEconItemAttributeIterator() = default;
+	
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, unsigned int                             value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, float                                    value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const uint64&                            value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const CAttribute_String&                 value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const CAttribute_DynamicRecipeComponent& value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const CAttribute_ItemSlotCriteria&       value) const = 0;
+	virtual bool OnIterateAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const CAttribute_WorldItemPlacement&     value) const = 0;
+};
+
+
 class ISchemaAttributeType
 {
 	// TODO: use vfunc thunks instead of relying on vtable matching up forever
@@ -130,20 +145,32 @@ static_assert(sizeof(attr_type_t) == 0x8);
 
 
 class CEconItemAttribute;
+
 class CAttributeList
 {
+public:
+	CEconItemAttribute *GetAttributeByID(int def_idx) const            { return ft_GetAttributeByID      (this, def_idx); }
+	CEconItemAttribute *GetAttributeByName(const char *name) const     { return ft_GetAttributeByName    (this, name); }
+	void IterateAttributes(IEconItemAttributeIterator *iter) const     {        ft_IterateAttributes     (this, iter); }
+	void AddAttribute(CEconItemAttribute *pAttr)                       {        ft_AddAttribute          (this, pAttr); }
+	void RemoveAttribute(const CEconItemAttributeDefinition *pAttrDef) {        ft_RemoveAttribute       (this, pAttrDef); }
+	void RemoveAttributeByIndex(int index)                             {        ft_RemoveAttributeByIndex(this, index); }
+	void DestroyAllAttributes()                                        {        ft_DestroyAllAttributes  (this); }
+	
+	CUtlVector<CEconItemAttribute>& Attributes() { return this->m_Attributes; }
+	
 private:
 	int vtable;
-	
-public:
-	CUtlVector<CEconItemAttribute> m_Attributes;
-	
-	void AddAttribute(CEconItemAttribute *pAttr) { ft_AddAttribute(this, pAttr); }
-	
-private:
+	CUtlVector<CEconItemAttribute> m_Attributes; // TODO: should be a netvar!
 	CAttributeManager *m_pManager;
 	
-	static MemberFuncThunk<CAttributeList *, void, CEconItemAttribute *> ft_AddAttribute;
+	static inline MemberFuncThunk<const CAttributeList *, CEconItemAttribute *, int>                  ft_GetAttributeByID      { "CAttributeList::GetAttributeByID"       };
+	static inline MemberFuncThunk<const CAttributeList *, CEconItemAttribute *, const char *>         ft_GetAttributeByName    { "CAttributeList::GetAttributeByName"     };
+	static inline MemberFuncThunk<const CAttributeList *, void, IEconItemAttributeIterator *>         ft_IterateAttributes     { "CAttributeList::IterateAttributes"      };
+	static inline MemberFuncThunk<      CAttributeList *, void, CEconItemAttribute *>                 ft_AddAttribute          { "CAttributeList::AddAttribute"           };
+	static inline MemberFuncThunk<      CAttributeList *, void, const CEconItemAttributeDefinition *> ft_RemoveAttribute       { "CAttributeList::RemoveAttribute"        };
+	static inline MemberFuncThunk<      CAttributeList *, void, int>                                  ft_RemoveAttributeByIndex{ "CAttributeList::RemoveAttributeByIndex" };
+	static inline MemberFuncThunk<      CAttributeList *, void>                                       ft_DestroyAllAttributes  { "CAttributeList::DestroyAllAttributes"   };
 };
 static_assert(sizeof(CAttributeList) == 0x1c);
 

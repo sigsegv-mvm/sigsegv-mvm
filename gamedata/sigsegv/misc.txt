@@ -2656,12 +2656,6 @@
 					sym  "_ZN18CEconItemAttributeC1Ev"
 				}
 				
-				"CAttributeList::AddAttribute"
-				{
-					type "sym"
-					sym  "_ZN14CAttributeList12AddAttributeEP18CEconItemAttribute"
-				}
-				
 				"CTFGameRules::SetCustomUpgradesFile"
 				{
 					type "sym"
@@ -2838,6 +2832,14 @@
 				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
 				
 				"CBasePlayer::SetVCollisionState" "_ZN11CBasePlayer18SetVCollisionStateERK6VectorS2_i"
+				
+				"CAttributeList::GetAttributeByID"       "_ZNK14CAttributeList16GetAttributeByIDEi"
+				"CAttributeList::GetAttributeByName"     "_ZNK14CAttributeList18GetAttributeByNameEPKc"
+				"CAttributeList::IterateAttributes"      "_ZNK14CAttributeList17IterateAttributesEP26IEconItemAttributeIterator"
+				"CAttributeList::AddAttribute"           "_ZN14CAttributeList12AddAttributeEP18CEconItemAttribute"
+				"CAttributeList::RemoveAttribute"        "_ZN14CAttributeList15RemoveAttributeEPK28CEconItemAttributeDefinition"
+				"CAttributeList::RemoveAttributeByIndex" "_ZN14CAttributeList22RemoveAttributeByIndexEi"
+				"CAttributeList::DestroyAllAttributes"   "_ZN14CAttributeList20DestroyAllAttributesEv"
 			}
 		}
 	}

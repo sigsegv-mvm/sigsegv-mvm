@@ -144,9 +144,6 @@ StaticFuncThunk<int, int, const char *, const CBaseEntity *, CUtlVector<CBaseEnt
 StaticFuncThunk<float, float, const char *, const CBaseEntity *, CUtlVector<CBaseEntity *> *, bool> CAttributeManager::ft_AttribHookValue_float("CAttributeManager::AttribHookValue<float>");
 
 
-MemberFuncThunk<CAttributeList *, void, CEconItemAttribute *> CAttributeList::ft_AddAttribute("CAttributeList::AddAttribute");
-
-
 IMPL_EXTRACT(const char *[NUM_SHOOT_SOUND_TYPES], perteamvisuals_t, m_Sounds, new CExtract_perteamvisuals_t_m_Sounds());
 
 
