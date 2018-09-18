@@ -428,4 +428,46 @@ inline CTFItemDefinition *FilterOutDefaultItemDef(CTFItemDefinition *item_def)
 }
 
 
+class CPlayerInventory
+{
+public:
+	void DumpInventoryToConsole(bool b1 = true) {        vt_DumpInventoryToConsole(this, b1); }
+	int GetMaxItemCount() const                 { return vt_GetMaxItemCount(this); }
+	
+private:
+	static MemberVFuncThunk<      CPlayerInventory *, void, bool> vt_DumpInventoryToConsole;
+	static MemberVFuncThunk<const CPlayerInventory *, int>        vt_GetMaxItemCount;
+};
+
+class CTFPlayerInventory : public CPlayerInventory
+{
+public:
+	
+private:
+	
+};
+
+
+class CInventoryManager
+{
+public:
+	
+private:
+	
+};
+
+class CTFInventoryManager : public CInventoryManager
+{
+public:
+	CTFPlayerInventory *GetInventoryForPlayer(const CSteamID& steamid) { return ft_GetInventoryForPlayer(this, steamid); }
+	
+private:
+	static MemberFuncThunk<CTFInventoryManager *, CTFPlayerInventory *, const CSteamID&> ft_GetInventoryForPlayer;
+};
+
+
+CInventoryManager   *InventoryManager();
+CTFInventoryManager *TFInventoryManager();
+
+
 #endif

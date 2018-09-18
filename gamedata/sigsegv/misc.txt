@@ -2840,6 +2840,14 @@
 				"CAttributeList::RemoveAttribute"        "_ZN14CAttributeList15RemoveAttributeEPK28CEconItemAttributeDefinition"
 				"CAttributeList::RemoveAttributeByIndex" "_ZN14CAttributeList22RemoveAttributeByIndexEi"
 				"CAttributeList::DestroyAllAttributes"   "_ZN14CAttributeList20DestroyAllAttributesEv"
+				
+				"CPlayerInventory::DumpInventoryToConsole" "_ZN16CPlayerInventory22DumpInventoryToConsoleEb"
+				"CPlayerInventory::GetMaxItemCount"        "_ZNK16CPlayerInventory15GetMaxItemCountEv"
+				
+				"CTFInventoryManager::GetInventoryForPlayer" "_ZN19CTFInventoryManager21GetInventoryForPlayerERK8CSteamID"
+				
+				"InventoryManager"   "_Z16InventoryManagerv"
+				"TFInventoryManager" "_Z18TFInventoryManagerv"
 			}
 		}
 	}

@@ -266,3 +266,17 @@ int GetLoadoutSlotFromName(const char *name)
 	
 	return -1;
 }
+
+
+MemberVFuncThunk<      CPlayerInventory *, void, bool> CPlayerInventory::vt_DumpInventoryToConsole(TypeName<CPlayerInventory>(), "CPlayerInventory::DumpInventoryToConsole");
+MemberVFuncThunk<const CPlayerInventory *, int>        CPlayerInventory::vt_GetMaxItemCount       (TypeName<CPlayerInventory>(), "CPlayerInventory::GetMaxItemCount");
+
+
+MemberFuncThunk<CTFInventoryManager *, CTFPlayerInventory *, const CSteamID&> CTFInventoryManager::ft_GetInventoryForPlayer("CTFInventoryManager::GetInventoryForPlayer");
+
+
+static StaticFuncThunk<CInventoryManager *> ft_InventoryManager("InventoryManager");
+CInventoryManager *InventoryManager() { return ft_InventoryManager(); }
+
+static StaticFuncThunk<CTFInventoryManager *> ft_TFInventoryManager("TFInventoryManager");
+CTFInventoryManager *TFInventoryManager() { return ft_TFInventoryManager(); }
