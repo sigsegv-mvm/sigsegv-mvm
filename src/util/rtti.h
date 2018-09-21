@@ -13,11 +13,11 @@ typedef _TypeDescriptor rtti_t;
 
 
 #if defined __GNUC__
-template<class T> inline const char *TypeName()     { return typeid( T).name(); }
-template<class T> inline const char *TypeName(T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
+template<typename T> inline const char *TypeName()     { return typeid( T).name(); }
+template<typename T> inline const char *TypeName(T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
 #elif defined _MSC_VER
-template<class T> inline const char *TypeName()     { return typeid( T).raw_name(); }
-template<class T> inline const char *TypeName(T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
+template<typename T> inline const char *TypeName()     { return typeid( T).raw_name(); }
+template<typename T> inline const char *TypeName(T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
 #endif
 
 
@@ -25,15 +25,15 @@ namespace RTTI
 {
 	void PreLoad();
 	
-	const rtti_t *GetRTTI(const char *name);
-	const void **GetVTable(const char *name);
+	const rtti_t *GetRTTI  (const char *name);
+	const void  **GetVTable(const char *name);
 	
-	template<class T> const rtti_t *GetRTTI()  { return GetRTTI(TypeName<T>()); }
-	template<class T> const void **GetVTable() { return GetVTable(TypeName<T>()); }
+	template<typename T> const rtti_t *GetRTTI()   { return GetRTTI  (TypeName<T>()); }
+	template<typename T> const void  **GetVTable() { return GetVTable(TypeName<T>()); }
 }
 
 
-template<class TO, class FROM>
+template<typename TO, typename FROM>
 inline TO rtti_cast(const FROM ptr)
 {
 	if (ptr == nullptr) {
