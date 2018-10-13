@@ -218,6 +218,7 @@ class ExtensionConfig(object):
     ############################################################################
     cxx.cxxflags += ['-std=c++17']
 #   cxx.cxxflags += ['-fno-exceptions']
+    cxx.cxxflags += ['-fexceptions'] # !!!
 #   cxx.cxxflags += ['-fno-threadsafe-statics']
 #   cxx.cxxflags += ['-Wno-non-virtual-dtor']
     cxx.cxxflags += ['-fvisibility-inlines-hidden']
