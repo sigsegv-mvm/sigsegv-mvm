@@ -1,6 +1,7 @@
 #include "mem/patch.h"
 #include "mem/scan.h"
 #include "mem/protect.h"
+#include "util/rtti.h"
 
 
 bool CPatch::Init()
@@ -10,7 +11,7 @@ bool CPatch::Init()
 	this->m_iFuncOffMax = this->GetFuncOffMax();
 	
 	if (this->Verbose()) {
-		DevMsg("CPatch::Init: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Init: \"%s\" %s\n", this->m_pszFuncName, TypeName(this));
 	}
 	
 	this->m_pFuncAddr = AddrManager::GetAddr(this->m_pszFuncName);
@@ -49,7 +50,7 @@ bool CPatch::Check()
 	uintptr_t addr_max = (uintptr_t)this->m_pFuncAddr + this->m_iFuncOffMax + this->m_iLength;
 	
 	if (this->Verbose()) {
-		DevMsg("CPatch::Check: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Check: \"%s\" %s\n", this->m_pszFuncName, TypeName(this));
 		DevMsg("CPatch::Check: func     %08x\n", (uintptr_t)this->m_pFuncAddr);
 		DevMsg("CPatch::Check: off_min      %04x\n", this->m_iFuncOffMin);
 		DevMsg("CPatch::Check: off_max      %04x\n", this->m_iFuncOffMax);
@@ -80,7 +81,7 @@ void CPatch::Apply()
 	if (this->VerifyOnly()) return;
 	
 	if (this->Verbose()) {
-		DevMsg("CPatch::Apply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::Apply: \"%s\" %s\n", this->m_pszFuncName, TypeName(this));
 	}
 	
 	if (this->m_bApplied) {
@@ -123,7 +124,7 @@ void CPatch::UnApply()
 	if (this->VerifyOnly()) return;
 	
 	if (this->Verbose()) {
-		DevMsg("CPatch::UnApply: \"%s\" %s\n", this->m_pszFuncName, typeid(*this).name());
+		DevMsg("CPatch::UnApply: \"%s\" %s\n", this->m_pszFuncName, TypeName(this));
 	}
 	
 	if (!this->m_bApplied) {
