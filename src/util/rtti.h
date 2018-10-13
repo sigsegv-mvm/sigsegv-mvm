@@ -12,13 +12,43 @@ typedef _TypeDescriptor rtti_t;
 #endif
 
 
-#if defined __GNUC__
-template<typename T> inline const char *TypeName()     { return typeid( T).name(); }
-template<typename T> inline const char *TypeName(T *t) { return typeid(*t).name(); } // if t is nullptr, will throw std::bad_typeid
-#elif defined _MSC_VER
-template<typename T> inline const char *TypeName()     { return typeid( T).raw_name(); }
-template<typename T> inline const char *TypeName(T *t) { return typeid(*t).raw_name(); } // if t is nullptr, will throw std::bad_typeid
+#ifdef _MSC_VER
+#define TYPEID_NAME(type_or_expr) typeid(type_or_expr).raw_name()
+#else
+#define TYPEID_NAME(type_or_expr) typeid(type_or_expr).name()
 #endif
+
+template<typename T> inline const char *TypeName()
+{
+	const char *name = "<???>";
+	
+	/* the standard says typeid(type) shouldn't ever actually throw */
+	try {
+		name = TYPEID_NAME(T);
+	} catch (const std::bad_typeid& e) {
+		Msg("%s: caught std::bad_typeid: %s\n", __PRETTY_FUNCTION__, e.what());
+		name = "<bad_typeid>";
+	}
+	
+	return name;
+}
+
+template<typename T> inline const char *TypeName(T *t)
+{
+	const char *name = "<???>";
+	
+	/* the standard says typeid(expression) will throw if expression is nullptr */
+	try {
+		name = TYPEID_NAME(*t);
+	} catch (const std::bad_typeid& e) {
+		Msg("%s: with 0x%08X: caught std::bad_typeid: %s\n", __PRETTY_FUNCTION__, (uintptr_t)t, e.what());
+		name = "<bad_typeid>";
+	}
+	
+	return name;
+}
+
+#undef TYPEID_NAME
 
 
 namespace RTTI
