@@ -114,6 +114,7 @@ sourceFiles += [
   'src/mod/anim/player_updatemodel_animstate_fix.cpp',
   'src/mod/anim/estimateabsvelocity_moveparent_fix.cpp',
   
+  'src/mod/attr/blockbackstab_oldstyle.cpp',
   'src/mod/attr/customprojectilemodel_precache.cpp',
   'src/mod/attr/healonkill_overheal_melee.cpp',
   'src/mod/attr/undocumented.cpp',
