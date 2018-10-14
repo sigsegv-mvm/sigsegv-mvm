@@ -1,5 +1,6 @@
 #include "stub/tfbot_behavior.h"
 #include "mem/patch.h"
+#include "mem/scan.h"
 #include "util/rtti.h"
 
 

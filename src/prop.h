@@ -3,7 +3,8 @@
 
 
 #include "mem/extract.h"
-#include "util/rtti.h"
+#include "util/autolist.h"
+//#include "util/rtti.h"
 
 
 /* from src/public/dt_utlvector_send.cpp */
@@ -45,8 +46,10 @@ public:
 		FAIL,
 	};
 	
-	virtual const char *GetObjectName() const = 0;
-	virtual const char *GetMemberName() const = 0;
+	virtual ~IProp() = default;
+	
+	virtual const char *GetObjectName() const { return this->m_pszObjName; }
+	virtual const char *GetMemberName() const { return this->m_pszMemName; }
 	virtual size_t GetSize() const = 0;
 	virtual const char *GetKind() const = 0;
 	
@@ -54,18 +57,20 @@ public:
 	
 	int GetOffsetAssert();
 	bool GetOffset(int& off);
-	bool GetOffsetConst(int& off) const;
 	
 	State GetState() const { return this->m_State; }
 	
 protected:
-	IProp() {}
+	IProp(const char *obj, const char *mem) :
+		m_pszObjName(obj), m_pszMemName(mem) {}
 	
 	virtual bool CalcOffset(int& off) const = 0;
 	
 private:
 	void DoCalcOffset();
 	
+	const char *m_pszObjName;
+	const char *m_pszMemName;
 	State m_State = State::INITIAL;
 	int m_Offset = -1;
 };
@@ -83,11 +88,6 @@ inline bool IProp::GetOffset(int& off)
 		this->DoCalcOffset();
 	}
 	
-	return this->GetOffsetConst(off);
-}
-
-inline bool IProp::GetOffsetConst(int& off) const
-{
 	if (this->m_State == State::OK) {
 		off = this->m_Offset;
 		return true;
@@ -108,36 +108,9 @@ inline void IProp::DoCalcOffset()
 }
 
 
-// template: AVOID IF POSSIBLE
-// ctor:     OKAY
-// dtor:     OKAY
-// virtual:  OKAY
-// members:  OKAY
-template<typename T>
-class IPropTyped : public IProp
+class CPropBase_SendProp : public IProp
 {
 public:
-	virtual const char *GetObjectName() const override { return this->m_pszObjName; }
-	virtual const char *GetMemberName() const override { return this->m_pszMemName; }
-	virtual size_t GetSize() const override            { return sizeof(T); }
-	
-protected:
-	IPropTyped(const char *obj, const char *mem) :
-		m_pszObjName(obj), m_pszMemName(mem) {}
-	
-private:
-	const char *m_pszObjName;
-	const char *m_pszMemName;
-};
-
-
-template<typename T>
-class CProp_SendProp : public IPropTyped<T>
-{
-public:
-	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
-		IPropTyped<T>(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func), m_pszRemoteName(remote_name) {}
-	
 	virtual const char *GetKind() const override { return "SENDPROP"; }
 	
 	void StateChanged(void *obj, void *var)
@@ -145,154 +118,87 @@ public:
 		(*this->m_pStateChangedFunc)(obj, var);
 	}
 	
+protected:
+	CPropBase_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
+		IProp(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func), m_pszRemoteName(remote_name) {}
+	
+	virtual bool CalcOffset(int& off) const override;
+	
 private:
-	virtual bool CalcOffset(int& off) const override
-	{
-		ServerClass *sv_class = this->FindServerClass();
-		if (sv_class == nullptr) {
-			Warning("CProp_SendProp: %s::%s FAIL: can't find ServerClass \"%s\"\n", this->GetObjectName(), this->GetMemberName(), this->m_pszServerClass);
-			return false;
-		}
-		
-		if (!this->FindSendProp(off, sv_class->m_pTable)) {
-			Warning("CProp_SendProp: %s::%s FAIL: can't find SendProp \"%s\"\n", this->GetObjectName(), this->GetMemberName(), this->GetSendPropMemberName());
-			return false;
-		}
-		
-		return true;
-	}
-	
-	ServerClass *FindServerClass() const
-	{
-		for (ServerClass *sv_class = gamedll->GetAllServerClasses(); sv_class != nullptr; sv_class = sv_class->m_pNext) {
-			if (strcmp(sv_class->GetName(), this->m_pszServerClass) == 0) {
-				return sv_class;
-			}
-		}
-		
-		return nullptr;
-	}
-	
-	bool FindSendProp(int& off, SendTable *s_table) const
-	{
-		for (int i = 0; i < s_table->GetNumProps(); ++i) {
-			SendProp *s_prop = s_table->GetProp(i);
-			
-			if (s_prop->GetName() != nullptr && strcmp(s_prop->GetName(), this->GetSendPropMemberName()) == 0) {
-				if (!this->IsSendPropUtlVector(off, s_prop)) {
-					off = s_prop->GetOffset();
-				}
-				return true;
-			}
-			
-			if (s_prop->GetDataTable() != nullptr) {
-				if (this->FindSendProp(off, s_prop->GetDataTable())) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	bool IsSendPropUtlVector(int& off, SendProp *q_prop) const
-	{
-		SendTable *s_table = q_prop->GetDataTable();
-		if (s_table == nullptr) return false;
-		
-		auto SendProxy_LengthTable = reinterpret_cast<SendTableProxyFn>(AddrManager::GetAddr("SendProxy_LengthTable"));
-		assert(SendProxy_LengthTable != nullptr);
-		
-		for (int i = 0; i < s_table->GetNumProps(); ++i) {
-			SendProp *s_prop = s_table->GetProp(i);
-			
-			if (s_prop->GetName() != nullptr && strcmp(s_prop->GetName(), "lengthproxy") == 0 &&
-				s_prop->GetDataTable() != nullptr && s_prop->GetDataTableProxyFn() == SendProxy_LengthTable) {
-				auto extra = reinterpret_cast<const CSendPropExtra_UtlVector *>(s_prop->GetExtraData());
-				if (extra != nullptr) {
-					off = extra->m_Offset;
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	const char *GetSendPropMemberName() const
-	{
-		if (this->m_pszRemoteName != nullptr) {
-			return this->m_pszRemoteName;
-		} else {
-			return this->GetMemberName();
-		}
-	}
+	ServerClass *FindServerClass() const;
+	bool FindSendProp(int& off, SendTable *s_table) const;
+	bool IsSendPropUtlVector(int& off, SendProp *q_prop) const;
+	const char *GetSendPropMemberName() const;
 	
 	const char *m_pszServerClass;
 	void (*m_pStateChangedFunc)(void *, void *);
 	const char *m_pszRemoteName;
 };
 
-
 template<typename T>
-class CProp_DataMap : public IPropTyped<T>
+class CProp_SendProp final : public CPropBase_SendProp
 {
 public:
-	CProp_DataMap(const char *obj, const char *mem) :
-		IPropTyped<T>(obj, mem) {}
+	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
+		CPropBase_SendProp(obj, mem, sv_class, sc_func, remote_name) {}
 	
+	virtual size_t GetSize() const override { return sizeof(T); }
+};
+
+
+class CPropBase_DataMap : public IProp
+{
+public:
 	virtual const char *GetKind() const override { return "DATAMAP"; }
 	
 	void StateChanged(void *obj, void *var) {}
 	
-private:
-	virtual bool CalcOffset(int& off) const override
-	{
-		char str_DataMap[1024];
-		V_sprintf_safe(str_DataMap, "%s::m_DataMap", this->GetObjectName());
-		
-		auto datamap = (datamap_t *)AddrManager::GetAddr(str_DataMap);
-		if (datamap == nullptr) {
-			Warning("CProp_DataMap: %s::%s FAIL: no addr for %s\n", this->GetObjectName(), this->GetMemberName(), str_DataMap);
-			return false;
-		}
-		
-		sm_datatable_info_t info;
-		if (!gamehelpers->FindDataMapInfo(datamap, this->GetMemberName(), &info)) {
-			Warning("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
-			return false;
-		}
-		
-//		const datamap_t *datamap = Prop::GetDataMapByRTTIName(this->GetObjectName());
-//		if (datamap == nullptr) {
-//			Warning("CProp_DataMap: %s::%s FAIL: can't find datamap for class %s\n", this->GetObjectName(), this->GetMemberName(), this->GetObjectName());
-//			return false;
-//		}
-//		
-//		sm_datatable_info_t info;
-//		if (!gamehelpers->FindDataMapInfo(const_cast<datamap_t *>(datamap), this->GetMemberName(), &info)) {
-//			Warning("CProp_DataMap: %s::%s FAIL: in FindDataMapInfo\n", this->GetObjectName(), this->GetMemberName());
-//			return false;
-//		}
-		
-		typedescription_t *td = info.prop;
-		off = td->fieldOffset[TD_OFFSET_NORMAL];
-		return true;
-	}
+protected:
+	CPropBase_DataMap(const char *obj, const char *mem) :
+		IProp(obj, mem) {}
+	
+	virtual bool CalcOffset(int& off) const override;
+};
+
+template<typename T>
+class CProp_DataMap final : public CPropBase_DataMap
+{
+public:
+	CProp_DataMap(const char *obj, const char *mem) :
+		CPropBase_DataMap(obj, mem) {}
+	
+	virtual size_t GetSize() const override { return sizeof(T); }
 };
 //#ifdef __GNUC__
 //#warning TODO: delete gamedata/sigsegv/datamaps.txt and remove from PackageScript and gameconf.cpp
 //#endif
 
 
+class CPropBase_Extract : public IProp
+{
+public:
+	virtual const char *GetKind() const override { return "EXTRACT"; }
+	
+	void StateChanged(void *obj, void *var) {}
+	
+protected:
+	CPropBase_Extract(const char *obj, const char *mem) :
+		IProp(obj, mem) {}
+	
+	virtual bool CalcOffset(int& off) const override;
+	
+	virtual IExtractBase *GetExtractor() const = 0;
+};
+
 template<typename T>
-class CProp_Extract : public IPropTyped<T>
+class CProp_Extract final : public CPropBase_Extract
 {
 public:
 	CProp_Extract(const char *obj, const char *mem, IExtract<T *> *extractor) :
-		IPropTyped<T>(obj, mem), m_Extractor(extractor) {}
+		CPropBase_Extract(obj, mem), m_Extractor(extractor) {}
 	CProp_Extract(const char *obj, const char *mem, IExtractStub *stub) :
-		IPropTyped<T>(obj, mem), m_Extractor(nullptr) {}
+		CPropBase_Extract(obj, mem), m_Extractor(nullptr) {}
+	
 	virtual ~CProp_Extract()
 	{
 		if (this->m_Extractor != nullptr) {
@@ -300,38 +206,24 @@ public:
 		}
 	}
 	
-	virtual const char *GetKind() const override { return "EXTRACT"; }
-	
-	void StateChanged(void *obj, void *var) {}
+	virtual size_t GetSize() const override { return sizeof(T); }
 	
 private:
 	virtual bool CalcOffset(int& off) const override
 	{
-		if (this->m_Extractor == nullptr) {
-			Warning("CProp_Extract: %s::%s FAIL: no extractor provided (nullptr)\n", this->GetObjectName(), this->GetMemberName());
-			return false;
-		}
-		
-		if (!this->m_Extractor->Init()) {
-			Warning("CProp_Extract: %s::%s FAIL: in extractor Init\n", this->GetObjectName(), this->GetMemberName());
-			return false;
-		}
-		
-		if (!this->m_Extractor->Check()) {
-			Warning("CProp_Extract: %s::%s FAIL: in extractor Check\n", this->GetObjectName(), this->GetMemberName());
-			return false;
-		}
+		if (!CPropBase_Extract::CalcOffset(off)) return false;
 		
 		off = (int)this->m_Extractor->Extract();
 		return true;
 	}
 	
+	virtual IExtractBase *GetExtractor() const { return this->m_Extractor; }
+	
 	IExtract<T *> *m_Extractor;
 };
 
 
-template<typename T>
-class CProp_Relative : public IPropTyped<T>
+class CPropBase_Relative : public IProp
 {
 public:
 	enum RelativeMethod
@@ -341,52 +233,24 @@ public:
 		REL_BEFORE,
 	};
 	
-	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, int diff = 0) :
-		IPropTyped<T>(obj, mem), m_RelProp(prop), m_Method(method), m_iAlign(align)
+	virtual const char *GetKind() const override { return "RELATIVE"; }
+	
+	void StateChanged(void *obj, void *var) {}
+	
+protected:
+	CPropBase_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, size_t size, int diff = 0) :
+		IProp(obj, mem), m_RelProp(prop), m_Method(method), m_iAlign(align), m_iDiff(diff)
 	{
 		switch (method) {
 		default:
 		case REL_MANUAL: this->m_iDiff =  diff;                   break;
 		case REL_AFTER:  this->m_iDiff =  diff + prop->GetSize(); break;
-		case REL_BEFORE: this->m_iDiff = -diff - this->GetSize(); break;
+		case REL_BEFORE: this->m_iDiff = -diff - size;            break;
 		}
 	}
-	
-	virtual const char *GetKind() const override { return "RELATIVE"; }
-	
-	void StateChanged(void *obj, void *var) {}
 	
 private:
-	virtual bool CalcOffset(int& off) const override
-	{
-		int base_off = 0;
-		
-		if (!this->m_RelProp->GetOffset(base_off)) {
-			Warning("CProp_Relative: %s::%s FAIL: in base prop GetOffset\n", this->GetObjectName(), this->GetMemberName());
-			return false;
-		}
-		
-		off = base_off + this->m_iDiff;
-		
-		if (this->m_iAlign != 0) {
-			int rem;
-			switch (this->m_Method) {
-			case REL_MANUAL:
-				assert(false); // not supported
-				break;
-			case REL_AFTER:
-				rem = (off % this->m_iAlign);
-				if (rem != 0) off += (this->m_iAlign - rem);
-				break;
-			case REL_BEFORE:
-				rem = (off % this->m_iAlign);
-				if (rem != 0) off -= rem;
-				break;
-			}
-		}
-		
-		return true;
-	}
+	virtual bool CalcOffset(int& off) const override;
 	
 	IProp *m_RelProp;
 	RelativeMethod m_Method;
@@ -394,12 +258,29 @@ private:
 	int m_iDiff;
 };
 
+template<typename T>
+class CProp_Relative final : public CPropBase_Relative
+{
+public:
+	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, int diff = 0) :
+		CPropBase_Relative(obj, mem, prop, method, align, sizeof(T), diff) {}
+	
+	virtual size_t GetSize() const override { return sizeof(T); }
+};
+
 
 #define T_PARAMS typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET, bool RW
 #define T_ARGS            IPROP,        PROP,               ADJUST,      NET,      RW
 
 
-template<typename T, T_PARAMS> class CPropAccessorBase
+class CPropAccessorBaseBase
+{
+public:
+	
+};
+
+template<typename T, T_PARAMS>
+class CPropAccessorBase : public CPropAccessorBaseBase
 {
 private:
 	/* determine whether we should be returning writable refs/ptrs */
@@ -516,9 +397,9 @@ public:
 	auto end()   { return this->Get().end();   }
 	
 	/* not implemented yet */
-	template<typename... ARGS> auto operator() (ARGS...) = delete; // TODO
-	template<typename... ARGS> auto operator*  (ARGS...) = delete; // TODO
-	template<typename... ARGS> auto operator->*(ARGS...) = delete; // TODO
+//	template<typename... ARGS> auto operator() (ARGS...) = delete; // TODO
+//	template<typename... ARGS> auto operator*  (ARGS...) = delete; // TODO
+//	template<typename... ARGS> auto operator->*(ARGS...) = delete; // TODO
 	
 protected:
 	RefRO_t Set(RefRO_t val)
@@ -535,7 +416,6 @@ protected:
 		}
 	}
 	
-	
 	/* reference getters */
 	RefRO_t GetRO() const { return *this->GetPtrRO(); }
 	RefRW_t GetRW() const { return *this->GetPtrRW(); }
@@ -546,11 +426,9 @@ protected:
 	PtrRW_t GetPtrRW() const { return reinterpret_cast<PtrRW_t>(this->GetInstanceVarAddr()); }
 	Ptr_t   GetPtr  () const { return reinterpret_cast<Ptr_t  >(this->GetInstanceVarAddr()); }
 	
-	
-	uintptr_t GetInstanceBaseAddr() const { return (reinterpret_cast<uintptr_t>(this) - *ADJUST); }
-	
 private:
-	uintptr_t GetInstanceVarAddr() const { return (this->GetInstanceBaseAddr() + this->GetCachedVarOffset()); }
+	uintptr_t GetInstanceBaseAddr() const { return (reinterpret_cast<uintptr_t>(this) - *ADJUST); }
+	uintptr_t GetInstanceVarAddr() const  { return (this->GetInstanceBaseAddr() + this->GetCachedVarOffset()); }
 	
 	ptrdiff_t GetCachedVarOffset() const
 	{
@@ -559,7 +437,8 @@ private:
 	}
 };
 
-template<typename U, T_PARAMS> struct CPropAccessorHandle : public CPropAccessorBase<CHandle<U>, T_ARGS>
+template<typename U, T_PARAMS>
+struct CPropAccessorHandle : public CPropAccessorBase<CHandle<U>, T_ARGS>
 {
 	using CPropAccessorBase<CHandle<U>, T_ARGS>::operator=;
 	
@@ -568,23 +447,30 @@ template<typename U, T_PARAMS> struct CPropAccessorHandle : public CPropAccessor
 };
 
 
-template<typename T, T_PARAMS> struct CPropAccessor : public CPropAccessorBase<T, T_ARGS>
+template<typename T, T_PARAMS>
+struct CPropAccessor final : public CPropAccessorBase<T, T_ARGS>
 {
 	using CPropAccessorBase<T, T_ARGS>::operator=;
 };
-template<typename U, T_PARAMS> struct CPropAccessor<CHandle<U>, T_ARGS> : public CPropAccessorHandle<U, T_ARGS>
+
+template<typename U, T_PARAMS>
+struct CPropAccessor<CHandle<U>, T_ARGS> final : public CPropAccessorHandle<U, T_ARGS>
 {
 	using CPropAccessorHandle<U, T_ARGS>::operator=;
 };
 
 
 /* some sanity checks to ensure zero-size, no ctors, no vtable, etc */
-#define CHECK_ACCESSOR(ACCESSOR) \
-	static_assert( std::is_empty_v                <ACCESSOR>, "NOT GOOD: Prop accessor isn't an empty type"     ); \
-	static_assert(!std::is_polymorphic_v          <ACCESSOR>, "NOT GOOD: Prop accessor has virtual functions"   ); \
-	static_assert(!std::is_default_constructible_v<ACCESSOR>, "NOT GOOD: Prop accessor is default-constructible"); \
-	static_assert(!std::is_copy_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is copy-constructible"   ); \
-	static_assert(!std::is_move_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is move-constructible"   )
+#ifdef DEBUG
+	#define CHECK_ACCESSOR(ACCESSOR) \
+		static_assert( std::is_empty_v                <ACCESSOR>, "NOT GOOD: Prop accessor isn't an empty type"     ); \
+		static_assert(!std::is_polymorphic_v          <ACCESSOR>, "NOT GOOD: Prop accessor has virtual functions"   ); \
+		static_assert(!std::is_default_constructible_v<ACCESSOR>, "NOT GOOD: Prop accessor is default-constructible"); \
+		static_assert(!std::is_copy_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is copy-constructible"   ); \
+		static_assert(!std::is_move_constructible_v   <ACCESSOR>, "NOT GOOD: Prop accessor is move-constructible"   )
+#else
+	#define CHECK_ACCESSOR(ACCESSOR)
+#endif
 
 
 #define DECL_PROP(TYPE, PROPNAME, VARIANT, NET, RW) \

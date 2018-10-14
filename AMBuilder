@@ -50,6 +50,7 @@ sourceFiles += [
   
   'src/mem/alloc.cpp',
   'src/mem/detour.cpp',
+  'src/mem/extract.cpp',
   'src/mem/hook.cpp',
   'src/mem/patch.cpp',
   'src/mem/scan.cpp',
