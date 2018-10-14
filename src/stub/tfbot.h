@@ -258,6 +258,7 @@ public:
 	void AddItem(const char *name)                                     {        ft_AddItem                     (this, name); }
 	float GetDesiredAttackRange() const                                { return ft_GetDesiredAttackRange       (this); }
 	void EquipBestWeaponForThreat(const CKnownEntity *threat)          {        ft_EquipBestWeaponForThreat    (this, threat); }
+	void EquipRequiredWeapon()                                         {        ft_EquipRequiredWeapon         (this); }
 	CTFPlayer *SelectRandomReachableEnemy()                            { return ft_SelectRandomReachableEnemy  (this); }
 	bool ShouldAutoJump()                                              { return ft_ShouldAutoJump              (this); }
 	
@@ -298,6 +299,7 @@ private:
 	static MemberFuncThunk<      CTFBot *, void, const char *                > ft_AddItem;
 	static MemberFuncThunk<const CTFBot *, float                             > ft_GetDesiredAttackRange;
 	static MemberFuncThunk<      CTFBot *, void, const CKnownEntity *        > ft_EquipBestWeaponForThreat;
+	static MemberFuncThunk<      CTFBot *, void                              > ft_EquipRequiredWeapon;
 	static MemberFuncThunk<      CTFBot *, CTFPlayer *                       > ft_SelectRandomReachableEnemy;
 	static MemberFuncThunk<      CTFBot *, bool                              > ft_ShouldAutoJump;
 	

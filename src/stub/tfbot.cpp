@@ -223,6 +223,7 @@ MemberFuncThunk<      CTFBot *, void, CTFPlayer *                        > CTFBo
 MemberFuncThunk<      CTFBot *, void, const char *                       > CTFBot::ft_AddItem                     ("CTFBot::AddItem");
 MemberFuncThunk<const CTFBot *, float                                    > CTFBot::ft_GetDesiredAttackRange       ("CTFBot::GetDesiredAttackRange");
 MemberFuncThunk<      CTFBot *, void, const CKnownEntity *               > CTFBot::ft_EquipBestWeaponForThreat    ("CTFBot::EquipBestWeaponForThreat");
+MemberFuncThunk<      CTFBot *, void                                     > CTFBot::ft_EquipRequiredWeapon         ("CTFBot::EquipRequiredWeapon");
 MemberFuncThunk<      CTFBot *, CTFPlayer *                              > CTFBot::ft_SelectRandomReachableEnemy  ("CTFBot::SelectRandomReachableEnemy");
 MemberFuncThunk<      CTFBot *, bool                                     > CTFBot::ft_ShouldAutoJump              ("CTFBot::ShouldAutoJump");
 
