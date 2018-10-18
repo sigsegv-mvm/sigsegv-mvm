@@ -253,6 +253,27 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	SpawnerData *GetDataForBot(CTFBot *bot)
+	{
+		if (bot == nullptr) return nullptr;
+		
+		auto it1 = spawner_of_bot.find(bot);
+		if (it1 == spawner_of_bot.end()) return nullptr;
+		CTFBotSpawner *spawner = (*it1).second;
+		
+		auto it2 = spawners.find(spawner);
+		if (it2 == spawners.end()) return nullptr;
+		SpawnerData& data = (*it2).second;
+		
+		return &data;
+	}
+	SpawnerData *GetDataForBot(CBaseEntity *ent)
+	{
+		CTFBot *bot = ToTFBot(ent);
+		return GetDataForBot(bot);
+	}
+	
+	
 	DETOUR_DECL_MEMBER(void, CTFBot_dtor0)
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
@@ -797,37 +818,26 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBotScenarioMonitor_DesiredScenarioAndClassAction, CTFBot *actor)
 	{
-		CTFBotSpawner *spawner = spawner_of_bot[actor];
-		if (spawner != nullptr) {
-		//	DevMsg("CTFBotSpawner: #%d \"%s\" => %08x\n", ENTINDEX(actor), actor->GetPlayerName(), (uintptr_t)spawner);
-			auto it = spawners.find(spawner);
-			if (it != spawners.end()) {
-			//	DevMsg("CTFBotSpawner: #%d \"%s\" has SpawnerData\n", ENTINDEX(actor), actor->GetPlayerName());
-				SpawnerData& data = (*it).second;
-				
-				switch (data.action) {
-				
-				case ACTION_Default:
-					break;
-				
-				case ACTION_FetchFlag:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to FetchFlag\n", ENTINDEX(actor), actor->GetPlayerName());
-					return CTFBotFetchFlag::New();
-				
-				case ACTION_PushToCapturePoint:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to PushToCapturePoint[-->FetchFlag]\n", ENTINDEX(actor), actor->GetPlayerName());
-					return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
-				
-				case ACTION_Mobber:
-					DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to Mobber\n", ENTINDEX(actor), actor->GetPlayerName());
-					return new CTFBotMobber();
-				
-				}
-			} else {
-			//	DevMsg("CTFBotSpawner: #%d \"%s\" does not have SpawnerData\n", ENTINDEX(actor), actor->GetPlayerName());
+		auto data = GetDataForBot(actor);
+		if (data != nullptr) {
+			switch (data->action) {
+			
+			case ACTION_Default:
+				break;
+			
+			case ACTION_FetchFlag:
+				DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to FetchFlag\n", ENTINDEX(actor), actor->GetPlayerName());
+				return CTFBotFetchFlag::New();
+			
+			case ACTION_PushToCapturePoint:
+				DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to PushToCapturePoint[-->FetchFlag]\n", ENTINDEX(actor), actor->GetPlayerName());
+				return CTFBotPushToCapturePoint::New(CTFBotFetchFlag::New());
+			
+			case ACTION_Mobber:
+				DevMsg("CTFBotSpawner: setting initial action of bot #%d \"%s\" to Mobber\n", ENTINDEX(actor), actor->GetPlayerName());
+				return new CTFBotMobber();
+			
 			}
-		} else {
-		//	DevMsg("CTFBotSpawner: #%d \"%s\" => can't find spawner???\n", ENTINDEX(actor), actor->GetPlayerName());
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_DesiredScenarioAndClassAction)(actor);
@@ -863,23 +873,14 @@ namespace Mod_Pop_TFBot_Extensions
 		auto result = DETOUR_MEMBER_CALL(CTFPlayer_IsPlayerClass)(iClass);
 		
 		if (rc_CTFBot_GetFlagToFetch > 0 && result && iClass == TF_CLASS_ENGINEER) {
-			CTFBot *bot = ToTFBot(player);
-			if (bot != nullptr) {
-				CTFBotSpawner *spawner = spawner_of_bot[bot];
-				if (spawner != nullptr) {
-					auto it = spawners.find(spawner);
-					if (it != spawners.end()) {
-						SpawnerData& data = (*it).second;
-						
-						/* disable the implicit "Attributes IgnoreFlag" thing
-						 * given to engineer bots if they have one of our Action
-						 * overrides enabled (the pop author can explicitly give
-						 * the engie bot "Attributes IgnoreFlag" if they want,
-						 * of course) */
-						if (data.action != ACTION_Default) {
-							return false;
-						}
-					}
+			auto data = GetDataForBot(player);
+			if (data != nullptr) {
+				/* disable the implicit "Attributes IgnoreFlag" thing given to
+				 * engineer bots if they have one of our Action overrides
+				 * enabled (the pop author can explicitly give the engie bot
+				 * "Attributes IgnoreFlag" if they want, of course) */
+				if (data->action != ACTION_Default) {
+					return false;
 				}
 			}
 		}
@@ -912,20 +913,17 @@ namespace Mod_Pop_TFBot_Extensions
 	
 	DETOUR_DECL_MEMBER(int, CTFGameRules_ApplyOnDamageModifyRules, CTakeDamageInfo& info, CBaseEntity *pVictim, bool b1)
 	{
-		auto pTFBot = ToTFBot(pVictim);
-		if (pTFBot != nullptr) {
-			CTFBotSpawner *spawner = spawner_of_bot[pTFBot];
-			if (spawner != nullptr) {
-				auto pTFWeapon = rtti_cast<CTFWeaponBase *>(info.GetWeapon());
-				if (pTFWeapon != nullptr) {
-					int weapon_id = pTFWeapon->GetWeaponID();
-					
-					auto it = spawners[spawner].weapon_resists.find(pTFWeapon->GetWeaponID());
-					if (it != spawners[spawner].weapon_resists.end()) {
-						float resist = (*it).second;
-						info.ScaleDamage(resist);
-						DevMsg("Bot #%d taking damage from weapon_id 0x%02x; resist is %4.2f\n", ENTINDEX(pVictim), weapon_id, resist);
-					}
+		auto data = GetDataForBot(pVictim);
+		if (data != nullptr) {
+			auto pTFWeapon = rtti_cast<CTFWeaponBase *>(info.GetWeapon());
+			if (pTFWeapon != nullptr) {
+				int weapon_id = pTFWeapon->GetWeaponID();
+				
+				auto it = data->weapon_resists.find(pTFWeapon->GetWeaponID());
+				if (it != data->weapon_resists.end()) {
+					float resist = (*it).second;
+					info.ScaleDamage(resist);
+					DevMsg("Bot #%d taking damage from weapon_id 0x%02x; resist is %4.2f\n", ENTINDEX(pVictim), weapon_id, resist);
 				}
 			}
 		}
@@ -939,25 +937,18 @@ namespace Mod_Pop_TFBot_Extensions
 		auto proj = DETOUR_MEMBER_CALL(CTFWeaponBaseGun_FireRocket)(player, i1);
 		
 		if (proj != nullptr) {
-			auto pTFBot = ToTFBot(proj->GetOwnerEntity());
-			if (pTFBot != nullptr) {
-				CTFBotSpawner *spawner = spawner_of_bot[pTFBot];
+			auto data = GetDataForBot(proj->GetOwnerEntity());
+			if (data != nullptr) {
+				if (!data->rocket_custom_model.empty()) {
+					proj->SetModel(data->rocket_custom_model.c_str());
+				}
 				
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					if (!data.rocket_custom_model.empty()) {
-						proj->SetModel(data.rocket_custom_model.c_str());
-					}
-					
-					if (!data.rocket_custom_particle.empty()) {
-						if (data.rocket_custom_particle.front() == '~') {
-							StopParticleEffects(proj);
-							DispatchParticleEffect(data.rocket_custom_particle.c_str() + 1, PATTACH_ABSORIGIN_FOLLOW, proj, INVALID_PARTICLE_ATTACHMENT, false);
-						} else {
-							DispatchParticleEffect(data.rocket_custom_particle.c_str(), PATTACH_ABSORIGIN_FOLLOW, proj, INVALID_PARTICLE_ATTACHMENT, false);
-						}
+				if (!data->rocket_custom_particle.empty()) {
+					if (data->rocket_custom_particle.front() == '~') {
+						StopParticleEffects(proj);
+						DispatchParticleEffect(data->rocket_custom_particle.c_str() + 1, PATTACH_ABSORIGIN_FOLLOW, proj, INVALID_PARTICLE_ATTACHMENT, false);
+					} else {
+						DispatchParticleEffect(data->rocket_custom_particle.c_str(), PATTACH_ABSORIGIN_FOLLOW, proj, INVALID_PARTICLE_ATTACHMENT, false);
 					}
 				}
 			}
@@ -974,13 +965,9 @@ namespace Mod_Pop_TFBot_Extensions
 		CTFPlayer *victim = ToTFPlayer(ent);
 		CTFBot *attacker  = ToTFBot(player);
 		if (victim != nullptr && attacker != nullptr) {
-			CTFBotSpawner *spawner = spawner_of_bot[attacker];
-			
-			auto it = spawners.find(spawner);
-			if (it != spawners.end()) {
-				SpawnerData& data = (*it).second;
-				
-				for (const auto& addcond : data.dmgappliesconds) {
+			auto data = GetDataForBot(attacker);
+			if (data != nullptr) {
+				for (const auto& addcond : data->dmgappliesconds) {
 					victim->m_Shared->AddCond(addcond.cond, addcond.duration, attacker);
 				}
 			}
@@ -994,17 +981,10 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		auto rocket = reinterpret_cast<CTFProjectile_Rocket *>(this);
 		
-		CTFBot *bot = ToTFBot(rocket->GetOwnerPlayer());
-		if (bot != nullptr) {
-			CTFBotSpawner *spawner = spawner_of_bot[bot];
-			
-			auto it = spawners.find(spawner);
-			if (it != spawners.end()) {
-				SpawnerData& data = (*it).second;
-				
-				if (data.homing_rockets.enable) {
-					rocket->SetMoveType(MOVETYPE_CUSTOM);
-				}
+		auto data = GetDataForBot(rocket->GetOwnerPlayer());
+		if (data != nullptr) {
+			if (data->homing_rockets.enable) {
+				rocket->SetMoveType(MOVETYPE_CUSTOM);
 			}
 		}
 	}
@@ -1084,16 +1064,9 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		auto ent = reinterpret_cast<CBaseEntity *>(this);
 		if (ent->ClassMatches("tf_projectile_rocket") && (rocket = rtti_cast<CTFProjectile_Rocket *>(ent)) != nullptr) {
-			CTFBot *bot = ToTFBot(rtti_cast<IScorer *>(rocket)->GetScorer());
-			if (bot != nullptr) {
-				CTFBotSpawner *spawner = spawner_of_bot[bot];
-				
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					hr = &data.homing_rockets;
-				}
+			auto data = GetDataForBot(rtti_cast<IScorer *>(rocket)->GetScorer());
+			if (data != nullptr) {
+				hr = &data->homing_rockets;
 			}
 		}
 		
@@ -1192,41 +1165,36 @@ namespace Mod_Pop_TFBot_Extensions
 		if (gpGlobals->tickcount % ring_of_fire_tick_interval == 0) {
 			ForEachTFBot([](CTFBot *bot){
 				if (!bot->IsAlive()) return;
-				CTFBotSpawner *spawner = spawner_of_bot[bot];
 				
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					if (data.ring_of_fire >= 0.0f) {
-						ForEachEntityInSphere(bot->GetAbsOrigin(), 135.0f, [&](CBaseEntity *ent){
-							CTFPlayer *victim = ToTFPlayer(ent);
-							if (victim == nullptr) return;
-							
-							if (victim->GetTeamNumber() == bot->GetTeamNumber()) return;
-							if (victim->m_Shared->IsInvulnerable())              return;
-							
-							Vector victim_mins = victim->GetPlayerMins();
-							Vector victim_maxs = victim->GetPlayerMaxs();
-							
-							if (bot->GetAbsOrigin().z >= victim->GetAbsOrigin().z + victim_maxs.z) return;
-							
-							Vector closest;
-							victim->CollisionProp()->CalcNearestPoint(bot->GetAbsOrigin(), &closest);
-							if (closest.DistToSqr(bot->GetAbsOrigin()) > Square(135.0f)) return;
-							
-							// trace start should be minigun WSC
-							trace_t tr;
-							UTIL_TraceLine(bot->WorldSpaceCenter(), victim->WorldSpaceCenter(), MASK_SOLID_BRUSHONLY, bot, COLLISION_GROUP_PROJECTILE, &tr);
-							
-							if (tr.fraction == 1.0f || tr.m_pEnt == victim) {
-								Vector bot_origin = bot->GetAbsOrigin();
-								victim->TakeDamage(CTakeDamageInfo(bot, bot, bot->GetActiveTFWeapon(), vec3_origin, bot_origin, data.ring_of_fire, DMG_IGNITE, 0, &bot_origin));
-							}
-						});
+				auto data = GetDataForBot(bot);
+				if (data != nullptr && data->ring_of_fire >= 0.0f) {
+					ForEachEntityInSphere(bot->GetAbsOrigin(), 135.0f, [&](CBaseEntity *ent){
+						CTFPlayer *victim = ToTFPlayer(ent);
+						if (victim == nullptr) return;
 						
-						DispatchParticleEffect("heavy_ring_of_fire", bot->GetAbsOrigin(), vec3_angle);
-					}
+						if (victim->GetTeamNumber() == bot->GetTeamNumber()) return;
+						if (victim->m_Shared->IsInvulnerable())              return;
+						
+						Vector victim_mins = victim->GetPlayerMins();
+						Vector victim_maxs = victim->GetPlayerMaxs();
+						
+						if (bot->GetAbsOrigin().z >= victim->GetAbsOrigin().z + victim_maxs.z) return;
+						
+						Vector closest;
+						victim->CollisionProp()->CalcNearestPoint(bot->GetAbsOrigin(), &closest);
+						if (closest.DistToSqr(bot->GetAbsOrigin()) > Square(135.0f)) return;
+						
+						// trace start should be minigun WSC
+						trace_t tr;
+						UTIL_TraceLine(bot->WorldSpaceCenter(), victim->WorldSpaceCenter(), MASK_SOLID_BRUSHONLY, bot, COLLISION_GROUP_PROJECTILE, &tr);
+						
+						if (tr.fraction == 1.0f || tr.m_pEnt == victim) {
+							Vector bot_origin = bot->GetAbsOrigin();
+							victim->TakeDamage(CTakeDamageInfo(bot, bot, bot->GetActiveTFWeapon(), vec3_origin, bot_origin, data->ring_of_fire, DMG_IGNITE, 0, &bot_origin));
+						}
+					});
+					
+					DispatchParticleEffect("heavy_ring_of_fire", bot->GetAbsOrigin(), vec3_angle);
 				}
 			});
 		}
@@ -1238,19 +1206,13 @@ namespace Mod_Pop_TFBot_Extensions
 		auto action = reinterpret_cast<const CTFBotMainAction *>(this);
 		
 		// TODO: make the perf impact of this less obnoxious if possible
-		if (!spawners.empty()) {
-			CTFBot *actor = ToTFBot(nextbot->GetEntity());
-			
-			CTFBotSpawner *spawner = spawner_of_bot[actor];
-			if (spawner != nullptr) {
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					/* do the exact same thing as the game code does when the bot has WeaponRestrictions MeleeOnly */
-					if (data.use_melee_threat_prioritization) {
-						return action->SelectCloserThreat(actor, threat1, threat2);
-					}
+		CTFBot *actor = ToTFBot(nextbot->GetEntity());
+		if (actor != nullptr) {
+			auto data = GetDataForBot(actor);
+			if (data != nullptr) {
+				/* do the exact same thing as the game code does when the bot has WeaponRestrictions MeleeOnly */
+				if (data->use_melee_threat_prioritization) {
+					return action->SelectCloserThreat(actor, threat1, threat2);
 				}
 			}
 		}
@@ -1264,28 +1226,14 @@ namespace Mod_Pop_TFBot_Extensions
 	{
 		auto player = reinterpret_cast<CTFPlayer *>(this);
 		
-		CTFBot *bot = ToTFBot(player);
-		if (bot != nullptr) {
-			CTFBotSpawner *spawner = spawner_of_bot[bot];
-			if (spawner != nullptr) {
-				auto it = spawners.find(spawner);
-				if (it != spawners.end()) {
-					SpawnerData& data = (*it).second;
-					
-					if (data.drop_weapon) {
-					//	DevMsg("ShouldDropAmmoPack[%s]: yep\n", player->GetPlayerName());
-						return true;
-				//	} else {
-				//		DevMsg("ShouldDropAmmoPack[%s]: nope\n", player->GetPlayerName());
-					}
-			//	} else {
-			//		DevMsg("ShouldDropAmmoPack[%s]: can't find data for bot spawner\n", player->GetPlayerName());
-				}
+		auto data = GetDataForBot(player);
+		if (data != nullptr) {
+			if (data->drop_weapon) {
+			//	DevMsg("ShouldDropAmmoPack[%s]: yep\n", player->GetPlayerName());
+				return true;
 		//	} else {
-		//		DevMsg("ShouldDropAmmoPack[%s]: can't find spawner of bot\n", player->GetPlayerName());
+		//		DevMsg("ShouldDropAmmoPack[%s]: nope\n", player->GetPlayerName());
 			}
-	//	} else {
-	//		DevMsg("ShouldDropAmmoPack[%s]: not a TFBot\n", player->GetPlayerName());
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFPlayer_ShouldDropAmmoPack)();
