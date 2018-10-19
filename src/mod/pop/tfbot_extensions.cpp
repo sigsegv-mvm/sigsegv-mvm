@@ -141,6 +141,8 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		bool use_melee_threat_prioritization = false;
 		
+		bool suppress_timed_fetchflag = false;
+		
 #ifdef ENABLE_BROKEN_STUFF
 		bool drop_weapon = false;
 #endif
@@ -617,6 +619,8 @@ namespace Mod_Pop_TFBot_Extensions
 				spawners[spawner].ring_of_fire = subkey->GetFloat();
 			} else if (FStrEq(name, "UseMeleeThreatPrioritization")) {
 				spawners[spawner].use_melee_threat_prioritization = subkey->GetBool();
+			} else if (FStrEq(name, "SuppressTimedFetchFlag")) {
+				spawners[spawner].suppress_timed_fetchflag = subkey->GetBool();
 #ifdef ENABLE_BROKEN_STUFF
 			} else if (FStrEq(name, "DropWeapon")) {
 				spawners[spawner].drop_weapon = subkey->GetBool();
@@ -643,6 +647,20 @@ namespace Mod_Pop_TFBot_Extensions
 		
 		// delete the temporary copy of the KV subtree
 		kv->deleteThis();
+		
+		/* post-processing: modify all of the spawner's EventChangeAttributes_t structs as necessary */
+		auto l_postproc_ecattr = [](CTFBotSpawner *spawner, CTFBot::EventChangeAttributes_t& ecattr){
+			/* Action Mobber: add implicit Attributes IgnoreFlag */
+			if (spawners[spawner].action == ACTION_Mobber) {
+				/* operator|= on enums: >:[ */
+				ecattr.m_nBotAttrs = static_cast<CTFBot::AttributeType>(ecattr.m_nBotAttrs | CTFBot::ATTR_IGNORE_FLAG);
+			}
+		};
+		
+		l_postproc_ecattr(spawner, spawner->m_DefaultAttrs);
+		for (auto& ecattr : spawner->m_ECAttrs) {
+			l_postproc_ecattr(spawner, ecattr);
+		}
 		
 		return result;
 	}
@@ -844,10 +862,29 @@ namespace Mod_Pop_TFBot_Extensions
 	}
 	
 	
+	RefCount rc_CTFBotScenarioMonitor_Update;
+	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotScenarioMonitor_Update, CTFBot *actor, float dt)
+	{
+		SCOPED_INCREMENT(rc_CTFBotScenarioMonitor_Update);
+		return DETOUR_MEMBER_CALL(CTFBotScenarioMonitor_Update)(actor, dt);
+	}
+	
 	RefCount rc_CTFBot_GetFlagToFetch;
 	DETOUR_DECL_MEMBER(CCaptureFlag *, CTFBot_GetFlagToFetch)
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
+		
+		/* for SuppressTimedFetchFlag, we carefully ensure that we only spoof
+		 * the result of CTFBot::GetFlagToFetch when called from
+		 * CTFBotScenarioMonitor::Update (the part of the AI where the timer
+		 * checks and the actual SuspendFor(CTFBotFetchFlag) occur);
+		 * the rest of the AI's calls to GetFlagToFetch will be untouched */
+		if (rc_CTFBotScenarioMonitor_Update > 0) {
+			auto data = GetDataForBot(bot);
+			if (data != nullptr && data->suppress_timed_fetchflag) {
+				return nullptr;
+			}
+		}
 		
 		SCOPED_INCREMENT(rc_CTFBot_GetFlagToFetch);
 		auto result = DETOUR_MEMBER_CALL(CTFBot_GetFlagToFetch)();
@@ -878,7 +915,9 @@ namespace Mod_Pop_TFBot_Extensions
 				/* disable the implicit "Attributes IgnoreFlag" thing given to
 				 * engineer bots if they have one of our Action overrides
 				 * enabled (the pop author can explicitly give the engie bot
-				 * "Attributes IgnoreFlag" if they want, of course) */
+				 * "Attributes IgnoreFlag" if they want, of course)
+				 * NOTE: this logic will NOT take effect if the bot also has the
+				 * SuppressTimedFetchFlag custom parameter */
 				if (data->action != ACTION_Default) {
 					return false;
 				}
@@ -1295,8 +1334,9 @@ namespace Mod_Pop_TFBot_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_DesiredScenarioAndClassAction, "CTFBotScenarioMonitor::DesiredScenarioAndClassAction");
 			
-			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,   "CTFBot::GetFlagToFetch");
-			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass, "CTFPlayer::IsPlayerClass");
+			MOD_ADD_DETOUR_MEMBER(CTFBotScenarioMonitor_Update, "CTFBotScenarioMonitor::Update");
+			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagToFetch,        "CTFBot::GetFlagToFetch");
+			MOD_ADD_DETOUR_MEMBER(CTFPlayer_IsPlayerClass,      "CTFPlayer::IsPlayerClass");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagCaptureZone, "CTFBot::GetFlagCaptureZone");
 			
