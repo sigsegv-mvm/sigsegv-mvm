@@ -99,7 +99,7 @@ CopyFiles('scripts', 'custom/sigsegv/scripts',
 # Copy binaries.
 for cxx_task in Extension.extensions:
   src = os.path.join('..', cxx_task.binary.path)
-  dst = os.path.join('addons/sourcemod/extensions', os.path.basename(cxx_task.binary.path))
+  dst = os.path.join('addons', 'sourcemod', 'extensions', os.path.basename(cxx_task.binary.path))
   builder.AddCommand(
     inputs  = [ cxx_task.binary ],
     argv    = [ 'cp', '--remove-destination', src, dst ],
