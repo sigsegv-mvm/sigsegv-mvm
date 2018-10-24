@@ -92,21 +92,24 @@ public:
 	};
 	static_assert(sizeof(Scale) <= 1);
 	
+	// TODO: turn these struct members back into enum types once the GCC devs get their heads out of their asses
+	// ("warning: ‘X86Instr::ModRM::mod’ is too small to hold all values of ‘enum X86Instr::Mod’" etc bullshit)
 	struct ModRM
 	{
-		Mod mod : 2;
-		Reg reg : 3;
-		RM  rm  : 3;
+		uint8_t mod : 2;
+		uint8_t reg : 3;
+		uint8_t rm  : 3;
 		
 		operator uint8_t() const { return *reinterpret_cast<const uint8_t *>(this); }
 	};
 	static_assert(sizeof(ModRM) == 1);
 	
+	// TODO: turn these back into enum types, see above
 	struct SIB
 	{
-		Scale scale : 2;
-		Reg   index : 3;
-		Reg   base  : 3;
+		uint8_t scale : 2;
+		uint8_t index : 3;
+		uint8_t base  : 3;
 		
 		operator uint8_t() const { return *reinterpret_cast<const uint8_t *>(this); }
 	};
