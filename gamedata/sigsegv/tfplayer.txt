@@ -588,6 +588,18 @@
 			//		sym  "_Z22GetTFConditionFromNamePKc"
 			//	}
 			}
+			
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "sym"
+					lib  "server"
+				}
+				
+				"CTFPlayerShared::SetDefaultItemChargeMeters" "_ZN15CTFPlayerShared26SetDefaultItemChargeMetersEv"
+				"CTFPlayerShared::SetItemChargeMeter"         "_ZN15CTFPlayerShared18SetItemChargeMeterE19loadout_positions_tf"
+			}
 		}
 	}
 }

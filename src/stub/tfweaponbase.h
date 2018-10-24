@@ -48,7 +48,7 @@ private:
 	static MemberVFuncThunk<      CBaseCombatWeapon *, void>                         vt_SetViewModel;
 };
 
-class CTFWeaponBase : public CBaseCombatWeapon
+class CTFWeaponBase : public CBaseCombatWeapon, public IHasGenericMeter
 {
 public:
 	CTFPlayer *GetTFPlayerOwner() const { return ToTFPlayer(this->GetOwner()); }

@@ -144,6 +144,12 @@ IMPL_SENDPROP(CHandle<CBaseEntity>, CTFReviveMarker, m_hOwner,   CTFReviveMarker
 IMPL_SENDPROP(short,                CTFReviveMarker, m_nRevives, CTFReviveMarker);
 
 
+MemberVFuncThunk<const IHasGenericMeter *, bool>  IHasGenericMeter::vt_ShouldUpdateMeter    (TypeName<IHasGenericMeter>(), "IHasGenericMeter::ShouldUpdateMeter");
+MemberVFuncThunk<const IHasGenericMeter *, float> IHasGenericMeter::vt_GetMeterMultiplier   (TypeName<IHasGenericMeter>(), "IHasGenericMeter::GetMeterMultiplier");
+MemberVFuncThunk<      IHasGenericMeter *, void>  IHasGenericMeter::vt_OnResourceMeterFilled(TypeName<IHasGenericMeter>(), "IHasGenericMeter::OnResourceMeterFilled");
+MemberVFuncThunk<const IHasGenericMeter *, float> IHasGenericMeter::vt_GetChargeInterval    (TypeName<IHasGenericMeter>(), "IHasGenericMeter::GetChargeInterval");
+
+
 MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> CEconWearable::vt_UnEquip(TypeName<CEconWearable>(), "CEconWearable::UnEquip");
 
 

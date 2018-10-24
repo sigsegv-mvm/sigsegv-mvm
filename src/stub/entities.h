@@ -79,6 +79,22 @@ public:
 class CTFMedigunShield : public CBaseAnimating {};
 
 
+class IHasGenericMeter
+{
+public:
+	bool ShouldUpdateMeter() const   { return vt_ShouldUpdateMeter    (rtti_cast<const IHasGenericMeter *>(this)); }
+	float GetMeterMultiplier() const { return vt_GetMeterMultiplier   (rtti_cast<const IHasGenericMeter *>(this)); }
+	void OnResourceMeterFilled()     {        vt_OnResourceMeterFilled(rtti_cast<      IHasGenericMeter *>(this)); }
+	float GetChargeInterval() const  { return vt_GetChargeInterval    (rtti_cast<const IHasGenericMeter *>(this)); }
+	
+private:
+	static MemberVFuncThunk<const IHasGenericMeter *, bool>  vt_ShouldUpdateMeter;
+	static MemberVFuncThunk<const IHasGenericMeter *, float> vt_GetMeterMultiplier;
+	static MemberVFuncThunk<      IHasGenericMeter *, void>  vt_OnResourceMeterFilled;
+	static MemberVFuncThunk<const IHasGenericMeter *, float> vt_GetChargeInterval;
+};
+
+
 class CEconWearable : public CEconEntity
 {
 public:
@@ -88,7 +104,7 @@ private:
 	static MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> vt_UnEquip;
 };
 
-class CTFWearable : public CEconWearable {};
+class CTFWearable : public CEconWearable, public IHasGenericMeter {};
 
 class CTFPowerupBottle : public CTFWearable {};
 class CTFWearableRobotArm : public CTFWearable {};

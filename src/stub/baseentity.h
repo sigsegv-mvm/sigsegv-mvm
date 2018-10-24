@@ -184,6 +184,7 @@ public:
 	void Teleport(const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity)                            {        vt_Teleport                      (this, newPosition, newAngles, newVelocity); }
 	int GetMaxHealth() const                                                                                                { return vt_GetMaxHealth                  (this); }
 	bool IsAlive()                                                                                                          { return vt_IsAlive                       (this); }
+	float GetDefaultItemChargeMeterValue() const                                                                            { return vt_GetDefaultItemChargeMeterValue(this); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)                                                                                                                                      { return ft_PrecacheModel      (name, bPreload); }
@@ -300,6 +301,7 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, void, const Vector *, const QAngle *, const Vector *>             vt_Teleport;
 	static MemberVFuncThunk<const CBaseEntity *, int>                                                              vt_GetMaxHealth;
 	static MemberVFuncThunk<      CBaseEntity *, bool>                                                             vt_IsAlive;
+	static MemberVFuncThunk<const CBaseEntity *, float>                                                            vt_GetDefaultItemChargeMeterValue;
 	
 	static StaticFuncThunk<int, const char *, bool>                                                                         ft_PrecacheModel;
 	static StaticFuncThunk<bool, const char *>                                                                              ft_PrecacheSound;

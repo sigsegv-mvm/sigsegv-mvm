@@ -215,19 +215,21 @@ public:
 	void SetState(int nState)      { this->m_nPlayerState = nState; }
 	bool InState(int nState) const { return (this->m_nPlayerState == nState); }
 	
-	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond             (this, cond, duration, provider); }
-	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond          (this, cond, b1); }
-	bool InCond(ETFCond cond) const                                                     { return ft_InCond              (this, cond); }
-	bool IsInvulnerable() const                                                         { return ft_IsInvulnerable      (this); }
-	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner)        {        ft_StunPlayer          (this, duration, amount, flags, stunner); }
-	void GetConditionsBits(CBitVec<192>& bitvec)                                        {        ft_GetConditionsBits   (this, bitvec); }
-	float GetConditionDuration(ETFCond cond)                                            { return ft_GetConditionDuration(this, cond); }
-	CBaseEntity *GetConditionProvider(ETFCond cond)                                     { return ft_GetConditionProvider(this, cond); }
-	int GetDisguiseTeam() const                                                         { return ft_GetDisguiseTeam     (this); }
-	bool IsStealthed() const                                                            { return ft_IsStealthed         (this); }
-	float GetPercentInvisible() const                                                   { return ft_GetPercentInvisible (this); }
-	bool IsControlStunned()                                                             { return ft_IsControlStunned    (this); }
-	bool IsLoserStateStunned() const                                                    { return ft_IsLoserStateStunned (this); }
+	void AddCond(ETFCond cond, float duration = -1.0f, CBaseEntity *provider = nullptr) {        ft_AddCond                   (this, cond, duration, provider); }
+	void RemoveCond(ETFCond cond, bool b1 = false)                                      {        ft_RemoveCond                (this, cond, b1); }
+	bool InCond(ETFCond cond) const                                                     { return ft_InCond                    (this, cond); }
+	bool IsInvulnerable() const                                                         { return ft_IsInvulnerable            (this); }
+	void StunPlayer(float duration, float amount, int flags, CTFPlayer *stunner)        {        ft_StunPlayer                (this, duration, amount, flags, stunner); }
+	void GetConditionsBits(CBitVec<192>& bitvec)                                        {        ft_GetConditionsBits         (this, bitvec); }
+	float GetConditionDuration(ETFCond cond)                                            { return ft_GetConditionDuration      (this, cond); }
+	CBaseEntity *GetConditionProvider(ETFCond cond)                                     { return ft_GetConditionProvider      (this, cond); }
+	int GetDisguiseTeam() const                                                         { return ft_GetDisguiseTeam           (this); }
+	bool IsStealthed() const                                                            { return ft_IsStealthed               (this); }
+	float GetPercentInvisible() const                                                   { return ft_GetPercentInvisible       (this); }
+	bool IsControlStunned()                                                             { return ft_IsControlStunned          (this); }
+	bool IsLoserStateStunned() const                                                    { return ft_IsLoserStateStunned       (this); }
+	void SetDefaultItemChargeMeters()                                                   {        ft_SetDefaultItemChargeMeters(this); }
+	void SetItemChargeMeter(loadout_positions_t slot, float value)                      {        ft_SetItemChargeMeter        (this, slot, value); }
 	
 	DECL_SENDPROP(float,       m_flCloakMeter);
 	DECL_SENDPROP(float,       m_flEnergyDrinkMeter);
@@ -256,6 +258,8 @@ private:
 	static MemberFuncThunk<const CTFPlayerShared *, float                               > ft_GetPercentInvisible;
 	static MemberFuncThunk<      CTFPlayerShared *, bool                                > ft_IsControlStunned;
 	static MemberFuncThunk<const CTFPlayerShared *, bool                                > ft_IsLoserStateStunned;
+	static MemberFuncThunk<      CTFPlayerShared *, void                                > ft_SetDefaultItemChargeMeters;
+	static MemberFuncThunk<      CTFPlayerShared *, void, loadout_positions_t, float    > ft_SetItemChargeMeter;
 };
 
 class CTFPlayer : public CBaseMultiplayerPlayer
