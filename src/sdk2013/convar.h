@@ -18,7 +18,7 @@
 
 // public/tier1/convar.h
 #define _SIGSEGV_SDK2013_OVERRIDE__PUBLIC_TIER1_CONVAR_H 1
-// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders 0ef5d3d4 20171105]
+// sigsegv modifications [WRT: Valve SDK2013 0d8dceea 20150909 / AlliedModders SDK2013 0ef5d3d4 20171105 / AlliedModders TF2 0fb7706f 20180505]
 // - fix size of ConCommand to match changes in recent TF2 binaries
 // - fix size of ConVar to match changes in recent TF2 binaries
 // - add some direct-reference-access functions to ConVarRef
@@ -324,10 +324,10 @@ private:
 	bool m_bUsingNewCommandCallback : 1;
 	bool m_bUsingCommandCallbackInterface : 1;
 	
-	uint32_t __PAD_0x24[0x7];
+	uint32_t __PAD_0x24[0x3];
 };
-// sigsegv: this size is correct as of TF2 20180426a
-static_assert(sizeof(ConCommand) == 0x40);
+// sigsegv: sizeof(ConCommand) is known to be >= 0x24 and <= 0x30, as of TF2 20180626a
+static_assert(sizeof(ConCommand) >= 0x24 && sizeof(ConCommand) <= 0x30);
 
 
 //-----------------------------------------------------------------------------
@@ -392,7 +392,7 @@ private:
 	// Called by CCvar when the value of a var is changing.
 	virtual void				InternalSetValue(const char *value);
 	// For CVARs marked FCVAR_NEVER_AS_STRING
-	virtual void				InternalSetFloatValue( float fNewValue );
+	virtual void				InternalSetFloatValue( float fNewValue, bool bForce = false );
 	virtual void				InternalSetIntValue( int nValue );
 
 	virtual bool				ClampValue( float& value );
@@ -430,15 +430,19 @@ private:
 	bool						m_bHasMax;
 	float						m_fMaxVal;
 	
-	uint32_t __PAD_0x44[0x5];
+	bool						m_bHasCompMin;
+	float						m_fCompMinVal;
+	bool						m_bHasCompMax;
+	float						m_fCompMaxVal;
+	bool						m_bCompetitiveRestrictions;
 	
 	// Call this function when ConVar changes
 	FnChangeCallback_t			m_fnChangeCallback;
 	
 	uint32_t __PAD_0x5c[0x1];
 };
-// sigsegv: this size is correct as of TF2 20180426a
-static_assert(sizeof(ConVar) == 0x60);
+// sigsegv: sizeof(ConVar) is known to be >= 0x5C, as of TF2 20180626a
+static_assert(sizeof(ConVar) >= 0x5c);
 
 
 //-----------------------------------------------------------------------------
