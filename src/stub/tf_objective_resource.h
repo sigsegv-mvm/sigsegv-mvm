@@ -7,7 +7,7 @@
 #include "link/link.h"
 
 
-enum MvMWaveClassFlags : unsigned int
+enum MvMWaveClassFlags : uint32_t
 {
 	CLASSFLAG_NORMAL          = (1 << 0), // set for non-support bots and tanks
 	CLASSFLAG_SUPPORT         = (1 << 1), // set for "support 1" and "support limited" bots

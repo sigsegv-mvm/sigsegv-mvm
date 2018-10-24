@@ -24,7 +24,7 @@ struct inputdata_t
 };
 
 
-enum DebugOverlayBits_t
+enum DebugOverlayBits_t : uint32_t
 {
 	OVERLAY_TEXT_BIT                 = 0x00000001, // show text debug overlay for this entity
 	OVERLAY_NAME_BIT                 = 0x00000002, // show name debug overlay for this entity

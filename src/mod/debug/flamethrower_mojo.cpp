@@ -14,7 +14,7 @@
 
 
 /* from CBaseEntity */
-enum thinkmethods_t
+enum thinkmethods_t : int32_t
 {
 	THINK_FIRE_ALL_FUNCTIONS,
 	THINK_FIRE_BASE_ONLY,

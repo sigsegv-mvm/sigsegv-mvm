@@ -12,10 +12,10 @@ class CBaseObject;
 class CTFBotPathCost;
 
 
-enum NavErrorType {};
+enum NavErrorType : int32_t;
 
 
-enum GetNavAreaFlags_t
+enum GetNavAreaFlags_t : uint32_t
 {
 	GETNAVAREA_CHECK_LOS           = 0x1,
 	GETNAVAREA_ALLOW_BLOCKED_AREAS = 0x2,
@@ -23,7 +23,7 @@ enum GetNavAreaFlags_t
 };
 
 
-enum NavAttributeType
+enum NavAttributeType : uint32_t
 {
 	NAV_MESH_INVALID		= 0,
 	NAV_MESH_CROUCH			= 0x00000001,				// must crouch to use this node/area
@@ -53,7 +53,7 @@ enum NavAttributeType
 
 
 /* from mvm-reversed/server/tf/nav_mesh/tf_nav_area.h */
-enum TFNavAttributeType : int
+enum TFNavAttributeType : uint32_t
 {
 	BLOCKED                     = (1 <<  0),
 	

@@ -226,7 +226,7 @@ private:
 class CPropBase_Relative : public IProp
 {
 public:
-	enum RelativeMethod
+	enum RelativeMethod : int
 	{
 		REL_MANUAL,
 		REL_AFTER,

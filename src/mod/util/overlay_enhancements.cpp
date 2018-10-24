@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-enum OverlayType_t
+enum OverlayType_t : int32_t
 {
 	OVERLAY_BOX = 0,
 	OVERLAY_SPHERE,

@@ -5,7 +5,7 @@
 #include "stub/baseentity.h"
 
 
-enum
+enum : int32_t
 {
 	TF_TEAM_RED  = 2,
 	TF_TEAM_BLUE = 3,
@@ -16,7 +16,7 @@ enum
 	TF_TEAM_PVE_INVADERS  = TF_TEAM_BLUE,
 };
 
-enum
+enum : int32_t
 {
 	TF_WEAPON_NONE = 0,
 	TF_WEAPON_BAT,
@@ -132,7 +132,7 @@ enum
 };
 
 
-enum ETFDmgCustom
+enum ETFDmgCustom : int32_t
 {
 	TF_DMG_CUSTOM_NONE = 0,
 	TF_DMG_CUSTOM_HEADSHOT,
@@ -219,7 +219,7 @@ enum ETFDmgCustom
 	TF_DMG_CUSTOM_TAUNTATK_GASBLAST,
 };
 
-enum
+enum : int32_t
 {
 	TAUNTATK_NONE = 0,
 	TAUNTATK_PYRO_HADOUKEN,
@@ -256,7 +256,7 @@ enum
 	TAUNTATK_PYRO_GASBLAST,
 };
 
-enum
+enum : int32_t
 {
 	OBJ_DISPENSER         = 0,
 	OBJ_TELEPORTER        = 1,
@@ -265,7 +265,7 @@ enum
 };
 
 /* from SourceMod; can't seem to find these elsewhere */
-enum
+enum : uint32_t
 {
 	TF_STUNFLAG_SLOWDOWN        = (1 << 0),	/**< activates slowdown modifier */
 	TF_STUNFLAG_BONKSTUCK       = (1 << 1),	/**< bonk sound, stuck */
@@ -282,7 +282,7 @@ enum
 	TF_STUNFLAGS_BIGBONK        = TF_STUNFLAG_CHEERSOUND | TF_STUNFLAG_BONKSTUCK,
 };
 
-enum
+enum : int32_t
 {
 	TF_PROJECTILE_NONE,
 	TF_PROJECTILE_BULLET,
@@ -319,7 +319,7 @@ enum
 	TF_NUM_PROJECTILES,
 };
 
-enum loadout_positions_t
+enum loadout_positions_t : int32_t
 {
 	LOADOUT_POSITION_INVALID   = -1,
 	
@@ -346,7 +346,7 @@ enum loadout_positions_t
 	LOADOUT_POSITION_COUNT,
 };
 
-enum
+enum : int32_t
 {
 	TF_WPN_TYPE_PRIMARY        =  0,
 	TF_WPN_TYPE_SECONDARY      =  1,
@@ -365,7 +365,7 @@ enum
 	TF_WPN_TYPE_ITEM4          = 14,
 };
 
-enum
+enum : int32_t
 {
 	TF_AMMO_DUMMY = 0,
 	TF_AMMO_PRIMARY,
@@ -377,7 +377,7 @@ enum
 	TF_AMMO_COUNT,
 };
 
-enum
+enum : uint32_t
 {
 	DMG_USE_HITLOCATIONS   = DMG_AIRBOAT,
 	DMG_HALF_FALLOFF       = DMG_RADIATION,
@@ -391,7 +391,7 @@ enum
 	DMG_IGNORE_MAXHEALTH   = DMG_BULLET,
 };
 
-enum
+enum : int32_t
 {
 	TF_STATE_ACTIVE   = 0,
 	TF_STATE_WELCOME  = 1,
@@ -401,7 +401,7 @@ enum
 	TF_STATE_COUNT,
 };
 
-enum
+enum : int32_t
 {
 	VISION_MODE_NONE      = 0,
 	VISION_MODE_PYRO      = 1,
@@ -411,7 +411,7 @@ enum
 	MAX_VISION_MODES,
 };
 
-enum
+enum : uint32_t
 {
 	TF_ITEM_UNDEFINED    = 0,
 	TF_ITEM_CAPTURE_FLAG = (1 << 0),
@@ -422,7 +422,7 @@ enum
 };
 
 /* really belongs in econ_item_constants.h or econ_holidays.h, but whatever */
-enum
+enum : int32_t
 {
 	kHoliday_None                            =  0, // name confirmed
 	kHoliday_TF2Birthday                     =  1,

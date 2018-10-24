@@ -102,7 +102,7 @@ private:
 class CTFMinigun : public CTFWeaponBaseGun
 {
 public:
-	enum MinigunState_t : int
+	enum MinigunState_t : int32_t
 	{
 		AC_STATE_IDLE        = 0,
 		AC_STATE_STARTFIRING = 1,

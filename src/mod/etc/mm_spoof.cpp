@@ -64,7 +64,7 @@ CTFGameRules::GetCurrentMatchGroup()
 #endif
 
 
-enum EMatchGroup
+enum EMatchGroup : int
 {
 	GROUP_INVALID      = -1,
 	GROUP_BOOTCAMP     =  0,

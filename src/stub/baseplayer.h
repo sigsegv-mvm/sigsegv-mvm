@@ -73,7 +73,7 @@ public:
 };
 
 
-enum PlayerPhysFlag_e
+enum PlayerPhysFlag_e : uint32_t
 {
 	PFLAG_DIROVERRIDE               = (1 << 0),
 	PFLAG_DUCKING                   = (1 << 1),

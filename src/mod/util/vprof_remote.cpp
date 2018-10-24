@@ -6,7 +6,7 @@
 class IVProfExport;
 
 
-enum ServerDataRequestType_t
+enum ServerDataRequestType_t : int32_t
 {
 	SERVERDATA_REQUESTVALUE,
 	SERVERDATA_SETVALUE,

@@ -212,7 +212,7 @@ public:
 class CHalloweenBaseBoss : public NextBotCombatCharacter
 {
 public:
-	enum HalloweenBossType
+	enum HalloweenBossType : int32_t
 	{
 		INVALID         = 0,
 		HEADLESS_HATMAN = 1,
@@ -252,7 +252,7 @@ extern GlobalThunk<CHandle<CUpgrades>> g_hUpgradeEntity;
 class CFuncNavPrerequisite : public CBaseTrigger
 {
 public:
-	enum TaskType
+	enum TaskType : int32_t
 	{
 		DESTROY_ENTITY = 1,
 		MOVE_TO        = 2,

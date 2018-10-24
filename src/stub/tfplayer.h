@@ -11,10 +11,10 @@ class CTFWeaponBase;
 class CTFPlayer;
 class CTFItem;
 class CTFWearable;
-enum ETFFlagType {};
+enum ETFFlagType : int32_t;
 
 
-enum
+enum : int32_t
 {
 	TF_CLASS_UNDEFINED = 0,
 	
@@ -32,7 +32,7 @@ enum
 };
 
 
-enum ETFCond
+enum ETFCond : int32_t
 {
 	TF_COND_INVALID                          =  -1,
 	

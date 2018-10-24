@@ -14,7 +14,7 @@
 class CBaseObject;
 class CNavLadder;
 class CFuncElevator;
-enum NavDirType {};
+enum NavDirType : int32_t;
 
 
 #include "../mvm-reversed/server/NextBot/Path/NextBotPath.h"
@@ -29,7 +29,7 @@ SIZE_CHECK(IPathCost,    0x04);
 
 
 /* from game/server/nav_pathfind.h */
-enum RouteType
+enum RouteType : int32_t
 {
 	DEFAULT_ROUTE,
 	FASTEST_ROUTE,

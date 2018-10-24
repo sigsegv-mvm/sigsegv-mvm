@@ -82,7 +82,7 @@ private:
 class CTFBot : public NextBotPlayer<CTFPlayer>
 {
 public:
-	enum AttributeType : int
+	enum AttributeType : uint32_t
 	{
 		ATTR_NONE                        = 0,
 		
@@ -114,7 +114,7 @@ public:
 		ATTR_FIRE_IMMUNE                 = (1 << 25),
 	};
 	
-	enum MissionType : int
+	enum MissionType : int32_t
 	{
 		MISSION_NONE             = 0,
 		// ?
@@ -144,8 +144,8 @@ public:
 		float m_flWhen;
 	};
 	
-	enum DifficultyType : int;
-	enum WeaponRestriction : int;
+	enum DifficultyType : int32_t;
+	enum WeaponRestriction : uint32_t;
 	
 	struct EventChangeAttributes_t
 	{
