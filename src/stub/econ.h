@@ -2,8 +2,7 @@
 #define _INCLUDE_SIGSEGV_STUB_ECON_H_
 
 
-#include "link/link.h"
-#include "prop.h"
+#include "stub/tf_shareddefs.h"
 
 
 class CEconItem;
@@ -409,12 +408,19 @@ extern GlobalThunk<const char *[NUM_VISUALS_BLOCKS]> g_TeamVisualSections;
 
 
 int GetNumberOfLoadoutSlots();
-
 bool IsValidLoadoutSlotNumber(int num);
-int ClampLoadoutSlotNumber(int num);
+loadout_positions_t ClampLoadoutSlotNumber(int num);
 
-const char *GetLoadoutSlotName(int slot);
-int GetLoadoutSlotFromName(const char *name);
+/* deals with un-prefixed loadout position names */
+const char *GetLoadoutSlotName(loadout_positions_t slot);
+loadout_positions_t GetLoadoutSlotByName(const char *name);
+
+/* deals with native, LOADOUT_POSISTION_ prefixed loadout position names */
+const char *GetLoadoutPositionName(loadout_positions_t slot);
+loadout_positions_t GetLoadoutPositionByName(const char *name);
+
+inline const char *GetLoadoutSlotName    (int slot) { return GetLoadoutSlotName    (static_cast<loadout_positions_t>(slot)); }
+inline const char *GetLoadoutPositionName(int slot) { return GetLoadoutPositionName(static_cast<loadout_positions_t>(slot)); }
 
 
 /* GetItemDefinition returns the def for the "default" item in the schema if the index doesn't match anything */

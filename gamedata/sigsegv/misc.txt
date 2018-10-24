@@ -2846,6 +2846,9 @@
 				
 				"CTFInventoryManager::GetInventoryForPlayer" "_ZN19CTFInventoryManager21GetInventoryForPlayerERK8CSteamID"
 				
+				"GetLoadoutPositionName"   "_Z22GetLoadoutPositionName19loadout_positions_t"
+				"GetLoadoutPositionByName" "_Z24GetLoadoutPositionByNamePKc"
+				
 				"InventoryManager"   "_Z16InventoryManagerv"
 				"TFInventoryManager" "_Z18TFInventoryManagerv"
 			}

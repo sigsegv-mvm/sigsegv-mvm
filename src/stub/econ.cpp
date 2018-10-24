@@ -3,6 +3,8 @@
 #include "stub/strings.h"
 #include "util/misc.h"
 
+#include <boost/algorithm/string.hpp>
+
 
 using const_char_ptr = const char *;
 
@@ -199,73 +201,68 @@ void CopyStringAttributeValueToCharPointerOutput(const CAttribute_String *attr_s
 GlobalThunk<const char *[NUM_VISUALS_BLOCKS]> g_TeamVisualSections("g_TeamVisualSections");
 
 
-int GetNumberOfLoadoutSlots()
+static const auto& GetLoadoutSlotNameMap()
 {
-	static int iNumLoadoutSlots = []{
-	//	ConColorMsg(Color(0xff, 0x00, 0xff, 0xff), "GetNumberOfLoadoutSlots: in lambda\n");
-		
-		const SegInfo& info_seg_server_rodata = LibMgr::GetInfo(Library::SERVER).GetSeg(Segment::RODATA);
-		
-		constexpr char prefix[] = "#LoadoutSlot_";
-		
-		for (int i = 0; i < 64; ++i) {
-			const char *str = g_szLoadoutStringsForDisplay[i];
-			
-			if (str == nullptr || !info_seg_server_rodata.ContainsAddr(str, 1) || strncmp(str, prefix, strlen(prefix)) != 0) {
-				return i;
-			}
-		}
-		
-		assert(false);
-		return 0;
-	}();
+	static std::map<loadout_positions_t, std::string> s_Map;
 	
-	return iNumLoadoutSlots;
+	if (s_Map.empty()) {
+		for (int i = LOADOUT_POSITION_INVALID; i < LOADOUT_POSITION_COUNT; ++i) {
+			auto slot = static_cast<loadout_positions_t>(i);
+			
+			s_Map.emplace(slot, boost::algorithm::to_lower_copy(std::string(GetLoadoutPositionName(i) + strlen("LOADOUT_POSITION_"))));
+		}
+	}
+	
+	return s_Map;
 }
 
+
+int GetNumberOfLoadoutSlots()
+{
+	return LOADOUT_POSITION_COUNT;
+}
 
 bool IsValidLoadoutSlotNumber(int num)
 {
-	return (num >= 0 && num < GetNumberOfLoadoutSlots());
+	return (num > LOADOUT_POSITION_INVALID && num < LOADOUT_POSITION_COUNT);
 }
 
-int ClampLoadoutSlotNumber(int num)
+loadout_positions_t ClampLoadoutSlotNumber(int num)
 {
-	return Clamp(num, 0, GetNumberOfLoadoutSlots() - 1);
+	return static_cast<loadout_positions_t>(Clamp(num, LOADOUT_POSITION_INVALID + 1, LOADOUT_POSITION_COUNT - 1));
 }
 
 
-static const char **GetLoadoutSlotNameArray()
+const char *GetLoadoutSlotName(loadout_positions_t slot)
 {
-	auto array = reinterpret_cast<const char **>(AddrManager::GetAddr("CTFPlayer::ModifyOrAppendCriteria::kSlotCriteriaName"));
-	assert(array != nullptr);
+//	if (!IsValidLoadoutSlotNumber(slot)) {
+//		return nullptr;
+//	}
 	
-	return array;
+	return GetLoadoutSlotNameMap().at(slot).c_str();
 }
 
-const char *GetLoadoutSlotName(int slot)
+loadout_positions_t GetLoadoutSlotByName(const char *name)
 {
-	if (!IsValidLoadoutSlotNumber(slot)) {
-		return nullptr;
-	}
+	const auto& map = GetLoadoutSlotNameMap();
 	
-	static auto array = GetLoadoutSlotNameArray();
-	return (array[slot] + strlen("loadout_slot_"));
-}
-
-int GetLoadoutSlotFromName(const char *name)
-{
-	static auto array = GetLoadoutSlotNameArray();
-	
-	int slot_count = GetNumberOfLoadoutSlots();
-	for (int i = 0; i < slot_count; ++i) {
-		if (FStrEq((array[i] + strlen("loadout_slot_")), name)) {
-			return i;
+	for (int i = LOADOUT_POSITION_INVALID + 1; i < LOADOUT_POSITION_COUNT; ++i) {
+		auto slot = static_cast<loadout_positions_t>(i);
+		
+		if (FStrEq(map.at(slot).c_str(), name)) {
+			return slot;
 		}
 	}
 	
-	return -1;
+	return LOADOUT_POSITION_INVALID;
 }
+
+
+static StaticFuncThunk<const char *, loadout_positions_t> ft_GetLoadoutPositionName("GetLoadoutPositionName");
+const char *GetLoadoutPositionName(loadout_positions_t slot) { return ft_GetLoadoutPositionName(slot); }
+
+static StaticFuncThunk<loadout_positions_t, const char *> ft_GetLoadoutPositionByName("GetLoadoutPositionByName");
+loadout_positions_t GetLoadoutPositionByName(const char *name) { return ft_GetLoadoutPositionByName(name); }
 
 
 MemberVFuncThunk<      CPlayerInventory *, void, bool> CPlayerInventory::vt_DumpInventoryToConsole(TypeName<CPlayerInventory>(), "CPlayerInventory::DumpInventoryToConsole");

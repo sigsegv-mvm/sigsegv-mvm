@@ -148,7 +148,7 @@ namespace Mod_Util_Client_Cmds
 						return;
 					}
 				} else {
-					slot = GetLoadoutSlotFromName(args[2]);
+					slot = GetLoadoutSlotByName(args[2]);
 					if (!IsValidLoadoutSlotNumber(slot)) {
 						ClientMsg(player, "[sig_unequip] Error: %s is not a valid loadout slot name\n", args[2]);
 						return;

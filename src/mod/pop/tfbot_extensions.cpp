@@ -542,7 +542,11 @@ namespace Mod_Pop_TFBot_Extensions
 			const char *name = subkey->GetName();
 			
 			if (FStrEq(name, "Slot")) {
-				slot = subkey->GetInt();
+				if (subkey->GetDataType() == KeyValues::TYPE_STRING) {
+					slot = GetLoadoutSlotByName(subkey->GetString());
+				} else {
+					slot = subkey->GetInt();
+				}
 				got_slot = true;
 			} else if (FStrEq(name, "Model")) {
 				path = subkey->GetString();
@@ -553,7 +557,7 @@ namespace Mod_Pop_TFBot_Extensions
 		}
 		
 		if (!got_slot) {
-			Warning("No weapon Slot specified in CustomWeaponModel block.\n");
+			Warning("No weapon slot specified in CustomWeaponModel block.\n");
 			return;
 		}
 		
@@ -562,8 +566,9 @@ namespace Mod_Pop_TFBot_Extensions
 			return;
 		}
 		
-		if (slot < TF_LOADOUT_POSITION_PRIMARY || slot > TF_LOADOUT_POSITION_PDA2) {
-			Warning("CustomWeaponModel Slot must be one of: { 0, 1, 2, 3, 4, 5, 6 }.\n");
+		if (slot < LOADOUT_POSITION_PRIMARY || slot > LOADOUT_POSITION_PDA2) {
+			Warning("CustomWeaponModel Slot must be in the inclusive range [LOADOUT_POSITION_PRIMARY, LOADOUT_POSITION_PDA2], i.e. [%d, %d].\n",
+				(int)LOADOUT_POSITION_PRIMARY, (int)LOADOUT_POSITION_PDA2);
 			return;
 		}
 		

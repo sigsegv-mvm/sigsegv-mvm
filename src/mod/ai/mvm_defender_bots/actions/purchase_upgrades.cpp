@@ -16,17 +16,17 @@ namespace Mod_AI_MvM_Defender_Bots
 	}
 	
 	
-	void ForEachValidUpgrade(CTFPlayer *player, int slot, const std::function<void(int)>& functor)
+	void ForEachValidUpgrade(CTFPlayer *player, loadout_positions_t slot, const std::function<void(int)>& functor)
 	{
 		CUtlVector<CMannVsMachineUpgrades>& upgrades = CMannVsMachineUpgradeManager::Upgrades();
 		
 		FOR_EACH_VEC(upgrades, i) {
-			if (upgrades[i].m_iUIGroup == 1 && slot != -1) continue;
+			if (upgrades[i].m_iUIGroup == 1 && slot != LOADOUT_POSITION_INVALID) continue;
 			
 			auto attr = GetItemSchema()->GetAttributeDefinitionByName(upgrades[i].m_szAttribute);
 			if (attr == nullptr) continue;
 			
-			if (!TFGameRules()->CanUpgradeWithAttrib(player, slot, attr->GetIndex(), &upgrades[i])) continue;
+			if (!TFGameRules()->CanUpgradeWithAttrib(player, (int)slot, attr->GetIndex(), &upgrades[i])) continue;
 			
 			functor(i);
 		}
@@ -38,49 +38,49 @@ namespace Mod_AI_MvM_Defender_Bots
 		CMannVsMachineUpgrades *upgrade = GetUpgradeByIndex(info.index);
 		
 		if (info.pclass == TF_CLASS_SNIPER) {
-			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
+			if (info.slot == LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "explosive sniper shot") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_MEDIC) {
-			if (info.slot == TF_LOADOUT_POSITION_SECONDARY &&
+			if (info.slot == LOADOUT_POSITION_SECONDARY &&
 				V_stricmp(upgrade->m_szAttribute, "generate rage on heal") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SOLDIER) {
-			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
+			if (info.slot == LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "rocket specialist") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SPY) {
-			if (info.slot == TF_LOADOUT_POSITION_MELEE &&
+			if (info.slot == LOADOUT_POSITION_MELEE &&
 				V_stricmp(upgrade->m_szAttribute, "armor piercing") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_HEAVYWEAPONS) {
-			if (info.slot == TF_LOADOUT_POSITION_PRIMARY &&
+			if (info.slot == LOADOUT_POSITION_PRIMARY &&
 				V_stricmp(upgrade->m_szAttribute, "attack projectiles") == 0) {
 				return 100;
 			}
 		}
 		
 		if (info.pclass == TF_CLASS_SCOUT) {
-			if (info.slot == TF_LOADOUT_POSITION_SECONDARY &&
+			if (info.slot == LOADOUT_POSITION_SECONDARY &&
 				V_stricmp(upgrade->m_szAttribute, "applies snare effect") == 0) {
 				return 100;
 			}
 		}
 		
 		/* low priority for canteen upgrades */
-		if (info.slot == TF_LOADOUT_POSITION_ACTION) {
+		if (info.slot == LOADOUT_POSITION_ACTION) {
 			return -10;
 		}
 		
@@ -144,17 +144,17 @@ namespace Mod_AI_MvM_Defender_Bots
 	
 	void CTFBotPurchaseUpgrades::CollectUpgrades()
 	{
-		for (int slot : {
-			(int)TF_LOADOUT_POSITION_INVALID,
-			(int)TF_LOADOUT_POSITION_PRIMARY,
-			(int)TF_LOADOUT_POSITION_SECONDARY,
-			(int)TF_LOADOUT_POSITION_MELEE,
-			(int)TF_LOADOUT_POSITION_BUILDING,
-			(int)TF_LOADOUT_POSITION_PDA,
-		//	(int)TF_LOADOUT_POSITION_ACTION,
+		for (loadout_positions_t slot : {
+			LOADOUT_POSITION_INVALID,
+			LOADOUT_POSITION_PRIMARY,
+			LOADOUT_POSITION_SECONDARY,
+			LOADOUT_POSITION_MELEE,
+			LOADOUT_POSITION_BUILDING,
+			LOADOUT_POSITION_PDA,
+		//	LOADOUT_POSITION_ACTION,
 		}) {
 			ForEachValidUpgrade(this->GetActor(), slot, [=](int index){
-				this->m_Upgrades.emplace_back(this->GetActor()->GetPlayerClass()->GetClassIndex(), slot, index);
+				this->m_Upgrades.emplace_back(this->GetActor()->GetPlayerClass()->GetClassIndex(), (int)slot, index);
 			});
 		}
 		
