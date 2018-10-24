@@ -62,7 +62,18 @@ class CBaseCombatCharacter;
 class INextBot;
 
 
-class CServerNetworkProperty : public IServerNetworkable {};
+class CServerNetworkProperty : public IServerNetworkable
+{
+public:
+	void MarkPVSInformationDirty()
+	{
+		if (this->GetEdict() != nullptr) {
+			this->GetEdict()->m_fStateFlags |= FL_EDICT_DIRTY_PVS_INFORMATION;
+		}
+	}
+	
+	// ...
+};
 
 
 class CBaseEntity : public IServerEntity
@@ -79,6 +90,8 @@ public:
 	bool NameMatches(const char *pszNameOrWildcard);
 	void SetModel(const char *szModelName);
 	bool ClassMatches(const char *pszClassOrWildcard);
+	void RemoveEffects(int nEffects);
+	void ClearEffects();
 	
 	/* getter/setter */
 	IServerNetworkable *GetNetworkable() const    { return &this->m_Network; }
@@ -118,54 +131,59 @@ public:
 	const Vector& GetLocalOrigin() const          { return this->m_vecOrigin; }
 	const QAngle& GetLocalAngles() const          { return this->m_angRotation; }
 	const QAngle& GetLocalAngularVelocity() const { return this->m_vecAngVelocity; }
+	int GetEffects() const                        { return this->m_fEffects; }
+	bool IsEffectActive(int nEffects) const       { return ((this->m_fEffects & nEffects) != 0); }
 	
 	/* thunk */
-	void Remove()                                                                                                           {        ft_Remove                   (this); }
-	void CalcAbsolutePosition()                                                                                             {        ft_CalcAbsolutePosition     (this); }
-	void CalcAbsoluteVelocity()                                                                                             {        ft_CalcAbsoluteVelocity     (this); }
-	bool NameMatchesComplex(const char *pszNameOrWildcard)                                                                  { return ft_NameMatchesComplex       (this, pszNameOrWildcard); }
-	bool ClassMatchesComplex(const char *pszClassOrWildcard)                                                                { return ft_ClassMatchesComplex      (this, pszClassOrWildcard); }
-	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin             (this, absOrigin); }
-	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles             (this, absAngles); }
-	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound_member1        (this, soundname, soundtime, duration); }
-	void EmitSound(const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = nullptr)    {        ft_EmitSound_member2        (this, soundname, handle, soundtime, duration); }
-	float GetNextThink(const char *szContext)                                                                               { return ft_GetNextThink             (this, szContext); }
-	bool IsBSPModel() const                                                                                                 { return ft_IsBSPModel               (this); }
-	void EntityText(int text_offset, const char *text, float duration, int r, int g, int b, int a)                          {        ft_EntityText               (this, text_offset, text, duration, r, g, b, a); }
-	int TakeDamage(const CTakeDamageInfo& info)                                                                             { return ft_TakeDamage               (this, info); }
-	void SetMoveType(MoveType_t val, MoveCollide_t moveCollide = MOVECOLLIDE_DEFAULT)                                       {        ft_SetMoveType              (this, val, moveCollide); }
-	model_t *GetModel()                                                                                                     { return ft_GetModel                 (this); }
-	void SetNextThink(float nextThinkTime, const char *szContext = nullptr)                                                 {        ft_SetNextThink_name        (this, nextThinkTime, szContext); }
-	void SetNextThink(int nContextIndex, float thinkTime)                                                                   {        ft_SetNextThink_index       (this, nContextIndex, thinkTime); }
-	Vector EyePosition()                                                                                                    { return vt_EyePosition              (this); }
-	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                (this); }
-	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity           (this, pOwner); }
-	void Spawn()                                                                                                            {        vt_Spawn                    (this); }
-	void Activate()                                                                                                         {        vt_Activate                 (this); }
-	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)                                             {        vt_GetVelocity              (this, vVelocity, vAngVelocity); }
-	const Vector& WorldSpaceCenter() const                                                                                  { return vt_WorldSpaceCenter         (this); }
-	bool IsBaseCombatWeapon() const                                                                                         { return vt_IsBaseCombatWeapon       (this); }
-	bool IsWearable() const                                                                                                 { return vt_IsWearable               (this); }
-	bool IsCombatItem() const                                                                                               { return vt_IsCombatItem             (this); }
-	void SetModelIndex(int index)                                                                                           {        vt_SetModelIndex            (this, index); }
-	int GetModelIndex() const                                                                                               { return vt_GetModelIndex            (this); }
-	string_t GetModelName() const                                                                                           { return vt_GetModelName             (this); }
-	CBaseCombatCharacter *MyCombatCharacterPointer()                                                                        { return vt_MyCombatCharacterPointer (this); }
-	bool ShouldCollide(int collisionGroup, int contentsMask) const                                                          { return vt_ShouldCollide            (this, collisionGroup, contentsMask); }
-	void DrawDebugGeometryOverlays()                                                                                        {        vt_DrawDebugGeometryOverlays(this); }
-	void ChangeTeam(int iTeamNum)                                                                                           {        vt_ChangeTeam               (this, iTeamNum); }
-	void SetModelIndexOverride(int index, int nValue)                                                                       {        vt_SetModelIndexOverride    (this, index, nValue); }
-	datamap_t *GetDataDescMap()                                                                                             { return vt_GetDataDescMap           (this); }
-	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput              (this, szInputName, pActivator, pCaller, Value, outputID); }
-	float GetDamage()                                                                                                       { return vt_GetDamage                (this); }
-	void SetDamage(float flDamage)                                                                                          {        vt_SetDamage                (this, flDamage); }
-	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                   { return vt_FVisible_ent             (this, pEntity, traceMask, ppBlocker); }
-	bool FVisible(const Vector& vecTarget, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                { return vt_FVisible_vec             (this, vecTarget, traceMask, ppBlocker); }
-	void Touch(CBaseEntity *pOther)                                                                                         {        vt_Touch                    (this, pOther); }
-	INextBot *MyNextBotPointer()                                                                                            { return vt_MyNextBotPointer         (this); }
-	void Teleport(const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity)                            {        vt_Teleport                 (this, newPosition, newAngles, newVelocity); }
-	int GetMaxHealth() const                                                                                                { return vt_GetMaxHealth             (this); }
-	bool IsAlive()                                                                                                          { return vt_IsAlive                  (this); }
+	void Remove()                                                                                                           {        ft_Remove                        (this); }
+	void CalcAbsolutePosition()                                                                                             {        ft_CalcAbsolutePosition          (this); }
+	void CalcAbsoluteVelocity()                                                                                             {        ft_CalcAbsoluteVelocity          (this); }
+	bool NameMatchesComplex(const char *pszNameOrWildcard)                                                                  { return ft_NameMatchesComplex            (this, pszNameOrWildcard); }
+	bool ClassMatchesComplex(const char *pszClassOrWildcard)                                                                { return ft_ClassMatchesComplex           (this, pszClassOrWildcard); }
+	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin                  (this, absOrigin); }
+	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles                  (this, absAngles); }
+	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound_member1             (this, soundname, soundtime, duration); }
+	void EmitSound(const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = nullptr)    {        ft_EmitSound_member2             (this, soundname, handle, soundtime, duration); }
+	float GetNextThink(const char *szContext)                                                                               { return ft_GetNextThink                  (this, szContext); }
+	bool IsBSPModel() const                                                                                                 { return ft_IsBSPModel                    (this); }
+	void EntityText(int text_offset, const char *text, float duration, int r, int g, int b, int a)                          {        ft_EntityText                    (this, text_offset, text, duration, r, g, b, a); }
+	int TakeDamage(const CTakeDamageInfo& info)                                                                             { return ft_TakeDamage                    (this, info); }
+	void SetMoveType(MoveType_t val, MoveCollide_t moveCollide = MOVECOLLIDE_DEFAULT)                                       {        ft_SetMoveType                   (this, val, moveCollide); }
+	model_t *GetModel()                                                                                                     { return ft_GetModel                      (this); }
+	void SetNextThink(float nextThinkTime, const char *szContext = nullptr)                                                 {        ft_SetNextThink_name             (this, nextThinkTime, szContext); }
+	void SetNextThink(int nContextIndex, float thinkTime)                                                                   {        ft_SetNextThink_index            (this, nContextIndex, thinkTime); }
+	int DispatchUpdateTransmitState()                                                                                       { return ft_DispatchUpdateTransmitState   (this); }
+	void SetEffects(int nEffects)                                                                                           {        ft_SetEffects                    (this, nEffects); }
+	void AddEffects(int nEffects)                                                                                           {        ft_AddEffects                    (this, nEffects); }
+	Vector EyePosition()                                                                                                    { return vt_EyePosition                   (this); }
+	const QAngle& EyeAngles()                                                                                               { return vt_EyeAngles                     (this); }
+	void SetOwnerEntity(CBaseEntity *pOwner)                                                                                {        vt_SetOwnerEntity                (this, pOwner); }
+	void Spawn()                                                                                                            {        vt_Spawn                         (this); }
+	void Activate()                                                                                                         {        vt_Activate                      (this); }
+	void GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity = nullptr)                                             {        vt_GetVelocity                   (this, vVelocity, vAngVelocity); }
+	const Vector& WorldSpaceCenter() const                                                                                  { return vt_WorldSpaceCenter              (this); }
+	bool IsBaseCombatWeapon() const                                                                                         { return vt_IsBaseCombatWeapon            (this); }
+	bool IsWearable() const                                                                                                 { return vt_IsWearable                    (this); }
+	bool IsCombatItem() const                                                                                               { return vt_IsCombatItem                  (this); }
+	void SetModelIndex(int index)                                                                                           {        vt_SetModelIndex                 (this, index); }
+	int GetModelIndex() const                                                                                               { return vt_GetModelIndex                 (this); }
+	string_t GetModelName() const                                                                                           { return vt_GetModelName                  (this); }
+	CBaseCombatCharacter *MyCombatCharacterPointer()                                                                        { return vt_MyCombatCharacterPointer      (this); }
+	bool ShouldCollide(int collisionGroup, int contentsMask) const                                                          { return vt_ShouldCollide                 (this, collisionGroup, contentsMask); }
+	void DrawDebugGeometryOverlays()                                                                                        {        vt_DrawDebugGeometryOverlays     (this); }
+	void ChangeTeam(int iTeamNum)                                                                                           {        vt_ChangeTeam                    (this, iTeamNum); }
+	void SetModelIndexOverride(int index, int nValue)                                                                       {        vt_SetModelIndexOverride         (this, index, nValue); }
+	datamap_t *GetDataDescMap()                                                                                             { return vt_GetDataDescMap                (this); }
+	bool AcceptInput(const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID) { return vt_AcceptInput                   (this, szInputName, pActivator, pCaller, Value, outputID); }
+	float GetDamage()                                                                                                       { return vt_GetDamage                     (this); }
+	void SetDamage(float flDamage)                                                                                          {        vt_SetDamage                     (this, flDamage); }
+	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                   { return vt_FVisible_ent                  (this, pEntity, traceMask, ppBlocker); }
+	bool FVisible(const Vector& vecTarget, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = nullptr)                { return vt_FVisible_vec                  (this, vecTarget, traceMask, ppBlocker); }
+	void Touch(CBaseEntity *pOther)                                                                                         {        vt_Touch                         (this, pOther); }
+	INextBot *MyNextBotPointer()                                                                                            { return vt_MyNextBotPointer              (this); }
+	void Teleport(const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity)                            {        vt_Teleport                      (this, newPosition, newAngles, newVelocity); }
+	int GetMaxHealth() const                                                                                                { return vt_GetMaxHealth                  (this); }
+	bool IsAlive()                                                                                                          { return vt_IsAlive                       (this); }
 	
 	/* static */
 	static int PrecacheModel(const char *name, bool bPreload = true)                                                                                                                                      { return ft_PrecacheModel      (name, bPreload); }
@@ -193,7 +211,7 @@ public:
 	
 	/* TODO: make me private again! */
 	DECL_SENDPROP(int,    m_fFlags);
-	DECL_DATAMAP(int,     m_nNextThinkTick);
+	DECL_DATAMAP (int,    m_nNextThinkTick);
 	DECL_SENDPROP(char,   m_lifeState);
 	DECL_SENDPROP(int[4], m_nModelIndexOverrides);
 	
@@ -227,6 +245,7 @@ private:
 	DECL_SENDPROP   (Vector,               m_vecVelocity);
 	DECL_SENDPROP   (Vector,               m_vecOrigin);
 	DECL_SENDPROP   (QAngle,               m_angRotation);
+	DECL_SENDPROP_RW(int,                  m_fEffects);
 	
 	static MemberFuncThunk<      CBaseEntity *, void>                                                    ft_Remove;
 	static MemberFuncThunk<      CBaseEntity *, void>                                                    ft_CalcAbsolutePosition;
@@ -247,6 +266,9 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, void, float, const char *>                               ft_SetNextThink_name;
 	static MemberFuncThunk<      CBaseEntity *, void, int, float>                                        ft_SetNextThink_index;
 	static MemberFuncThunk<      CBaseEntity *, BASEPTR, BASEPTR, float, const char *>                   ft_ThinkSet;
+	static MemberFuncThunk<      CBaseEntity *, int>                                                     ft_DispatchUpdateTransmitState;
+	static MemberFuncThunk<      CBaseEntity *, void, int>                                               ft_SetEffects;
+	static MemberFuncThunk<      CBaseEntity *, void, int>                                               ft_AddEffects;
 	
 	static MemberVFuncThunk<      CBaseEntity *, Vector>                                                           vt_EyePosition;
 	static MemberVFuncThunk<      CBaseEntity *, const QAngle&>                                                    vt_EyeAngles;
@@ -396,6 +418,23 @@ inline void CBaseEntity::SetModel(const char *szModelName)
 inline bool CBaseEntity::ClassMatches(const char *pszClassOrWildcard)
 {
 	return (IDENT_STRINGS(this->m_iClassname, pszClassOrWildcard) || this->ClassMatchesComplex(pszClassOrWildcard));
+}
+
+inline void CBaseEntity::RemoveEffects(int nEffects)
+{
+	this->m_fEffects &= ~nEffects;
+	
+	if ((nEffects & EF_NODRAW) != 0) {
+		this->NetworkProp()->MarkPVSInformationDirty();
+		this->DispatchUpdateTransmitState();
+	}
+}
+
+inline void CBaseEntity::ClearEffects()
+{
+	this->m_fEffects = 0;
+	
+	this->DispatchUpdateTransmitState();
 }
 
 

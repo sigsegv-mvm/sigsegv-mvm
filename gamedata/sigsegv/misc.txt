@@ -2809,9 +2809,12 @@
 				"UTIL_GetCommandClientIndex"        "_Z26UTIL_GetCommandClientIndexv"
 				"UTIL_IsCommandIssuedByServerAdmin" "_Z33UTIL_IsCommandIssuedByServerAdminv"
 				
-				"CBaseEntity::ThinkSet"     "_ZN11CBaseEntity8ThinkSetEMS_FvvEfPKc"
-				"CBaseEntity::GetMaxHealth" "_ZNK11CBaseEntity12GetMaxHealthEv"
-				"CBaseEntity::IsAlive"      "_ZN11CBaseEntity7IsAliveEv"
+				"CBaseEntity::ThinkSet"                    "_ZN11CBaseEntity8ThinkSetEMS_FvvEfPKc"
+				"CBaseEntity::GetMaxHealth"                "_ZNK11CBaseEntity12GetMaxHealthEv"
+				"CBaseEntity::IsAlive"                     "_ZN11CBaseEntity7IsAliveEv"
+				"CBaseEntity::DispatchUpdateTransmitState" "_ZN11CBaseEntity27DispatchUpdateTransmitStateEv"
+				"CBaseEntity::SetEffects"                  "_ZN11CBaseEntity10SetEffectsEi"
+				"CBaseEntity::AddEffects"                  "_ZN11CBaseEntity10AddEffectsEi"
 				
 				"CBaseCombatCharacter::GetBossType" "_ZNK20CBaseCombatCharacter11GetBossTypeEv"
 				
