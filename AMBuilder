@@ -367,11 +367,16 @@ if 'mods_visualize' not in Extension.exclude:
     'src/mod/visualize/jar_radius.cpp',
     'src/mod/visualize/melee_range.cpp',
     'src/mod/visualize/minigun_deflect.cpp',
+    'src/mod/visualize/projectile_bounds.cpp',
     'src/mod/visualize/projectile_speed.cpp',
     'src/mod/visualize/projectile_trail.cpp',
     'src/mod/visualize/sapper_range.cpp',
     'src/mod/visualize/taunt_attacks.cpp',
   ]
+
+NO_MODS_WHATSOEVER = False
+if NO_MODS_WHATSOEVER:
+  sourceFiles = [file for file in sourceFiles if not file.startswith('src/mod/')]
 
 ###############
 # Make sure to edit PackageScript, which copies your files to their appropriate locations
