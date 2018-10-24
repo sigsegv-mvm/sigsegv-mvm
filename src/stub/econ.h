@@ -105,7 +105,7 @@ public:
 	virtual int GetTypeUniqueIdentifier() const = 0;
 	virtual void LoadEconAttributeValue(CEconItem *pItem, const CEconItemAttributeDefinition *pAttrDef, const attribute_data_union_t& value) const = 0;
 	virtual std::string *ConvertEconAttributeValueToByteStream(const attribute_data_union_t& value, std::string *pString) const = 0;
-	virtual bool BConvertStringToEconAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const char *pString, attribute_data_union_t *pValue, bool b1) const = 0;
+	virtual bool BConvertStringToEconAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const char *pString, attribute_data_union_t *pValue, bool b1 = true) const = 0;
 	virtual std::string *ConvertEconAttributeValueToString(const CEconItemAttributeDefinition *pAttrDef, const attribute_data_union_t& value, std::string *pString) const = 0;
 	virtual void LoadByteStreamToEconAttributeValue(CEconItem *pItem, const CEconItemAttributeDefinition *pAttrDef, const std::string& string) const = 0;
 	virtual void InitializeNewEconAttributeValue(attribute_data_union_t *pValue) const = 0;
@@ -286,23 +286,33 @@ class CEconItemAttributeDefinition
 public:
 	KeyValues *GetKeyValues() const       { return this->m_pKV; }
 	unsigned short GetIndex() const       { return this->m_iIndex; }
-	ISchemaAttributeType *GetType() const { return this->m_nAttributeType; }
+	ISchemaAttributeType *GetType() const { return this->m_pAttributeType; }
 	
-	const char *GetName          (const char *fallback = nullptr) const { return this->GetKVString("name",            fallback); }
-	const char *GetAttributeClass(const char *fallback = nullptr) const { return this->GetKVString("attribute_class", fallback); }
+	const char *GetName          (const char *fallback = nullptr) const { return this->GetKVString("name",              fallback); }
+	const char *GetAttributeClass(const char *fallback = nullptr) const { return this->GetKVString("attribute_class",   fallback); }
+	bool        IsStoredAsInteger(bool        fallback = false)   const { return this->GetKVBool  ("stored_as_integer", fallback); }
 	
 	template<typename T> bool IsType() const { return (dynamic_cast<T *>(this->GetType()) != nullptr); }
 	
+	/* do all the libstrcompat junk automatically;
+	 * and handle "stored_as_integer" properly when BConvertStringToEconAttributeValue was called with b1 = true */
+	void ConvertValueToString(attribute_data_union_t& value, char *buf, size_t buf_len);
+	
 private:
-	const char *GetKVString(const char *str, const char *fallback) const
+	bool GetKVBool(const char *key, bool fallback) const
 	{
-		if (this->m_pKV == nullptr) return nullptr;
-		return this->m_pKV->GetString(str, fallback);
+		if (this->m_pKV == nullptr) return fallback;
+		return this->m_pKV->GetBool(key, fallback);
+	}
+	const char *GetKVString(const char *key, const char *fallback) const
+	{
+		if (this->m_pKV == nullptr) return fallback;
+		return this->m_pKV->GetString(key, fallback);
 	}
 	
 	KeyValues *m_pKV;                       // +0x00
 	unsigned short m_iIndex;                // +0x04
-	ISchemaAttributeType *m_nAttributeType; // +0x08
+	ISchemaAttributeType *m_pAttributeType; // +0x08
 	// ...
 };
 

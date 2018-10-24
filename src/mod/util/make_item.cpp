@@ -7,8 +7,6 @@
 #include "util/clientmsg.h"
 #include "util/admin.h"
 
-#include <strcompat.h>
-
 
 // TODO 20170825:
 // - client message acknowledging a successful give
@@ -64,6 +62,9 @@ namespace Mod_Util_Make_Item
 			CEconItemView::Destroy(this->m_pEconItemView);
 		}
 		
+		CEconItemViewWrapper(const CEconItemViewWrapper&)                        = delete;
+		const CEconItemViewWrapper& operator=(const CEconItemViewWrapper&) const = delete;
+		
 		operator CEconItemView *() { return this->m_pEconItemView; }
 		CEconItemView *operator*() { return this->m_pEconItemView; }
 		
@@ -95,7 +96,7 @@ namespace Mod_Util_Make_Item
 		
 		CEconItemView *item_view = (*it).second;
 		if (item_view != nullptr) {
-			ClientMsg(player, "[sig_makeitem_clear] Clearing out information for unfinished item \"%s\"\n", item_view->GetStaticData()->GetName());
+			ClientMsg(player, "[sig_makeitem_clear] Clearing out information for unfinished item \"%s\".\n", item_view->GetStaticData()->GetName());
 		}
 		
 		state.erase(it);
@@ -118,7 +119,7 @@ namespace Mod_Util_Make_Item
 		if (it != state.end()) {
 			CEconItemView *item_view = (*it).second;
 			if (item_view != nullptr) {
-				ClientMsg(player, "[sig_makeitem_start] Warning: discarding information for unfinished item \"%s\"\n", item_view->GetStaticData()->GetName());
+				ClientMsg(player, "[sig_makeitem_start] Warning: discarding information for unfinished item \"%s\".\n", item_view->GetStaticData()->GetName());
 			}
 			
 			state.erase(it);
@@ -134,7 +135,7 @@ namespace Mod_Util_Make_Item
 		}
 		
 		if (item_def == nullptr) {
-			ClientMsg(player, "[sig_makeitem_start] Error: couldn't find any items in the item schema matching \"%s\"\n", args[1]);
+			ClientMsg(player, "[sig_makeitem_start] Error: couldn't find any items in the item schema matching \"%s\".\n", args[1]);
 			return;
 		}
 		
@@ -142,7 +143,7 @@ namespace Mod_Util_Make_Item
 		CEconItemView *item_view = state[*steamid];
 		item_view->Init(item_def->m_iItemDefIndex, item_def->m_iItemQuality, 9999, 0);
 		
-		ClientMsg(player, "[sig_makeitem_start] Started making item \"%s\"\n", item_def->GetName());
+		ClientMsg(player, "\n[sig_makeitem_start] Started making item \"%s\".\n\n", item_def->GetName());
 	}
 	
 	
@@ -160,7 +161,7 @@ namespace Mod_Util_Make_Item
 		
 		auto it = state.find(*steamid);
 		if (it == state.end()) {
-			ClientMsg(player, "[sig_makeitem_add_attr] Error: you need to do sig_makeitem_start before you can do sig_makeitem_add_attr\n");
+			ClientMsg(player, "[sig_makeitem_add_attr] Error: you need to do sig_makeitem_start before you can do sig_makeitem_add_attr.\n");
 			return;
 		}
 		
@@ -176,7 +177,7 @@ namespace Mod_Util_Make_Item
 		}
 		
 		if (attr_def == nullptr) {
-			ClientMsg(player, "[sig_makeitem_add_attr] Error: couldn't find any attributes in the item schema matching \"%s\"\n", args[1]);
+			ClientMsg(player, "[sig_makeitem_add_attr] Error: couldn't find any attributes in the item schema matching \"%s\".\n", args[1]);
 			return;
 		}
 		
@@ -187,39 +188,23 @@ namespace Mod_Util_Make_Item
 		// UnloadEconAttributeValue call to avoid leaking memory
 		attr_def->GetType()->InitializeNewEconAttributeValue(&value);
 		if (!attr_def->GetType()->BConvertStringToEconAttributeValue(attr_def, value_str, &value, true)) {
-			ClientMsg(player, "[sig_makeitem_add_attr] Error: couldn't parse attribute value \"%s\"\n", args[2]);
+			ClientMsg(player, "[sig_makeitem_add_attr] Error: couldn't parse attribute value \"%s\".\n", args[2]);
 			attr_def->GetType()->UnloadEconAttributeValue(&value);
 			return;
 		}
 		CEconItemAttribute *attr = CEconItemAttribute::Create(attr_def->GetIndex());
 		*attr->GetValuePtr() = value;
-		item_view->GetAttributeList().AddAttribute(attr);
-		CEconItemAttribute::Destroy(attr);
+		item_view->GetAttributeList().AddAttribute(attr); // <-- this calls the copy ctor of the CEconItemAttribute; so DO NOT deallocate the attr afterwards!
+	//	CEconItemAttribute::Destroy(&attr);
 		
-		void *str = strcompat_alloc();
-		attr_def->GetType()->ConvertEconAttributeValueToString(attr_def, value, reinterpret_cast<std::string *>(str));
 		char buf[1024];
-		strcompat_get(str, buf, sizeof(buf));
-		strcompat_free(str);
-		
-		ClientMsg(player, "[sig_makeitem_add_attr] Added attribute \"%s\" with value \"%s\"\n", attr_def->GetName(), buf);
+		attr_def->ConvertValueToString(value, buf, sizeof(buf));
+		ClientMsg(player, "[sig_makeitem_add_attr] Added attribute \"%s\" with value \"%s\".\n", attr_def->GetName(), buf);
 	}
 	
 	
-	void CC_Give(CTFPlayer *player, const CCommand& args)
+	void CC_Give_Common(CTFPlayer *player, const CCommand& args, const char *cmd_name, const CSteamID *steamid, bool no_remove)
 	{
-		const CSteamID *steamid = GetCommandClientSteamID("CC_Give", player);
-		if (steamid == nullptr) return;
-		
-		if (args.ArgC() != 1 && args.ArgC() != 2) {
-			ClientMsg(player, "[sig_makeitem_give] Usage: any of the following:\n"
-				"  sig_makeitem_give               | give to yourself\n"
-				"  sig_makeitem_give <player_name> | give to the player with this name (names with spaces need quotes)\n"
-				"  sig_makeitem_give <steam_id>    | give to the player with this Steam ID\n"
-				"  sig_makeitem_give <user_id>     | give to the player with this server user ID\n");
-			return;
-		}
-		
 		// possible ways to use this command:
 		// - 0 args: give to me
 		// - 1 args: give to steam ID, or user ID, or player name exact match, or player name unique-partial-match
@@ -227,68 +212,78 @@ namespace Mod_Util_Make_Item
 		if (args.ArgC() == 1) {
 			recipient = player;
 		} else if (args.ArgC() == 2) {
-			ClientMsg(player, "[sig_makeitem_give] UNIMPLEMENTED: 1-arg variants\n");
+			ClientMsg(player, "[%s] UNIMPLEMENTED: 1-arg variants!\n", cmd_name);
 			return;
 			
 			// TODO: implement 1-arg version of this command
 			
 			if (recipient == nullptr) {
-				ClientMsg(player, "[sig_makeitem_give] Error: couldn't find any potential recipient player matching \"%s\"\n", args[1]);
+				ClientMsg(player, "[%s] Error: couldn't find any potential recipient player matching \"%s\".\n", cmd_name, args[1]);
 				return;
 			}
 		}
 		
 		auto it = state.find(*steamid);
 		if (it == state.end()) {
-			ClientMsg(player, "[sig_makeitem_give] Error: you need to do sig_makeitem_start before you can do sig_makeitem_give\n");
+			ClientMsg(player, "[%s] Error: you need to do sig_makeitem_start before you can do %s.\n", cmd_name, cmd_name);
 			return;
 		}
 		
 		CEconItemView *item_view = (*it).second;
 		
 		int slot = item_view->GetStaticData()->GetLoadoutSlot(recipient->GetPlayerClass()->GetClassIndex());
-		
-		if (IsLoadoutSlot_Cosmetic(slot)) {
-			/* equip-region-conflict-based old item removal */
-			
-			unsigned int mask1 = item_view->GetStaticData()->GetEquipRegionMask();
-			
-			for (int i = recipient->GetNumWearables() - 1; i >= 0; --i) {
-				CEconWearable *wearable = recipient->GetWearable(i);
-				if (wearable == nullptr) continue;
-				
-				unsigned int mask2 = wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetEquipRegionMask();
-				
-				if ((mask1 & mask2) != 0) {
-					Msg("Removing conflicting wearable \"%s\" (old: %08x, new: %08x, overlap: %08x)\n",
-						wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), mask2, mask1, (mask1 & mask2));
-					recipient->RemoveWearable(wearable);
-				}
+		if (slot == -1) {
+			slot = item_view->GetStaticData()->GetLoadoutSlot(TF_CLASS_UNDEFINED);
+			if (slot == -1) {
+				ClientMsg(player, "[%s] WARNING: failed to determine this item's loadout slot for the current player class; weird things may occur.\n", cmd_name);
+			} else {
+				ClientMsg(player, "[%s] WARNING: using best-guess loadout slot #%d (\"%s\"). Not guaranteed to work perfectly for this class.\n", cmd_name, slot, GetLoadoutSlotName(slot));
 			}
-		} else {
-			/* slot-based old item removal */
-			
-			CEconEntity *old_econ_entity = nullptr;
-			(void)CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot(recipient, slot, &old_econ_entity);
-			
-			if (old_econ_entity != nullptr) {
-				if (old_econ_entity->IsBaseCombatWeapon()) {
-					auto old_weapon = rtti_cast<CBaseCombatWeapon *>(old_econ_entity);
+		}
+		
+		if (!no_remove) {
+			if (IsLoadoutSlot_Cosmetic(static_cast<loadout_positions_t>(slot))) {
+				/* equip-region-conflict-based old item removal */
+				
+				unsigned int mask1 = item_view->GetStaticData()->GetEquipRegionMask();
+				
+				for (int i = recipient->GetNumWearables() - 1; i >= 0; --i) {
+					CEconWearable *wearable = recipient->GetWearable(i);
+					if (wearable == nullptr) continue;
 					
-					Msg("Removing old weapon \"%s\" from slot %d\n", old_weapon->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), slot);
-					recipient->Weapon_Detach(old_weapon);
-					old_weapon->Remove();
-				} else if (old_econ_entity->IsWearable()) {
-					auto old_wearable = rtti_cast<CEconWearable *>(old_econ_entity);
+					unsigned int mask2 = wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetEquipRegionMask();
 					
-					Msg("Removing old wearable \"%s\" from slot %d\n", old_wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), slot);
-					recipient->RemoveWearable(old_wearable);
-				} else {
-					Msg("Removing old entity \"%s\" from slot %d\n", old_econ_entity->GetClassname(), slot);
-					old_econ_entity->Remove();
+					if ((mask1 & mask2) != 0) {
+						ClientMsg(player, "[%s] Removing conflicting wearable \"%s\". (Equip group info: old %08x, new %08x, overlap %08x)\n",
+							cmd_name, wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), mask2, mask1, (mask1 & mask2));
+						recipient->RemoveWearable(wearable);
+					}
 				}
 			} else {
-				Msg("No old entity in slot %d\n", slot);
+				/* slot-based old item removal */
+				
+				CEconEntity *old_econ_entity = nullptr;
+				(void)CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot(recipient, slot, &old_econ_entity);
+				
+				if (old_econ_entity != nullptr) {
+					if (old_econ_entity->IsBaseCombatWeapon()) {
+						auto old_weapon = rtti_cast<CBaseCombatWeapon *>(old_econ_entity);
+						
+						ClientMsg(player, "[%s] Removing old weapon \"%s\" from slot #%d (\"%s\").\n", cmd_name, old_weapon->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), slot, GetLoadoutSlotName(slot));
+						recipient->Weapon_Detach(old_weapon);
+						old_weapon->Remove();
+					} else if (old_econ_entity->IsWearable()) {
+						auto old_wearable = rtti_cast<CEconWearable *>(old_econ_entity);
+						
+						ClientMsg(player, "[%s] Removing old wearable \"%s\" from slot #%d (\"%s\").\n", cmd_name, old_wearable->GetAttributeContainer()->GetItem()->GetStaticData()->GetName(), slot, GetLoadoutSlotName(slot));
+						recipient->RemoveWearable(old_wearable);
+					} else {
+						ClientMsg(player, "[%s] Removing old entity \"%s\" from slot #%d (\"%s\").\n", cmd_name, old_econ_entity->GetClassname(), slot, GetLoadoutSlotName(slot));
+						old_econ_entity->Remove();
+					}
+				} else {
+				//	Msg("No old entity in slot %d\n", slot);
+				}
 			}
 		}
 		
@@ -314,29 +309,86 @@ namespace Mod_Util_Make_Item
 				
 				econ_ent->GiveTo(recipient);
 			} else {
-				ClientMsg(player, "GiveNamedItem returned a non-CEconEntity\n");
+				ClientMsg(player, "[%s] Failure: GiveNamedItem returned a non-CEconEntity!\n", cmd_name);
+				return;
 			}
 		} else {
-			ClientMsg(player, "GiveNamedItem returned nullptr\n");
+			ClientMsg(player, "[%s] Failure: GiveNamedItem returned nullptr!\n", cmd_name);
+			return;
 		}
 		
-		// TODO: display success message like this:
-		//   Created item "<item name>" with the following attributes:
-		//   - "<attr name>" "<value>"
-		//   And gave it to player "<player name>"
+		if (!item_view->GetAttributeList().Attributes().IsEmpty()) {
+			size_t attr_name_len_max = 0;
+			for (CEconItemAttribute& attr : item_view->GetAttributeList().Attributes()) {
+				attr_name_len_max = Max(attr_name_len_max, strlen(attr.GetStaticData()->GetName()));
+			}
+			
+			char buf[1024];
+			int attr_num = 1;
+			
+			ClientMsg(player, "[%s] Created item \"%s\" with the following %d attributes:\n", cmd_name, item_view->GetStaticData()->GetName(), item_view->GetAttributeList().Attributes().Count());
+			for (CEconItemAttribute& attr : item_view->GetAttributeList().Attributes()) {
+				CEconItemAttributeDefinition *attr_def = attr.GetStaticData();
+				
+				attr_def->ConvertValueToString(*(attr.GetValuePtr()), buf, sizeof(buf));
+				int pad = ((int)attr_name_len_max - (int)strlen(attr_def->GetName()));
+				
+				ClientMsg(player, "[%s]   [%2d] \"%s\"%*s \"%s\"\n", cmd_name, attr_num, attr_def->GetName(), pad, "", buf);
+				++attr_num;
+			}
+			ClientMsg(player, "[%s] And gave it to player \"%s\".\n\n", cmd_name, recipient->GetPlayerName());
+		} else {
+			ClientMsg(player, "[%s] Created item \"%s\" with 0 attributes and gave it to player \"%s\".\n\n", cmd_name, item_view->GetStaticData()->GetName(), recipient->GetPlayerName());
+		}
 		
 		state.erase(it);
+	}
+	
+	void CC_Give(CTFPlayer *player, const CCommand& args)
+	{
+		const CSteamID *steamid = GetCommandClientSteamID("CC_Give", player);
+		if (steamid == nullptr) return;
+		
+		ClientMsg(player, "\n");
+		
+		if (args.ArgC() != 1 && args.ArgC() != 2) {
+			ClientMsg(player, "[sig_makeitem_give] Usage: any of the following:\n"
+				"  sig_makeitem_give               | give to yourself\n"
+				"  sig_makeitem_give <player_name> | give to the player with this name (names with spaces need quotes)\n"
+				"  sig_makeitem_give <steam_id>    | give to the player with this Steam ID\n"
+				"  sig_makeitem_give <user_id>     | give to the player with this server user ID\n");
+			return;
+		}
+		
+		CC_Give_Common(player, args, "sig_makeitem_give", steamid, false);
+	}
+	
+	void CC_Give_NoRemove(CTFPlayer *player, const CCommand& args)
+	{
+		const CSteamID *steamid = GetCommandClientSteamID("CC_Give_NoRemove", player);
+		if (steamid == nullptr) return;
+		
+		ClientMsg(player, "\n");
+		
+		if (args.ArgC() != 1 && args.ArgC() != 2) {
+			ClientMsg(player, "[sig_makeitem_give_noremove] Usage: same as sig_makeitem_give.\n"
+				"  (This version of the command won't remove pre-existing items that have equip region or item slot conflicts.)\n");
+			return;
+		}
+		
+		CC_Give_Common(player, args, "sig_makeitem_give_noremove", steamid, true);
 	}
 	
 	
 	// TODO: use an std::unordered_map so we don't have to do any V_stricmp's at all for lookups
 	// (also make this change in Util:Client_Cmds)
 	static const std::map<const char *, void (*)(CTFPlayer *, const CCommand&), VStricmpLess> cmds {
-		{ "sig_makeitem_help",     CC_Help    },
-		{ "sig_makeitem_clear",    CC_Clear   },
-		{ "sig_makeitem_start",    CC_Start   },
-		{ "sig_makeitem_add_attr", CC_AddAttr },
-		{ "sig_makeitem_give",     CC_Give    },
+		{ "sig_makeitem_help",          CC_Help          },
+		{ "sig_makeitem_clear",         CC_Clear         },
+		{ "sig_makeitem_start",         CC_Start         },
+		{ "sig_makeitem_add_attr",      CC_AddAttr       },
+		{ "sig_makeitem_give",          CC_Give          },
+		{ "sig_makeitem_give_noremove", CC_Give_NoRemove },
 	};
 	
 	

@@ -5,6 +5,8 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include <strcompat.h>
+
 
 using const_char_ptr = const char *;
 
@@ -174,6 +176,23 @@ MemberVFuncThunk<const CEconItemView *, int> CEconItemView::vt_GetItemDefIndex(T
 
 
 IMPL_SENDPROP(CEconItemView, CAttributeContainer, m_Item, CEconEntity);
+
+
+void CEconItemAttributeDefinition::ConvertValueToString(attribute_data_union_t& value, char *buf, size_t buf_len)
+{
+	/* if BConvertStringToEconAttributeValue was called with b1 = true, then
+	 * calling ConvertEconAttributeValueToString will render the stored-as-float
+	 * value as an integer, which looks horribly wrong */
+	if (this->IsStoredAsInteger() && this->IsType<CSchemaAttributeType_Default>()) {
+		snprintf(buf, buf_len, "%d", RoundFloatToInt(value.m_Float));
+		return;
+	}
+	
+	void *str = strcompat_alloc();
+	this->GetType()->ConvertEconAttributeValueToString(this, value, reinterpret_cast<std::string *>(str));
+	strcompat_get(str, buf, buf_len);
+	strcompat_free(str);
+}
 
 
 MemberFuncThunk<      CEconItemAttribute *, void>                           CEconItemAttribute::ft_ctor         ("CEconItemAttribute::CEconItemAttribute [C1]");
