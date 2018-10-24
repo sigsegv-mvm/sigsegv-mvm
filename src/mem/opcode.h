@@ -30,6 +30,7 @@ public:
 		OP_JMP_REL_IMM32     = 0xe9,
 		OP_FF                = 0xff, // opcode ext in modrm.reg
 	};
+	static_assert(sizeof(OpCode) == 1);
 	
 	enum Mod : uint8_t
 	{
@@ -40,6 +41,7 @@ public:
 		
 		MOD_MASK            = 0b11,
 	};
+	static_assert(sizeof(Mod) <= 1);
 	
 	enum Reg : uint8_t
 	{
@@ -62,6 +64,7 @@ public:
 		
 		REG_MASK = 0b111,
 	};
+	static_assert(sizeof(Reg) <= 1);
 	
 	enum RM : uint8_t
 	{
@@ -76,6 +79,7 @@ public:
 		
 		RM_MASK   = 0b111,
 	};
+	static_assert(sizeof(RM) <= 1);
 	
 	enum Scale : uint8_t
 	{
@@ -86,6 +90,7 @@ public:
 		
 		SCALE_MASK = 0b11,
 	};
+	static_assert(sizeof(Scale) <= 1);
 	
 	struct ModRM
 	{
