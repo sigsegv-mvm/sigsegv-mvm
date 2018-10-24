@@ -429,4 +429,12 @@ inline void DispatchSpawn(CBaseEntity *pEntity)
 }
 
 
+inline void UTIL_Remove(CBaseEntity *pEntity)
+{
+	if (pEntity != nullptr) {
+		pEntity->Remove();
+	}
+}
+
+
 #endif
