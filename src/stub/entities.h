@@ -98,16 +98,27 @@ private:
 class CEconWearable : public CEconEntity
 {
 public:
-	void UnEquip(CBasePlayer *player) { vt_UnEquip(this, player); }
+	void RemoveFrom(CBaseEntity *ent) { vt_RemoveFrom(this, ent); }
+	// TODO: CanEquip
+	// TODO: Equip
+	void UnEquip(CBasePlayer *player) { vt_UnEquip   (this, player); }
+	// TODO: OnWearerDeath
+	// TODO: GetDropType
+	// TODO: IsViewModelWearable
+	// TODO: GetSkin
+	// TODO: InternalSetPlayerDisplayModel
 	
 private:
+	static MemberVFuncThunk<CEconWearable *, void, CBaseEntity *> vt_RemoveFrom;
 	static MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> vt_UnEquip;
 };
 
 class CTFWearable : public CEconWearable, public IHasGenericMeter {};
 
-class CTFPowerupBottle : public CTFWearable {};
-class CTFWearableRobotArm : public CTFWearable {};
+class CTFWearableDemoShield : public CTFWearable {};
+class CTFWearableRobotArm   : public CTFWearable {};
+class CTFWearableRazorback  : public CTFWearable {};
+class CTFPowerupBottle      : public CTFWearable {};
 
 
 class CBaseTFBotHintEntity : public CPointEntity {};

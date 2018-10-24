@@ -150,7 +150,8 @@ MemberVFuncThunk<      IHasGenericMeter *, void>  IHasGenericMeter::vt_OnResourc
 MemberVFuncThunk<const IHasGenericMeter *, float> IHasGenericMeter::vt_GetChargeInterval    (TypeName<IHasGenericMeter>(), "IHasGenericMeter::GetChargeInterval");
 
 
-MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> CEconWearable::vt_UnEquip(TypeName<CEconWearable>(), "CEconWearable::UnEquip");
+MemberVFuncThunk<CEconWearable *, void, CBaseEntity *> CEconWearable::vt_RemoveFrom(TypeName<CEconWearable>(), "CEconWearable::RemoveFrom");
+MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> CEconWearable::vt_UnEquip   (TypeName<CEconWearable>(), "CEconWearable::UnEquip");
 
 
 IMPL_SENDPROP(bool, CTFBotHintEngineerNest, m_bHasActiveTeleporter, CTFBotHintEngineerNest);
