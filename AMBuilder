@@ -155,6 +155,7 @@ sourceFiles += [
   'src/mod/etc/mm_spoof.cpp',
   'src/mod/etc/nav_updateblocked.cpp',
   'src/mod/etc/override_move_speed.cpp',
+  'src/mod/etc/ratelimit_exclude.cpp',
   'src/mod/etc/release_source_mutex.cpp',
   'src/mod/etc/suppress_nb_event_messages.cpp',
   'src/mod/etc/target_changegravity_improved.cpp',
