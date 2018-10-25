@@ -172,12 +172,10 @@ std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const ch
 #endif
 	std::regex filter(pattern, std::regex_constants::ECMAScript);
 	
-	std::vector<Symbol *> matches;
+	std::vector<Symbol> matches;
 	
-	LibMgr::ForEachSym(lib, [&](Symbol *sym){
-		std::string name(sym->buffer(), sym->length);
-		
-		if (std::regex_match(name, filter, std::regex_constants::match_any)) {
+	LibMgr::ForEachSym(lib, [&](const Symbol& sym){
+		if (std::regex_match(sym.name, filter, std::regex_constants::match_any)) {
 			matches.push_back(sym);
 			if (matches.size() > 1) return false;
 		}
@@ -186,8 +184,7 @@ std::tuple<bool, std::string, void *> LibMgr::FindSymRegex(Library lib, const ch
 	});
 	
 	if (matches.size() == 1) {
-		std::string name(matches[0]->buffer(), matches[0]->length);
-		return std::make_tuple(true, name, matches[0]->address);
+		return std::make_tuple(true, matches[0].name, matches[0].addr);
 	} else {
 		return std::make_tuple(false, "", nullptr);
 	}

@@ -27,21 +27,21 @@
  * or <http://www.sourcemod.net/license.php>.
  */
 
+// WARNING: VERY HEAVILY MODIFIED FROM ORIGINAL SOURCEMOD CODE!
+
 #ifndef _INCLUDE_SOURCEMOD_MEMORYUTILS_H_
 #define _INCLUDE_SOURCEMOD_MEMORYUTILS_H_
 
 #include <sp_vm_types.h>
 #include <sm_platform.h>
-//#if defined PLATFORM_LINUX || defined PLATFORM_APPLE
-#include <sh_vector.h>
-#include "sm_symtable.h"
-
-using namespace SourceHook;
-//#endif
 
 #ifdef PLATFORM_APPLE
 #include <CoreServices/CoreServices.h>
 #endif
+
+#include <string>
+#include <vector>
+#include <unordered_map>
 
 struct DynLibInfo
 {
@@ -49,12 +49,22 @@ struct DynLibInfo
 	size_t memorySize;
 };
 
+using SymbolTable = std::unordered_map<std::string, void *>;
+
+struct Symbol
+{
+	const std::string& name;
+	void *addr;
+};
+
 #if defined PLATFORM_LINUX || defined PLATFORM_APPLE
 struct LibSymbolTable
 {
+	LibSymbolTable(uintptr_t lib_base) : lib_base(lib_base) {}
+	
 	SymbolTable table;
 	uintptr_t lib_base;
-	uint32_t last_pos;
+	size_t last_pos = 0;
 };
 #endif
 
@@ -62,10 +72,10 @@ class MemoryUtils
 {
 public:
 	MemoryUtils();
-	~MemoryUtils();
+	~MemoryUtils() = default;
 	void *ResolveSymbol(void *handle, const char *symbol);
 	bool GetLibraryInfo(const void *libPtr, DynLibInfo &lib);
-	void ForEachSymbol(void *handle, const std::function<bool(Symbol *)>& functor);
+	void ForEachSymbol(void *handle, const std::function<bool(const Symbol&)>& functor);
 #if defined PLATFORM_LINUX
 	void ForEachSection(void *handle, const std::function<void(const Elf32_Shdr *, const char *)>& functor);
 #elif defined PLATFORM_WINDOWS
@@ -73,7 +83,7 @@ public:
 #endif
 #if defined PLATFORM_LINUX || defined PLATFORM_APPLE
 private:
-	CVector<LibSymbolTable *> m_SymTables;
+	std::vector<LibSymbolTable> m_SymTables;
 #ifdef PLATFORM_APPLE
 	struct dyld_all_image_infos *m_ImageList;
 	SInt32 m_OSXMajor;

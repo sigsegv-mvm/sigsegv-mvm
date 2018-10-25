@@ -366,12 +366,10 @@ bool IDetour_SymRegex::DoLoad()
 	#warning NEED try/catch for std::regex ctor!
 #endif
 	std::regex filter(this->m_strPattern, std::regex_constants::ECMAScript);
-	std::vector<Symbol *> syms;
-	LibMgr::ForEachSym(this->m_Library, [&](Symbol *sym){
-		const char *it_begin = sym->buffer();
-		const char *it_end   = it_begin + sym->length;
-		if (std::regex_search(it_begin, it_end, filter, std::regex_constants::match_any)) {
-			if (sym->address >= text_begin && sym->address < text_end) {
+	std::vector<Symbol> syms;
+	LibMgr::ForEachSym(this->m_Library, [&](const Symbol& sym){
+		if (std::regex_search(sym.name, filter, std::regex_constants::match_any)) {
+			if (sym.addr >= text_begin && sym.addr < text_end) {
 				syms.push_back(sym);
 			}
 		}
@@ -381,15 +379,14 @@ bool IDetour_SymRegex::DoLoad()
 	
 	if (syms.size() != 1) {
 		DevMsg("IDetour_SymRegex::DoLoad: \"%s\": symbol lookup failed (%zu matches):\n", this->GetName(), syms.size());
-		for (auto sym : syms) {
-			std::string name(sym->buffer(), sym->length);
-			DevMsg("  %s\n", name.c_str());
+		for (const auto& sym : syms) {
+			DevMsg("  %s\n", sym.name.c_str());
 		}
 		return false;
 	}
 	
-	this->m_strSymbol = std::string(syms[0]->buffer(), syms[0]->length);
-	this->m_pFunc     = reinterpret_cast<uint8_t *>(syms[0]->address);
+	this->m_strSymbol = syms[0].name;
+	this->m_pFunc     = reinterpret_cast<uint8_t *>(syms[0].addr);
 	
 	DemangleName(this->m_strSymbol.c_str(), this->m_strDemangled);
 	

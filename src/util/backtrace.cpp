@@ -6,12 +6,12 @@
 #if defined _LINUX || defined _OSX
 
 
-void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *offp)
+static void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *offp)
 {
 	snprintf(bufp, len, "???");
 	*offp = 0;
 	
-	static unw_word_t r_ip;
+	unw_word_t r_ip;
 	unw_get_reg(cp, UNW_REG_IP, &r_ip);
 	
 	Library lib = LibMgr::WhichLibAtAddr((void *)r_ip);
@@ -19,11 +19,11 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 		return;
 	}
 	
-	static Symbol *best = nullptr;
-	LibMgr::ForEachSym(lib, [](Symbol *sym) {
-		if (r_ip > (uintptr_t)sym->address) {
-			if (best == nullptr || (r_ip - (uintptr_t)best->address) > (r_ip - (uintptr_t)sym->address)) {
-				best = sym;
+	const Symbol *best = nullptr;
+	LibMgr::ForEachSym(lib, [&r_ip, &best](const Symbol& sym) {
+		if (r_ip > (uintptr_t)sym.addr) {
+			if (best == nullptr || (r_ip - (uintptr_t)best->addr) > (r_ip - (uintptr_t)sym.addr)) {
+				best = &sym;
 			}
 		}
 		
@@ -31,13 +31,13 @@ void sym_get_proc_name(unw_cursor_t *cp, char *bufp, size_t len, unw_word_t *off
 	});
 	
 	if (best != nullptr) {
-		snprintf(bufp, len, "%*s", best->length, best->buffer());
-		*offp = r_ip - (uintptr_t)best->address;
+		snprintf(bufp, len, "%*s", best->name.size(), best->name.c_str());
+		*offp = r_ip - (uintptr_t)best->addr;
 	}
 }
 
 
-void cached_get_proc_name(unw_cursor_t *cp, const char **p_name, unw_word_t *p_off)
+static void cached_get_proc_name(unw_cursor_t *cp, const char **p_name, unw_word_t *p_off)
 {
 	struct CacheEntry
 	{

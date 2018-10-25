@@ -27,16 +27,17 @@ namespace RTTI
 #if defined __GNUC__
 		
 		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0}) {
-			LibMgr::ForEachSym(lib, [](Symbol *sym){
-				const char *buf = sym->buffer();
+			LibMgr::ForEachSym(lib, [](const Symbol& sym){
+				const char *buf = sym.name.c_str();
+				size_t buf_len  = sym.name.size();
 				char name[4096];
 				
-				if (sym->length >= 4 && memcmp(buf, "_ZT", 3) == 0) {
+				if (buf_len >= 4 && memcmp(buf, "_ZT", 3) == 0) {
 					bool is_rtti = (buf[3] == 'I');
 					bool is_vt   = (buf[3] == 'V');
 					
 					if (is_rtti || is_vt) {
-						size_t len = sym->length - 4;
+						size_t len = buf_len - 4;
 						len = Min(len, sizeof(name) - 1);
 						
 						memcpy(name, buf + 4, len);
@@ -44,7 +45,7 @@ namespace RTTI
 						
 						if (is_rtti) {
 							std::string key(name);
-							auto addr = (const rtti_t *)(sym->address);
+							auto addr = (const rtti_t *)(sym.addr);
 							
 							if (s_RTTI.find(key) != s_RTTI.end()) {
 								DevWarning("RTTI::PreLoad: duplicate symbol \"_ZTI%s\"\n", name);
@@ -54,7 +55,7 @@ namespace RTTI
 							}
 						} else if (is_vt) {
 							std::string key(name);
-							auto addr = (const void **)((uintptr_t)(sym->address) + offsetof(vtable, vfptrs));
+							auto addr = (const void **)((uintptr_t)(sym.addr) + offsetof(vtable, vfptrs));
 							
 							if (s_VT.find(key) != s_VT.end()) {
 								DevWarning("RTTI::PreLoad: duplicate symbol \"_ZTV%s\"\n", name);
