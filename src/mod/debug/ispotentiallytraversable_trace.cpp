@@ -106,8 +106,7 @@ namespace Mod::Debug::IsPotentiallyTraversable_Trace
 	
 	ConVar cvar_enable("sig_debug_ispotentiallytraversable_trace", "0", FCVAR_NOTIFY,
 		"Debug: spew info about ILocomotion::IsPotentiallyTraversable's ray trace",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

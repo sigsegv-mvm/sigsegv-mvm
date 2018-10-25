@@ -386,8 +386,7 @@ namespace Mod::AI::EngieBot_Dispensers
 	
 	ConVar cvar_enable("sig_ai_engiebot_dispensers", "0", FCVAR_NOTIFY,
 		"Mod: make engiebots build dispensers instead of sentries/teles",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

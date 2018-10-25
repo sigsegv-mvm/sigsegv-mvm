@@ -60,8 +60,7 @@ namespace Mod::Debug::Revive_Fast
 	
 	ConVar cvar_enable("sig_debug_revive_fast", "0", FCVAR_NOTIFY,
 		"Debug: diagnose instant revives",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

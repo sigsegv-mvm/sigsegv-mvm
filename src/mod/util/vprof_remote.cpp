@@ -167,9 +167,8 @@ namespace Mod::Util::VProf_Remote
 	
 	ConVar cvar_enable("sig_util_vprof_remote", "0", FCVAR_NOTIFY,
 		"Utility: make vprof_remote_start and vprof_remote_stop work",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	
@@ -262,9 +261,8 @@ namespace Mod::Util::VProf_Remote_Test
 	
 	ConVar cvar_enable("sig_util_vprof_remote_test", "0", FCVAR_NOTIFY,
 		"Utility: test",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

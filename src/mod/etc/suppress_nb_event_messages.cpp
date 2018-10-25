@@ -39,8 +39,7 @@ namespace Mod::Etc::Suppress_NB_Event_Messages
 	
 	ConVar cvar_enable("sig_etc_suppress_nb_event_messages", "0", FCVAR_NOTIFY,
 		"Mod: suppress NextBot event RESULT_CRITICAL collision console messages",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

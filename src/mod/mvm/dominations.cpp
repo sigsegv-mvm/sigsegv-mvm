@@ -61,8 +61,7 @@ namespace Mod::MvM::Dominations
 	
 	ConVar cvar_enable("sig_mvm_dominations", "0", FCVAR_NOTIFY,
 		"Mod: enable domination and revenge in MvM mode",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

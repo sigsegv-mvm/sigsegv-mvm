@@ -37,8 +37,7 @@ namespace Mod::Tank::Gunslinger_Combo
 	
 	ConVar cvar_enable("sig_tank_gunslinger_combo", "0", FCVAR_NOTIFY,
 		"Tank: enable gunslinger 3-punch combo functionality",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

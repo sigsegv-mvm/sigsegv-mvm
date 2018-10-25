@@ -63,8 +63,7 @@ namespace Mod::Debug::Tele_AutoDetonate
 	
 	ConVar cvar_enable("sig_debug_tele_autodetonate", "0", FCVAR_NOTIFY,
 		"Debug: figure out why 2-way teles like to detonate themselves sometimes",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

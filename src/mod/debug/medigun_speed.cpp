@@ -99,8 +99,7 @@ namespace Mod::Debug::Medigun_Speed
 	
 	ConVar cvar_enable("sig_debug_medigun_speed", "0", FCVAR_NOTIFY,
 		"Debug: investigate bugginess of medigun movement speed matching",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

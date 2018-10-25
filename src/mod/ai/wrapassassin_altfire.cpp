@@ -42,8 +42,7 @@ namespace Mod::AI::WrapAssassin_AltFire
 	
 	ConVar cvar_enable("sig_ai_wrapassassin_altfire", "0", FCVAR_NOTIFY,
 		"Mod: make bots fire Wrap Assassin balls, similar to how they use the Sandman",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

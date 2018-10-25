@@ -307,8 +307,7 @@ namespace Mod::Debug::OnKilled_Before_MainAction_Start
 	
 	ConVar cvar_enable("sig_debug_onkilled_before_mainaction_start", "0", FCVAR_NOTIFY,
 		"Debug: investigate post-20160707a edge cases of bots not switching to spectator",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

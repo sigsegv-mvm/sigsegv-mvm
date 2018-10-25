@@ -30,8 +30,7 @@ namespace Mod::AI::Prevent_Postmortem_Updates
 	
 	ConVar cvar_enable("sig_ai_prevent_postmortem_updates", "0", FCVAR_NOTIFY,
 		"Mod: fix bugs caused by CTFBot AI Update functions being called after bots have died",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

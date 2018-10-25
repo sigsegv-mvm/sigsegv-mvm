@@ -247,8 +247,7 @@ namespace Mod::Prof::Attr_Munge
 	
 	ConVar cvar_enable("sig_prof_attr_munge", "0", FCVAR_NOTIFY,
 		"Mod: profile heap thrashing in attribute mungers",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

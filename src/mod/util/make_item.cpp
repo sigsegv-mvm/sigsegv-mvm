@@ -429,9 +429,8 @@ namespace Mod::Util::Make_Item
 	 * I've acquiesced and made this mod convar non-notifying (sigh) */
 	ConVar cvar_enable("sig_util_make_item", "0", /*FCVAR_NOTIFY*/FCVAR_NONE,
 		"Utility: enable sig_makeitem_* client commands",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	/* default: admin-only mode ENABLED */

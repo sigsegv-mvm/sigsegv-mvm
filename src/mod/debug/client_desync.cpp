@@ -75,9 +75,8 @@ namespace Mod::Debug::Client_Desync
 	
 	ConVar cvar_enable("sig_debug_client_desync", "0", FCVAR_NOTIFY,
 		"Debug: diagnose client entity state desynchronization",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

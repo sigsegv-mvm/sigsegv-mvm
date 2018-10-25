@@ -94,9 +94,8 @@ namespace Mod::Pop::ECAttr_Extensions
 	
 	ConVar cvar_enable("sig_pop_ecattr_extensions", "0", FCVAR_NOTIFY,
 		"Mod: enable extended KV in EventChangeAttributes",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

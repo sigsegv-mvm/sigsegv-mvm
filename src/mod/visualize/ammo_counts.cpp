@@ -100,8 +100,7 @@ namespace Mod::Visualize::Ammo_Counts
 	
 	ConVar cvar_enable("sig_visualize_ammo_counts", "0", FCVAR_NOTIFY,
 		"Visualization: draw ammo count numbers for all weapons",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

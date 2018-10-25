@@ -74,8 +74,7 @@ namespace Mod::Etc::Loose_Cannon_Damage_Fix
 	
 	ConVar cvar_enable("sig_etc_loose_cannon_damage_fix", "0", FCVAR_NOTIFY,
 		"Mod: fix the Tough Break update change that made Loose Cannon projectile impact damage unaffected by multipliers",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

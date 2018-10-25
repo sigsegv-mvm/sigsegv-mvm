@@ -49,8 +49,7 @@ namespace Mod::Perf::Medigun_Shield_Damage_Interval
 	
 	ConVar cvar_enable("sig_perf_medigun_shield_damage_interval", "0", FCVAR_NOTIFY,
 		"Mod: change the medigun shield damage interval to values greater than every single tick",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

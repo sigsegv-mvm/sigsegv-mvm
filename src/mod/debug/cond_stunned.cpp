@@ -34,8 +34,7 @@ namespace Mod::Debug::Cond_Stunned
 	
 	ConVar cvar_enable("sig_debug_cond_stunned", "0", FCVAR_NOTIFY,
 		"Debug: display whether each player is in TF_COND_STUNNED at any given time",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

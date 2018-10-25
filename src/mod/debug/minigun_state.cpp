@@ -38,8 +38,7 @@ namespace Mod::Debug::Minigun_State
 	
 	ConVar cvar_enable("sig_debug_minigun_state", "0", FCVAR_NOTIFY,
 		"Debug: watch the value of CTFMinigun::m_iWeaponState",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

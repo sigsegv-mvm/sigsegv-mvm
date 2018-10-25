@@ -44,8 +44,7 @@ namespace Mod::Debug::EnergyRing_Knockback
 	
 	ConVar cvar_enable("sig_debug_energyring_knockback", "0", FCVAR_NOTIFY,
 		"Debug: figure out why Pomson/Bison projectiles are inflicting knockback",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

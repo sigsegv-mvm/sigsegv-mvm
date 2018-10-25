@@ -64,9 +64,8 @@ namespace Mod::Debug::Console_Scramble_v1
 	
 	ConVar cvar_enable("sig_debug_console_scramble_v1", "0", FCVAR_NOTIFY,
 		"Debug: determine why mat_queue_mode 2 causes console output to go out of order",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

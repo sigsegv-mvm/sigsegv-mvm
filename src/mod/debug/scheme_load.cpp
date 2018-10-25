@@ -25,8 +25,7 @@ namespace Mod::Debug::Scheme_Load
 	
 	ConVar cvar_enable("sig_debug_scheme_load", "0", FCVAR_NOTIFY,
 		"Debug: trace vgui scheme loads",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

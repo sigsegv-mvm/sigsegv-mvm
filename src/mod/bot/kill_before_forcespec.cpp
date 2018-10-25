@@ -78,8 +78,7 @@ namespace Mod::Bot::Kill_Before_ForceSpec
 	
 	ConVar cvar_enable("sig_bot_kill_before_forcespec", "0", FCVAR_NOTIFY,
 		"Mod: fix bugs caused by bots not being killed before being switched to spectator",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

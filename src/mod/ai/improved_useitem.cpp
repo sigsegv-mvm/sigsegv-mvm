@@ -236,8 +236,7 @@ namespace Mod::AI::Improved_UseItem
 	
 	ConVar cvar_enable("sig_ai_improved_useitem", "0", FCVAR_NOTIFY,
 		"Mod: use improved replacement for CTFBotUseItem",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -304,8 +304,7 @@ namespace Mod::Visualize::Flamethrower
 	
 	ConVar cvar_enable("sig_visualize_flamethrower", "0", FCVAR_NOTIFY,
 		"Visualization: show flame entity boxes, distances, etc.",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

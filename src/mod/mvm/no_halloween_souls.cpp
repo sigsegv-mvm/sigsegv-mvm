@@ -28,8 +28,7 @@ namespace Mod::MvM::No_Halloween_Souls
 	
 	ConVar cvar_enable("sig_mvm_no_halloween_souls", "0", FCVAR_NOTIFY,
 		"Mod: disable those stupid Halloween soul drop things in MvM mode",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

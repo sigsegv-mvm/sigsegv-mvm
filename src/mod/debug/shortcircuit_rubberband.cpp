@@ -98,8 +98,7 @@ namespace Mod::Debug::ShortCircuit_RubberBand
 	
 	ConVar cvar_enable("sig_debug_shortcircuit_rubberband", "0", FCVAR_NOTIFY,
 		"Debug: investigate Short Circuit alt-fire causing players to rubber-band",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

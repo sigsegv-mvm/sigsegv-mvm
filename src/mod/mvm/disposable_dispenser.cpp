@@ -19,8 +19,7 @@ namespace Mod::MvM::Disposable_Dispenser
 	
 	ConVar cvar_enable("sig_mvm_disposable_dispenser", "0", FCVAR_NOTIFY,
 		"Mod: replace the disposable mini-sentry with a disposable mini-dispenser",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

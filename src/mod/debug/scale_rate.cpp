@@ -37,8 +37,7 @@ namespace Mod::Debug::Scale_Rate
 	
 	ConVar cvar_enable("sig_debug_scale_rate", "0", FCVAR_NOTIFY,
 		"Debug: figure out how head/hand/torso scale rates work",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

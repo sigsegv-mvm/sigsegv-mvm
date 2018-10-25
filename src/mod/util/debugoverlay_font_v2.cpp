@@ -374,8 +374,7 @@ namespace Mod::Util::DebugOverlay_Font_v2
 	
 	ConVar cvar_enable("sig_util_debugoverlay_font_v2", "0", FCVAR_NOTIFY,
 		"Utility: allow overriding the debug overlay font",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

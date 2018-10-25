@@ -77,8 +77,7 @@ namespace Mod::Debug::Credit_Magnet
 	
 	ConVar cvar_enable("sig_debug_credit_magnet", "0", FCVAR_NOTIFY,
 		"Debug: investigate how credit pack magnet pull works",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

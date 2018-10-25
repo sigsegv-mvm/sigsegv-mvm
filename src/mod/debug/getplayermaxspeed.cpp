@@ -74,8 +74,7 @@ namespace Mod::Debug::GetPlayerMaxSpeed
 	
 	ConVar cvar_enable("sig_debug_getplayermaxspeed", "0", FCVAR_NOTIFY,
 		"Debug: show result of CBasePlayer::GetPlayerMaxSpeed() as an overlay",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

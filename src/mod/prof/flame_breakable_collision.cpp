@@ -33,8 +33,7 @@ namespace Mod::Prof::Flame_Breakable_Collision
 	
 	ConVar cvar_enable("sig_prof_flame_breakable_collision", "0", FCVAR_NOTIFY,
 		"Mod: profile flame entity think performance",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

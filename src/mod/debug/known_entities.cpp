@@ -1001,9 +1001,8 @@ namespace Mod::Debug::Known_Entities
 	
 	ConVar cvar_enable("sig_debug_known_entities", "0", FCVAR_NOTIFY,
 		"Debug: show detailed information about a bot's known entities",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

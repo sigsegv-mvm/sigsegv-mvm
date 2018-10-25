@@ -42,8 +42,7 @@ namespace Mod::Debug::FeignDeath_Ragdoll
 	
 	ConVar cvar_enable("sig_debug_feigndeath_ragdoll", "0", FCVAR_NOTIFY,
 		"Debug: investigate spy croissant issues",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

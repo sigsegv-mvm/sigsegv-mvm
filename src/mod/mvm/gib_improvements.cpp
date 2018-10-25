@@ -189,8 +189,7 @@ namespace Mod::MvM::Gib_Improvements
 	
 	ConVar cvar_enable("sig_mvm_gib_improvements", "0", FCVAR_NOTIFY,
 		"Mod: improve various aspects of human and robot gibbing in MvM mode",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

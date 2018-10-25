@@ -404,9 +404,8 @@ namespace Mod::AI::MvM_Defender_Bots
 	
 	ConVar cvar_enable("sig_ai_mvm_defender_bots", "0", FCVAR_NOTIFY,
 		"Mod: make red TFBots in MvM do things other than stand around uselessly",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

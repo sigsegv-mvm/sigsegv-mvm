@@ -42,8 +42,7 @@ namespace Mod::Robot::Spawn_Protection_Fix
 	
 	ConVar cvar_enable("sig_robot_spawn_protection_fix", "0", FCVAR_NOTIFY,
 		"Mod: make robot spawn protection only involve TF_COND_INVULNERABLE_HIDE_UNLESS_DAMAGED",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -25,8 +25,7 @@ namespace Mod::Debug::Max_Clients
 	
 	ConVar cvar_enable("sig_debug_max_clients", "0", FCVAR_NOTIFY,
 		"Debug: figure out what the hell is going on with sv.m_nMaxclients",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

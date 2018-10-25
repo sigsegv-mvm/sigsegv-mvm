@@ -66,8 +66,7 @@ namespace Mod::Client::Player_Track
 	
 	ConVar cvar_enable("sig_debug_client_player_track", "0", FCVAR_NOTIFY,
 		"Debug: enable tracking players on the client side during demo playback",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

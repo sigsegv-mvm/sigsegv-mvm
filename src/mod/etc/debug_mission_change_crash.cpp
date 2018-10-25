@@ -94,8 +94,7 @@ namespace Mod::Etc::Debug_Mission_Change_Crash
 	
 	ConVar cvar_enable("sig_etc_debug_mission_change_crash", "0", FCVAR_NOTIFY,
 		"Mod: debug crash that occurs in CBaseEntity::SetNextThink when an MvM mission ends and the next one starts",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

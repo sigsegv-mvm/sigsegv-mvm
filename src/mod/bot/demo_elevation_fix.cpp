@@ -43,9 +43,8 @@ namespace Mod::Bot::Demo_Elevation_Fix
 	
 	ConVar cvar_enable("sig_bot_demo_elevation_fix", "0", FCVAR_NOTIFY,
 		"Mod: make demoman aim elevation properly compensate for projectile speed modifiers",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

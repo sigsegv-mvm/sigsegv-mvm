@@ -24,8 +24,7 @@ namespace Mod::Etc::Holiday_Items_Allow
 	
 	ConVar cvar_enable("sig_etc_holiday_items_allow", "0", FCVAR_NOTIFY,
 		"Mod: allow holiday-restricted loadout items regardless of the holiday state",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -54,8 +54,7 @@ namespace Mod::Debug::Better_Ent_Text
 	
 	ConVar cvar_enable("sig_debug_better_ent_text", "0", FCVAR_NOTIFY,
 		"Debug: make the ent_text command less useless",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

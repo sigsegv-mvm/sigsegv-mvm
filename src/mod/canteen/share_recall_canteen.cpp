@@ -97,8 +97,7 @@ namespace Mod::Canteen::Share_Recall_Canteen
 	
 	ConVar cvar_enable("sig_canteen_share_recall_canteen", "0", FCVAR_NOTIFY,
 		"Mod: allow Recall Canteens to be shared with the Canteen Specialist upgrade",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

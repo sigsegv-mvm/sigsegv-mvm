@@ -244,8 +244,7 @@ namespace Mod::Debug::Building_Status
 	
 	ConVar cvar_enable("sig_debug_building_status", "0", FCVAR_NOTIFY,
 		"Debug: draw large building status \"HUD\" to help elucidate MvM Building Health upgrade exploit",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

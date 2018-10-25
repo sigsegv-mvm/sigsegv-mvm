@@ -273,8 +273,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 	
 	ConVar cvar_enable("sig_pop_nested_complex_spawners", "0", FCVAR_NOTIFY,
 		"Mod: calculate correct wave class counts for nested complex spawners using a recursive algorithm",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

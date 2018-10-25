@@ -93,8 +93,7 @@ namespace Mod::Bot::Kart_Locomotion
 	
 	ConVar cvar_enable("sig_bot_kart_locomotion", "0", FCVAR_NOTIFY,
 		"Mod: make bots do delta-yaw movement instead of strafe movement when in TF_COND_HALLOWEEN_KART",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

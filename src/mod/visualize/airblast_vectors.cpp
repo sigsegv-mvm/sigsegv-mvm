@@ -122,9 +122,8 @@ namespace Mod::Visualize::Airblast_Vectors
 	
 	ConVar cvar_enable("sig_visualize_airblast_vectors", "0", FCVAR_NOTIFY,
 		"Visualization: draw vectors used for airblast deflection of players",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

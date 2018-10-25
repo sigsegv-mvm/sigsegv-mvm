@@ -33,8 +33,7 @@ namespace Mod::Util::DTWarning_Use_CVar
 	
 	ConVar cvar_enable("sig_util_dtwarning_use_cvar", "0", FCVAR_NOTIFY,
 		"Utility: make the dtwarning engine cvar actually control whether DataTable_Warning prints messages",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -164,8 +164,7 @@ namespace Mod::Visualize::Projectile_Speed
 	
 	ConVar cvar_enable("sig_visualize_projectile_speed", "0", FCVAR_NOTIFY,
 		"Visualization: projectile speed overlay",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

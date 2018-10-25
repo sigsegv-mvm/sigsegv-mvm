@@ -82,9 +82,8 @@ namespace Mod::VGUI::Test
 	
 	ConVar cvar_enable("sig_vgui_test", "0", FCVAR_NOTIFY,
 		"Mod: test custom VGUI elements",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

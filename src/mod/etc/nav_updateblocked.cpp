@@ -65,9 +65,8 @@ namespace Mod::Etc::Nav_UpdateBlocked
 	
 	ConVar cvar_enable("sig_etc_nav_updateblocked", "0", FCVAR_NOTIFY,
 		"Etc: make CTFNavArea::UpdateBlocked chain to CNavArea::UpdateBlocked instead of doing NOTHING",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 
@@ -103,8 +102,7 @@ namespace Mod::Etc::Nav_UpdateBlocked_Visualize
 	
 	ConVar cvar_enable("sig_etc_nav_updateblocked_visualize", "0", FCVAR_NOTIFY,
 		"Etc: draw blocked and non-blocked nav areas",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

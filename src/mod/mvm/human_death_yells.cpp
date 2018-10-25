@@ -105,8 +105,7 @@ namespace Mod::MvM::Human_Death_Yells
 	
 	ConVar cvar_enable("sig_mvm_human_death_yells", "0", FCVAR_NOTIFY,
 		"Mod: re-enable human death yells and crunching sounds and so forth in MvM mode",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

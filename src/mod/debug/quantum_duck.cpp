@@ -84,8 +84,7 @@ namespace Mod::Debug::Quantum_Duck
 	
 	ConVar cvar_enable("sig_debug_quantum_duck", "0", FCVAR_NOTIFY,
 		"Debug: determine why quantum ducking is possible and how to fix it",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -285,20 +285,20 @@ namespace Mod::MvM::Set_Credit_Team
 	
 	ConVar cvar_enable("sig_mvm_set_credit_team", "0", FCVAR_NOTIFY,
 		"Mod: change which team is allowed to collect MvM credits (normally hardcoded to TF_TEAM_RED)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			auto var = static_cast<ConVar *>(pConVar);
 			
 			/* refresh patches with the new convar value if we do a nonzero --> nonzero transition */
-			if (s_Mod.IsEnabled() && var.GetBool()) {
+			if (s_Mod.IsEnabled() && var->GetBool()) {
 				// REMOVE ME
 				ConColorMsg(Color(0xff, 0x00, 0xff, 0xff),
 					"sig_mvm_set_credit_team: toggling patches off and back on, for %s --> %s transition.\n",
-					pOldValue, var.GetString());
+					pOldValue, var->GetString());
 				
 				s_Mod.ToggleAllPatches(false);
 				s_Mod.ToggleAllPatches(true);
 			}
 			
-			s_Mod.Toggle(var.GetBool());
+			s_Mod.Toggle(var->GetBool());
 		});
 }

@@ -133,8 +133,7 @@ namespace Mod::Bot::MultiClass_Weapon
 	
 	ConVar cvar_enable("sig_bot_multiclass_weapon", "0", FCVAR_NOTIFY,
 		"Mod: remap item entity names so bots can be given multi-class weapons",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

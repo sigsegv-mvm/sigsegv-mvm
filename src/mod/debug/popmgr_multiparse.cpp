@@ -49,8 +49,7 @@ namespace Mod::Debug::PopMgr_MultiParse
 	
 	ConVar cvar_enable("sig_debug_popmgr_multiparse", "0", FCVAR_NOTIFY,
 		"Debug: figure out why tf_mvm_popfile parses the popfile about 4 times",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -947,8 +947,7 @@ namespace Mod::Debug::Flamethrower_Mojo
 	
 	ConVar cvar_enable("sig_debug_flamethrower_mojo", "0", FCVAR_NOTIFY,
 		"Debug: investigate the 'flamethrower mojo' phenomenon",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

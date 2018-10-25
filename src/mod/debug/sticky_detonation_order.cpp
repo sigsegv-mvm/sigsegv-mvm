@@ -77,8 +77,7 @@ namespace Mod::Debug::Sticky_Detonation_Order
 	
 	ConVar cvar_enable("sig_debug_sticky_detonation_order", "0", FCVAR_NOTIFY,
 		"Debug: diagnose weird effects due to stickybomb detonation order",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

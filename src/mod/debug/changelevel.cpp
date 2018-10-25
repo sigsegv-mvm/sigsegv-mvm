@@ -76,8 +76,7 @@ namespace Mod::Debug::ChangeLevel
 	
 	ConVar cvar_enable("sig_debug_changelevel", "0", FCVAR_NOTIFY,
 		"Debug: diagnose problems with changelevel vote starting around 5/31/2016",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

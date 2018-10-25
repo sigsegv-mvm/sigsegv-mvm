@@ -222,9 +222,8 @@ namespace Mod::Visualize::Backstab
 	
 	ConVar cvar_enable("sig_visualize_backstab", "0", FCVAR_NOTIFY,
 		"Visualization: draw information about backstab angles",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

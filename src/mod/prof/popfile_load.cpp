@@ -87,8 +87,7 @@ namespace Mod::Prof::Popfile_Load
 	
 	ConVar cvar_enable("sig_prof_popfile_load", "0", FCVAR_NOTIFY,
 		"Mod: profile MvM popfile load performance",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

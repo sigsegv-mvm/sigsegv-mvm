@@ -48,8 +48,7 @@ namespace Mod::Etc::LaserDot_Fix
 	
 	ConVar cvar_enable("sig_etc_laserdot_fix", "0", FCVAR_NOTIFY,
 		"Mod: client-side fix for env_laserdot drawing the sniper laser particle",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

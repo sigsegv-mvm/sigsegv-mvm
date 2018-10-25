@@ -226,9 +226,8 @@ namespace Mod::Util::ConFilter
 	
 	ConVar cvar_enable("sig_util_confilter", "0", FCVAR_NOTIFY,
 		"Utility: enable enhanced console message filtering system",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

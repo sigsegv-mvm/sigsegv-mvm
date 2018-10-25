@@ -38,8 +38,7 @@ namespace Mod::Robot::No_Canteens
 	
 	ConVar cvar_enable("sig_robot_no_canteens", "0", FCVAR_NOTIFY,
 		"Mod: don't give stock canteens to robots, because that's idiotic",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

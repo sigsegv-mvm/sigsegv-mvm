@@ -174,8 +174,7 @@ namespace Mod::AI::EngieBot_Wrangler
 	
 	ConVar cvar_enable("sig_ai_engiebot_wrangler", "0", FCVAR_NOTIFY,
 		"Mod: enable custom AI behavior for wrangling sentry",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

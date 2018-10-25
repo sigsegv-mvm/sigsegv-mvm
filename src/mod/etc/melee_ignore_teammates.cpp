@@ -86,8 +86,7 @@ namespace Mod::Etc::Melee_Ignore_Teammates
 	
 	ConVar cvar_enable("sig_etc_melee_ignore_teammates", "0", FCVAR_NOTIFY,
 		"Mod: allow melee traces to pass through teammates (for anyone, not just MvM blu team players)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -30,8 +30,7 @@ namespace Mod::Attr::CustomProjectileModel_Precache
 	
 	ConVar cvar_enable("sig_attr_customprojectilemodel_precache", "0", FCVAR_NOTIFY,
 		"Mod: do automatic model precaching of \"custom projectile model\" attr values instead of crashing the server",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

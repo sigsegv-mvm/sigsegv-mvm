@@ -116,8 +116,7 @@ namespace Mod::Debug::UserMsg_Overflow
 	
 	ConVar cvar_enable("sig_debug_usermsg_overflow", "0", FCVAR_NOTIFY,
 		"Debug: buffer overflow in net message (svc_UserMessage)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

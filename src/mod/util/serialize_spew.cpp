@@ -66,9 +66,8 @@ namespace Mod::Util::Serialize_Spew
 	
 	ConVar cvar_enable("sig_util_serialize_spew", "0", FCVAR_NOTIFY,
 		"Utility: fix spew ordering problems caused by CShaderSystem's spew buffering mechanism",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

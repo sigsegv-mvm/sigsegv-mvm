@@ -261,8 +261,7 @@ namespace Mod::Util::Download_Manager
 	
 	ConVar cvar_enable("sig_util_download_manager", "0", FCVAR_NOTIFY,
 		"Utility: add custom downloads to the downloadables string table and tweak some things",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

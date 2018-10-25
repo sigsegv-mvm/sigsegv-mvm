@@ -41,8 +41,7 @@ namespace Mod::Debug::TeleportWhere
 	
 	ConVar cvar_enable("sig_debug_teleportwhere", "0", FCVAR_NOTIFY,
 		"Debug: determine whether bots' TeleportWhere vectors are properly being cleared out at spawn",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

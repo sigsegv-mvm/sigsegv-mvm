@@ -128,8 +128,7 @@ namespace Mod::Debug::SentryBuster_Mannhattan
 	
 	ConVar cvar_enable("sig_debug_sentrybuster_mannhattan", "0", FCVAR_NOTIFY,
 		"Debug: investigate the specifics of the func_nav_prerequisite gate issues related to busters",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

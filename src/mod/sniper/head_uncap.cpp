@@ -26,8 +26,7 @@ namespace Mod::Sniper::Head_Uncap
 	
 	ConVar cvar_enable("sig_sniper_head_uncap", "0", FCVAR_NOTIFY,
 		"Mod: remove the 6-head cap on the Bazaar Bargain",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

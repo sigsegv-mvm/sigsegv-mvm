@@ -19,8 +19,7 @@ namespace Mod::Debug::NextBot_Input
 	
 	ConVar cvar_enable("sig_debug_nextbot_input", "0", FCVAR_NOTIFY,
 		"Debug: show INextBotPlayerInput information",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

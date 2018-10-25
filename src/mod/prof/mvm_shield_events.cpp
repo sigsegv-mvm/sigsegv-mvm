@@ -143,9 +143,8 @@ namespace Prof_MvM_Shield_Events
 	
 	ConVar cvar_enable("sig_prof_mvm_shield_events", "0", FCVAR_NOTIFY,
 		"Mod: profile excessive game events due to MvM medigun shield damage",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

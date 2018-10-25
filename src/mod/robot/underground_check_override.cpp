@@ -80,8 +80,7 @@ namespace Mod::Robot::Underground_Check_Override
 	
 	ConVar cvar_enable("sig_robot_underground_check_override", "0", FCVAR_NOTIFY,
 		"Mod: disable the faulty underground-detection logic in CTFBotMainAction::Update",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

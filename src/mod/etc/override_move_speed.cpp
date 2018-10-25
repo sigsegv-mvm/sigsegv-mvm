@@ -126,8 +126,7 @@ namespace Mod::Etc::Override_Move_Speed
 	
 	ConVar cvar_enable("sig_etc_override_speed_limit", "0", FCVAR_NOTIFY,
 		"Etc: override the 520 HU/s player move speed limit",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

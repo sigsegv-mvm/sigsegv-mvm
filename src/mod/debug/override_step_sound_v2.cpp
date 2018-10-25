@@ -99,9 +99,8 @@ namespace Mod::Debug::Override_Step_Sound
 	
 	ConVar cvar_enable("sig_debug_override_step_sound", "0", FCVAR_NOTIFY,
 		"Debug: investigate ways of overriding bot step sounds",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

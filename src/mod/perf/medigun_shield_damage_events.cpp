@@ -56,8 +56,7 @@ namespace Mod::Perf::Medigun_Shield_Damage_Events
 	
 	ConVar cvar_enable("sig_perf_medigun_shield_damage_events", "0", FCVAR_NOTIFY,
 		"Mod: prevent \"player_hurt\" and \"npc_hurt\" game events from firing due to medigun shield damage",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

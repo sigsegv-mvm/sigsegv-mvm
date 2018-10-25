@@ -64,9 +64,8 @@ namespace Mod::MvM::Disposable_Sentry_Health_Upgrades
 	
 	ConVar cvar_enable("sig_mvm_disposable_sentry_health_upgrades", "0", FCVAR_NOTIFY,
 		"Mod: make building health upgrades apply to disposable sentries",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

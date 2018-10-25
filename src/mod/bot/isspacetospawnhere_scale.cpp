@@ -177,8 +177,7 @@ namespace Mod::Bot::IsSpaceToSpawnHere_Scale
 	
 	ConVar cvar_enable("sig_bot_isspacetospawnhere_scale", "0", FCVAR_NOTIFY,
 		"Mod: make IsSpaceToSpawnHere take bots' model scale into account",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

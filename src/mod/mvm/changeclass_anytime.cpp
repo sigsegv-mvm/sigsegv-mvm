@@ -65,8 +65,7 @@ namespace Mod::MvM::ChangeClass_AnyTime
 	
 	ConVar cvar_enable("sig_mvm_changeclass_anytime", "0", FCVAR_NOTIFY,
 		"Mod: allow changing class during waves",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

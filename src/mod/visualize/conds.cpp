@@ -56,9 +56,8 @@ namespace Mod::Visualize::Conds
 	
 	ConVar cvar_enable("sig_visualize_conds", "0", FCVAR_NOTIFY,
 		"Visualization: draw information about active player conditions",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 
@@ -166,9 +165,8 @@ namespace Mod::Visualize::Conds_Client
 	
 	ConVar cvar_enable("sig_visualize_conds_client", "0", FCVAR_NOTIFY,
 		"Visualization: player conds (crappy client-side edition)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

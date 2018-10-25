@@ -71,8 +71,7 @@ namespace Mod::Pop::EventPopfile_Improvements
 	
 	ConVar cvar_enable("sig_pop_eventpopfile_improvements", "0", FCVAR_NOTIFY,
 		"Mod: make EventPopfile work regardless of holiday; set tf_forced_holiday based on EventPopfile; disable zombie souls for sentry busters",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

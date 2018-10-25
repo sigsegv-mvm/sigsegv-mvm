@@ -143,9 +143,8 @@ namespace Mod::Visualize::Minigun_Deflect
 	
 	ConVar cvar_enable("sig_visualize_minigun_deflect", "0", FCVAR_NOTIFY,
 		"Visualization: draw cylinder used for heavy's projectile deflection upgrade",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 	

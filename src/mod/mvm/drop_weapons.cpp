@@ -68,8 +68,7 @@ namespace Mod::MvM::Drop_Weapons
 	
 	ConVar cvar_enable("sig_mvm_drop_weapons", "0", FCVAR_NOTIFY,
 		"Mod: make MvM robots drop their weapon upon death (but not ammo packs)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

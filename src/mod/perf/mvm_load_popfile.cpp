@@ -35,9 +35,8 @@ namespace Mod::Perf::MvM_Load_Popfile
 	
 	ConVar cvar_enable("sig_perf_mvm_load_popfile", "0", FCVAR_NOTIFY,
 		"Mod: eliminate unnecessary duplication of parsing/init code during tf_mvm_popfile",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 #endif
 	

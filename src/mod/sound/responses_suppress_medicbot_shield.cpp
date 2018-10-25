@@ -29,8 +29,7 @@ namespace Mod::Sound::Suppress_MedicBot_Shield
 	
 	ConVar cvar_enable("sig_sound_suppress_medicbot_shield", "0", FCVAR_NOTIFY,
 		"Mod: suppress TLK_MEDIC_HEAL_SHIELD voice response when a bot activates the medigun shield",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

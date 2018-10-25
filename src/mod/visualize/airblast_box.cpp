@@ -62,8 +62,7 @@ namespace Mod::Visualize::Airblast_Box
 	
 	ConVar cvar_enable("sig_visualize_airblast_box", "0", FCVAR_NOTIFY,
 		"Visualization: draw box used for airblast deflection of projectiles",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

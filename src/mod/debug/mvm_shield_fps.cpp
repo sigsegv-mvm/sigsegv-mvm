@@ -144,9 +144,8 @@ namespace Debug_MvM_Shield_FPS
 	
 	ConVar cvar_enable("sig_debug_mvm_shield_fps", "0", FCVAR_NOTIFY,
 		"Debug: MvM projectile shield FPS issues",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

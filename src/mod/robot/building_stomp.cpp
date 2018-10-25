@@ -99,9 +99,8 @@ namespace Mod::Robot::Building_Stomp
 	
 	ConVar cvar_enable("sig_robot_building_stomp", "0", FCVAR_NOTIFY,
 		"Mod: replace robots' stuck-with-building-stomp ability with something less stupid",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

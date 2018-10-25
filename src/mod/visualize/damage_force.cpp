@@ -33,8 +33,7 @@ namespace Mod::Visualize::Damage_Force
 	
 	ConVar cvar_enable("sig_visualize_damage_force", "0", FCVAR_NOTIFY,
 		"Visualization: draw force vector from damage events",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

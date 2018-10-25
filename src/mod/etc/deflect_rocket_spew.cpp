@@ -52,8 +52,7 @@ namespace Mod::Etc::Deflect_Rocket_Spew
 	
 	ConVar cvar_enable("sig_etc_deflect_rocket_spew", "0", FCVAR_NOTIFY,
 		"Mod: intentionally cause multiple rocket breakmodels to spew forth when projectile deflection occurs",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

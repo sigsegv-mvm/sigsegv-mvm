@@ -33,8 +33,7 @@ namespace Mod::Sound::Tele_Activate
 	
 	ConVar cvar_enable("sig_sound_tele_activate", "0", FCVAR_NOTIFY,
 		"Mod: enable the engiebot teleporter activation sound effect",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -68,8 +68,7 @@ namespace Mod::Debug::Func_Nav_Cost_Tags
 	
 	ConVar cvar_enable("sig_debug_func_nav_cost_tags", "0", FCVAR_NOTIFY,
 		"Debug: show information for func_nav_cost tag matching",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

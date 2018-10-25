@@ -63,8 +63,7 @@ namespace Mod::Credits::Spawn_AutoCollect
 	
 	ConVar cvar_enable("sig_credits_spawn_autocollect", "0", FCVAR_NOTIFY,
 		"Mod: auto-collect credits that land in the bots' spawn area",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

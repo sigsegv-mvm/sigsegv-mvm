@@ -55,8 +55,7 @@ namespace Mod::MvM::MedigunShield_Damage
 	
 	ConVar cvar_enable("sig_mvm_medigunshield_damage", "0", FCVAR_NOTIFY,
 		"Mod: enable damage and stun for robots' medigun shields",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -424,9 +424,8 @@ namespace Mod::Debug::Proj_Energy_Ball
 	
 	ConVar cvar_enable("sig_debug_proj_energy_ball", "0", FCVAR_NOTIFY,
 		"Debug: diagnose why Cow Mangler projectiles can damage enemies through walls in some cases",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

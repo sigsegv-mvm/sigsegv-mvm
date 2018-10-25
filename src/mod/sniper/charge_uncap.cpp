@@ -175,8 +175,7 @@ namespace Mod::Sniper::Charge_Uncap
 	
 	ConVar cvar_enable("sig_sniper_charge_uncap", "0", FCVAR_NOTIFY,
 		"Mod: remove the 200 percent upper limit on sniper rifle charge rate",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

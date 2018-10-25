@@ -126,8 +126,7 @@ namespace Mod::Anim::EstimateAbsVelocity_MoveParent_Fix
 	
 	ConVar cvar_enable("sig_anim_estimateabsvelocity_moveparent_fix", "0", FCVAR_NOTIFY,
 		"Mod: fix client/server animation de-sync (move speed, and therefore sequence) when players stand on moving entities (e.g. func_conveyor)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

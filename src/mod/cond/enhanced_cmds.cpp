@@ -75,9 +75,8 @@ namespace Mod::Cond::Enhanced_Cmds
 	
 	ConVar cvar_enable("sig_cond_enhanced_cmds", "0", FCVAR_NOTIFY,
 		"Mod: enhance addcond and removecond",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

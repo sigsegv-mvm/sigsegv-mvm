@@ -128,8 +128,7 @@ namespace Mod::Debug::Deflect_Angle_v2
 	
 	ConVar cvar_enable("sig_debug_deflect_angle_v2", "0", FCVAR_NOTIFY,
 		"Debug: projectile deflection angle bug (post-MYM-update)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

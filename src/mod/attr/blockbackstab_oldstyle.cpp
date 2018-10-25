@@ -153,8 +153,7 @@ namespace Mod::Attr::BlockBackstab_OldStyle
 	
 	ConVar cvar_enable("sig_attr_blockbackstab_oldstyle", "0", FCVAR_NOTIFY,
 		"Mod: make attribute \"set_blockbackstab_once\" on non-Razorback items behave as it did before the Jungle Inferno update (i.e. remove the item when stabbed)",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

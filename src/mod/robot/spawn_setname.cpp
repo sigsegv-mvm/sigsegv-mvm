@@ -39,8 +39,7 @@ namespace Mod::Robot::Spawn_SetName
 	
 	ConVar cvar_enable("sig_robot_spawn_setname", "0", FCVAR_NOTIFY,
 		"Mod: use SetPlayerName instead of cl_name in CTFBotSpawner::Spawn",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

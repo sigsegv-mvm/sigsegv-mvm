@@ -105,8 +105,7 @@ namespace Mod::Debug::Heal_Debuff
 	
 	ConVar cvar_enable("sig_debug_heal_debuff", "0", FCVAR_NOTIFY,
 		"Debug: figure out why TF_COND_HEALING_DEBUFF is so screwed up",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

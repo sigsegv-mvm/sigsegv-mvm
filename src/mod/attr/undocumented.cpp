@@ -42,8 +42,7 @@ namespace Mod::Attr::Undocumented
 	
 	ConVar cvar_enable("sig_attr_undocumented", "0", FCVAR_NOTIFY,
 		"Mod: enable undocumented attribute classes",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

@@ -65,8 +65,7 @@ namespace Mod::Bot::Medieval_NonMelee
 	
 	ConVar cvar_enable("sig_bot_medieval_nonmelee", "0", FCVAR_NOTIFY,
 		"Mod: allow bots in Medieval Mode to use weapons in non-melee slots",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

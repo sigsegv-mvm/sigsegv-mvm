@@ -35,8 +35,7 @@ namespace Mod::Sound::Suppress_Giant_SentryBuster
 	
 	ConVar cvar_enable("sig_sound_suppress_giant_sentrybuster", "0", FCVAR_NOTIFY,
 		"Mod: suppress TLK_MVM_GIANT_CALLOUT voice response when a sentry buster spawns",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

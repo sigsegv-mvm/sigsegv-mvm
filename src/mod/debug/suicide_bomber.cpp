@@ -301,9 +301,8 @@ namespace Mod::Debug::Suicide_Bomber
 	
 	ConVar cvar_enable("sig_debug_suicide_bomber", "0", FCVAR_NOTIFY,
 		"Debug: enable debug statements for CTFBotMissionSuicideBomber",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
 

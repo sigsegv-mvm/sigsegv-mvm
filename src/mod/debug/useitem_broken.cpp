@@ -332,8 +332,7 @@ namespace Mod::Debug::UseItem_Broken
 	
 	ConVar cvar_enable("sig_debug_useitem_broken", "0", FCVAR_NOTIFY,
 		"Debug: brokenness of CTFBotUseItem since Tough Break update",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

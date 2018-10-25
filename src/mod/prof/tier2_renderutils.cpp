@@ -112,8 +112,7 @@ namespace Mod::Prof::Tier2_RenderUtils
 	
 	ConVar cvar_enable("sig_prof_tier2_renderutils", "0", FCVAR_NOTIFY,
 		"Mod: add some hooks to tier2 renderutils functions so we can do MSVC CPU profiling without symbols",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

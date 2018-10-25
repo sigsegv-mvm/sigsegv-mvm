@@ -51,8 +51,7 @@ namespace Mod::Etc::CrayAirblast_ConVar_NoCheat
 	
 	ConVar cvar_enable("sig_etc_crayairblast_convar_nocheat", "0", FCVAR_NOTIFY,
 		"Mod: remove the FCVAR_CHEAT flag from the Cray Airblast enable and tuning convars",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

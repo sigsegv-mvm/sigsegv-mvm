@@ -384,9 +384,8 @@ namespace Mod::Debug::Bottle_Break
 	
 	ConVar cvar_enable("sig_debug_bottle_break", "0", FCVAR_NOTIFY,
 		"Debug: investigate tf_weapon_bottle bodygroup issues caused by c_models conversion",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

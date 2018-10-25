@@ -31,8 +31,7 @@ namespace Mod::Etc::Limp_Projectiles
 	
 	ConVar cvar_enable("sig_etc_limp_projectiles", "0", FCVAR_NOTIFY,
 		"Etc: make projectiles come out in a disappointingly limp fashion",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

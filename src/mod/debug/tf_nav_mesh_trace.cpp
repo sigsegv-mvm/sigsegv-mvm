@@ -40,8 +40,7 @@ namespace Mod::Debug::TF_Nav_Mesh_Trace
 	
 	ConVar cvar_enable("sig_debug_tf_nav_mesh_trace", "0", FCVAR_NOTIFY,
 		"Debug: trace TF Nav Mesh calls",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

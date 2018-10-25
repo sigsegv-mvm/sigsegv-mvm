@@ -12,7 +12,7 @@ namespace Mod::MvM::Robot_Limit
 	ConVar cvar_override("sig_mvm_robot_limit_override", "22", FCVAR_NOTIFY,
 		"Mod: override the max number of MvM robots that are allowed to be spawned at once (normally 22)",
 		true, 0, false, 0,
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
 			/* ensure that slots are cleared up when this convar is decreased */
 			CUtlVector<CTFPlayer *> mvm_bots;
 			CPopulationManager::CollectMvMBots(&mvm_bots);
@@ -171,8 +171,7 @@ namespace Mod::MvM::Robot_Limit
 	
 	ConVar cvar_enable("sig_mvm_robot_limit", "0", FCVAR_NOTIFY,
 		"Mod: modify/enhance/fix some population manager code related to the 22-robot limit in MvM",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

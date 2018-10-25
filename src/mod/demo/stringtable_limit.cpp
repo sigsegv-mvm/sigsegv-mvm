@@ -150,8 +150,7 @@ namespace Mod::Demo::StringTable_Limit
 	
 	ConVar cvar_enable("sig_demo_stringtable_limit", "0", FCVAR_NOTIFY,
 		"Mod: override 512KB string table limit in demos",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

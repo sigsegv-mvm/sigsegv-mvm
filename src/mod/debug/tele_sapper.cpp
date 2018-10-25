@@ -239,9 +239,8 @@ namespace Mod::Debug::Tele_Sapper
 	
 	ConVar cvar_enable("sig_debug_tele_sapper", "0", FCVAR_NOTIFY,
 		"Debug: investigate why spamming sappers and wrenching can result in a sapper on one tele but not the other",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	

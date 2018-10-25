@@ -50,8 +50,7 @@ namespace Mod::MvM::UpgradeStation_Regen_Improved
 	
 	ConVar cvar_enable("sig_mvm_upgradestation_regen_improved", "0", FCVAR_NOTIFY,
 		"Mod: fix annoying aspects of the health+ammo regen provided by the upgrade station",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

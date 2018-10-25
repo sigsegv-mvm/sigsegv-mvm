@@ -148,8 +148,7 @@ namespace Mod::Prof::Debug_Overlay
 	
 	ConVar cvar_enable("sig_prof_debug_overlay", "0", FCVAR_NOTIFY,
 		"Mod: profile debug overlay rendering",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

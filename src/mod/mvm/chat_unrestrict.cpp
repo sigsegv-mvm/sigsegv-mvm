@@ -33,8 +33,7 @@ namespace Mod::MvM::Chat_Unrestrict
 	
 	ConVar cvar_enable("sig_mvm_chat_unrestrict", "0", FCVAR_NOTIFY,
 		"Mod: allow players on any team and with any life state to chat with each other",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

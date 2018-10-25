@@ -102,8 +102,7 @@ namespace Mod::Etc::MM_Spoof
 	
 	ConVar cvar_enable("sig_etc_mm_spoof", "0", FCVAR_NOTIFY,
 		"Mod: spoof a server into using Valve's matchmaking gamemodes",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }

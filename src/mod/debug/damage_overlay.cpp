@@ -97,8 +97,7 @@ namespace Mod::Debug::Damage_Overlay
 	
 	ConVar cvar_enable("sig_debug_damage_overlay", "0", FCVAR_NOTIFY,
 		"Debug: draw some overlays to show damage information",
-		[](IConVar *pConVar, const char *pOldValue, float flOldValue) {
-			ConVarRef var(pConVar);
-			s_Mod.Toggle(var.GetBool());
+		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
+			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 }
