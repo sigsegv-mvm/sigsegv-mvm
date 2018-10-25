@@ -12,17 +12,16 @@ constexpr long double operator"" _deg(long double deg)        { return deg * (M_
 constexpr long double operator"" _deg(unsigned long long deg) { return (long double)deg * (M_PI / 180.0); }
 
 
-template<typename T>
+template<typename T,
+	typename U = std::remove_reference_t<T>,
+	typename = std::enable_if_t<std::is_array_v<U>>>
 constexpr size_t countof()
 {
-	using U = std::remove_reference_t<T>;
+	constexpr size_t extent = std::extent_v<U>;
+	static_assert(extent > 0, "zero- or unknown-size array");
 	
-	static_assert(std::is_array_v<U>,   "countof() requires an array argument");
-	static_assert(std::extent_v<U> > 0, "zero- or unknown-size array");
-	
-	return std::extent_v<U>;
+	return extent;
 }
-#define countof(x) countof<decltype(x)>()
 
 
 template<typename T, T BASE = 10>
