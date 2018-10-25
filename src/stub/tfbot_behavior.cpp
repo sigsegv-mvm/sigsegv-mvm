@@ -37,7 +37,7 @@ struct IVerify_CTFBotSeekAndDestroy : public IVerify
 
 
 template<typename T>
-uint32_t FindAdditionalVTable(const void **vt, ptrdiff_t diff)
+static uint32_t FindAdditionalVTable(const void **vt, ptrdiff_t diff)
 {
 	using VTScanner = CBasicScanner<ScanDir::FORWARD, ScanResults::ALL, 0x4>;
 	
