@@ -66,21 +66,22 @@ bool IAddr_DataDescMap::FindAddrWin(uintptr_t& addr) const
 	}
 	
 	CScan<ClassNameRefScanner> scan1(CLibSegBounds(this->GetLibrary(), Segment::DATA), p_str);
-	std::vector<GetDataDescMapScanner *> scanners;
+	std::vector<GetDataDescMapScanner> scanners;
 	for (auto match : scan1.Matches()) {
 		GetDataDescMap gddm;
 		gddm.buf[0x00] = 0xb8; // mov eax,[????????]
 		*(uint32_t *)(&gddm.buf[0x01]) = (uint32_t)match - offsetof(datamap_t, dataClassName);
 		gddm.buf[0x05] = 0xc3; // ret
 		
-		scanners.push_back(new GetDataDescMapScanner(CLibSegBounds(this->GetLibrary(), Segment::TEXT), gddm));
+		scanners.emplace_back(CLibSegBounds(this->GetLibrary(), Segment::TEXT), gddm);
 	}
 	
-	CMultiScan<GetDataDescMapScanner> scan2(scanners);
+	CMultiScan scan2(scanners);
 	std::vector<const void *> results;
-	for (auto scanner : scanners) {
-		if (scanner->ExactlyOneMatch()) {
-			results.push_back(scanner->FirstMatch());
+	for (const auto& scanner : scanners)
+	{
+		if (scanner.ExactlyOneMatch()) {
+			results.push_back(scanner.FirstMatch());
 		}
 	}
 	if (results.size() != 1) {

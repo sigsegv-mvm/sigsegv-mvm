@@ -1,4 +1,5 @@
 #include "mem/scan.h"
+#include "library.h"
 
 
 CLibBounds::CLibBounds(Library lib)
@@ -6,10 +7,11 @@ CLibBounds::CLibBounds(Library lib)
 	if (LibMgr::HaveLib(lib)) {
 		const LibInfo& lib_info = LibMgr::GetInfo(lib);
 		
-		this->m_AddrLow  = reinterpret_cast<const void *>(lib_info.AddrBegin());
-		this->m_AddrHigh = reinterpret_cast<const void *>(lib_info.AddrEnd());
+		this->m_Lower = reinterpret_cast<const uint8_t *>(lib_info.AddrBegin());
+		this->m_Upper = reinterpret_cast<const uint8_t *>(lib_info.AddrEnd());
 	}
 }
+
 
 CLibSegBounds::CLibSegBounds(Library lib, Segment seg)
 {
@@ -19,10 +21,95 @@ CLibSegBounds::CLibSegBounds(Library lib, Segment seg)
 		if (lib_info.HaveSeg(seg)) {
 			const SegInfo& seg_info = lib_info.GetSeg(seg);
 			
-			this->m_AddrLow  = reinterpret_cast<const void *>(seg_info.AddrBegin());
-			this->m_AddrHigh = reinterpret_cast<const void *>(seg_info.AddrEnd());
+			this->m_Lower = reinterpret_cast<const uint8_t *>(seg_info.AddrBegin());
+			this->m_Upper = reinterpret_cast<const uint8_t *>(seg_info.AddrEnd());
 		}
 	}
+}
+
+
+void IScan::RunScan(IScanner *scanner)
+{
+	ScanDir dir       = scanner->GetDir();
+	ScanResults rtype = scanner->GetResultsType();
+	int align         = scanner->GetAlign();
+	
+	bool fwd = (dir == ScanDir::FORWARD);
+	
+	auto [p_low, p_high] = scanner->GetBounds();
+	
+	p_high -= scanner->GetLen();
+	
+	const uint8_t *ptr = (fwd ? p_low  : p_high - align);
+	const uint8_t *end = (fwd ? p_high : p_low  - align);
+	
+	uintptr_t rem = (uintptr_t)ptr % align;
+	if (rem != 0) {
+		if (fwd) {
+			ptr += (align - rem);
+		} else {
+			ptr -= rem;
+		}
+	}
+	
+	int incr = (fwd ? align : -align);
+	
+	while (fwd ? (ptr <= end) : (ptr >= end)) {
+		bool matched = scanner->CheckOne((const void *)ptr);
+		
+		if (rtype == ScanResults::FIRST && matched) {
+			break;
+		}
+		
+		ptr += incr;
+	}
+}
+
+
+void CMultiScan::RunMultiScan()
+{
+//	DevMsg("CMultiScan: BEGIN\n");
+	
+	unsigned int n_threads = Max(1U, std::thread::hardware_concurrency());
+	n_threads = Min(n_threads, this->m_Scanners.size());
+	
+	std::vector<std::thread> threads;
+	for (unsigned int i = 0; i < n_threads; ++i) {
+//		DevMsg("CMultiScan: SPAWN T#%d\n", i);
+		threads.emplace_back(&CMultiScan::ThreadWorker, this, i);
+	}
+	
+	for (unsigned int i = 0; i < n_threads; ++i) {
+		threads[i].join();
+//		DevMsg("CMultiScan: JOIN  T#%d\n", i);
+	}
+	
+//	DevMsg("CMultiScan: END\n");
+}
+
+void CMultiScan::ThreadWorker(int id)
+{
+//	DevMsg("CMultiScan: W#%d BEGIN\n", id);
+	
+	IScanner *scanner;
+	while ((scanner = this->GetTask()) != nullptr) {
+//		DevMsg("CMultiScan: W#%d SCAN BEGIN %08x\n", id, (uintptr_t)scanner);
+		IScan::RunScan(scanner);
+//		DevMsg("CMultiScan: W#%d SCAN END   %08x\n", id, (uintptr_t)scanner);
+	}
+	
+//	DevMsg("CMultiScan: W#%d END\n", id);
+}
+
+IScanner *CMultiScan::GetTask()
+{
+	std::lock_guard<std::mutex> lock(this->m_Mutex);
+	
+	if (this->m_NextIndex >= this->m_Scanners.size()) {
+		return nullptr;
+	}
+	
+	return this->m_Scanners[this->m_NextIndex++];
 }
 
 

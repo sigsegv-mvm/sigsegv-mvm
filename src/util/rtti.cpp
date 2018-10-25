@@ -172,28 +172,26 @@ namespace RTTI
 			
 			Prof::Begin();
 			std::unordered_map<COLScanner *, std::string> scannermap_COL;
-			std::vector<COLScanner *> scanners_COL;
+			std::vector<COLScanner> scanners_COL;
 			for (const auto& pair : s_RTTI) {
 				auto name = pair.first;
 				auto p_TD = pair.second;
 				
-				auto scanner = new COLScanner(CLibSegBounds(lib, Segment::RODATA), p_TD);
-				
-				scanners_COL.push_back(scanner);
-				scannermap_COL[scanner] = name;
+				auto& scanner = scanners_COL.emplace_back(CLibSegBounds(lib, Segment::RODATA), p_TD);
+				scannermap_COL[&scanner] = name;
 			}
 			Prof::End("COL pre");
 			Prof::Begin();
-			CMultiScan<COLScanner> scan_COL(scanners_COL);
+			CMultiScan scan_COL(scanners_COL);
 			Prof::End("COL scan");
 			
 			Prof::Begin();
 			std::unordered_map<std::string, const __RTTI_CompleteObjectLocator *> results_COL;
-			for (auto scanner : scanners_COL) {
-				auto& name = scannermap_COL[scanner];
+			for (const auto& scanner : scanners_COL) {
+				auto& name = scannermap_COL[&scanner];
 				
 				std::vector<const __RTTI_CompleteObjectLocator *> matches;
-				for (auto match : scanner->Matches()) {
+				for (auto match : scanner.Matches()) {
 					auto p_COL = (const __RTTI_CompleteObjectLocator *)((uintptr_t)match - offsetof(__RTTI_CompleteObjectLocator, pTypeDescriptor));
 					
 					if (p_COL->signature == 0x00000000 && p_COL->offset == 0x00000000 && p_COL->cdOffset == 0x00000000) {
@@ -202,7 +200,7 @@ namespace RTTI
 				}
 				
 				if (matches.size() != 1) {
-				//	DevMsg("RTTI::PreLoad: %u TD refs for \"%s\"\n", scanner->Matches().size(), name.c_str());
+				//	DevMsg("RTTI::PreLoad: %u TD refs for \"%s\"\n", scanner.Matches().size(), name.c_str());
 					continue;
 				}
 				
@@ -214,31 +212,29 @@ namespace RTTI
 			
 			Prof::Begin();
 			std::unordered_map<VTScanner *, std::string> scannermap_VT;
-			std::vector<VTScanner *> scanners_VT;
+			std::vector<VTScanner> scanners_VT;
 			for (const auto& pair : results_COL) {
 				auto name  = pair.first;
 				auto p_COL = pair.second;
 				
-				auto scanner = new VTScanner(CLibSegBounds(lib, Segment::RODATA), p_COL);
-				
-				scanners_VT.push_back(scanner);
-				scannermap_VT[scanner] = name;
+				auto& scanner = scanners_VT.emplace_back(CLibSegBounds(lib, Segment::RODATA), p_COL);
+				scannermap_VT[&scanner] = name;
 			}
 			Prof::End("VT pre");
 			Prof::Begin();
-			CMultiScan<VTScanner> scan_VT(scanners_VT);
+			CMultiScan scan_VT(scanners_VT);
 			Prof::End("VT scan");
 			
 			Prof::Begin();
-			for (auto scanner : scanners_VT) {
-				auto& name = scannermap_VT[scanner];
+			for (const auto& scanner : scanners_VT) {
+				auto& name = scannermap_VT[&scanner];
 				
-				if (!scanner->ExactlyOneMatch()) {
-				//	DevMsg("RTTI::PreLoad: %u COL refs for \"%s\"\n", scanner->Matches().size(), name.c_str());
+				if (!scanner.ExactlyOneMatch()) {
+				//	DevMsg("RTTI::PreLoad: %u COL refs for \"%s\"\n", scanner.Matches().size(), name.c_str());
 					continue;
 				}
 				
-				s_VT[name] = (const void **)((uintptr_t)scanner->FirstMatch() + 0x4);
+				s_VT[name] = (const void **)((uintptr_t)scanner.FirstMatch() + 0x4);
 			//	DevMsg("\"%s\" VT @ %08x\n", name.c_str(), (uintptr_t)s_VT[name]);
 			}
 			Prof::End("VT post");

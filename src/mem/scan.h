@@ -2,8 +2,12 @@
 #define _INCLUDE_SIGSEGV_MEM_SCAN_H_
 
 
-#include "library.h"
 #include "util/buf.h"
+
+
+//#include "library.h"
+enum class Library : int;
+enum class Segment : int;
 
 
 enum class ScanDir : int
@@ -24,11 +28,16 @@ enum class ScanResults : int
 class IBounds
 {
 public:
-	virtual const void *GetLowerBound() const = 0;
-	virtual const void *GetUpperBound() const = 0;
+	std::pair<const uint8_t *, const uint8_t *> Get() const { return std::make_pair(this->m_Lower, this->m_Upper); }
 	
 protected:
-	IBounds() {}
+	IBounds() = default;
+	IBounds(const void *lower, const void *upper) :
+		m_Lower(reinterpret_cast<const uint8_t *>(lower)),
+		m_Upper(reinterpret_cast<const uint8_t *>(upper)) {}
+	
+	const uint8_t *m_Lower = nullptr;
+	const uint8_t *m_Upper = nullptr;
 };
 
 
@@ -36,20 +45,7 @@ class CAddrAddrBounds : public IBounds
 {
 public:
 	CAddrAddrBounds(const void *addr1, const void *addr2) :
-		m_Addr1(addr1), m_Addr2(addr2) {}
-	
-	virtual const void *GetLowerBound() const override
-	{
-		return Min(this->m_Addr1, this->m_Addr2);
-	}
-	virtual const void *GetUpperBound() const override
-	{
-		return Max(this->m_Addr1, this->m_Addr2);
-	}
-	
-private:
-	const void *m_Addr1;
-	const void *m_Addr2;
+		IBounds(Min(addr1, addr2), Max(addr1, addr2)) {}
 };
 
 
@@ -65,13 +61,6 @@ class CLibBounds : public IBounds
 {
 public:
 	CLibBounds(Library lib);
-	
-	virtual const void *GetLowerBound() const override { return this->m_AddrLow; }
-	virtual const void *GetUpperBound() const override { return this->m_AddrHigh; }
-	
-private:
-	const void *m_AddrLow  = nullptr;
-	const void *m_AddrHigh = nullptr;
 };
 
 
@@ -79,43 +68,39 @@ class CLibSegBounds : public IBounds
 {
 public:
 	CLibSegBounds(Library lib, Segment seg);
-	
-	virtual const void *GetLowerBound() const override { return this->m_AddrLow; }
-	virtual const void *GetUpperBound() const override { return this->m_AddrHigh; }
-	
-private:
-	const void *m_AddrLow  = nullptr;
-	const void *m_AddrHigh = nullptr;
 };
 
 
 // SCANNERS ====================================================================
 
-template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
 class IScanner
 {
 public:
-	virtual ~IScanner() {}
+	virtual ~IScanner() = default;
 	
-	static constexpr ScanDir GetDir()             { return DIR; }
-	static constexpr ScanResults GetResultsType() { return RTYPE; }
-	static constexpr int GetAlign()               { return ALIGN; }
-	
-	const IBounds& GetBounds() const { return this->m_Bounds; }
-	int GetLen() const               { return this->m_Len; }
+	ScanDir GetDir() const             { return this->m_Dir; }
+	ScanResults GetResultsType() const { return this->m_RType; }
+	int GetAlign() const               { return this->m_Align; }
+	auto GetBounds() const             { return this->m_Bounds.Get(); }
+	int GetLen() const                 { return this->m_Len; }
 	
 	const std::vector<const void *>& Matches() const { return this->m_Matches; }
 	const void *FirstMatch() const                   { return this->m_Matches[0]; }
 	bool ExactlyOneMatch() const                     { return (this->m_Matches.size() == 1); }
 	
+	virtual bool CheckOne(const void *where) = 0;
+	
 protected:
-	IScanner(const IBounds& bounds, int len) :
-		m_Bounds(bounds), m_Len(len) {}
+	IScanner(ScanDir dir, ScanResults rtype, int align, const IBounds& bounds, int len) :
+		m_Dir(dir), m_RType(rtype), m_Align(align), m_Bounds(bounds), m_Len(len) {}
 	
 	void AddMatch(const void *match) { this->m_Matches.push_back(match); }
 	
 private:
-	const IBounds& m_Bounds;
+	ScanDir m_Dir;
+	ScanResults m_RType;
+	int m_Align;
+	IBounds m_Bounds;
 	int m_Len;
 	
 	std::vector<const void *> m_Matches;
@@ -123,11 +108,11 @@ private:
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
-class CBasicScanner : public IScanner<DIR, RTYPE, ALIGN>
+class CBasicScanner : public IScanner
 {
 public:
 	CBasicScanner(const IBounds& bounds, const void *seek, int len) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, len)
+		IScanner(DIR, RTYPE, ALIGN, bounds, len)
 	{
 		this->m_Seek = new uint8_t[len];
 		memcpy(this->m_Seek, seek, len);
@@ -137,7 +122,7 @@ public:
 		delete[] this->m_Seek;
 	}
 	
-	bool CheckOne(const void *where);
+	virtual bool CheckOne(const void *where) override;
 	
 private:
 	uint8_t *m_Seek;
@@ -161,7 +146,6 @@ class CTypeScanner : public CBasicScanner<DIR, RTYPE, ALIGN>
 public:
 	CTypeScanner(const IBounds& bounds, const T& seek) :
 		CBasicScanner<DIR, RTYPE, ALIGN>(bounds, reinterpret_cast<const void *>(&seek), sizeof(T)) {}
-	virtual ~CTypeScanner() {}
 };
 
 
@@ -171,18 +155,17 @@ class CAlignedTypeScanner : public CTypeScanner<DIR, RTYPE, T, sizeof(T)>
 public:
 	CAlignedTypeScanner(const IBounds& bounds, const T& seek) :
 		CTypeScanner<DIR, RTYPE, T, sizeof(T)>(bounds, seek) {}
-	virtual ~CAlignedTypeScanner() {}
 };
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
-class CStringScanner : public IScanner<DIR, RTYPE, ALIGN>
+class CStringScanner : public IScanner
 {
 public:
 	CStringScanner(const IBounds& bounds, const char *str) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, strlen(str) + 1), m_Str(str) {}
+		IScanner(DIR, RTYPE, ALIGN, bounds, strlen(str) + 1), m_Str(str) {}
 	
-	bool CheckOne(const void *where);
+	virtual bool CheckOne(const void *where) override;
 	
 private:
 	const char *m_Str;
@@ -201,13 +184,13 @@ inline bool CStringScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
-class CStringPrefixScanner : public IScanner<DIR, RTYPE, ALIGN>
+class CStringPrefixScanner : public IScanner
 {
 public:
 	CStringPrefixScanner(const IBounds& bounds, const char *str) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, strlen(str) + 1), m_Str(str) {}
+		IScanner(DIR, RTYPE, ALIGN, bounds, strlen(str) + 1), m_Str(str) {}
 	
-	bool CheckOne(const void *where);
+	virtual bool CheckOne(const void *where) override;
 	
 private:
 	const char *m_Str;
@@ -226,16 +209,16 @@ inline bool CStringPrefixScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
-class CMaskedScanner : public IScanner<DIR, RTYPE, ALIGN>
+class CMaskedScanner : public IScanner
 {
 public:
 	CMaskedScanner(const IBounds& bounds, const ByteBuf& seek, const ByteBuf& mask) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, seek.GetSize()), m_Seek(seek), m_Mask(mask)
+		IScanner(DIR, RTYPE, ALIGN, bounds, seek.GetSize()), m_Seek(seek), m_Mask(mask)
 	{
 		assert(this->m_Seek.GetSize() == this->m_Mask.GetSize());
 	}
 	
-	bool CheckOne(const void *where);
+	virtual bool CheckOne(const void *where) override;
 	
 private:
 	const ByteBuf& m_Seek;
@@ -263,13 +246,13 @@ inline bool CMaskedScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 
 
 template<ScanDir DIR, ScanResults RTYPE, int ALIGN>
-class CCallScanner : public IScanner<DIR, RTYPE, ALIGN>
+class CCallScanner : public IScanner
 {
 public:
 	CCallScanner(const IBounds& bounds, uint32_t target) :
-		IScanner<DIR, RTYPE, ALIGN>(bounds, sizeof(target)), m_Target(target) {}
+		IScanner(DIR, RTYPE, ALIGN, bounds, sizeof(target)), m_Target(target) {}
 	
-	bool CheckOne(const void *where);
+	virtual bool CheckOne(const void *where) override;
 	
 private:
 	const uint32_t m_Target;
@@ -295,169 +278,75 @@ inline bool CCallScanner<DIR, RTYPE, ALIGN>::CheckOne(const void *where)
 
 // SCANS =======================================================================
 
-template<class SCANNER>
-class CScan
+class IScan
 {
-public:
-	CScan(SCANNER *scanner) :
-		m_Scanner(scanner)
-	{
-		this->DoScan();
-	}
-	template<typename... ARGS>
-	CScan(ARGS&&... args)
-	{
-		this->m_Scanner = new SCANNER(std::forward<ARGS>(args)...);
-		this->DoScan();
-	}
-	~CScan()
-	{
-		delete this->m_Scanner;
-	}
-	
-	void DoScan();
-	
-	const std::vector<const void *>& Matches() const { return this->m_Scanner->Matches(); }
-	const void *FirstMatch() const                   { return this->m_Scanner->FirstMatch(); }
-	bool ExactlyOneMatch() const                     { return this->m_Scanner->ExactlyOneMatch(); }
-	
-private:
-	SCANNER *m_Scanner = nullptr;
+protected:
+	static void RunScan(IScanner *scanner);
 };
 
+
 template<class SCANNER>
-inline void CScan<SCANNER>::DoScan()
+class CScan : public IScan
 {
-	SCANNER *scanner = this->m_Scanner;
-	
-	constexpr ScanDir DIR       = SCANNER::GetDir();
-	constexpr ScanResults RTYPE = SCANNER::GetResultsType();
-	constexpr int ALIGN         = SCANNER::GetAlign();
-	
-	constexpr bool FWD = (DIR == ScanDir::FORWARD);
-	
-	const uint8_t *p_low  = (const uint8_t *)scanner->GetBounds().GetLowerBound();
-	const uint8_t *p_high = (const uint8_t *)scanner->GetBounds().GetUpperBound();
-	
-	p_high -= scanner->GetLen();
-	
-	const uint8_t *ptr = (FWD ? p_low : p_high - ALIGN);
-	const uint8_t *end = (FWD ? p_high : p_low - ALIGN);
-	
-	uintptr_t rem = (uintptr_t)ptr % ALIGN;
-	if (rem != 0) {
-		if (FWD) {
-			ptr += (ALIGN - rem);
-		} else {
-			ptr -= rem;
-		}
+public:
+	CScan(SCANNER&& scanner) : m_Scanner(scanner)
+	{
+		RunScan(&this->m_Scanner);
+	}
+	template<typename... ARGS>
+	CScan(ARGS&&... args) : m_Scanner(std::forward<ARGS>(args)...)
+	{
+		RunScan(&this->m_Scanner);
 	}
 	
-	constexpr int INCR = (FWD ? ALIGN : -ALIGN);
+	const std::vector<const void *>& Matches() const { return this->m_Scanner.Matches(); }
+	const void *FirstMatch() const                   { return this->m_Scanner.FirstMatch(); }
+	bool ExactlyOneMatch() const                     { return this->m_Scanner.ExactlyOneMatch(); }
 	
-	while (FWD ? (ptr <= end) : (ptr >= end)) {
-		bool matched = scanner->CheckOne((const void *)ptr);
-		
-		if (RTYPE == ScanResults::FIRST && matched) {
-			break;
-		}
-		
-		ptr += INCR;
-	}
-}
+private:
+	SCANNER m_Scanner;
+};
 
 
 // TODO: make CMultiScan threads globally shared/persistent instead of creating/deleting
 // TODO: make heterogeneous CMultiScans possible by using RTTI
 
-template<class SCANNER>
-class CMultiScan
+class CMultiScan : public IScan
 {
 public:
-	CMultiScan(const std::vector<SCANNER *>& scanners)
+	template<typename CONTAINER, typename SCANNER>
+	CMultiScan(const CONTAINER& scanners)
 	{
-		for (auto scanner : scanners) {
+		for (SCANNER& scanner : scanners) {
+			this->m_Scanners.push_back(&scanner);
+		}
+		
+		this->RunMultiScan();
+	}
+	template<typename... ARGS>
+	CMultiScan(ARGS&&... scanners)
+	{
+		for (auto scanner : { (IScanner *)&scanners... }) {
 			this->m_Scanners.push_back(scanner);
 		}
 		
-		this->DoScans();
+		this->RunMultiScan();
 	}
+	
+	const std::vector<const void *>& Matches(size_t idx) const { return this->m_Scanners[idx]->Matches(); }
+	const void *FirstMatch(size_t idx) const                   { return this->m_Scanners[idx]->FirstMatch(); }
+	bool ExactlyOneMatch(size_t idx) const                     { return this->m_Scanners[idx]->ExactlyOneMatch(); }
 	
 private:
-	void DoScans();
+	void RunMultiScan();
 	
-	void Worker(int id);
-	SCANNER *GetTask();
-	void SubmitTask(CScan<SCANNER> *result);
+	void ThreadWorker(int id);
+	IScanner *GetTask();
 	
-	/* tasks in */
-	std::mutex m_MutexIn;
-	std::list<SCANNER *> m_Scanners;
-	
-	/* tasks out */
-	std::mutex m_MutexOut;
-	std::vector<std::unique_ptr<CScan<SCANNER>>> m_Scans;
+	std::mutex m_Mutex;
+	std::vector<IScanner *> m_Scanners;
+	size_t m_NextIndex = 0;
 };
-
-template<class SCANNER>
-inline void CMultiScan<SCANNER>::DoScans()
-{
-//	DevMsg("CMultiScan: BEGIN\n");
-	
-	unsigned int n_threads = Max(1U, std::thread::hardware_concurrency());
-	n_threads = Min(n_threads, this->m_Scanners.size());
-	
-	std::vector<std::thread> threads;
-	for (unsigned int i = 0; i < n_threads; ++i) {
-//		DevMsg("CMultiScan: SPAWN T#%d\n", i);
-		threads.emplace_back(&CMultiScan<SCANNER>::Worker, this, i);
-	}
-	
-	for (unsigned int i = 0; i < n_threads; ++i) {
-		threads[i].join();
-//		DevMsg("CMultiScan: JOIN  T#%d\n", i);
-	}
-	
-//	DevMsg("CMultiScan: END\n");
-}
-
-template<class SCANNER>
-inline void CMultiScan<SCANNER>::Worker(int id)
-{
-//	DevMsg("CMultiScan: W#%d BEGIN\n", id);
-	
-	SCANNER *scanner;
-	while ((scanner = this->GetTask()) != nullptr) {
-//		DevMsg("CMultiScan: W#%d SCAN BEGIN %08x\n", id, (uintptr_t)scanner);
-		auto scan = new CScan<SCANNER>(scanner);
-//		DevMsg("CMultiScan: W#%d SCAN END   %08x\n", id, (uintptr_t)scanner);
-		this->SubmitTask(scan);
-	}
-	
-//	DevMsg("CMultiScan: W#%d END\n", id);
-}
-
-template<class SCANNER>
-inline SCANNER *CMultiScan<SCANNER>::GetTask()
-{
-	std::lock_guard<std::mutex> lock(this->m_MutexIn);
-	
-	if (this->m_Scanners.empty()) {
-		return nullptr;
-	}
-	
-	SCANNER *scanner = this->m_Scanners.front();
-	this->m_Scanners.pop_front();
-	return scanner;
-}
-
-template<class SCANNER>
-inline void CMultiScan<SCANNER>::SubmitTask(CScan<SCANNER> *result)
-{
-	std::lock_guard<std::mutex> lock(this->m_MutexOut);
-	
-	this->m_Scans.emplace_back(result);
-}
 
 
 namespace Scan

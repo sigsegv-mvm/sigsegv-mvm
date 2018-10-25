@@ -89,25 +89,25 @@ public:
 		// +0x24 ptr: ""
 		// +0x28 ptr: "tf_weapon_shotgun_primary"
 		
-		auto strscan1 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun");
-		auto strscan2 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_soldier");
-		auto strscan3 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_hwg");
-		auto strscan4 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_pyro");
-		auto strscan5 = new StrScanner(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_primary");
-		CMultiScan<StrScanner> scan1({ strscan1, strscan2, strscan3, strscan4, strscan5 });
-		if (!strscan1->ExactlyOneMatch()) { DevMsg("Fail strscan1\n"); return false; }
-		if (!strscan2->ExactlyOneMatch()) { DevMsg("Fail strscan2\n"); return false; }
-		if (!strscan3->ExactlyOneMatch()) { DevMsg("Fail strscan3\n"); return false; }
-		if (!strscan4->ExactlyOneMatch()) { DevMsg("Fail strscan4\n"); return false; }
-		if (!strscan5->ExactlyOneMatch()) { DevMsg("Fail strscan5\n"); return false; }
+		StrScanner strscan1(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun");
+		StrScanner strscan2(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_soldier");
+		StrScanner strscan3(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_hwg");
+		StrScanner strscan4(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_pyro");
+		StrScanner strscan5(CLibSegBounds(Library::SERVER, Segment::RODATA), "tf_weapon_shotgun_primary");
+		CMultiScan scan1(strscan1, strscan2, strscan3, strscan4, strscan5);
+		if (!strscan1.ExactlyOneMatch()) { DevMsg("Fail strscan1\n"); return false; }
+		if (!strscan2.ExactlyOneMatch()) { DevMsg("Fail strscan2\n"); return false; }
+		if (!strscan3.ExactlyOneMatch()) { DevMsg("Fail strscan3\n"); return false; }
+		if (!strscan4.ExactlyOneMatch()) { DevMsg("Fail strscan4\n"); return false; }
+		if (!strscan5.ExactlyOneMatch()) { DevMsg("Fail strscan5\n"); return false; }
 		
 		ByteBuf seek(0x32);
 		ByteBuf mask(0x32);
-		mask.SetDword(0x00, 0xffffffff); seek.SetDword(0x00, (uint32_t)strscan1->FirstMatch());
-		mask.SetDword(0x10, 0xffffffff); seek.SetDword(0x10, (uint32_t)strscan2->FirstMatch());
-		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3->FirstMatch());
-		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4->FirstMatch());
-		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5->FirstMatch());
+		mask.SetDword(0x00, 0xffffffff); seek.SetDword(0x00, (uint32_t)strscan1.FirstMatch());
+		mask.SetDword(0x10, 0xffffffff); seek.SetDword(0x10, (uint32_t)strscan2.FirstMatch());
+		mask.SetDword(0x1c, 0xffffffff); seek.SetDword(0x1c, (uint32_t)strscan3.FirstMatch());
+		mask.SetDword(0x20, 0xffffffff); seek.SetDword(0x20, (uint32_t)strscan4.FirstMatch());
+		mask.SetDword(0x28, 0xffffffff); seek.SetDword(0x28, (uint32_t)strscan5.FirstMatch());
 		CScan<ArrScanner> scan2(CLibSegBounds(Library::SERVER, Segment::DATA), seek, mask);
 		if (!scan2.ExactlyOneMatch()) { DevMsg("Fail scan2 %u\n", scan2.Matches().size()); return false; }
 		
