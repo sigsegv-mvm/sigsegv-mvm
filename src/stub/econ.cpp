@@ -228,7 +228,7 @@ static const auto& GetLoadoutSlotNameMap()
 		for (int i = LOADOUT_POSITION_INVALID; i < LOADOUT_POSITION_COUNT; ++i) {
 			auto slot = static_cast<loadout_positions_t>(i);
 			
-			s_Map.emplace(slot, boost::algorithm::to_lower_copy(std::string(GetLoadoutPositionName(i) + strlen("LOADOUT_POSITION_"))));
+			s_Map.emplace(slot, boost::to_lower_copy(std::string(GetLoadoutPositionName(i) + strlen("LOADOUT_POSITION_"))));
 		}
 	}
 	
