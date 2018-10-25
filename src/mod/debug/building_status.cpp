@@ -7,7 +7,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Building_Status
+namespace Mod::Debug::Building_Status
 {
 	ConVar cvar_xpos("sig_debug_building_status_xpos", "10", FCVAR_NOTIFY);
 	ConVar cvar_ypos("sig_debug_building_status_ypos", "10", FCVAR_NOTIFY);

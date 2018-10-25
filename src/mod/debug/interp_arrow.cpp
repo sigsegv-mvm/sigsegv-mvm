@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Interp_Arrow
+namespace Mod::Debug::Interp_Arrow
 {
 	[[gnu::format(printf, 1, 2)]]
 	void ServerCommand(const char *format, ...)

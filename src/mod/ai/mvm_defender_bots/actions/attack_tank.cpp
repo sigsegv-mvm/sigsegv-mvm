@@ -3,7 +3,7 @@
 #include "mod/ai/mvm_defender_bots/actions/attack_tank.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	ActionResult<CTFBot> CTFBotAttackTank::OnStart(CTFBot *actor, Action<CTFBot> *action)
 	{

@@ -10,7 +10,7 @@ class CSmokeStack : public CBaseParticleEntity {};
 class CEntityMapData;
 
 
-namespace Mod_Prof_Popfile_Load
+namespace Mod::Prof::Popfile_Load
 {
 	StringPool pool(true);
 	

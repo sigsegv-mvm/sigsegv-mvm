@@ -6,7 +6,7 @@
 #include <con_nprint.h>
 
 
-namespace Mod_Util_Notify_Recv
+namespace Mod::Util::Notify_Recv
 {
 	ConVar cvar_trace("sig_util_notify_recv_trace", "0", FCVAR_NOTIFY,
 		"Trace notify messages as they are received");

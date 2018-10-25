@@ -3,7 +3,7 @@
 #include "util/misc.h"
 
 
-namespace Mod_Cond_Enhanced_Cmds
+namespace Mod::Cond::Enhanced_Cmds
 {
 	// existing addcond syntax:
 	// addcond [condnum] [duration] [player name substring]

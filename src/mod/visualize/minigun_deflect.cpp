@@ -4,7 +4,7 @@
 
 #ifdef EXPERIMENTAL
 
-namespace Mod_Visualize_Minigun_Deflect
+namespace Mod::Visualize::Minigun_Deflect
 {
 	ConVar cvar_duration("sig_visualize_minigun_deflect_duration", "0.1", FCVAR_NOTIFY,
 		"Visualization: cylinder draw duration");

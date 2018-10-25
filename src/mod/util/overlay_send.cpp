@@ -52,7 +52,7 @@
 	FUNC_STATS(dbits)
 
 
-namespace Mod_Util_Overlay_Send
+namespace Mod::Util::Overlay_Send
 {
 	ConVar cvar_mtu("sig_util_overlay_send_mtu", "65000", FCVAR_NOTIFY,
 		"The maximum size of UDP packets to send through the firehose");

@@ -3,7 +3,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_Rage
+namespace Mod::Debug::Rage
 {
 	// CTFPlayerShared::m_flRageMeter
 	// CTFPlayerShared::m_bRageDraining

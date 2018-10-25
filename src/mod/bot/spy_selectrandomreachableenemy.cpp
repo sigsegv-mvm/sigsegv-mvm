@@ -5,7 +5,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Bot_Spy_SelectRandomReachableEnemy
+namespace Mod::Bot::Spy_SelectRandomReachableEnemy
 {
 ////////////////////////////////////////////////////////////////////////////////
 ////// The actual implementation in the game ///////////////////////////////////

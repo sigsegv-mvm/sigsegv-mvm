@@ -4,7 +4,7 @@
 
 #if defined _WINDOWS
 
-namespace Mod_Etc_Release_Source_Mutex
+namespace Mod::Etc::Release_Source_Mutex
 {
 	bool IsClient()
 	{

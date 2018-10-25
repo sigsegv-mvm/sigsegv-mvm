@@ -77,7 +77,7 @@
 // box detection: 48x48x48, 64 HU from your WSC in ? direction
 
 
-namespace Mod_Visualize_Taunt_Attacks
+namespace Mod::Visualize::Taunt_Attacks
 {
 	[[gnu::format(printf, 1, 2)]]
 	void ServerCommand(const char *format, ...)

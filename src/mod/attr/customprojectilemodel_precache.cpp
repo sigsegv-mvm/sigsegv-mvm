@@ -3,7 +3,7 @@
 #include "stub/econ.h"
 
 
-namespace Mod_Attr_CustomProjectileModel_Precache
+namespace Mod::Attr::CustomProjectileModel_Precache
 {
 	DETOUR_DECL_MEMBER(void, CTFWeaponBaseGun_GetCustomProjectileModel, CAttribute_String *attr_str)
 	{

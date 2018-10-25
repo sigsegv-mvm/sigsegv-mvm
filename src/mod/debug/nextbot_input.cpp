@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_NextBot_Input
+namespace Mod::Debug::NextBot_Input
 {
 	
 	

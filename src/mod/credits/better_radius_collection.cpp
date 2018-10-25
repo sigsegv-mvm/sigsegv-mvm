@@ -4,7 +4,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_Credits_Better_Radius_Collection
+namespace Mod::Credits::Better_Radius_Collection
 {
 	/* which team is allowed to collect credits? */
 	int GetCreditTeamNum()

@@ -8,7 +8,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* mark a giant for death */
 	class CTFBotMarkGiant : public IHotplugAction

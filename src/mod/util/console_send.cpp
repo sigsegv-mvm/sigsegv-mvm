@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_Console_Send
+namespace Mod::Util::Console_Send
 {
 	SpewOutputFunc_t LocalSpewOutputFunc = nullptr;
 	

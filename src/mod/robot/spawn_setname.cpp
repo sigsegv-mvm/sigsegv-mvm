@@ -3,7 +3,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Robot_Spawn_SetName
+namespace Mod::Robot::Spawn_SetName
 {
 	RefCount rc_CTFBotSpawner_Spawn;
 	DETOUR_DECL_MEMBER(int, CTFBotSpawner_Spawn, const Vector& where, CUtlVector<CHandle<CBaseEntity>> *ents)

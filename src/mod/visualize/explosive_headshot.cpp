@@ -3,7 +3,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Visualize_Explosive_Headshot
+namespace Mod::Visualize::Explosive_Headshot
 {
 	ConVar cvar_duration("sig_visualize_explosive_headshot_duration", "0.5", FCVAR_NOTIFY,
 		"Visualization: EH sphere draw duration");

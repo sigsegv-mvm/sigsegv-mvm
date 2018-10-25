@@ -2,7 +2,7 @@
 #include "stub/baseentity.h"
 
 
-namespace Mod_Debug_EnergyRing_Knockback
+namespace Mod::Debug::EnergyRing_Knockback
 {
 	// g_aWeaponDamageTypes
 	// TF_WEAPON_RAYGUN:     0x00220002

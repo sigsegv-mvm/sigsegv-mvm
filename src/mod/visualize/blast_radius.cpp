@@ -31,7 +31,7 @@ struct CTFRadiusDamageInfo
 };
 
 
-namespace Mod_Visualize_Blast_Radius
+namespace Mod::Visualize::Blast_Radius
 {
 	// draw multiple concentric semi-transparent spheres representing each 10% damage threshold, colored based on distance
 	// draw a number over each sphere showing the ~damage at that distance

@@ -13,7 +13,7 @@
 	} while (false)
 
 
-namespace Mod_Debug_Sound_Leak
+namespace Mod::Debug::Sound_Leak
 {
 	// 1000 x "play" => ~14MB increase in memory usage
 	// so roughly 14000 bytes leaked per "play"

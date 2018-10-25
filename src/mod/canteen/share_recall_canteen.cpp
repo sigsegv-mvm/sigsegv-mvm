@@ -6,7 +6,7 @@
 #include "util/rtti.h"
 
 
-namespace Mod_Canteen_Share_Recall_Canteen
+namespace Mod::Canteen::Share_Recall_Canteen
 {
 	RefCount rc_CTFPowerupBottle_ReapplyProvision;
 	

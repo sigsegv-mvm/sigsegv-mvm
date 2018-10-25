@@ -11,7 +11,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Pop_TFBot_Extensions
+namespace Mod::Pop::TFBot_Extensions
 {
 	/* mobber AI, based on CTFBotAttackFlagDefenders */
 	class CTFBotMobber : public IHotplugAction

@@ -5,7 +5,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Visualize_Engie_Nests
+namespace Mod::Visualize::Engie_Nests
 {
 	ConVar cvar_interval("sig_visualize_engie_nests_interval", "66", FCVAR_NOTIFY,
 		"Visualization: frame interval");

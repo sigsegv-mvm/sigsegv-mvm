@@ -4,7 +4,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_AI_Improved_UseItem
+namespace Mod::AI::Improved_UseItem
 {
 	ConVar cvar_debug("sig_ai_improved_useitem_debug", "0", FCVAR_NOTIFY,
 		"Mod: debug CTFBotUseItemImproved and descendants");

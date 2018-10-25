@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Visualize_Damage_Force
+namespace Mod::Visualize::Damage_Force
 {
 	DETOUR_DECL_MEMBER(int, CTFPlayer_OnTakeDamage, const CTakeDamageInfo& info)
 	{

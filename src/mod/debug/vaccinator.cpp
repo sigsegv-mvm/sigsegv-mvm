@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Debug_Vaccinator
+namespace Mod::Debug::Vaccinator
 {
 	#warning __gcc_regcall detours considered harmful!
 	DETOUR_DECL_STATIC_CALL_CONVENTION(__gcc_regcall, bool, CheckMedicResist, ETFCond iCondUber, ETFCond iCondPassive, CTFPlayer *pPlayer, float& f1, bool bCrit, float& f2)

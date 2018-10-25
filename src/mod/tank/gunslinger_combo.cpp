@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Tank_Gunslinger_Combo
+namespace Mod::Tank::Gunslinger_Combo
 {
 	// TODO: finish this
 	// basically, in CTFRobotArm::Smack, just override the vcall to ::IsPlayer so that it returns true for CTFTankBoss's

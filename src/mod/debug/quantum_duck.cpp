@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Quantum_Duck
+namespace Mod::Debug::Quantum_Duck
 {
 	// +CBasePlayer::m_bDucked
 	// +CBasePlayer::m_bDucking

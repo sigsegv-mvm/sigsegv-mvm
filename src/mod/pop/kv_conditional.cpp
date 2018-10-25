@@ -2,7 +2,7 @@
 #include "mod/pop/kv_conditional.h"
 
 
-namespace Mod_Pop_KV_Conditional
+namespace Mod::Pop::KV_Conditional
 {
 	bool IsSigsegv()
 	{

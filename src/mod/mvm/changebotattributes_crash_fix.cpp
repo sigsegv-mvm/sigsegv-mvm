@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_ChangeBotAttributes_Crash_Fix
+namespace Mod::MvM::ChangeBotAttributes_Crash_Fix
 {
 	RefCount rc_CPointPopulatorInterface_InputChangeBotAttributes;
 	DETOUR_DECL_MEMBER(void, CPointPopulatorInterface_InputChangeBotAttributes, inputdata_t& inputdata)

@@ -3,7 +3,7 @@
 #include "stub/populators.h"
 
 
-namespace Mod_Pop_WaveSpawn_Extensions
+namespace Mod::Pop::WaveSpawn_Extensions
 {
 	struct WaveSpawnData
 	{

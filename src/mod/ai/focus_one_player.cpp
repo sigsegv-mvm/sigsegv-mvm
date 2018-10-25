@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_AI_Focus_One_Player
+namespace Mod::AI::Focus_One_Player
 {
 	ConVar cvar_name("sig_ai_focus_one_player_name", "", FCVAR_NOTIFY,
 		"Mod: name of the player to focus (can be a substring)");

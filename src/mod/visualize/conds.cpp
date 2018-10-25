@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Visualize_Conds
+namespace Mod::Visualize::Conds
 {
 	void DrawPlayerConds()
 	{
@@ -88,7 +88,7 @@ UnknownStructType g_MedigunResistConditions[] = {
 #endif
 
 
-namespace Mod_Visualize_Conds_Client
+namespace Mod::Visualize::Conds_Client
 {
 	void DrawPlayerConds()
 	{

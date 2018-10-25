@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Weapon_AntiGrief
+namespace Mod::MvM::Weapon_AntiGrief
 {
 	ConVar cvar_scorchshot  ("sig_mvm_weapon_antigrief_scorchshot",   "1", FCVAR_NOTIFY, "Disable knockback and stun effects vs giant robots from the Scorch Shot");
 	ConVar cvar_loosecannon ("sig_mvm_weapon_antigrief_loosecannon",  "1", FCVAR_NOTIFY, "Disable knockback and stun effects vs giant robots from the Loose Cannon");

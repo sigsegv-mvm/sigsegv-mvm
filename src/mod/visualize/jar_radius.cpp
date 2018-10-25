@@ -6,7 +6,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Visualize_Jar_Radius
+namespace Mod::Visualize::Jar_Radius
 {
 	[[gnu::format(printf, 1, 2)]]
 	void ServerCommand(const char *format, ...)

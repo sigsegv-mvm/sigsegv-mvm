@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_StringTables
+namespace Mod::Debug::StringTables
 {
 	void WriteTableToFile(INetworkStringTable *table)
 	{

@@ -49,7 +49,7 @@ const studiohdr_t *virtualgroup_t::GetStudioHdr( ) const
 //////
 
 
-namespace Mod_Debug_Bottle_Break
+namespace Mod::Debug::Bottle_Break
 {
 	////////////////////////////////////////////////////////////////////////////
 	// BEGIN STUFF FROM game/shared/animation.cpp //////////////////////////////

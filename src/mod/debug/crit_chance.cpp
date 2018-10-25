@@ -3,7 +3,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_Crit_Chance
+namespace Mod::Debug::Crit_Chance
 {
 //	void Print_m_iCritMult(CTFPlayer *player)
 //	{

@@ -2,7 +2,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_Etc_Instant_Scaling
+namespace Mod::Etc::Instant_Scaling
 {
 	DETOUR_DECL_MEMBER(float, CTFPlayer_GetHandScaleSpeed)
 	{

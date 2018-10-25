@@ -8,7 +8,7 @@ class CMoveData;
 // on a listen server, this mod will only override stuff in the client DLL
 
 
-namespace Mod_Etc_Override_Move_Speed
+namespace Mod::Etc::Override_Move_Speed
 {
 	bool IsClient()
 	{

@@ -2,7 +2,7 @@
 #include "re/nextbot.h"
 
 
-namespace Mod_AI_NextBotEventResponder_Hooks
+namespace Mod::AI::NextBotEventResponder_Hooks
 {
 	// INER test results:
 	

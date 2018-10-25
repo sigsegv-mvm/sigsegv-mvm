@@ -130,7 +130,7 @@ CStringPool CVProfRecorder::s_NamePool;
 // - on every received update?
 
 
-namespace Mod_Util_VProf_Recv
+namespace Mod::Util::VProf_Recv
 {
 	ConVar cvar_port("sig_util_vprof_recv_port", "30001", FCVAR_NOTIFY,
 		"Network port to use for VProf reception");

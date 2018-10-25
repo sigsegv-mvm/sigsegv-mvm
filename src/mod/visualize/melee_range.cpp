@@ -3,7 +3,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Visualize_Melee_Range
+namespace Mod::Visualize::Melee_Range
 {
 	// when we do a melee attack, draw these things:
 	// - hull box for all players

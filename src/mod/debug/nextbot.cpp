@@ -3,7 +3,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Debug_NextBot
+namespace Mod::Debug::NextBot
 {
 	constexpr float INTERVAL = 0.25f;
 	

@@ -5,7 +5,7 @@
 #include <random>
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	bool WouldPlayerAtLocationTouchTrigger(const Vector& where, CBasePlayer *player, CBaseEntity *trigger)
 	{

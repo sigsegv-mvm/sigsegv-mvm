@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Robot_Underground_Check_Override
+namespace Mod::Robot::Underground_Check_Override
 {
 	constexpr uint8_t s_Buf[] = {
 		0xf3, 0x0f, 0x10, 0x45, 0xb8,                   // +0000  movss xmm0,[ebp+var_48]

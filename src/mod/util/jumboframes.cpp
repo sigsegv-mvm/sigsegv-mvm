@@ -8,7 +8,7 @@
 #include "util/trace.h"
 
 
-namespace Mod_Util_JumboFrames
+namespace Mod::Util::JumboFrames
 {
 	constexpr int MAX_ROUTABLE_PAYLOAD = 65000;
 	

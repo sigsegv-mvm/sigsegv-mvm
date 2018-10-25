@@ -4,7 +4,7 @@
 #include "util/backtrace.h"
 
 
-namespace Mod_Perf_MvM_Load_Popfile
+namespace Mod::Perf::MvM_Load_Popfile
 {
 #if 0 // new re-implementation
 	

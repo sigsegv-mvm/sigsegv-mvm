@@ -42,7 +42,7 @@ Manual KV file format:
 */
 
 
-namespace Mod_Util_Download_Manager
+namespace Mod::Util::Download_Manager
 {
 	extern ConVar cvar_kvpath;
 	

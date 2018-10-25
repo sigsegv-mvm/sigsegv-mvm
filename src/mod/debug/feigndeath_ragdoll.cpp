@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Debug_FeignDeath_Ragdoll
+namespace Mod::Debug::FeignDeath_Ragdoll
 {
 	RefCount rc_CreateFeignDeathRagdoll;
 	DETOUR_DECL_MEMBER(void, CTFPlayer_CreateFeignDeathRagdoll, const CTakeDamageInfo& info, bool b1, bool b2, bool b3)

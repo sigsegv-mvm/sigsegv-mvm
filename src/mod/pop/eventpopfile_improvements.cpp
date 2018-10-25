@@ -6,7 +6,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Pop_EventPopfile_Improvements
+namespace Mod::Pop::EventPopfile_Improvements
 {
 	RefCount rc_CTFBotSpawner_Spawn;
 	IPopulationSpawner *spawner = nullptr;

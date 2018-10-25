@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Attr_Undocumented
+namespace Mod::Attr::Undocumented
 {
 	ConVar cvar_parachute_disable("sig_attr_undocumented_parachute_disable", "0", FCVAR_NOTIFY,
 		"");

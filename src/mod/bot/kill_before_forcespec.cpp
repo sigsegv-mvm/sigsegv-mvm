@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Bot_Kill_Before_ForceSpec
+namespace Mod::Bot::Kill_Before_ForceSpec
 {
 	ConVar cvar_force("sig_bot_kill_before_forcespec_force", "1", FCVAR_NOTIFY,
 		"Mod: value to pass for bForce parameter of CommitSuicide");

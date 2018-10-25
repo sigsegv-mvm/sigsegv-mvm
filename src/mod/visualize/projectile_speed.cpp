@@ -3,7 +3,7 @@
 #include "stub/baseplayer.h"
 
 
-namespace Mod_Visualize_Projectile_Speed
+namespace Mod::Visualize::Projectile_Speed
 {
 	IPhysicsEnvironment *GetPhysicsEnvironment()
 	{

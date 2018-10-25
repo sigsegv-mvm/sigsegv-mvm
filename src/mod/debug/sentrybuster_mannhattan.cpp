@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_SentryBuster_Mannhattan
+namespace Mod::Debug::SentryBuster_Mannhattan
 {
 	std::vector<CFmtStr> messages;
 	

@@ -3,7 +3,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_Bot_Medieval_NonMelee
+namespace Mod::Bot::Medieval_NonMelee
 {
 	constexpr uint8_t s_Buf[] = {
 		0xa1, 0x00, 0x00, 0x00, 0x00,             // +0000  mov eax,[g_pGameRules]

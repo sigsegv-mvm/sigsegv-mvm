@@ -109,7 +109,7 @@ static_assert(sizeof(OverlayScreenLine_t) == sizeof(OverlayBox_t));
 
 
 
-namespace Mod_Util_Overlay_Enhancements
+namespace Mod::Util::Overlay_Enhancements
 {
 	void CustomRenderScreenSpaceRect(float xFrom, float yFrom, float xTo, float yTo, const Color& cFill, const Color& cEdge)
 	{

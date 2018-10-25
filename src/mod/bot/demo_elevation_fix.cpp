@@ -4,7 +4,7 @@
 
 #if 0 // TODO: fix compile errors in this
 
-namespace Mod_Bot_Demo_Elevation_Fix
+namespace Mod::Bot::Demo_Elevation_Fix
 {
 	DETOUR_DECL_MEMBER(Vector, CTFBotMainAction_SelectTargetPoint, const INextBot *nextbot, const CBaseCombatCharacter *them)
 	{

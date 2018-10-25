@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_MvM_MedigunShield_Damage
+namespace Mod::MvM::MedigunShield_Damage
 {
 	constexpr uint8_t s_Buf[] = {
 		0x89, 0x34, 0x24,                   // +0000  mov [esp],esi

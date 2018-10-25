@@ -2,7 +2,7 @@
 #include "stub/tf_shareddefs.h"
 
 
-namespace Mod_Perf_Medigun_Shield_Damage_Events
+namespace Mod::Perf::Medigun_Shield_Damage_Events
 {
 	constexpr bool BLOCK_PLAYER = true;
 	constexpr bool BLOCK_NPC    = true;

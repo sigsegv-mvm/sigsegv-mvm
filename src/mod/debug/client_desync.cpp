@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Client_Desync
+namespace Mod::Debug::Client_Desync
 {
 	ConVar cvar_player_index("sig_debug_client_desync_index", "2", FCVAR_NOTIFY,
 		"Entity index to track");

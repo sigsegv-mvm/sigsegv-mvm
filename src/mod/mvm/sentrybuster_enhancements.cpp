@@ -5,7 +5,7 @@
 #include <effect_dispatch_data.h>
 
 
-namespace Mod_MvM_SentryBuster_Enhancements
+namespace Mod::MvM::SentryBuster_Enhancements
 {
 	class SendProxyOverride
 	{

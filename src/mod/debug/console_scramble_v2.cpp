@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Console_Scramble_v2
+namespace Mod::Debug::Console_Scramble_v2
 {
 	FILE *f = nullptr;
 	

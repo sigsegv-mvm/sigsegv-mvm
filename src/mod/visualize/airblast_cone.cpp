@@ -5,7 +5,7 @@
 
 #if 0 // obsolete as of Inferno Update
 
-namespace Mod_Visualize_Airblast_Cone
+namespace Mod::Visualize::Airblast_Cone
 {
 	ConVar cvar_clear("sig_visualize_airblast_cone_clear", "1", FCVAR_NOTIFY,
 		"Visualization: set 1 to clear overlays each time");

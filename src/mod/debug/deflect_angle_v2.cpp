@@ -5,7 +5,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_Debug_Deflect_Angle_v2
+namespace Mod::Debug::Deflect_Angle_v2
 {
 	void DrawEntityBounds(CBaseEntity *ent, float duration, int r, int g, int b, int a)
 	{

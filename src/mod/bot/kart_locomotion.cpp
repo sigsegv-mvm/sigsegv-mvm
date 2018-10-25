@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Bot_Kart_Locomotion
+namespace Mod::Bot::Kart_Locomotion
 {
 	/* don't do dodge strafing */
 	DETOUR_DECL_MEMBER(void, CTFBotMainAction_Dodge, CTFBot *actor)

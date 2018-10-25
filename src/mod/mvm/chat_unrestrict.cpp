@@ -3,7 +3,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_MvM_Chat_Unrestrict
+namespace Mod::MvM::Chat_Unrestrict
 {
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_CanHearAndReadChatFrom, CBasePlayer *them)
 	{

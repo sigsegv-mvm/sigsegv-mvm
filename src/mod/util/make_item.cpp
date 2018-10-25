@@ -26,7 +26,7 @@
 // - maybe: user restriction functionality (so everyone doesn't use this mod willy-nilly)
 
 
-namespace Mod_Util_Make_Item
+namespace Mod::Util::Make_Item
 {
 	const CSteamID *GetCommandClientSteamID(const char *func, CTFPlayer *player)
 	{

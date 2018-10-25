@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Visualize_Airblast_Box
+namespace Mod::Visualize::Airblast_Box
 {
 	ConVar cvar_clear("sig_visualize_airblast_box_clear", "1", FCVAR_NOTIFY,
 		"Visualization: set 1 to clear overlays each time");

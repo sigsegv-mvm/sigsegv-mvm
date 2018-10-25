@@ -2,7 +2,7 @@
 #include "addr/standard.h"
 
 
-namespace Mod_Debug_ChangeLevel
+namespace Mod::Debug::ChangeLevel
 {
 	// ewww, get rid of this garbage!
 	struct Addrs

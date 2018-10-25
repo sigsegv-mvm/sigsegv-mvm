@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Etc_Heat_Seeking_Rockets
+namespace Mod::Etc::Heat_Seeking_Rockets
 {
 #if 1 && 0
 	class CTFProjectile_Flare : public CTFProjectile_Rocket

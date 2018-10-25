@@ -16,7 +16,7 @@ public:
 };
 
 
-namespace Mod_Debug_VProf_Record
+namespace Mod::Debug::VProf_Record
 {
 	DETOUR_DECL_MEMBER(void, CVProfRecorder_Record_WriteTimings_R, CVProfNode *pIn)
 	{

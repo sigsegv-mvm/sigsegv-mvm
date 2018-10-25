@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Robot_Spawn_Protection_Fix
+namespace Mod::Robot::Spawn_Protection_Fix
 {
 	RefCount rc_CTFBotMainAction_Update;
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMainAction_Update, CTFBot *actor, float dt)

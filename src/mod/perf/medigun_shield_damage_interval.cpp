@@ -3,7 +3,7 @@
 #include "stub/tfweaponbase.h"
 
 
-namespace Mod_Perf_Medigun_Shield_Damage_Interval
+namespace Mod::Perf::Medigun_Shield_Damage_Interval
 {
 	DETOUR_DECL_MEMBER(int, CBaseEntity_TakeDamage, const CTakeDamageInfo& inputInfo)
 	{

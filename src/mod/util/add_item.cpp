@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Util_Add_Item
+namespace Mod::Util::Add_Item
 {
 	/* only works on TFBots */
 	CON_COMMAND(sig_add_item, "Gives the item with the specified name to the currently selected TFBot")

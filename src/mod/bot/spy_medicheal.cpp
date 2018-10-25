@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Bot_Spy_MedicHeal
+namespace Mod::Bot::Spy_MedicHeal
 {
 	
 	

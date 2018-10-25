@@ -2,7 +2,7 @@
 #define _INCLUDE_SIGSEGV_MOD_AI_MVM_DEFENDER_BOTS_UPGRADES_SPY_H_
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	
 }

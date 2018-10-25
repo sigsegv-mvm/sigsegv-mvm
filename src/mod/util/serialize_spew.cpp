@@ -5,7 +5,7 @@
 #if 0
 
 
-namespace Mod_Util_Serialize_Spew
+namespace Mod::Util::Serialize_Spew
 {
 	FILE *f = nullptr;
 	

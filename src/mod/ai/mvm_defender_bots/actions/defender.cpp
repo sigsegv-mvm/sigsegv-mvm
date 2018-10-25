@@ -9,7 +9,7 @@
 #include "stub/tfbot_behavior.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	QueryResponse CTFBotMvMDefender::ShouldHurry(const INextBot *nextbot) const
 	{

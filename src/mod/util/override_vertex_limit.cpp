@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_Override_Vertex_Limit
+namespace Mod::Util::Override_Vertex_Limit
 {
 	CON_COMMAND(sig_util_override_vertex_limit, "")
 	{

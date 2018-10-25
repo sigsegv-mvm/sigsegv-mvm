@@ -2,7 +2,7 @@
 #include "mem/scan.h"
 
 
-namespace Mod_Etc_Suppress_NB_Event_Messages
+namespace Mod::Etc::Suppress_NB_Event_Messages
 {
 	const char *p_fmtstr = nullptr;
 	

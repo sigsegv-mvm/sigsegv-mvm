@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Attr_HealOnKill_Overheal_Melee
+namespace Mod::Attr::HealOnKill_Overheal_Melee
 {
 	RefCount rc_MeleeHoK;
 	DETOUR_DECL_MEMBER(void, CTFPlayer_OnKilledOther_Effects, CBaseEntity *other, const CTakeDamageInfo& info)

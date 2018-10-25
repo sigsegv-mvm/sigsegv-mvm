@@ -8,7 +8,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* attack a tank */
 	class CTFBotAttackTank : public IHotplugAction

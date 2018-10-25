@@ -2,7 +2,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_Debug_Revive_Fast
+namespace Mod::Debug::Revive_Fast
 {
 	DETOUR_DECL_MEMBER(CTFReviveMarker *, CTFReviveMarker_Create)
 	{

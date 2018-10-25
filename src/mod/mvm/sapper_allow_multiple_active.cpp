@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Sapper_Allow_Multiple_Active
+namespace Mod::MvM::Sapper_Allow_Multiple_Active
 {
 	RefCount rc_CTFPlayer_CanBuild__sapper;
 	DETOUR_DECL_MEMBER(int, CTFPlayer_CanBuild, int iObjectType, int iObjectMode)

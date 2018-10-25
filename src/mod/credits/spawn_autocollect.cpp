@@ -6,7 +6,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Credits_Spawn_AutoCollect
+namespace Mod::Credits::Spawn_AutoCollect
 {
 	/* which team is allowed to collect credits? */
 	int GetCreditTeamNum()

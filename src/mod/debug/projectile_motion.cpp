@@ -3,7 +3,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Projectile_Motion
+namespace Mod::Debug::Projectile_Motion
 {
 	IPhysicsEnvironment *GetPhysicsEnvironment()
 	{

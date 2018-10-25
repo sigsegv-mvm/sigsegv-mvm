@@ -12,7 +12,7 @@ void ForEachArea(const std::function<void(CTFNavArea *)>& functor)
 }
 
 
-namespace Mod_Debug_Nav_Mesh
+namespace Mod::Debug::Nav_Mesh
 {
 	constexpr float INTERVAL = 0.25f;
 	

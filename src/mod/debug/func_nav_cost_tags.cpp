@@ -3,7 +3,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Debug_Func_Nav_Cost_Tags
+namespace Mod::Debug::Func_Nav_Cost_Tags
 {
 	DETOUR_DECL_MEMBER(bool, CFuncNavCost_IsApplicableTo, CBaseCombatCharacter *who)
 	{

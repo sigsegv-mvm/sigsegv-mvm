@@ -4,7 +4,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Robot_Standable_Heads
+namespace Mod::Robot::Standable_Heads
 {
 	RefCount rc_TFPlayerThink;
 	DETOUR_DECL_MEMBER(void, CTFPlayer_TFPlayerThink)

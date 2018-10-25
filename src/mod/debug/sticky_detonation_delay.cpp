@@ -9,7 +9,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Sticky_Detonation_Delay
+namespace Mod::Debug::Sticky_Detonation_Delay
 {
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_DoClassSpecialSkill)
 	{

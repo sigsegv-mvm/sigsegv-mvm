@@ -15,7 +15,7 @@
 #include "util/trace.h"
 
 
-namespace Mod_AI_EngieBot_Dispensers
+namespace Mod::AI::EngieBot_Dispensers
 {
 	bool suppress_speak = false;
 	

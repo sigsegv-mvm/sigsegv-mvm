@@ -78,7 +78,7 @@ enum EMatchGroup : int
 };
 
 
-namespace Mod_Etc_MM_Spoof
+namespace Mod::Etc::MM_Spoof
 {
 	ConVar cvar_mode("sig_etc_mm_spoof_mode", "-1", FCVAR_NOTIFY,
 		"Mod: spoof mode");

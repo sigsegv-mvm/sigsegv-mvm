@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Prof_Attr_Munge
+namespace Mod::Prof::Attr_Munge
 {
 #undef VPROF
 #undef VPROF_BUDGET

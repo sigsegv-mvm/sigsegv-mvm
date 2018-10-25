@@ -2,7 +2,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_Sound_Tele_Activate
+namespace Mod::Sound::Tele_Activate
 {
 	DETOUR_DECL_MEMBER(void, CTFBotHintEngineerNest_HintTeleporterThink)
 	{

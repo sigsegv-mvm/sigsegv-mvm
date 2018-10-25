@@ -2,7 +2,7 @@
 #include "prop.h"
 
 
-namespace Mod_Sniper_Charge_Uncap
+namespace Mod::Sniper::Charge_Uncap
 {
 #if defined _LINUX
 	

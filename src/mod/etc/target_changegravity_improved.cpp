@@ -2,7 +2,7 @@
 #include "stub/baseentity.h"
 
 
-namespace Mod_Etc_Target_ChangeGravity_Improved
+namespace Mod::Etc::Target_ChangeGravity_Improved
 {
 	DETOUR_DECL_MEMBER(void, CTargetChangeGravity_InputChangeGrav, inputdata_t& inputdata)
 	{

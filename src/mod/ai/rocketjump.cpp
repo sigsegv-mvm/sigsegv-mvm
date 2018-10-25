@@ -5,7 +5,7 @@
 #include "util/misc.h"
 
 
-namespace Mod_AI_RocketJump
+namespace Mod::AI::RocketJump
 {
 	/* base class */
 	class CTFBotRocketJump : public IHotplugAction

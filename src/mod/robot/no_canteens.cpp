@@ -5,7 +5,7 @@
 #include "stub/tf_shareddefs.h"
 
 
-namespace Mod_Robot_No_Canteens
+namespace Mod::Robot::No_Canteens
 {
 	constexpr int DEFIDX_CANTEEN_DEFAULT = 1163;
 	

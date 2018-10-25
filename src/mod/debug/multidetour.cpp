@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_MultiDetour
+namespace Mod::Debug::MultiDetour
 {
 	int Function()
 	{

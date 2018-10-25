@@ -4,7 +4,7 @@
 struct OverlayBase_t;
 
 
-namespace Mod_Prof_Debug_Overlay
+namespace Mod::Prof::Debug_Overlay
 {
 	DETOUR_DECL_MEMBER(void, CDebugOverlay_Paint)
 	{

@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Robot_Limit
+namespace Mod::MvM::Robot_Limit
 {
 	void CheckForMaxInvadersAndKickExtras(CUtlVector<CTFPlayer *>& mvm_bots);
 	

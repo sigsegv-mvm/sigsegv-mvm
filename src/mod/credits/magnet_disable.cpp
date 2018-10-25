@@ -2,7 +2,7 @@
 
 
 #if 0
-namespace Mod_Credits_Magnet_Disable
+namespace Mod::Credits::Magnet_Disable
 {
 	constexpr uint8_t s_Buf[] = {
 		0xff, 0x90, 0x84, 0x03, 0x00, 0x00,

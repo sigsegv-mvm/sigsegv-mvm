@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Backtrace
+namespace Mod::Debug::Backtrace
 {
 	class CMod : public IMod
 	{

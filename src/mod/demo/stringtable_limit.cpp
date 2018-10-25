@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Demo_StringTable_Limit
+namespace Mod::Demo::StringTable_Limit
 {
 	// CDemoPlayer::ReadPacket
 	// mem alloc: 0x80000

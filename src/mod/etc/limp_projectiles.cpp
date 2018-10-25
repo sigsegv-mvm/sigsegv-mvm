@@ -6,7 +6,7 @@
 class CTFWeaponInfo;
 
 
-namespace Mod_Etc_Limp_Projectiles
+namespace Mod::Etc::Limp_Projectiles
 {
 	DETOUR_DECL_STATIC(CTFGrenadePipebombProjectile *, CTFGrenadePipebombProjectile_Create, const Vector& position, const QAngle& angles, const Vector& velocity, const AngularImpulse& angVelocity, CBaseCombatCharacter *pOwner, const CTFWeaponInfo& weaponInfo, int i1, float f1)
 	{

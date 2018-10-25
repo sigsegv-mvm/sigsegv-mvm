@@ -6,7 +6,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Deflect_Angle
+namespace Mod::Debug::Deflect_Angle
 {
 #if 0
 	class CTraceFilterProjectileDeflection : public CTraceFilterSimple

@@ -96,7 +96,7 @@ enum thinkmethods_t : int32_t
 */
 
 
-namespace Mod_Debug_Flamethrower_Mojo
+namespace Mod::Debug::Flamethrower_Mojo
 {
 	Color RainbowGenerator()
 	{

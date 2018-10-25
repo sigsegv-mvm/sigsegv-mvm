@@ -55,7 +55,7 @@ const char *CChoreoEvent::NameForType( EVENTTYPE type )
 }
 
 
-namespace Mod_Debug_UserMsg_Overflow_v2
+namespace Mod::Debug::UserMsg_Overflow_v2
 {
 	ConVar cvar_backtrace("sig_debug_usermsg_overflow_v2_backtrace", "0", FCVAR_NOTIFY,
 		"Debug: enable backtraces from SendNetMsg");

@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Sound_Suppress_MedicBot_Shield
+namespace Mod::Sound::Suppress_MedicBot_Shield
 {
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_SpeakConceptIfAllowed, int iConcept, const char *modifiers, char *pszOutResponseChosen, size_t bufsize, IRecipientFilter *filter)
 	{

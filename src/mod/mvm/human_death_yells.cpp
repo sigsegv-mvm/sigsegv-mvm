@@ -4,7 +4,7 @@
 #include "stub/tfweaponbase.h"
 
 
-namespace Mod_MvM_Human_Death_Yells
+namespace Mod::MvM::Human_Death_Yells
 {
 	constexpr uint8_t s_Buf_CTFPlayer_DeathSound[] = {
 		0x85, 0xc0,                               // +0000  test eax,eax

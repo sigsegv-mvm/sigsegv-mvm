@@ -2,7 +2,7 @@
 #include "stub/baseentity.h"
 
 
-namespace Mod_Etc_Debug_Mission_Change_Crash
+namespace Mod::Etc::Debug_Mission_Change_Crash
 {
 	// same as CGlobalEntityList::IsEntityPtr
 	bool IsEntityPtr(void *ptr)

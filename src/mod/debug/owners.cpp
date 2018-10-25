@@ -6,7 +6,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Owners
+namespace Mod::Debug::Owners
 {
 	StringPool strpool(false);
 	

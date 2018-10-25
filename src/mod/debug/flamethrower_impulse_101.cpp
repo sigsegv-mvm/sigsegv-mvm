@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Flamethrower_Impulse_101
+namespace Mod::Debug::Flamethrower_Impulse_101
 {
 	DETOUR_DECL_MEMBER(const char *, C_TFFlameThrower_FullCritChargedEffectName)
 	{

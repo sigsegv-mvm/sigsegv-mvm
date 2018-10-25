@@ -3,7 +3,7 @@
 #include "stub/baseplayer.h"
 
 
-namespace Mod_Debug_Grenade_Logger
+namespace Mod::Debug::Grenade_Logger
 {
 	// col: grenade #
 	// col: server time

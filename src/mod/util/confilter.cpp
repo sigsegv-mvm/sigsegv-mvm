@@ -6,7 +6,7 @@
 #include <boost/algorithm/string/find.hpp>
 
 
-namespace Mod_Util_ConFilter
+namespace Mod::Util::ConFilter
 {
 	class CConExcludeFilter
 	{

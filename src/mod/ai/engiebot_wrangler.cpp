@@ -6,7 +6,7 @@
 class CTFBotMvMEngineerIdle : public Action<CTFBot> {};
 
 
-namespace Mod_AI_EngieBot_Wrangler
+namespace Mod::AI::EngieBot_Wrangler
 {
 	class CTFBotMvMEngineerDisableAutopilot : public IHotplugAction
 	{

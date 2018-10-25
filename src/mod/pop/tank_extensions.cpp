@@ -7,7 +7,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Pop_Tank_Extensions
+namespace Mod::Pop::Tank_Extensions
 {
 	struct SpawnerData
 	{

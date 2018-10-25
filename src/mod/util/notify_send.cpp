@@ -12,7 +12,7 @@
 	sender.End();
 
 
-namespace Mod_Util_Notify_Send
+namespace Mod::Util::Notify_Send
 {
 	ConVar cvar_mtu("sig_util_notify_send_mtu", "65000", FCVAR_NOTIFY,
 		"The maximum size of UDP packets to send through the firehose");

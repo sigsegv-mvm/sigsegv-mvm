@@ -7,7 +7,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	struct CreditInfo
 	{

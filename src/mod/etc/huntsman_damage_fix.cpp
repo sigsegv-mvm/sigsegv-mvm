@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Etc_Huntsman_Damage_Fix
+namespace Mod::Etc::Huntsman_Damage_Fix
 {
 	RefCount rc_CTFCompoundBow_GetProjectileDamage;
 	float flBaseClassProjectileDamage;

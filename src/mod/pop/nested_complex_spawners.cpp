@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Pop_Nested_Complex_Spawners
+namespace Mod::Pop::Nested_Complex_Spawners
 {
 	ConVar cvar_trace("sig_pop_nested_complex_spawners_trace", "0", FCVAR_NOTIFY,
 		"Trace populators and spawners as they are parsed");

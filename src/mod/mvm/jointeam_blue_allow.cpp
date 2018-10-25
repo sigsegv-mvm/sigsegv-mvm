@@ -12,13 +12,13 @@
 
 
 /* HACK */
-namespace Mod_Pop_PopMgr_Extensions
+namespace Mod::Pop::PopMgr_Extensions
 {
 	bool PopFileIsOverridingJoinTeamBlueConVarOn();
 }
 
 
-namespace Mod_MvM_JoinTeam_Blue_Allow
+namespace Mod::MvM::JoinTeam_Blue_Allow
 {
 	using CollectPlayersFunc_t = int (*)(CUtlVector<CTFPlayer *> *, int, bool, bool);
 	
@@ -430,7 +430,7 @@ namespace Mod_MvM_JoinTeam_Blue_Allow
 		if (TFGameRules()->IsMannVsMachineMode() && !pPlayer->IsBot() && iWantedTeam == TF_TEAM_BLUE && iResult != iWantedTeam) {
 			// NOTE: if the pop file had custom param 'AllowJoinTeamBlue 1', then disregard admin-only restrictions
 			extern ConVar cvar_adminonly;
-			if (Mod_Pop_PopMgr_Extensions::PopFileIsOverridingJoinTeamBlueConVarOn() ||
+			if (Mod::Pop::PopMgr_Extensions::PopFileIsOverridingJoinTeamBlueConVarOn() ||
 				!cvar_adminonly.GetBool() || PlayerIsSMAdmin(pPlayer)) {
 				if (cvar_max.GetInt() < 0 || GetMvMBlueHumanCount() < cvar_max.GetInt()) {
 					DevMsg("Player #%d \"%s\" requested team %d but was forced onto team %d; overriding to allow them to join team %d.\n",

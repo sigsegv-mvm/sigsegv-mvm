@@ -4,7 +4,7 @@
 #include "stub/tfbot_behavior.h"
 
 
-namespace Mod_AI_Prevent_Postmortem_Updates
+namespace Mod::AI::Prevent_Postmortem_Updates
 {
 	DETOUR_DECL_MEMBER(EventDesiredResult<CTFBot>, Action_CTFBot_OnKilled, CTFBot *actor, const CTakeDamageInfo& info)
 	{

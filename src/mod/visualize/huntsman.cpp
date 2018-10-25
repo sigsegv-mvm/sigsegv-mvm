@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Visualize_Huntsman
+namespace Mod::Visualize::Huntsman
 {
 	ConVar cvar_interval("sig_visualize_huntsman_interval", "2", FCVAR_NOTIFY,
 		"Visualization: frame interval");

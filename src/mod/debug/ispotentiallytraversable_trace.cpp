@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Debug_IsPotentiallyTraversable_Trace
+namespace Mod::Debug::IsPotentiallyTraversable_Trace
 {
 	// do the opposite of what Ray_t::Init does, to recover the original input values
 	void Ray_UnInit(const Ray_t& ray, Vector& start, Vector& end, Vector& mins, Vector& maxs)

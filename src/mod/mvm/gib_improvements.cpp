@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Gib_Improvements
+namespace Mod::MvM::Gib_Improvements
 {
 	constexpr uint8_t s_Buf[] = {
 		0xa1, 0x5c, 0x6c, 0x70, 0x01,             // +0000  mov eax,ds:g_pGameRules

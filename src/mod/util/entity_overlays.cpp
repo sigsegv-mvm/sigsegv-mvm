@@ -3,7 +3,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Util_Entity_Overlays
+namespace Mod::Util::Entity_Overlays
 {
 	/* sigh... */
 	CBasePlayer *GetLocalPlayer()

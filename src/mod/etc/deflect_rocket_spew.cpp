@@ -3,7 +3,7 @@
 #include "stub/usermessages_sv.h"
 
 
-namespace Mod_Etc_Deflect_Rocket_Spew
+namespace Mod::Etc::Deflect_Rocket_Spew
 {
 	DETOUR_DECL_MEMBER(void, CTFBaseRocket_Destroy, bool bGlow, bool bDud)
 	{

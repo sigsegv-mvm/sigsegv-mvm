@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Debug_GetPlayerMaxSpeed
+namespace Mod::Debug::GetPlayerMaxSpeed
 {
 	void DrawSpeedOverlay(float duration)
 	{

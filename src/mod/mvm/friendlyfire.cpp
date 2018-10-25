@@ -4,7 +4,7 @@
 #include "stub/tf_shareddefs.h"
 
 
-namespace Mod_MvM_FriendlyFire
+namespace Mod::MvM::FriendlyFire
 {
 	ConVar cvar_lagcompensate("sig_mvm_friendlyfire_lagcompensate", "1", FCVAR_NOTIFY,
 		"Mod: enable lag compensation for friendly fire mode");

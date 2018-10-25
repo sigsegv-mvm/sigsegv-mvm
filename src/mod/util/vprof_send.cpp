@@ -64,7 +64,7 @@ public:
 };
 
 
-namespace Mod_Util_VProf_Send
+namespace Mod::Util::VProf_Send
 {
 	ConVar cvar_host("sig_util_vprof_send_host", "jgvm-win8", FCVAR_NOTIFY,
 		"Network host to use for VProf transmission");

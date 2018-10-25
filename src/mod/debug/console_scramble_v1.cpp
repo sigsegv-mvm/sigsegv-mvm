@@ -2,7 +2,7 @@
 #include <vstdlib/coroutine.h>
 
 
-namespace Mod_Debug_Console_Scramble_v1
+namespace Mod::Debug::Console_Scramble_v1
 {
 	FILE *f = nullptr;
 	SpewOutputFunc_t RealOutputFunc = nullptr;

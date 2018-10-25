@@ -4,7 +4,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_Medigun_Speed
+namespace Mod::Debug::Medigun_Speed
 {
 	ConVar cvar_filter_name("sig_debug_medigun_speed_filter_name", "", FCVAR_NOTIFY,
 		"Debug: list of strings against which to filter player names");

@@ -2,7 +2,7 @@
 #include "prop.h"
 
 
-namespace Mod_MvM_YER_Unnerf
+namespace Mod::MvM::YER_Unnerf
 {
 	constexpr uint8_t s_Buf[] = {
 		0xa1, 0x00, 0x00, 0x00, 0x00,             // +0000  mov eax,[g_pGameRules]

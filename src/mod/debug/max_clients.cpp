@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Max_Clients
+namespace Mod::Debug::Max_Clients
 {
 	class CMod : public IMod, public IFrameUpdateListener
 	{

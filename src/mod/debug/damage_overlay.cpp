@@ -3,7 +3,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Damage_Overlay
+namespace Mod::Debug::Damage_Overlay
 {
 	ConVar cvar_clear("sig_debug_damage_overlay_clear", "1", FCVAR_NOTIFY,
 		"Debug: clear overlays each time");

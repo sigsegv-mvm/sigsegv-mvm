@@ -1,7 +1,7 @@
 #include "mod/ai/mvm_defender_bots/trackers.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	CreditTracker TheCreditTracker;
 	FlagTracker TheFlagTracker;

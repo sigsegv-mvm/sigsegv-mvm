@@ -2,7 +2,7 @@
 #include "stub/objects.h"
 
 
-namespace Mod_Visualize_Dispenser_Radius
+namespace Mod::Visualize::Dispenser_Radius
 {
 	// for ammo:
 	// - CObjectDispenser::DispenseThink

@@ -11,7 +11,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Pop_Wave_Extensions
+namespace Mod::Pop::Wave_Extensions
 {
 	struct SentryGunInfo
 	{

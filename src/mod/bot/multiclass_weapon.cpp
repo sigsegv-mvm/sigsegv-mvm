@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Bot_MultiClass_Weapon
+namespace Mod::Bot::MultiClass_Weapon
 {
 	/* a less strict version of TranslateWeaponEntForClass (don't return empty strings) */
 	const char *TranslateWeaponEntForClass_improved(const char *name, int classnum)

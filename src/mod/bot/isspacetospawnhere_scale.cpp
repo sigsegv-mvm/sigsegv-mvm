@@ -4,7 +4,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_Bot_IsSpaceToSpawnHere_Scale
+namespace Mod::Bot::IsSpaceToSpawnHere_Scale
 {
 	/* real implementation in 20151007a */
 #if 0

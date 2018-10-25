@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Cond_Stunned
+namespace Mod::Debug::Cond_Stunned
 {
 	class CMod : public IMod, public IFrameUpdateListener
 	{

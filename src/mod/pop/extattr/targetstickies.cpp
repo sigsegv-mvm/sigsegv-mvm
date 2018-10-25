@@ -7,7 +7,7 @@
 
 #if defined EXPERIMENTAL
 
-namespace Mod_Pop_ExtAttr_TargetStickies
+namespace Mod::Pop::ExtAttr::TargetStickies
 {
 	class CTFBotChaseStickies : public Action<CTFBot>
 	{

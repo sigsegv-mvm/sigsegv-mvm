@@ -7,7 +7,7 @@
 // and the specific part that fails in there is the call to CTFPlayerShared::IsPlayerDominated
 
 
-namespace Mod_MvM_Dominations
+namespace Mod::MvM::Dominations
 {
 	constexpr uint8_t s_Buf[] = {
 		0x80, 0xbf, 0x72, 0x09, 0x00, 0x00, 0x00, // +0000  cmp byte ptr [edi+m_bPlayingMannVsMachine],0x0

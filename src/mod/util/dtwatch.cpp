@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_DTWatch
+namespace Mod::Util::DTWatch
 {
 	
 }

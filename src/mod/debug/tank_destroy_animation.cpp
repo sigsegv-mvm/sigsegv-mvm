@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Debug_Tank_Destroy_Animation
+namespace Mod::Debug::Tank_Destroy_Animation
 {
 	ConVar cvar_override("sig_debug_tank_destroy_animation_override", "", FCVAR_NOTIFY,
 		"Debug: specify sequence to use for tank destruction");

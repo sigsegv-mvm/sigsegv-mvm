@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Prof_Flame_Breakable_Collision
+namespace Mod::Prof::Flame_Breakable_Collision
 {
 	DETOUR_DECL_MEMBER(void, CTFFlameEntity_FlameThink)
 	{

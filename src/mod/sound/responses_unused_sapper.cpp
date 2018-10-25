@@ -5,7 +5,7 @@
 class CTFPlayer;
 
 
-namespace Mod_Sound_Unused_Sapper
+namespace Mod::Sound::Unused_Sapper
 {
 	RefCount rc_CObjectSapper_ApplyRoboSapperEffects;
 	DETOUR_DECL_MEMBER(bool, CObjectSapper_ApplyRoboSapperEffects, CTFPlayer *target, float duration)

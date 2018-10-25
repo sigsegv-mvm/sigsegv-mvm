@@ -3,7 +3,7 @@
 #include "stub/fonts.h"
 
 
-namespace Mod_Util_DebugOverlay_Font_v2
+namespace Mod::Util::DebugOverlay_Font_v2
 {
 #if 0
 	void Experiment(vgui::HFont hFontFG, vgui::HFont hFontBG)

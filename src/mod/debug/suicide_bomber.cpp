@@ -10,7 +10,7 @@
 // 
 
 
-namespace Mod_Debug_Suicide_Bomber
+namespace Mod::Debug::Suicide_Bomber
 {
 	struct CTFBotMissionSuicideBomber : public Action<CTFBot>
 	{

@@ -3,7 +3,7 @@
 #include "link/link.h"
 
 
-namespace Mod_Debug_Override_Step_Sound
+namespace Mod::Debug::Override_Step_Sound
 {
 	DETOUR_DECL_MEMBER(const char *, CTFPlayer_GetOverrideStepSound, const char *pszBaseStepSoundName)
 	{

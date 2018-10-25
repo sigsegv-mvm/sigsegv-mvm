@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_List_Competitive_ConVars
+namespace Mod::Debug::List_Competitive_ConVars
 {
 	constexpr ptrdiff_t OFF_ConVar_m_nFlags      = 0x14;
 	constexpr ptrdiff_t OFF_ConVar_m_pParent     = 0x1c;

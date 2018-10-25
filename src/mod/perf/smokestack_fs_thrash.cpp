@@ -4,7 +4,7 @@
 #include "util/misc.h"
 
 
-namespace Mod_Perf_SmokeStack_FS_Thrash
+namespace Mod::Perf::SmokeStack_FS_Thrash
 {
 	DETOUR_DECL_MEMBER(bool, CSmokeStack_KeyValue, const char *szKeyName, const char *szValue)
 	{

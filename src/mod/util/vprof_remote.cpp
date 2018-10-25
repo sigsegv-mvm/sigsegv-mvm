@@ -44,7 +44,7 @@ MemberFuncThunk<CRConClient *, void, CUtlBuffer&, bool>                         
 MemberFuncThunk<CRConClient *, void, CUtlBuffer&, ServerDataRequestType_t, const char *, const char *> CRConClient::ft_BuildResponse("CRConClient::BuildResponse");
 
 
-namespace Mod_Util_VProf_Remote
+namespace Mod::Util::VProf_Remote
 {
 	FnCommandCallback_t *GetConCommandCallback(ConCommand *cmd)
 	{
@@ -215,7 +215,7 @@ namespace Mod_Util_VProf_Remote
 }
 
 
-namespace Mod_Util_VProf_Remote_Test
+namespace Mod::Util::VProf_Remote_Test
 {
 	typedef unsigned int ra_listener_id;
 	DETOUR_DECL_MEMBER(void, CServerRemoteAccess_SendVProfData, ra_listener_id listenerID, bool bGroupData, void *data, int len)

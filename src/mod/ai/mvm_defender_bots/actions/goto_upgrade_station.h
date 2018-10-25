@@ -8,7 +8,7 @@
 #include "stub/entities.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* find a func_upgradestation and path toward it */
 	class CTFBotGoToUpgradeStation : public IHotplugAction

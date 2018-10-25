@@ -7,7 +7,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_MedigunShield_Obstruction
+namespace Mod::Debug::MedigunShield_Obstruction
 {
 	// - PathFollower::Avoid
 	//   - ILocomotion::TraceHull

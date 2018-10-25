@@ -6,7 +6,7 @@
 #include "stub/cdebugoverlay.h"
 
 
-namespace Mod_Util_Overlay_Recv
+namespace Mod::Util::Overlay_Recv
 {
 	ConVar cvar_trace("sig_util_overlay_recv_trace", "0", FCVAR_NOTIFY,
 		"Trace overlay messages as they are received");

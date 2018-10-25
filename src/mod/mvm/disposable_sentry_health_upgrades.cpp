@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Disposable_Sentry_Health_Upgrades
+namespace Mod::MvM::Disposable_Sentry_Health_Upgrades
 {
 	/* undo the modification of m_iMaxHealth in CObjectSentrygun::MakeDisposableBuilding */
 	RefCount rc_CObjectSentrygun_MakeDisposableBuilding;

@@ -22,7 +22,7 @@
 #include "util/trace.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	// TODO: is there ever any need to override/spoof TFGameRules()->GetGameType()?
 	

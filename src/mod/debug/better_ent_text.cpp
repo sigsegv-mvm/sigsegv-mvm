@@ -4,7 +4,7 @@
 #include "re/nextbot.h"
 
 
-namespace Mod_Debug_Better_Ent_Text
+namespace Mod::Debug::Better_Ent_Text
 {
 	const char *GetTeamNameString(int teamnum)
 	{

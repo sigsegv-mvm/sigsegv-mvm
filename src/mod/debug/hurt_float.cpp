@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Hurt_Float
+namespace Mod::Debug::Hurt_Float
 {
 	template<typename... ARGS>
 	void FancyMsg(float x, float y, const char *fmt, ARGS... args)

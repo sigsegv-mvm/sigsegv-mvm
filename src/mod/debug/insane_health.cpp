@@ -3,7 +3,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Insane_Health
+namespace Mod::Debug::Insane_Health
 {
 	CON_COMMAND_F(sig_debug_insane_health, "Debug: set HP to given value and see what happens", FCVAR_CHEAT)
 	{

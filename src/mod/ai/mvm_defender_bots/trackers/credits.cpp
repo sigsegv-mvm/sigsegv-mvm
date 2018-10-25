@@ -2,7 +2,7 @@
 #include "mod/ai/mvm_defender_bots/helpers.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	void ForEachCurrencyPack(const std::function<void(CCurrencyPack *, bool&)>& functor)
 	{

@@ -3,7 +3,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_Conds
+namespace Mod::Debug::Conds
 {
 	DETOUR_DECL_MEMBER(void, CTFPlayerShared_OnConditionAdded, ETFCond cond)
 	{

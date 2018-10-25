@@ -10,7 +10,7 @@
 #include "mod/pop/kv_conditional.h"
 
 
-namespace Mod_Pop_PopMgr_Extensions
+namespace Mod::Pop::PopMgr_Extensions
 {
 	template<typename T>
 	class IPopOverride

@@ -16,7 +16,7 @@
 //   call: void DebugDrawPhysCollide(const CPhysCollide *pCollide, IMaterial *pMaterial, matrix3x4_t& transform, const color32& color, bool drawAxes)
 
 
-namespace Mod_Debug_Draw_CPhysCollide
+namespace Mod::Debug::Draw_CPhysCollide
 {
 	// C_BaseAnimating::VPhysicsGetObjectList: client, virtual
 	// 

@@ -5,7 +5,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Attr_BlockBackstab_OldStyle
+namespace Mod::Attr::BlockBackstab_OldStyle
 {
 	// Differences between CTFPlayer::CheckBlockBackstab pre-JungleInferno vs post-JungleInferno:
 	// - Removal of unused-return-value (i.e. useless) call to CBaseEntity::IsBaseCombatWeapon

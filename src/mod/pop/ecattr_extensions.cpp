@@ -19,7 +19,7 @@
 
 
 #if 0
-namespace Mod_Pop_ECAttr_Extensions
+namespace Mod::Pop::ECAttr_Extensions
 {
 	/* maps ECAttr instances -> extra data instances */
 	std::map<CTFBot::EventChangeAttributes_t *, CTFBot::ExtraData> extdata;

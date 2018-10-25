@@ -19,7 +19,7 @@ public:
 };
 
 
-namespace Mod_Debug_UseItem_Broken
+namespace Mod::Debug::UseItem_Broken
 {
 	// here's the problem:
 	// the initial delay is calculated based on the required item's m_flNextPrimaryAttack

@@ -6,7 +6,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* defend the gate(s) */
 	class CTFBotMvMDefendGate : public IHotplugAction

@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Debug_TeleportWhere
+namespace Mod::Debug::TeleportWhere
 {
 	const CUtlStringList& Get_CTFBot_m_TeleportWhere(const CTFBot *bot)
 	{

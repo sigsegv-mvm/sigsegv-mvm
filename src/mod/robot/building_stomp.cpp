@@ -3,7 +3,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Robot_Building_Stomp
+namespace Mod::Robot::Building_Stomp
 {
 	RefCount rc_CTFBotMainAction_OnContact;
 	RefCount rc_CTFBotMainAction_OnStuck;

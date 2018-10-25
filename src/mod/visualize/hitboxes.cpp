@@ -9,7 +9,7 @@
 // until we fix the compile errors
 #ifdef _WINDOWS
 
-namespace Mod_Visualize_Hitboxes
+namespace Mod::Visualize::Hitboxes
 {
 	bool IsClient() { return (ClientFactory() != nullptr); }
 	

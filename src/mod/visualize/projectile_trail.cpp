@@ -5,7 +5,7 @@
 #include "util/misc.h"
 
 
-namespace Mod_Visualize_Projectile_Trail
+namespace Mod::Visualize::Projectile_Trail
 {
 	ConVar cvar_interval("sig_visualize_projectile_trail_interval", "1", FCVAR_NOTIFY,
 		"Visualization: frame interval");

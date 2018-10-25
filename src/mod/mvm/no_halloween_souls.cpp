@@ -2,7 +2,7 @@
 #include "stub/gamerules.h"
 
 
-namespace Mod_MvM_No_Halloween_Souls
+namespace Mod::MvM::No_Halloween_Souls
 {
 	DETOUR_DECL_MEMBER(void, CTFGameRules_DropHalloweenSoulPack, int i1, const Vector& vec1, CBaseEntity *ent1, int i2)
 	{

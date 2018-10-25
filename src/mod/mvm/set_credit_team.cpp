@@ -2,7 +2,7 @@
 #include "stub/baseplayer.h"
 
 
-namespace Mod_MvM_Set_Credit_Team
+namespace Mod::MvM::Set_Credit_Team
 {
 	int GetCreditTeamNum()
 	{

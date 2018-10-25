@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Util_Screenshot_PNG
+namespace Mod::Util::Screenshot_PNG
 {
 	// detour CL_TakeSnapshotAndSwap
 	// - not strictly necessary actually

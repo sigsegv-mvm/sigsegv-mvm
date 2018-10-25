@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Anim_Player_UpdateModel_AnimState_Fix
+namespace Mod::Anim::Player_UpdateModel_AnimState_Fix
 {
 	ConVar cvar_setcycle("sig_anim_player_updatemodel_animstate_fix_1", "0", FCVAR_NOTIFY,
 		"Mod: also call CBaseAnimating::SetCycle(0.0f) in CTFPlayer::UpdateModel");

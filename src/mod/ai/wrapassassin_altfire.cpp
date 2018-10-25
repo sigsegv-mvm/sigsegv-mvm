@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_AI_WrapAssassin_AltFire
+namespace Mod::AI::WrapAssassin_AltFire
 {
 	RefCount rc_CTFBot_OpportunisticallyUseWeaponAbilities;
 	DETOUR_DECL_MEMBER(Action<CTFBot> *, CTFBot_OpportunisticallyUseWeaponAbilities)

@@ -2,7 +2,7 @@
 #include "stub/baseentity.h"
 
 
-namespace Mod_Etc_Medicgun_Beam_Machinery
+namespace Mod::Etc::Medicgun_Beam_Machinery
 {
 	DETOUR_DECL_MEMBER(bool, CWeaponMedigun_AllowedToHealTarget, CBaseEntity *pTarget)
 	{

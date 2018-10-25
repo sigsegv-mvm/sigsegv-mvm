@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_MvM_Explosive_Headshot_On_Everything
+namespace Mod::MvM::Explosive_Headshot_On_Everything
 {
 	
 	

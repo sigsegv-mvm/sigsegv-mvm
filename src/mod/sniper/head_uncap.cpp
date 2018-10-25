@@ -2,7 +2,7 @@
 #include "stub/tfweaponbase.h"
 
 
-namespace Mod_Sniper_Head_Uncap
+namespace Mod::Sniper::Head_Uncap
 {
 	DETOUR_DECL_MEMBER(float, CTFSniperRifleDecap_SniperRifleChargeRateMod)
 	{

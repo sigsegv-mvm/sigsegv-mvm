@@ -8,7 +8,7 @@
 #include "util/misc.h"
 
 
-namespace Mod_Util_Client_Cmds
+namespace Mod::Util::Client_Cmds
 {
 	// TODO: another version that allows setting a different player's scale...?
 	void CC_SetPlayerScale(CTFPlayer *player, const CCommand& args)

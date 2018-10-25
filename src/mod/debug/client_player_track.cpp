@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Client_Player_Track
+namespace Mod::Client::Player_Track
 {
 	// can we find NDebugOverlay::EntityBounds in the client?
 	

@@ -3,7 +3,7 @@
 #include "re/nextbot.h"
 
 
-namespace Mod_AI_EngieBot_NoPush
+namespace Mod::AI::EngieBot_NoPush
 {
 	RefCount rc_TeleSpawn_Update;
 	DETOUR_DECL_MEMBER(ActionResult<CTFBot>, CTFBotMvMEngineerTeleportSpawn_Update, CTFBot *actor, float dt)

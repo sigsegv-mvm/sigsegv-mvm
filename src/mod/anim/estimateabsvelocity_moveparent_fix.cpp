@@ -3,7 +3,7 @@
 #include "stub/baseentity.h"
 
 
-namespace Mod_Anim_EstimateAbsVelocity_MoveParent_Fix
+namespace Mod::Anim::EstimateAbsVelocity_MoveParent_Fix
 {
 	DETOUR_DECL_MEMBER(void, C_BaseEntity_EstimateAbsVelocity, Vector& vel)
 	{

@@ -2,7 +2,7 @@
 #include "mod/util/netmsg_shared.h"
 
 
-namespace Mod_Util_NetMsg_Client
+namespace Mod::Util::NetMsg_Client
 {
 	
 	

@@ -5,7 +5,7 @@
 #include "util/color.h"
 
 
-namespace Mod_Visualize_Ammo_Counts
+namespace Mod::Visualize::Ammo_Counts
 {
 	void ScreenText(int group, int line, float duration, const char *str, const Color32& color)
 	{

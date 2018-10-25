@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Etc_Loose_Cannon_Damage_Fix
+namespace Mod::Etc::Loose_Cannon_Damage_Fix
 {
 	RefCount rc_CTFGrenadePipebombProjectile_PipebombTouch;
 	CTFGrenadePipebombProjectile *pGrenade = nullptr;

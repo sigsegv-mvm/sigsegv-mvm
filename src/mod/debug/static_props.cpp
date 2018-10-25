@@ -7,7 +7,7 @@
 // GetAllStaticPropsInOBB
 
 
-namespace Mod_Debug_Static_Props
+namespace Mod::Debug::Static_Props
 {
 	CON_COMMAND(sig_debug_static_props, "")
 	{

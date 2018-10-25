@@ -4,7 +4,7 @@
 //#include "util/misc.h"
 
 
-namespace Mod_AI_Giant_Pyro
+namespace Mod::AI::Giant_Pyro
 {
 	ConVar cvar_attack("sig_ai_giant_pyro_attack", "0", FCVAR_NOTIFY, "");
 	

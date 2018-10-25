@@ -25,7 +25,7 @@ class CTFPlayer;
 class CUpgradeInfo;
 
 
-namespace Mod_Debug_UserMsg_Overflow
+namespace Mod::Debug::UserMsg_Overflow
 {
 	DETOUR_DECL_MEMBER(void, CBaseServer_BroadcastMessage1, INetMessage& msg, bool onlyActive, bool reliable)
 	{

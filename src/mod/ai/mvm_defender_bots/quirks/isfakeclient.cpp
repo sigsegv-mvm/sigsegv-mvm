@@ -4,7 +4,7 @@
 //#include "util/backtrace.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	RefCount rc_Quirk_IsFakeClient;
 	DETOUR_DECL_MEMBER(bool, NextBotPlayer_CTFPlayer_IsFakeClient)

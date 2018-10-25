@@ -44,7 +44,7 @@ public:
 };
 
 
-namespace Mod_Debug_OnKilled_Before_MainAction_Start
+namespace Mod::Debug::OnKilled_Before_MainAction_Start
 {
 	ConVar cvar_overlay_duration("sig_debug_onkilled_before_mainaction_start_overlay_duration", "0.030", FCVAR_NOTIFY,
 		"");

@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_DTWarning_Use_CVar
+namespace Mod::Util::DTWarning_Use_CVar
 {
 	DETOUR_DECL_STATIC(void, DataTable_Warning, const char *pInMessage, ...)
 	{

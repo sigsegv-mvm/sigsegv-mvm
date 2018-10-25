@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Visualize_Sapper_Range
+namespace Mod::Visualize::Sapper_Range
 {
 	void DrawSapperRadius(CTFWeaponBuilder *sapper, float duration)
 	{

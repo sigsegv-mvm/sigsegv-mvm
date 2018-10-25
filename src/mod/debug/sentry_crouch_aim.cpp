@@ -5,7 +5,7 @@
 #define FL_ANIMDUCKING (1<<2)
 
 
-namespace Mod_Debug_Sentry_Crouch_Aim
+namespace Mod::Debug::Sentry_Crouch_Aim
 {
 	CON_COMMAND(sig_debug_sentry_crouch_aim, "")
 	{

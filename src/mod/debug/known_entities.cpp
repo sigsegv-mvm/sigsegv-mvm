@@ -4,7 +4,7 @@
 #include "stub/objects.h"
 
 
-namespace Mod_Debug_Known_Entities
+namespace Mod::Debug::Known_Entities
 {
 	// cvar: select bot by index (or maybe just use nb_select to choose)
 	

@@ -2,7 +2,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Robot_Ticklish
+namespace Mod::Robot::Ticklish
 {
 	ConVar cvar_giants("sig_robot_ticklish_giants", "0", FCVAR_NOTIFY,
 		"Mod: enable tickling for giant robots as well");

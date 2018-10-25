@@ -6,7 +6,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Robot_Pose_Parameters
+namespace Mod::Debug::Robot_Pose_Parameters
 {
 	void PrintToChatAll(const char *str)
 	{

@@ -5,7 +5,7 @@
 //#include "util/backtrace.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	std::vector<bool> stack_m_bPlayingMannVsMachine;
 	void Quirk_MvM_Pre(bool red)

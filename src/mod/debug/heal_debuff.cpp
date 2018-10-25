@@ -3,7 +3,7 @@
 #include "util/backtrace.h"
 
 
-namespace Mod_Debug_Heal_Debuff
+namespace Mod::Debug::Heal_Debuff
 {
 	ConVar cvar_trace("sig_debug_heal_debuff_trace", "0", FCVAR_NOTIFY, "Debug: Print backtrace when InCond(TF_COND_HEALING_DEBUFF) is called");
 	

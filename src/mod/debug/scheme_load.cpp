@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Scheme_Load
+namespace Mod::Debug::Scheme_Load
 {
 	DETOUR_DECL_MEMBER(vgui::HScheme, ISchemeManager_LoadSchemeFromFileEx, vgui::VPANEL sizingPanel, const char *fileName, const char *tag)
 	{

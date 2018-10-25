@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_Search_Paths
+namespace Mod::Util::Search_Paths
 {
 	void AddSearchPath(SearchPathAdd_t where, const CCommand& args)
 	{

@@ -19,7 +19,7 @@ struct CMannVsMachineUpgrades
 };
 
 
-namespace Mod_Debug_Upgrade_Tiers
+namespace Mod::Debug::Upgrade_Tiers
 {
 	DETOUR_DECL_STATIC(int, GetUpgradeStepData, CTFPlayer *player, int slot, int tier, int& count, bool& b1)
 	{

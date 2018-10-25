@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_UpgradeStation_Regen_Improved
+namespace Mod::MvM::UpgradeStation_Regen_Improved
 {
 	RefCount rc_CUpgrades_PlayerPurchasingUpgrade;
 	DETOUR_DECL_MEMBER(void, CUpgrades_PlayerPurchasingUpgrade, CTFPlayer *player, int slot, int tier, bool sell, bool free, bool b3)

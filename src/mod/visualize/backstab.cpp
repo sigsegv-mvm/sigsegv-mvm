@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Visualize_Backstab
+namespace Mod::Visualize::Backstab
 {
 	ConVar cvar_dotproduct("sig_visualize_backstab_dotproduct", "0", FCVAR_NOTIFY,
 		"Visualization: show dot products instead of lines and stuff");

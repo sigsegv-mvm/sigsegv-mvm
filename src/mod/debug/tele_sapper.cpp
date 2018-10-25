@@ -7,7 +7,7 @@
 class CTFBotMainAction : public Action<CTFBot> {};
 
 
-namespace Mod_Debug_Tele_Sapper
+namespace Mod::Debug::Tele_Sapper
 {
 	bool  *CBaseObject_IsPlasmaDisabled     (CBaseObject *obj) { return reinterpret_cast<bool  *>((uintptr_t)obj + 0x0a1c); }
 	float *CBaseObject_GetPlasmaDisabledTime(CBaseObject *obj) { return reinterpret_cast<float *>((uintptr_t)obj + 0x0a18); }

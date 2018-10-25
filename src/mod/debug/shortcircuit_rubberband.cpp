@@ -4,7 +4,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_ShortCircuit_RubberBand
+namespace Mod::Debug::ShortCircuit_RubberBand
 {
 	// 1: convar to disable lag compensation; see if that makes a difference
 	// 2: see if sv_clockcorrection_msecs makes a difference

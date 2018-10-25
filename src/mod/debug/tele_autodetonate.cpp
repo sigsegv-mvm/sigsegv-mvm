@@ -3,7 +3,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Debug_Tele_AutoDetonate
+namespace Mod::Debug::Tele_AutoDetonate
 {
 	struct CFlaggedEntitiesEnum
 	{

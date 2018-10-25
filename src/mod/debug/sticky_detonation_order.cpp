@@ -3,7 +3,7 @@
 #include "util/clientmsg.h"
 
 
-namespace Mod_Debug_Sticky_Detonation_Order
+namespace Mod::Debug::Sticky_Detonation_Order
 {
 	int indent = 0;
 	

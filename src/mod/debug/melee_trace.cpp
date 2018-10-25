@@ -8,7 +8,7 @@
 #include "stub/misc.h"
 
 
-namespace Mod_Debug_Melee_Trace
+namespace Mod::Debug::Melee_Trace
 {
 	/* included within this namespace */
 	#include "mod/debug/melee_trace_normal.h"

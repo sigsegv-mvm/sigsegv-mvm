@@ -5,7 +5,7 @@
 #include <sys/mman.h>
 
 
-namespace Mod_Util_Heap_KSM
+namespace Mod::Util::Heap_KSM
 {
 	void ModifyKSM(bool enable)
 	{

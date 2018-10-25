@@ -8,7 +8,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Cond_Reprogrammed
+namespace Mod::Cond::Reprogrammed
 {
 	constexpr uint8_t s_Buf_UpdateMission[] = {
 		0x8d, 0x45, 0xa8,                               // +0000  lea eax,[ebp-0x58]

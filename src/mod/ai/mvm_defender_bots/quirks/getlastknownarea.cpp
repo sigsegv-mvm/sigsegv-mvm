@@ -4,7 +4,7 @@
 //#include "util/backtrace.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	RefCount rc_Quirk_GetLastKnownArea;
 	DETOUR_DECL_MEMBER(CNavArea *, CTFBot_GetLastKnownArea)

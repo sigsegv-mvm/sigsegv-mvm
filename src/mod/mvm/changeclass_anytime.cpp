@@ -5,7 +5,7 @@
 #include "stub/tf_shareddefs.h"
 
 
-namespace Mod_MvM_ChangeClass_AnyTime
+namespace Mod::MvM::ChangeClass_AnyTime
 {
 	/* this mod merely bypasses the server-side restriction in
 	 * CTFPlayer::HandleCommand_JoinClass;

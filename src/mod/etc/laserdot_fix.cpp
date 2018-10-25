@@ -5,7 +5,7 @@
 class C_SniperDot {};
 
 
-namespace Mod_Etc_LaserDot_Fix
+namespace Mod::Etc::LaserDot_Fix
 {
 	DETOUR_DECL_MEMBER(void, C_SniperDot_ClientThink)
 	{

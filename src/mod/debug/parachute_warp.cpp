@@ -6,7 +6,7 @@
 #include "util/backtrace.h"
 
 
-namespace Mod_Debug_Parachute_Warp
+namespace Mod::Debug::Parachute_Warp
 {
 	// tracing results:
 	// - it's happening somewhere inside of CTFBot::CTFBotIntention::Update

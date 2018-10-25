@@ -2,7 +2,7 @@
 #include "stub/tf_shareddefs.h"
 
 
-namespace Mod_Etc_Holiday_Items_Allow
+namespace Mod::Etc::Holiday_Items_Allow
 {
 	/* the only actual callers of this function are econ-related */
 	DETOUR_DECL_STATIC(int, UTIL_GetHolidayForString, const char *str)

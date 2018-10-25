@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Etc_Melee_Ignore_Teammates
+namespace Mod::Etc::Melee_Ignore_Teammates
 {
 	CTFWeaponBaseMelee *melee = nullptr;
 	CTFPlayer *owner = nullptr;

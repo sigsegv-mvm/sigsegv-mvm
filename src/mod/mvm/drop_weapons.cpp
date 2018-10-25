@@ -5,7 +5,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_Drop_Weapons
+namespace Mod::MvM::Drop_Weapons
 {
 	DETOUR_DECL_MEMBER(bool, CTFPlayer_ShouldDropAmmoPack)
 	{

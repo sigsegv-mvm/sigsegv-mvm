@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Prof_Tier2_RenderUtils
+namespace Mod::Prof::Tier2_RenderUtils
 {
 	DETOUR_DECL_STATIC(void, GenerateBoxVertices, const Vector& vOrigin, const QAngle& angles, const Vector& vMins, const Vector& vMaxs, Vector pVerts[8])
 	{

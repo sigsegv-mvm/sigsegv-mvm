@@ -5,7 +5,7 @@
 
 #if defined _WINDOWS
 
-namespace Mod_Util_DebugOverlay_Font_v3
+namespace Mod::Util::DebugOverlay_Font_v3
 {
 	ConVar cvar_spew("sig_util_debugoverlay_font_v3_spew", "0", FCVAR_NOTIFY,
 		"Utility: spew debugging information");

@@ -5,7 +5,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Credit_Magnet
+namespace Mod::Debug::Credit_Magnet
 {
 	// show all members for each currency pack
 	// show pull info for each currency pack (lines connecting to players pulling on it)

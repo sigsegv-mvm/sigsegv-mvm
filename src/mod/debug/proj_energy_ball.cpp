@@ -18,7 +18,7 @@ struct CTFRadiusDamageInfo
 };
 
 
-namespace Mod_Debug_Proj_Energy_Ball
+namespace Mod::Debug::Proj_Energy_Ball
 {
 #if 0
 	

@@ -3,7 +3,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Minigun_State
+namespace Mod::Debug::Minigun_State
 {
 	class CMod : public IMod, public IFrameUpdateListener
 	{

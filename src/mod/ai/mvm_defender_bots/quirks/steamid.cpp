@@ -86,7 +86,7 @@ inline const char *CSteamID::Render() const // renders this steam ID to string u
 }
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	std::map<CHandle<CTFBot>, uint64_t> map_bot2id;
 	std::map<uint64_t, CHandle<CTFBot>> map_id2bot;

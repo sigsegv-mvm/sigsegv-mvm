@@ -4,7 +4,7 @@
 #include "re/path.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* for use when we don't have an actual bot in mind but still want to figure
 	 * out what the flag carrier's path cost would roughly be */

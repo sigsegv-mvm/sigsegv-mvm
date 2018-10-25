@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Sound_Suppress_Giant_SentryBuster
+namespace Mod::Sound::Suppress_Giant_SentryBuster
 {
 	RefCount rc_CMissionPopulator_UpdateMissionDestroySentries;
 	DETOUR_DECL_MEMBER(bool, CMissionPopulator_UpdateMissionDestroySentries)

@@ -21,7 +21,7 @@
 // 
 
 
-namespace Mod_Debug_PopMgr_MultiParse
+namespace Mod::Debug::PopMgr_MultiParse
 {
 	class CMod : public IMod
 	{

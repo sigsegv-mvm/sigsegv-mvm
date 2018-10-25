@@ -4,7 +4,7 @@
 #include "util/iterate.h"
 
 
-namespace Mod_Debug_Flamethrower_Misc
+namespace Mod::Debug::Flamethrower_Misc
 {
 	ConVar cvar_off1("sig_debug_flamethrower_misc_off1", "+0.0 +0.0 +0.0", 0);
 	ConVar cvar_off2("sig_debug_flamethrower_misc_off2", "+0.0 +0.0 +0.0", 0);

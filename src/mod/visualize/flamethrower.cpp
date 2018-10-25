@@ -6,7 +6,7 @@
 // adapted from Debug:Flamethrower_Mojo
 
 
-namespace Mod_Visualize_Flamethrower
+namespace Mod::Visualize::Flamethrower
 {
 	Color RainbowGenerator()
 	{

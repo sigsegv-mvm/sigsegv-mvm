@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Util_DebugOverlay_Font
+namespace Mod::Util::DebugOverlay_Font
 {
 	RefCount rc_CDebugOverlay_Paint;
 	vgui::HScheme hScheme = 0;

@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Debug_AirblastVuln
+namespace Mod::Debug::AirblastVuln
 {
 	ConVar cvar_trace("sig_debug_airblastvuln_trace", "0", FCVAR_NOTIFY,
 		"Debug: enable debug trace statements");

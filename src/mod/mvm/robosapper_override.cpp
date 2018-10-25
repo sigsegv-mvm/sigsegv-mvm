@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_MvM_RoboSapper_Override
+namespace Mod::MvM::RoboSapper_Override
 {
 	ConVar cvar_radius("sig_mvm_robosapper_override_radius", "-1", FCVAR_NOTIFY,
 		"Mod: robo sapper radius (usual: 0 @ L0, 200 @ L1, 225 @ L2, 250 @ L3); if negative, no override will be applied");

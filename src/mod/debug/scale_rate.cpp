@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_Scale_Rate
+namespace Mod::Debug::Scale_Rate
 {
 	ConVar cvar_hand_scale ("sig_debug_scale_rate_hand_scale",  "1.0", FCVAR_NOTIFY, "Debug: value to be returned by CTFPlayer::GetDesiredHandScale");
 	ConVar cvar_head_scale ("sig_debug_scale_rate_head_scale",  "1.0", FCVAR_NOTIFY, "Debug: value to be returned by CTFPlayer::GetDesiredHeadScale");

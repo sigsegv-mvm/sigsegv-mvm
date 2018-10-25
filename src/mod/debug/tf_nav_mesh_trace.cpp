@@ -2,7 +2,7 @@
 #include "util/backtrace.h"
 
 
-namespace Mod_Debug_TF_Nav_Mesh_Trace
+namespace Mod::Debug::TF_Nav_Mesh_Trace
 {
 	// FireGameEvent
 	// OnServerActivate

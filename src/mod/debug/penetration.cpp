@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Debug_Penetration
+namespace Mod::Debug::Penetration
 {
 	struct penetrated_target_list
 	{

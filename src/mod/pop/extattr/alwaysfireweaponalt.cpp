@@ -2,7 +2,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_Pop_ExtAttr_AlwaysFireWeaponAlt
+namespace Mod::Pop::ExtAttr::AlwaysFireWeaponAlt
 {
 	DETOUR_DECL_MEMBER(void, CTFBotMainAction_FireWeaponAtEnemy, CTFBot *actor)
 	{

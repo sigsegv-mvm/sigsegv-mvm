@@ -3,7 +3,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Sound_Unused_Credits
+namespace Mod::Sound::Unused_Credits
 {
 	RefCount rc_CCurrencyPack_MyTouch;
 	DETOUR_DECL_MEMBER(bool, CCurrencyPack_MyTouch, CBasePlayer *pPlayer)

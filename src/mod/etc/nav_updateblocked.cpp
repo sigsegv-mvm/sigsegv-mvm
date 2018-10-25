@@ -4,7 +4,7 @@
 #include "mem/protect.h"
 
 
-namespace Mod_Etc_Nav_UpdateBlocked
+namespace Mod::Etc::Nav_UpdateBlocked
 {
 	class CMod : public IMod
 	{
@@ -72,7 +72,7 @@ namespace Mod_Etc_Nav_UpdateBlocked
 }
 
 
-namespace Mod_Etc_Nav_UpdateBlocked_Visualize
+namespace Mod::Etc::Nav_UpdateBlocked_Visualize
 {
 	class CMod : public IMod, public IFrameUpdateListener
 	{

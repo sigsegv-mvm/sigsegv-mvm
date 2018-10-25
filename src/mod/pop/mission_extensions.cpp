@@ -4,7 +4,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Pop_Mission_Extensions
+namespace Mod::Pop::Mission_Extensions
 {
 	struct MissionData
 	{

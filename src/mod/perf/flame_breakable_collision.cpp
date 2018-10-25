@@ -2,7 +2,7 @@
 #include "util/scope.h"
 
 
-namespace Mod_Perf_Flame_Breakable_Collision
+namespace Mod::Perf::Flame_Breakable_Collision
 {
 	RefCount rc_CTFFlameEntity_FlameThink;
 	DETOUR_DECL_MEMBER(void, CTFFlameEntity_FlameThink)

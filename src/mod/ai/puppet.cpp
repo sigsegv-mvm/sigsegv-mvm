@@ -7,7 +7,7 @@
 #include <worldsize.h>
 
 
-namespace Mod_AI_Puppet
+namespace Mod::AI::Puppet
 {
 	class CTFBotPuppet : public IHotplugAction
 	{

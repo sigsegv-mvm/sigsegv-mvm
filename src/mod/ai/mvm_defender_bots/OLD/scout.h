@@ -7,7 +7,7 @@
 #include "stub/tfbot.h"
 
 
-namespace Mod_AI_MvM_Defender_Bots
+namespace Mod::AI::MvM_Defender_Bots
 {
 	/* run around and do scout stuff */
 	class CTFBotMvMDefenderScout : public IHotplugAction

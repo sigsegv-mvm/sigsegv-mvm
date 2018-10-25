@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Debug_NoKnockback
+namespace Mod::Debug::NoKnockback
 {
 	DETOUR_DECL_MEMBER(void, CTFPlayer_ApplyPushFromDamage, const CTakeDamageInfo& info, Vector v1)
 	{

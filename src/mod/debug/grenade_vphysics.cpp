@@ -9,7 +9,7 @@
 #include "util/trace.h"
 
 
-namespace Mod_Debug_Grenade_VPhysics
+namespace Mod::Debug::Grenade_VPhysics
 {
 	[[gnu::format(printf, 1, 2)]]
 	void ServerCommand(const char *format, ...)

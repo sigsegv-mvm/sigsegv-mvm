@@ -2,7 +2,7 @@
 #include "stub/baseplayer.h"
 
 
-namespace Mod_Util_ListenServerHost
+namespace Mod::Util::ListenServerHost
 {
 	ConVar cvar_index("sig_util_listenserverhost_index", "1", FCVAR_NOTIFY,
 		"Entity index of the \"listen server host\" player");

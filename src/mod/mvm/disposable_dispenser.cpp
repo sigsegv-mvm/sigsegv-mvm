@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_MvM_Disposable_Dispenser
+namespace Mod::MvM::Disposable_Dispenser
 {
 	
 	

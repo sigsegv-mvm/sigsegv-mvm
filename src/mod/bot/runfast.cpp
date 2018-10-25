@@ -3,7 +3,7 @@
 #include "stub/tfplayer.h"
 
 
-namespace Mod_Bot_RunFast
+namespace Mod::Bot::RunFast
 {
 	constexpr uint8_t s_Buf_Verify[] = {
 		0xe8, 0x08, 0x73, 0xfe, 0xff,                   // +0000  call Path::Compute<CTFBotPathCost>

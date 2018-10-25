@@ -1,7 +1,7 @@
 #include "mod.h"
 
 
-namespace Mod_Util_Console_Recv
+namespace Mod::Util::Console_Recv
 {
 	class SpewBase
 	{

@@ -44,7 +44,7 @@ class SVC_CmdKeyValues : public Base_CmdKeyValues {};
 class CLC_CmdKeyValues : public Base_CmdKeyValues {};
 
 
-namespace Mod_VGUI_Test
+namespace Mod::VGUI::Test
 {
 	bool IsClient() { return (ClientFactory() != nullptr); }
 	
