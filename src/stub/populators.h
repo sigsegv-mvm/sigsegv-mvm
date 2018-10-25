@@ -14,6 +14,7 @@ class CPopulationManager : public CPointEntity
 public:
 	bool LoadMvMMission(KeyValues *kv) { return ft_LoadMvMMission(this, kv); }
 	CWave *GetCurrentWave()            { return ft_GetCurrentWave(this); }
+	void ResetMap()                    {        ft_ResetMap      (this); }
 	
 	static int CollectMvMBots(CUtlVector<CTFPlayer *> *mvm_bots) { return ft_CollectMvMBots(mvm_bots); }
 	
@@ -24,6 +25,7 @@ public:
 private:
 	static MemberFuncThunk<CPopulationManager *, bool, KeyValues *> ft_LoadMvMMission;
 	static MemberFuncThunk<CPopulationManager *, CWave *>           ft_GetCurrentWave;
+	static MemberFuncThunk<CPopulationManager *, void>              ft_ResetMap;
 	
 	static StaticFuncThunk<int, CUtlVector<CTFPlayer *> *> ft_CollectMvMBots;
 };

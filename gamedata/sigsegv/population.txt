@@ -19,10 +19,14 @@
 					lib  "server"
 				}
 				
+				"CPopulationManager::CPopulationManager [C1]"                     "_ZN18CPopulationManagerC1Ev"
+				"CPopulationManager::~CPopulationManager [D0]"                    "_ZN18CPopulationManagerD0Ev"
+				"CPopulationManager::~CPopulationManager [D2]"                    "_ZN18CPopulationManagerD2Ev"
 				"CPopulationManager::AddRespecToPlayer"                           "_ZN18CPopulationManager17AddRespecToPlayerEP9CTFPlayer"
 				"CPopulationManager::AllocateBots"                                "_ZN18CPopulationManager12AllocateBotsEv"
 				"CPopulationManager::ClearCheckpoint"                             "_ZN18CPopulationManager15ClearCheckpointEv"
 				"CPopulationManager::CollectMvMBots"                              "_ZN18CPopulationManager14CollectMvMBotsEP10CUtlVectorIP9CTFPlayer10CUtlMemoryIS2_iEE"
+				"CPopulationManager::CycleMission"                                "_ZN18CPopulationManager12CycleMissionEv"
 				"CPopulationManager::FindCheckpointSnapshot [CTFPlayer *]"        "_ZNK18CPopulationManager22FindCheckpointSnapshotEP9CTFPlayer"
 				"CPopulationManager::FindOrAddPlayerUpgradeHistory [CTFPlayer *]" "_ZN18CPopulationManager29FindOrAddPlayerUpgradeHistoryEP9CTFPlayer"
 				"CPopulationManager::GetCurrentWave"                              "_ZN18CPopulationManager14GetCurrentWaveEv"
@@ -40,6 +44,8 @@
 				"CPopulationManager::RestoreCheckpoint"                           "_ZN18CPopulationManager17RestoreCheckpointEv"
 				"CPopulationManager::RestorePlayerCurrency"                       "_ZN18CPopulationManager21RestorePlayerCurrencyEv"
 				"CPopulationManager::SetNumRespecsForPlayer"                      "_ZN18CPopulationManager22SetNumRespecsForPlayerEP9CTFPlayeri"
+				"CPopulationManager::Spawn"                                       "_ZN18CPopulationManager5SpawnEv"
+				"CPopulationManager::Update"                                      "_ZN18CPopulationManager6UpdateEv"
 				"CPopulationManager::UpdateObjectiveResource"                     "_ZN18CPopulationManager23UpdateObjectiveResourceEv"
 				"CPopulationManager::WaveEnd"                                     "_ZN18CPopulationManager7WaveEndEb"
 				
