@@ -140,6 +140,7 @@ sourceFiles += [
   
   'src/mod/demo/stringtable_limit.cpp',
   
+  'src/mod/etc/crayairblast_convar_nocheat.cpp',
   'src/mod/etc/debug_mission_change_crash.cpp',
   'src/mod/etc/deflect_rocket_spew.cpp',
   'src/mod/etc/heat_seeking_rockets.cpp',
