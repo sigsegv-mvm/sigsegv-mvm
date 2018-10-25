@@ -58,9 +58,9 @@ public:
 	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
 	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
 	
-	DECL_SENDPROP(float, m_flLastFireTime);
-	DECL_SENDPROP(float, m_flEffectBarRegenTime);
-	DECL_SENDPROP(float, m_flEnergy);
+	DECL_SENDPROP(float,                m_flLastFireTime);
+	DECL_SENDPROP(float,                m_flEffectBarRegenTime);
+	DECL_SENDPROP(float,                m_flEnergy);
 	DECL_SENDPROP(CHandle<CTFWearable>, m_hExtraWearable);
 	DECL_SENDPROP(CHandle<CTFWearable>, m_hExtraWearableViewModel);
 	
