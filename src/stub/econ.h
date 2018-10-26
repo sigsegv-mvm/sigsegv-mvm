@@ -104,9 +104,9 @@ protected:
 public:
 	virtual int GetTypeUniqueIdentifier() const = 0;
 	virtual void LoadEconAttributeValue(CEconItem *pItem, const CEconItemAttributeDefinition *pAttrDef, const attribute_data_union_t& value) const = 0;
-	virtual std::string *ConvertEconAttributeValueToByteStream(const attribute_data_union_t& value, std::string *pString) const = 0;
+	virtual void ConvertEconAttributeValueToByteStream(const attribute_data_union_t& value, std::string *pString) const = 0;
 	virtual bool BConvertStringToEconAttributeValue(const CEconItemAttributeDefinition *pAttrDef, const char *pString, attribute_data_union_t *pValue, bool b1 = true) const = 0;
-	virtual std::string *ConvertEconAttributeValueToString(const CEconItemAttributeDefinition *pAttrDef, const attribute_data_union_t& value, std::string *pString) const = 0;
+	virtual void ConvertEconAttributeValueToString(const CEconItemAttributeDefinition *pAttrDef, const attribute_data_union_t& value, std::string *pString) const = 0;
 	virtual void LoadByteStreamToEconAttributeValue(CEconItem *pItem, const CEconItemAttributeDefinition *pAttrDef, const std::string& string) const = 0;
 	virtual void InitializeNewEconAttributeValue(attribute_data_union_t *pValue) const = 0;
 	virtual void UnloadEconAttributeValue(attribute_data_union_t *pValue) const = 0;
