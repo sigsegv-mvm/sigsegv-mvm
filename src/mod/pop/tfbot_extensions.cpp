@@ -14,7 +14,7 @@
 namespace Mod::Pop::TFBot_Extensions
 {
 	/* mobber AI, based on CTFBotAttackFlagDefenders */
-	class CTFBotMobber : public IHotplugAction
+	class CTFBotMobber final : public IHotplugAction
 	{
 	public:
 		CTFBotMobber()
@@ -164,7 +164,7 @@ namespace Mod::Pop::TFBot_Extensions
 	std::vector<DelayedAddCond> delayed_addconds;
 	
 	
-	void UpdateDelayedAddConds()
+	static void UpdateDelayedAddConds()
 	{
 		for (auto it = delayed_addconds.begin(); it != delayed_addconds.end(); ) {
 			const auto& info = *it;
@@ -186,7 +186,7 @@ namespace Mod::Pop::TFBot_Extensions
 	}
 	
 	
-	void ClearAllData()
+	static void ClearAllData()
 	{
 		spawners.clear();
 		spawner_of_bot.clear();
@@ -194,7 +194,7 @@ namespace Mod::Pop::TFBot_Extensions
 	}
 	
 	
-	void RemoveSpawner(CTFBotSpawner *spawner)
+	static void RemoveSpawner(CTFBotSpawner *spawner)
 	{
 		for (auto it = spawner_of_bot.begin(); it != spawner_of_bot.end(); ) {
 			if ((*it).second == spawner) {
@@ -229,7 +229,7 @@ namespace Mod::Pop::TFBot_Extensions
 	}
 	
 	
-	const char *GetStateName(int nState)
+	static const char *GetStateName(int nState)
 	{
 		switch (nState) {
 		case TF_STATE_ACTIVE:   return "ACTIVE";
@@ -241,7 +241,7 @@ namespace Mod::Pop::TFBot_Extensions
 	}
 	
 	
-	void ClearDataForBot(CTFBot *bot)
+	static void ClearDataForBot(CTFBot *bot)
 	{
 		spawner_of_bot.erase(bot);
 		
@@ -328,7 +328,7 @@ namespace Mod::Pop::TFBot_Extensions
 	}
 	
 	
-	void Parse_AddCond(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_AddCond(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		AddCond addcond;
 		
@@ -370,7 +370,7 @@ namespace Mod::Pop::TFBot_Extensions
 		spawners[spawner].addconds.push_back(addcond);
 	}
 	
-	void Parse_DamageAppliesCond(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_DamageAppliesCond(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		AddCond addcond;
 		
@@ -408,7 +408,7 @@ namespace Mod::Pop::TFBot_Extensions
 		spawners[spawner].dmgappliesconds.push_back(addcond);
 	}
 	
-	void Parse_Action(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_Action(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		const char *value = kv->GetString();
 		
@@ -425,7 +425,7 @@ namespace Mod::Pop::TFBot_Extensions
 		}
 	}
 	
-	void Parse_WeaponResist(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_WeaponResist(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
 			const char *name = subkey->GetName();
@@ -441,7 +441,7 @@ namespace Mod::Pop::TFBot_Extensions
 		}
 	}
 	
-	void Parse_ItemColor(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_ItemColor(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		const char *item_name = "";
 		int color_r           = 0x00;
@@ -495,7 +495,7 @@ namespace Mod::Pop::TFBot_Extensions
 		spawners[spawner].item_colors[item_name] = { color_r, color_g, color_b, 0xff };
 	}
 	
-	void Parse_HomingRockets(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_HomingRockets(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		HomingRockets& hr = spawners[spawner].homing_rockets;
 		hr.enable = true;
@@ -530,7 +530,7 @@ namespace Mod::Pop::TFBot_Extensions
 			hr.speed, hr.turn_power, hr.min_dot_product);
 	}
 	
-	void Parse_CustomWeaponModel(CTFBotSpawner *spawner, KeyValues *kv)
+	static void Parse_CustomWeaponModel(CTFBotSpawner *spawner, KeyValues *kv)
 	{
 		int slot = -1;
 		const char *path = "";
@@ -1203,7 +1203,7 @@ namespace Mod::Pop::TFBot_Extensions
 //	}
 	
 	
-	void UpdateRingOfFire()
+	static void UpdateRingOfFire()
 	{
 		static int ring_of_fire_tick_interval = (int)(0.500f / (float)gpGlobals->interval_per_tick);
 		if (gpGlobals->tickcount % ring_of_fire_tick_interval == 0) {

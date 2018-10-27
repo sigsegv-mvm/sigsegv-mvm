@@ -17,7 +17,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 	};
 	
 	
-	const char *ClassFlags_ToString(unsigned int flags)
+	static const char *ClassFlags_ToString(unsigned int flags)
 	{
 		static char buf[4096];
 		buf[0] = '\0';
@@ -35,7 +35,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 	std::map<CRandomChoiceSpawner *, int> randomchoice_tracker;
 	
 	
-	void CRandomChoiceSpawner_GenerateRandomIndexes(CRandomChoiceSpawner *spawner, int index)
+	static void CRandomChoiceSpawner_GenerateRandomIndexes(CRandomChoiceSpawner *spawner, int index)
 	{
 		/* this is pretty much straight out of mvm-reversed */
 		
@@ -53,7 +53,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 	}
 	
 	
-	int CRandomChoiceSpawner_GetNextIndex(CRandomChoiceSpawner *spawner)
+	static int CRandomChoiceSpawner_GetNextIndex(CRandomChoiceSpawner *spawner)
 	{
 		/* will default to zero if not yet in the map */
 		int& ordinal = randomchoice_tracker[spawner];
@@ -62,7 +62,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 	}
 	
 	
-	int IPopulationSpawner_CountClasses(CWaveSpawnPopulator *wavespawn, IPopulationSpawner *spawner, std::vector<WaveClassCount_t>& counts)
+	static int IPopulationSpawner_CountClasses(CWaveSpawnPopulator *wavespawn, IPopulationSpawner *spawner, std::vector<WaveClassCount_t>& counts)
 	{
 		/* TODO: remove this garbage */
 		constexpr ptrdiff_t OFF_CWaveSpawnPopulator_m_bSupport        = 0x4cc;
@@ -161,7 +161,7 @@ namespace Mod::Pop::Nested_Complex_Spawners
 		return num_spawned;
 	}
 	
-	void CWave_CountClasses(CWave *wave)
+	static void CWave_CountClasses(CWave *wave)
 	{
 		if (cvar_trace.GetBool()) {
 			DevMsg("[Wave]\n");

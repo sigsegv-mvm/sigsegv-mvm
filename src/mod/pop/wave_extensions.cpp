@@ -92,7 +92,7 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	bool FindSentryHint(const char *name, std::vector<CHandle<CTFBotHintSentrygun>>& hints)
+	static bool FindSentryHint(const char *name, std::vector<CHandle<CTFBotHintSentrygun>>& hints)
 	{
 		ForEachEntityByClassname("bot_hint_sentrygun", [&](CBaseEntity *ent){
 			if (FStrEq(STRING(ent->GetEntityName()), name)) {
@@ -107,7 +107,7 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	void Parse_Explanation(CWave *wave, KeyValues *kv)
+	static void Parse_Explanation(CWave *wave, KeyValues *kv)
 	{
 		waves[wave].explanation.clear();
 		
@@ -116,7 +116,7 @@ namespace Mod::Pop::Wave_Extensions
 		}
 	}
 	
-	void Parse_SentryGun(CWave *wave, KeyValues *kv)
+	static void Parse_SentryGun(CWave *wave, KeyValues *kv)
 	{
 		SentryGunInfo info;
 		
@@ -179,7 +179,7 @@ namespace Mod::Pop::Wave_Extensions
 		waves[wave].sentryguns.push_back(info);
 	}
 	
-	void Parse_HalloweenBoss(CWave *wave, KeyValues *kv)
+	static void Parse_HalloweenBoss(CWave *wave, KeyValues *kv)
 	{
 		BossInfo info;
 		
@@ -248,7 +248,7 @@ namespace Mod::Pop::Wave_Extensions
 		waves[wave].bosses.push_back(info);
 	}
 	
-	void Parse_SoundLoop(CWave *wave, KeyValues *kv)
+	static void Parse_SoundLoop(CWave *wave, KeyValues *kv)
 	{
 		if (!waves[wave].sound_loops.empty()) {
 			Warning("Multiple \'SoundLoop\' blocks found in the same Wave!\n");
@@ -309,7 +309,7 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	void PrintToChatAll(const char *str)
+	static void PrintToChatAll(const char *str)
 	{
 		int msg_type = usermessages->LookupUserMessage("SayText2");
 		if (msg_type == -1) return;
@@ -326,7 +326,7 @@ namespace Mod::Pop::Wave_Extensions
 		engine->MessageEnd();
 	}
 	
-	void ParseColorsAndPrint(const char *line)
+	static void ParseColorsAndPrint(const char *line)
 	{
 		std::vector<char> output;
 		
@@ -393,7 +393,7 @@ namespace Mod::Pop::Wave_Extensions
 		PrintToChatAll(output.data());
 	}
 	
-	void ShowWaveExplanation()
+	static void ShowWaveExplanation()
 	{
 		/* wave will be null after game is won and in other corner cases */
 		CWave *wave = g_pPopulationManager->GetCurrentWave();
@@ -432,7 +432,7 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	CObjectSentrygun *SpawnSentryGun(const Vector& origin, const QAngle& angles, int teamnum, int level)
+	static CObjectSentrygun *SpawnSentryGun(const Vector& origin, const QAngle& angles, int teamnum, int level)
 	{
 		auto sentry = rtti_cast<CObjectSentrygun *>(CreateEntityByName("obj_sentrygun"));
 		if (sentry == nullptr) {
@@ -459,7 +459,7 @@ namespace Mod::Pop::Wave_Extensions
 		return sentry;
 	}
 	
-	void SpawnSentryGuns(SentryGunInfo& info)
+	static void SpawnSentryGuns(SentryGunInfo& info)
 	{
 		info.spawned = true;
 		
@@ -478,7 +478,7 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	void SpawnBoss(BossInfo& info)
+	static void SpawnBoss(BossInfo& info)
 	{
 		info.spawned = true;
 		
@@ -579,7 +579,7 @@ namespace Mod::Pop::Wave_Extensions
 	std::string soundloop_active;
 	
 	
-	void StopSoundLoop()
+	static void StopSoundLoop()
 	{
 		ConColorMsg(Color(0xff, 0x00, 0x00, 0xff), "[SoundLoop] StopSoundLoop \"%s\"\n", soundloop_active.c_str());
 		
@@ -590,7 +590,7 @@ namespace Mod::Pop::Wave_Extensions
 		soundloop_active.clear();
 	}
 	
-	void StartSoundLoop(const std::string& filename)
+	static void StartSoundLoop(const std::string& filename)
 	{
 		if (!soundloop_active.empty()) {
 			StopSoundLoop();

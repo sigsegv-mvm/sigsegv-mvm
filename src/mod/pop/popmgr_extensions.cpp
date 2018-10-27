@@ -777,7 +777,7 @@ namespace Mod::Pop::PopMgr_Extensions
 //	}
 	
 	
-	void Parse_ItemWhitelist(KeyValues *kv)
+	static void Parse_ItemWhitelist(KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
 			if (FStrEq(subkey->GetName(), "Classname")) {
@@ -796,7 +796,7 @@ namespace Mod::Pop::PopMgr_Extensions
 		}
 	}
 	
-	void Parse_ItemBlacklist(KeyValues *kv)
+	static void Parse_ItemBlacklist(KeyValues *kv)
 	{
 		FOR_EACH_SUBKEY(kv, subkey) {
 			if (FStrEq(subkey->GetName(), "Classname")) {
@@ -815,7 +815,7 @@ namespace Mod::Pop::PopMgr_Extensions
 		}
 	}
 	
-	void Parse_FlagResetTime(KeyValues *kv)
+	static void Parse_FlagResetTime(KeyValues *kv)
 	{
 		const char *name = nullptr; // required
 		int reset_time;             // required
@@ -848,7 +848,7 @@ namespace Mod::Pop::PopMgr_Extensions
 		state.m_FlagResetTimes.emplace(name, reset_time);
 	}
 	
-	void Parse_ExtraSpawnPoint(KeyValues *kv)
+	static void Parse_ExtraSpawnPoint(KeyValues *kv)
 	{
 		const char *name = nullptr; // required
 		int teamnum = TEAM_INVALID; // required
@@ -922,7 +922,7 @@ namespace Mod::Pop::PopMgr_Extensions
 			VectorExpand(spawnpoint->GetAbsOrigin()), VectorExpand(spawnpoint->GetAbsAngles()));
 	}
 	
-	void Parse_ExtraTankPath(KeyValues *kv)
+	static void Parse_ExtraTankPath(KeyValues *kv)
 	{
 		const char *name = nullptr; // required
 		std::vector<Vector> points; // required

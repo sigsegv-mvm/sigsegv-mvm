@@ -25,7 +25,7 @@ namespace Mod::Pop::Tank_Extensions
 	std::map<CTankSpawner *, SpawnerData> spawners;
 	
 	
-	SpawnerData *FindSpawnerDataForTank(const CTFTankBoss *tank)
+	static SpawnerData *FindSpawnerDataForTank(const CTFTankBoss *tank)
 	{
 		if (tank == nullptr) return nullptr;
 		
@@ -40,7 +40,7 @@ namespace Mod::Pop::Tank_Extensions
 		
 		return nullptr;
 	}
-	SpawnerData *FindSpawnerDataForBoss(const CTFBaseBoss *boss)
+	static SpawnerData *FindSpawnerDataForBoss(const CTFBaseBoss *boss)
 	{
 		/* FindSpawnerDataForTank doesn't do anything special, just a ptr comparison,
 		 * so there's no need to do an expensive rtti_cast or anything if we have a CTFBaseBoss ptr */
@@ -120,7 +120,7 @@ namespace Mod::Pop::Tank_Extensions
 	}
 	
 	
-	void ForceRomeVisionModels(CTFTankBoss *tank)
+	static void ForceRomeVisionModels(CTFTankBoss *tank)
 	{
 		auto l_print_model_array = [](auto& array, const char *name){
 			DevMsg("\n");
