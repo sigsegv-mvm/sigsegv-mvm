@@ -5,7 +5,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+#ifdef __GNUC__
 #include <strcompat.h>
+#endif
 
 
 using const_char_ptr = const char *;
@@ -178,20 +180,25 @@ MemberVFuncThunk<const CEconItemView *, int> CEconItemView::vt_GetItemDefIndex(T
 IMPL_SENDPROP(CEconItemView, CAttributeContainer, m_Item, CEconEntity);
 
 
-void CEconItemAttributeDefinition::ConvertValueToString(attribute_data_union_t& value, char *buf, size_t buf_len)
+std::string CEconItemAttributeDefinition::ConvertValueToString(attribute_data_union_t& value)
 {
 	/* if BConvertStringToEconAttributeValue was called with b1 = true, then
 	 * calling ConvertEconAttributeValueToString will render the stored-as-float
 	 * value as an integer, which looks horribly wrong */
 	if (this->IsStoredAsInteger() && this->IsType<CSchemaAttributeType_Default>()) {
-		snprintf(buf, buf_len, "%d", RoundFloatToInt(value.m_Float));
-		return;
+		return std::to_string(RoundFloatToInt(value.m_Float));
 	}
 	
-	void *str = strcompat_alloc();
-	this->GetType()->ConvertEconAttributeValueToString(this, value, reinterpret_cast<std::string *>(str));
-	strcompat_get(str, buf, buf_len);
-	strcompat_free(str);
+	/* we only actually need to use the strcompat workaround on GCC Linux builds */
+#ifdef __GNUC__
+	string_compat str;
+	this->GetType()->ConvertEconAttributeValueToString(this, value, str.compat_ptr());
+	return str.get();
+#else
+	std::string str;
+	this->GetType()->ConvertEconAttributeValueToString(this, value, &str);
+	return str;
+#endif
 }
 
 

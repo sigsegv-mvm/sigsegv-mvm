@@ -96,6 +96,11 @@ public:
 };
 
 
+/* WARNING WARNING WARNING:
+ * on GCC, be EXTREMELY careful about passing std::string instances across ABI
+ * boundaries! this means you should use libstdcompat as an intermediary layer
+ * and never directly touch the std::string instances yourself! */
+
 class ISchemaAttributeType
 {
 	// TODO: use vfunc thunks instead of relying on vtable matching up forever
@@ -296,7 +301,7 @@ public:
 	
 	/* do all the libstrcompat junk automatically;
 	 * and handle "stored_as_integer" properly when BConvertStringToEconAttributeValue was called with b1 = true */
-	void ConvertValueToString(attribute_data_union_t& value, char *buf, size_t buf_len);
+	std::string ConvertValueToString(attribute_data_union_t& value);
 	
 private:
 	bool GetKVBool(const char *key, bool fallback) const
