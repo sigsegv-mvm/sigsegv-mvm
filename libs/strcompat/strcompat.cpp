@@ -1,8 +1,9 @@
 #if !defined(__GNUC__) || __GNUC__ != 4 || __GNUC_MINOR__ != 8
-#error The strcompat library must be built with GCC 4.8.x! That's the whole point!
+#error The strcompat library must be built with GCC 4.8.x! Thats the whole point!
 #endif
 
 
+#include <cstddef>
 #include <cassert>
 #include <string>
 #include <bsd/string.h>
@@ -26,6 +27,26 @@ void strcompat_free(void *ptr)
 
 
 extern "C" [[gnu::visibility("default")]]
+size_t strcompat_size(const void *ptr)
+{
+	assert(ptr != nullptr);
+	
+	const std::string *str = reinterpret_cast<const std::string *>(ptr);
+	return str->size();
+}
+
+
+extern "C" [[gnu::visibility("default")]]
+void strcompat_set(void *ptr, const char *src)
+{
+	assert(ptr != nullptr);
+	assert(src != nullptr);
+	
+	std::string *str = reinterpret_cast<std::string *>(ptr);
+	str->assign(src);
+}
+
+extern "C" [[gnu::visibility("default")]]
 size_t strcompat_get(const void *ptr, char *dst, size_t dst_len)
 {
 	assert(ptr != nullptr);
@@ -36,12 +57,12 @@ size_t strcompat_get(const void *ptr, char *dst, size_t dst_len)
 	return strlcpy(dst, str->c_str(), dst_len);
 }
 
+
 extern "C" [[gnu::visibility("default")]]
-void strcompat_set(void *ptr, const char *src)
+const char *strcompat_get_unsafe(const void *ptr)
 {
 	assert(ptr != nullptr);
-	assert(src != nullptr);
 	
-	std::string *str = reinterpret_cast<std::string *>(ptr);
-	str->assign(src);
+	const std::string *str = reinterpret_cast<const std::string *>(ptr);
+	return str->c_str();
 }

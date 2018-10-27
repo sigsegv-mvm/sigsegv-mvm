@@ -2,19 +2,8 @@
 #define _INCLUDE_LIBSTRCOMPAT_
 
 
-#include <cstddef>
-
-
-extern "C"
-{
-	void *strcompat_alloc(void);
-	void  strcompat_free (void *ptr);
-	
-	size_t strcompat_get(const void *ptr, char *dst, size_t dst_len);
-	void   strcompat_set(void *ptr, const char *src);
-}
-
-
+// =============================================================================
+//
 // The purpose of this library is to make it possible to interoperate with
 // std::string objects between binaries built with modern GCC versions
 // (e.g. 8.2.0) and binaries build with ancient horrible crusty GCC versions
@@ -64,6 +53,30 @@ extern "C"
 // 
 // GCC people (specifically the libsupc++/libstdc++ maintainers):
 // Get your shit together. Please.
+// 
+// =============================================================================
+
+
+#include <cstddef>
+
+
+/* opaque pointer to a GCC 4.8 ABI std::string */
+using strptr_t = void *;
+
+
+/* main API functions */
+extern "C"
+{
+	strptr_t strcompat_alloc(void);
+	void     strcompat_free (strptr_t ptr);
+	
+	size_t strcompat_size(const strptr_t ptr);
+	
+	void   strcompat_set(strptr_t ptr, const char *src);
+	size_t strcompat_get(const strptr_t ptr, char *dst, size_t dst_len);
+	
+	const char *strcompat_get_unsafe(const strptr_t ptr);
+}
 
 
 #endif
