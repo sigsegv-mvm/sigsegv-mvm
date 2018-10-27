@@ -58,6 +58,7 @@
 
 
 #include <cstddef>
+#include <string>
 
 
 /* opaque pointer to a GCC 4.8 ABI std::string */
@@ -77,6 +78,37 @@ extern "C"
 	
 	const char *strcompat_get_unsafe(const strptr_t ptr);
 }
+
+
+/* helper class for less-clunky usage from external C++ code */
+class string_compat
+{
+public:
+	 string_compat() = default;
+	~string_compat() { strcompat_free(m_ptr); }
+	
+	/* initialize the string value at construction time */
+	explicit string_compat(const char        *init) { strcompat_set(m_ptr, init);         }
+	explicit string_compat(const std::string& init) { strcompat_set(m_ptr, init.c_str()); }
+	
+	/* get the string length */
+	size_t size() const { return strcompat_size(m_ptr); }
+	
+	/* get the GCC 4.8 ABI compatible string pointer */
+	std::string *compat_ptr() const { return reinterpret_cast<std::string *>(m_ptr); }
+	
+	/* copy in the string value from a C string pointer or native std::string */
+	void set(const char        *str) { strcompat_set(m_ptr, str);         }
+	void set(const std::string& str) { strcompat_set(m_ptr, str.c_str()); }
+	
+	/* copy out the string value to a C string buffer or native std::string */
+	template<size_t N> size_t      get(char (&dst)[N])            const { return strcompat_get(m_ptr, dst, N);       }
+	                   size_t      get(char *dst, size_t dst_len) const { return strcompat_get(m_ptr, dst, dst_len); }
+	                   std::string get()                          const { return strcompat_get_unsafe(m_ptr);        }
+	
+private:
+	strptr_t m_ptr{ strcompat_alloc() };
+};
 
 
 #endif
