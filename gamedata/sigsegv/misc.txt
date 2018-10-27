@@ -1275,12 +1275,6 @@
 					sym  "_ZN14CTFFlameEntity6CreateERK6VectorRK6QAngleP11CBaseEntityfifbb"
 				}
 				
-				"UTIL_Remove"
-				{
-					type "sym"
-					sym  "_Z11UTIL_RemoveP11CBaseEntity"
-				}
-				
 				"CBaseCombatCharacter::GiveAmmo"
 				{
 					type "sym"
@@ -2806,10 +2800,13 @@
 					lib  "server"
 				}
 				
-				"UTIL_GetCommandClient"             "_Z21UTIL_GetCommandClientv"
-				"UTIL_GetCommandClientIndex"        "_Z26UTIL_GetCommandClientIndexv"
-				"UTIL_IsCommandIssuedByServerAdmin" "_Z33UTIL_IsCommandIssuedByServerAdminv"
-				"UTIL_PrecacheOther"                "_Z18UTIL_PrecacheOtherPKcS0_"
+				
+				"UTIL_GetCommandClient"              "_Z21UTIL_GetCommandClientv"
+				"UTIL_GetCommandClientIndex"         "_Z26UTIL_GetCommandClientIndexv"
+				"UTIL_IsCommandIssuedByServerAdmin"  "_Z33UTIL_IsCommandIssuedByServerAdminv"
+				"UTIL_PrecacheOther"                 "_Z18UTIL_PrecacheOtherPKcS0_"
+				"UTIL_Remove [IServerNetworkable *]" "_Z11UTIL_RemoveP18IServerNetworkable"
+				"UTIL_Remove [CBaseEntity *]"        "_Z11UTIL_RemoveP11CBaseEntity"
 				
 				"CBaseEntity::ThinkSet"                       "_ZN11CBaseEntity8ThinkSetEMS_FvvEfPKc"
 				"CBaseEntity::GetMaxHealth"                   "_ZNK11CBaseEntity12GetMaxHealthEv"
