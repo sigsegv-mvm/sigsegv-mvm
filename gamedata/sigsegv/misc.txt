@@ -2834,7 +2834,11 @@
 				
 				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
 				
+				"CTFObjectiveResource::DecrementMannVsMachineWaveClassCount" "_ZN20CTFObjectiveResource36DecrementMannVsMachineWaveClassCountE8string_tj"
+				
 				"CBasePlayer::SetVCollisionState" "_ZN11CBasePlayer18SetVCollisionStateERK6VectorS2_i"
+				
+				"CTFTankBoss::UpdateOnRemove" "_ZN11CTFTankBoss14UpdateOnRemoveEv"
 				
 				"CAttributeList::GetAttributeByID"       "_ZNK14CAttributeList16GetAttributeByIDEi"
 				"CAttributeList::GetAttributeByName"     "_ZNK14CAttributeList18GetAttributeByNameEPKc"

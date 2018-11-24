@@ -2,6 +2,7 @@
 #include "mod/pop/kv_conditional.h"
 #include "stub/entities.h"
 #include "stub/populators.h"
+#include "stub/tf_objective_resource.h"
 #include "stub/strings.h"
 #include "stub/misc.h"
 #include "util/scope.h"
@@ -350,6 +351,27 @@ namespace Mod::Pop::Tank_Extensions
 	}
 	
 	
+	RefCount rc_CTFTankBoss_UpdateOnRemove__not_miniboss;
+	DETOUR_DECL_MEMBER(void, CTFTankBoss_UpdateOnRemove)
+	{
+		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		
+		SpawnerData *data = FindSpawnerDataForTank(tank);
+
+		SCOPED_INCREMENT_IF(rc_CTFTankBoss_UpdateOnRemove__not_miniboss, data != nullptr && !data->is_miniboss);
+		DETOUR_MEMBER_CALL(CTFTankBoss_UpdateOnRemove)();
+	}
+	
+	DETOUR_DECL_MEMBER(void, CTFObjectiveResource_DecrementMannVsMachineWaveClassCount, string_t name, unsigned int flags)
+	{
+		if (rc_CTFTankBoss_UpdateOnRemove__not_miniboss) {
+			flags &= ~CLASSFLAG_MINIBOSS;
+		}
+		
+		DETOUR_MEMBER_CALL(CTFObjectiveResource_DecrementMannVsMachineWaveClassCount)(name, flags);
+	}
+	
+	
 	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
@@ -372,6 +394,9 @@ namespace Mod::Pop::Tank_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTankSpawner_GetClassIcon, "CTankSpawner::GetClassIcon");
 			
 			MOD_ADD_DETOUR_MEMBER(CTankSpawner_IsMiniBoss, "CTankSpawner::IsMiniBoss");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFTankBoss_UpdateOnRemove,                                "CTFTankBoss::UpdateOnRemove");
+			MOD_ADD_DETOUR_MEMBER(CTFObjectiveResource_DecrementMannVsMachineWaveClassCount, "CTFObjectiveResource::DecrementMannVsMachineWaveClassCount");
 		}
 		
 		virtual void OnUnload() override
