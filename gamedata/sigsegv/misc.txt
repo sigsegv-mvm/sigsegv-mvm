@@ -2847,6 +2847,8 @@
 				"CTFWeaponBaseGun::ShouldPlayFireAnim"   "_ZN16CTFWeaponBaseGun18ShouldPlayFireAnimEv"
 				"CTFWeaponBaseGun::UpdatePunchAngles"    "_ZN16CTFWeaponBaseGun17UpdatePunchAnglesEP9CTFPlayer"
 				
+				"CBaseProjectile::SetLauncher" "_ZN15CBaseProjectile11SetLauncherEP11CBaseEntity"
+				
 				"CTFTankBoss::UpdateOnRemove" "_ZN11CTFTankBoss14UpdateOnRemoveEv"
 				
 				"CAttributeList::GetAttributeByID"       "_ZNK14CAttributeList16GetAttributeByIDEi"
