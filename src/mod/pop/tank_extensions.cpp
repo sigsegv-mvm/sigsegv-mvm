@@ -324,11 +324,12 @@ namespace Mod::Pop::Tank_Extensions
 	
 	DETOUR_DECL_MEMBER(string_t, CTankSpawner_GetClassIcon, int index)
 	{
-		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		auto spawner = reinterpret_cast<CTankSpawner *>(this);
 		
-		SpawnerData *data = FindSpawnerDataForTank(tank);
-		if (data != nullptr) {
-			return AllocPooledString(data->icon.c_str());
+		auto it = spawners.find(spawner);
+		if (it != spawners.end()) {
+			SpawnerData& data = (*it).second;
+			return AllocPooledString(data.icon.c_str());
 		}
 		
 		return DETOUR_MEMBER_CALL(CTankSpawner_GetClassIcon)(index);
@@ -337,11 +338,12 @@ namespace Mod::Pop::Tank_Extensions
 	
 	DETOUR_DECL_MEMBER(bool, CTankSpawner_IsMiniBoss, int index)
 	{
-		auto tank = reinterpret_cast<CTFTankBoss *>(this);
+		auto spawner = reinterpret_cast<CTankSpawner *>(this);
 		
-		SpawnerData *data = FindSpawnerDataForTank(tank);
-		if (data != nullptr) {
-			return data->is_miniboss;
+		auto it = spawners.find(spawner);
+		if (it != spawners.end()) {
+			SpawnerData& data = (*it).second;
+			return data.is_miniboss;
 		}
 		
 		return DETOUR_MEMBER_CALL(CTankSpawner_IsMiniBoss)(index);
