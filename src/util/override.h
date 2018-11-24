@@ -23,6 +23,22 @@ private:
 };
 
 
+template<typename T, typename = std::enable_if_t<std::is_base_of_v<IOverride, T>>>
+class COverrideRAII : public T
+{
+public:
+	template<typename... ARGS>
+	COverrideRAII(ARGS&&... args) : T(std::forward<ARGS>(args)...)
+	{
+		this->Enable();
+	}
+	virtual ~COverrideRAII()
+	{
+		this->Disable();
+	}
+};
+
+
 class IConVarOverride : public IOverride
 {
 protected:
