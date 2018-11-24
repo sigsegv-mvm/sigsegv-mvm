@@ -1,4 +1,5 @@
 #include "addr/addr.h"
+#include "mem/extract.h"
 #include "mem/scan.h"
 #include "prop.h"
 #include "stub/gamerules.h"

@@ -1,4 +1,5 @@
 #include "stub/projectiles.h"
+#include "mem/extract.h"
 
 
 #if defined _LINUX

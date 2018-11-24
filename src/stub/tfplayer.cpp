@@ -1,4 +1,5 @@
 #include "stub/tfplayer.h"
+#include "mem/extract.h"
 #include "stub/tfweaponbase.h"
 #include "stub/entities.h"
 #include "stub/strings.h"

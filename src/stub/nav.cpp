@@ -1,4 +1,5 @@
 #include "stub/nav.h"
+#include "mem/extract.h"
 
 
 IMPL_DATAMAP(int,                   CFuncNavCost, m_team);

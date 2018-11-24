@@ -2,9 +2,11 @@
 #define _INCLUDE_SIGSEGV_PROP_H_
 
 
-#include "mem/extract.h"
 #include "util/autolist.h"
-//#include "util/rtti.h"
+
+
+class IExtractBase;
+class IExtractStub;
 
 
 /* from src/public/dt_utlvector_send.cpp */
@@ -48,9 +50,9 @@ public:
 	
 	virtual ~IProp() = default;
 	
-	virtual const char *GetObjectName() const { return this->m_pszObjName; }
-	virtual const char *GetMemberName() const { return this->m_pszMemName; }
-	virtual size_t GetSize() const = 0;
+	const char *GetObjectName() const { return this->m_pszObjName; }
+	const char *GetMemberName() const { return this->m_pszMemName; }
+	
 	virtual const char *GetKind() const = 0;
 	
 	void Preload() { this->DoCalcOffset(); }
@@ -108,9 +110,12 @@ inline void IProp::DoCalcOffset()
 }
 
 
-class CPropBase_SendProp : public IProp
+class CProp_SendProp final : public IProp
 {
 public:
+	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
+		IProp(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func), m_pszRemoteName(remote_name) {}
+	
 	virtual const char *GetKind() const override { return "SENDPROP"; }
 	
 	void StateChanged(void *obj, void *var)
@@ -118,13 +123,9 @@ public:
 		(*this->m_pStateChangedFunc)(obj, var);
 	}
 	
-protected:
-	CPropBase_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
-		IProp(obj, mem), m_pszServerClass(sv_class), m_pStateChangedFunc(sc_func), m_pszRemoteName(remote_name) {}
-	
+private:
 	virtual bool CalcOffset(int& off) const override;
 	
-private:
 	ServerClass *FindServerClass() const;
 	bool FindSendProp(int& off, SendTable *s_table) const;
 	bool IsSendPropUtlVector(int& off, SendProp *q_prop) const;
@@ -135,95 +136,45 @@ private:
 	const char *m_pszRemoteName;
 };
 
-template<typename T>
-class CProp_SendProp final : public CPropBase_SendProp
-{
-public:
-	CProp_SendProp(const char *obj, const char *mem, const char *sv_class, void (*sc_func)(void *, void *), const char *remote_name = nullptr) :
-		CPropBase_SendProp(obj, mem, sv_class, sc_func, remote_name) {}
-	
-	virtual size_t GetSize() const override { return sizeof(T); }
-};
 
-
-class CPropBase_DataMap : public IProp
-{
-public:
-	virtual const char *GetKind() const override { return "DATAMAP"; }
-	
-	void StateChanged(void *obj, void *var) {}
-	
-protected:
-	CPropBase_DataMap(const char *obj, const char *mem) :
-		IProp(obj, mem) {}
-	
-	virtual bool CalcOffset(int& off) const override;
-};
-
-template<typename T>
-class CProp_DataMap final : public CPropBase_DataMap
+class CProp_DataMap final : public IProp
 {
 public:
 	CProp_DataMap(const char *obj, const char *mem) :
-		CPropBase_DataMap(obj, mem) {}
+		IProp(obj, mem) {}
 	
-	virtual size_t GetSize() const override { return sizeof(T); }
+	virtual const char *GetKind() const override { return "DATAMAP"; }
+	
+private:
+	virtual bool CalcOffset(int& off) const override;
 };
 //#ifdef __GNUC__
 //#warning TODO: delete gamedata/sigsegv/datamaps.txt and remove from PackageScript and gameconf.cpp
 //#endif
 
 
-class CPropBase_Extract : public IProp
+class CProp_Extract final : public IProp
 {
 public:
+	/* TODO: ideally we want to guarantee that the extractor's type is a ptr to the prop's type */
+	CProp_Extract(const char *obj, const char *mem, IExtractBase *extractor) :
+		IProp(obj, mem), m_Extractor(extractor) {}
+	
+	CProp_Extract(const char *obj, const char *mem, IExtractStub *stub) :
+		IProp(obj, mem), m_Extractor(nullptr) {}
+	
+	virtual ~CProp_Extract();
+	
 	virtual const char *GetKind() const override { return "EXTRACT"; }
 	
-	void StateChanged(void *obj, void *var) {}
-	
-protected:
-	CPropBase_Extract(const char *obj, const char *mem) :
-		IProp(obj, mem) {}
-	
+private:
 	virtual bool CalcOffset(int& off) const override;
 	
-	virtual IExtractBase *GetExtractor() const = 0;
-};
-
-template<typename T>
-class CProp_Extract final : public CPropBase_Extract
-{
-public:
-	CProp_Extract(const char *obj, const char *mem, IExtract<T *> *extractor) :
-		CPropBase_Extract(obj, mem), m_Extractor(extractor) {}
-	CProp_Extract(const char *obj, const char *mem, IExtractStub *stub) :
-		CPropBase_Extract(obj, mem), m_Extractor(nullptr) {}
-	
-	virtual ~CProp_Extract()
-	{
-		if (this->m_Extractor != nullptr) {
-			delete this->m_Extractor;
-		}
-	}
-	
-	virtual size_t GetSize() const override { return sizeof(T); }
-	
-private:
-	virtual bool CalcOffset(int& off) const override
-	{
-		if (!CPropBase_Extract::CalcOffset(off)) return false;
-		
-		off = (int)this->m_Extractor->Extract();
-		return true;
-	}
-	
-	virtual IExtractBase *GetExtractor() const { return this->m_Extractor; }
-	
-	IExtract<T *> *m_Extractor;
+	IExtractBase *m_Extractor;
 };
 
 
-class CPropBase_Relative : public IProp
+class CProp_Relative final : public IProp
 {
 public:
 	enum RelativeMethod : int
@@ -233,21 +184,18 @@ public:
 		REL_BEFORE,
 	};
 	
-	virtual const char *GetKind() const override { return "RELATIVE"; }
-	
-	void StateChanged(void *obj, void *var) {}
-	
-protected:
-	CPropBase_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, size_t size, int diff = 0) :
-		IProp(obj, mem), m_RelProp(prop), m_Method(method), m_iAlign(align), m_iDiff(diff)
+	CProp_Relative(const char *obj, const char *mem, size_t my_size, size_t relprop_size, IProp *relprop, RelativeMethod method, int align, int diff = 0) :
+		IProp(obj, mem), m_RelProp(relprop), m_Method(method), m_iAlign(align), m_iDiff(diff)
 	{
 		switch (method) {
 		default:
-		case REL_MANUAL: this->m_iDiff =  diff;                   break;
-		case REL_AFTER:  this->m_iDiff =  diff + prop->GetSize(); break;
-		case REL_BEFORE: this->m_iDiff = -diff - size;            break;
+		case REL_MANUAL: this->m_iDiff =  diff;                break;
+		case REL_AFTER:  this->m_iDiff =  diff + relprop_size; break;
+		case REL_BEFORE: this->m_iDiff = -diff -      my_size; break;
 		}
 	}
+	
+	virtual const char *GetKind() const override { return "RELATIVE"; }
 	
 private:
 	virtual bool CalcOffset(int& off) const override;
@@ -258,29 +206,13 @@ private:
 	int m_iDiff;
 };
 
-template<typename T>
-class CProp_Relative final : public CPropBase_Relative
-{
-public:
-	CProp_Relative(const char *obj, const char *mem, IProp *prop, RelativeMethod method, int align, int diff = 0) :
-		CPropBase_Relative(obj, mem, prop, method, align, sizeof(T), diff) {}
-	
-	virtual size_t GetSize() const override { return sizeof(T); }
-};
-
 
 #define T_PARAMS typename IPROP, IPROP *PROP, const size_t *ADJUST, bool NET, bool RW
 #define T_ARGS            IPROP,        PROP,               ADJUST,      NET,      RW
 
 
-class CPropAccessorBaseBase
-{
-public:
-	
-};
-
 template<typename T, T_PARAMS>
-class CPropAccessorBase : public CPropAccessorBaseBase
+class CPropAccessorBase
 {
 private:
 	/* determine whether we should be returning writable refs/ptrs */
@@ -404,7 +336,7 @@ public:
 protected:
 	RefRO_t Set(RefRO_t val)
 	{
-		if (NET) {
+		if constexpr (NET) {
 			if (memcmp(this->GetPtrRO(), &val, sizeof(T)) != 0) {
 				PROP->StateChanged(reinterpret_cast<void *>(this->GetInstanceBaseAddr()), this->GetPtrRW());
 				return (this->GetRW() = val);
@@ -474,10 +406,11 @@ struct CPropAccessor<CHandle<U>, T_ARGS> final : public CPropAccessorHandle<U, T
 
 
 #define DECL_PROP(TYPE, PROPNAME, VARIANT, NET, RW) \
-	using _type_prop_##PROPNAME = CProp_##VARIANT<TYPE>; \
-	static _type_prop_##PROPNAME s_prop_##PROPNAME; \
+	using _type_##PROPNAME = TYPE; \
+	static constexpr size_t _sizeof_##PROPNAME = sizeof(TYPE); \
+	static CProp_##VARIANT s_prop_##PROPNAME; \
 	static const size_t _adj_##PROPNAME; \
-	using _type_accessor_##PROPNAME = CPropAccessor<TYPE, _type_prop_##PROPNAME, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW>; \
+	using _type_accessor_##PROPNAME = CPropAccessor<TYPE, CProp_##VARIANT, &s_prop_##PROPNAME, &_adj_##PROPNAME, NET, RW>; \
 	_type_accessor_##PROPNAME PROPNAME; \
 	CHECK_ACCESSOR(_type_accessor_##PROPNAME)
 
@@ -492,28 +425,28 @@ struct CPropAccessor<CHandle<U>, T_ARGS> final : public CPropAccessorHandle<U, T
 #define IMPL_SENDPROP(TYPE, CLASSNAME, PROPNAME, SVCLASS, ...) \
 	void NetworkStateChanged_##CLASSNAME##_##PROPNAME(void *obj, void *var) { reinterpret_cast<CLASSNAME *>(obj)->NetworkStateChanged(var); } \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_SendProp<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, #SVCLASS, &NetworkStateChanged_##CLASSNAME##_##PROPNAME, ##__VA_ARGS__)
+	CProp_SendProp CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, #SVCLASS, &NetworkStateChanged_##CLASSNAME##_##PROPNAME, ##__VA_ARGS__)
 #define IMPL_DATAMAP(TYPE, CLASSNAME, PROPNAME) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_DataMap<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME)
+	CProp_DataMap CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME)
 #define IMPL_EXTRACT(TYPE, CLASSNAME, PROPNAME, EXTRACTOR) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Extract<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, EXTRACTOR)
+	CProp_Extract CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, EXTRACTOR)
 #define IMPL_RELATIVE(TYPE, CLASSNAME, PROPNAME, RELPROP, DIFF) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_MANUAL, 0, DIFF)
+	CProp_Relative CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, CLASSNAME::_sizeof_##PROPNAME, CLASSNAME::_sizeof_##RELPROP, &CLASSNAME::s_prop_##RELPROP, CProp_Relative::REL_MANUAL, 0, DIFF)
 #define IMPL_REL_AFTER(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, 0, ##__VA_ARGS__)
+	CProp_Relative CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, CLASSNAME::_sizeof_##PROPNAME, CLASSNAME::_sizeof_##RELPROP, &CLASSNAME::s_prop_##RELPROP, CProp_Relative::REL_AFTER, 0, ##__VA_ARGS__)
 #define IMPL_REL_BEFORE(TYPE, CLASSNAME, PROPNAME, RELPROP, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, 0, ##__VA_ARGS__)
+	CProp_Relative CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, CLASSNAME::_sizeof_##PROPNAME, CLASSNAME::_sizeof_##RELPROP, &CLASSNAME::s_prop_##RELPROP, CProp_Relative::REL_BEFORE, 0, ##__VA_ARGS__)
 #define IMPL_REL_AFTER_ALIGN(TYPE, CLASSNAME, PROPNAME, RELPROP, ALIGN, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_AFTER, ALIGN, ##__VA_ARGS__)
+	CProp_Relative CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, CLASSNAME::_sizeof_##PROPNAME, CLASSNAME::_sizeof_##RELPROP, &CLASSNAME::s_prop_##RELPROP, CProp_Relative::REL_AFTER, ALIGN, ##__VA_ARGS__)
 #define IMPL_REL_BEFORE_ALIGN(TYPE, CLASSNAME, PROPNAME, RELPROP, ALIGN, ...) \
 	const size_t CLASSNAME::_adj_##PROPNAME = offsetof(CLASSNAME, PROPNAME); \
-	CProp_Relative<TYPE> CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, &CLASSNAME::s_prop_##RELPROP, CProp_Relative<TYPE>::REL_BEFORE, ALIGN, ##__VA_ARGS__)
+	CProp_Relative CLASSNAME::s_prop_##PROPNAME(#CLASSNAME, #PROPNAME, CLASSNAME::_sizeof_##PROPNAME, CLASSNAME::_sizeof_##RELPROP, &CLASSNAME::s_prop_##RELPROP, CProp_Relative::REL_BEFORE, ALIGN, ##__VA_ARGS__)
 
 
 #endif

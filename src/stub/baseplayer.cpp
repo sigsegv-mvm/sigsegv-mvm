@@ -1,4 +1,5 @@
 #include "stub/baseplayer.h"
+#include "mem/extract.h"
 #include "stub/tfplayer.h"
 
 
