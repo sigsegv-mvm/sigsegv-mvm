@@ -46,6 +46,7 @@ MemberFuncThunk<      CBaseEntity *, bool, const char *                         
 MemberFuncThunk<      CBaseEntity *, bool, const char *                                     > CBaseEntity::ft_ClassMatchesComplex        ("CBaseEntity::ClassMatchesComplex");
 MemberFuncThunk<      CBaseEntity *, void, const Vector&                                    > CBaseEntity::ft_SetAbsOrigin               ("CBaseEntity::SetAbsOrigin");
 MemberFuncThunk<      CBaseEntity *, void, const QAngle&                                    > CBaseEntity::ft_SetAbsAngles               ("CBaseEntity::SetAbsAngles");
+MemberFuncThunk<      CBaseEntity *, void, const Vector&                                    > CBaseEntity::ft_SetAbsVelocity             ("CBaseEntity::SetAbsVelocity");
 MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *                     > CBaseEntity::ft_EmitSound_member1          ("CBaseEntity::EmitSound [member: normal]");
 MemberFuncThunk<      CBaseEntity *, void, const char *, HSOUNDSCRIPTHANDLE&, float, float *> CBaseEntity::ft_EmitSound_member2          ("CBaseEntity::EmitSound [member: normal + handle]");
 MemberFuncThunk<      CBaseEntity *, float, const char *                                    > CBaseEntity::ft_GetNextThink               ("CBaseEntity::GetNextThink");
@@ -94,6 +95,9 @@ MemberVFuncThunk<const CBaseEntity *, int                                       
 MemberVFuncThunk<      CBaseEntity *, bool                                                            > CBaseEntity::vt_IsAlive                       (TypeName<CBaseEntity>(), "CBaseEntity::IsAlive");
 MemberVFuncThunk<const CBaseEntity *, float                                                           > CBaseEntity::vt_GetDefaultItemChargeMeterValue(TypeName<CBaseEntity>(), "CBaseEntity::GetDefaultItemChargeMeterValue");
 
+
+StaticFuncThunk<CBaseEntity *, const char *, const Vector&, const QAngle&, CBaseEntity *>                        CBaseEntity::ft_Create             ("CBaseEntity::Create");
+StaticFuncThunk<CBaseEntity *, const char *, const Vector&, const QAngle&, CBaseEntity *>                        CBaseEntity::ft_CreateNoSpawn      ("CBaseEntity::CreateNoSpawn");
 StaticFuncThunk<int, const char *, bool>                                                                         CBaseEntity::ft_PrecacheModel      ("CBaseEntity::PrecacheModel");
 StaticFuncThunk<bool, const char *>                                                                              CBaseEntity::ft_PrecacheSound      ("CBaseEntity::PrecacheSound");
 StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *>                                                                CBaseEntity::ft_PrecacheScriptSound("CBaseEntity::PrecacheScriptSound");

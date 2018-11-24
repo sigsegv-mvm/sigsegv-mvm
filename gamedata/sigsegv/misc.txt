@@ -723,12 +723,6 @@
 					sym  "_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
 				}
 				
-				"CBaseEntity::CreateNoSpawn"
-				{
-					type "sym"
-					sym  "_ZN11CBaseEntity13CreateNoSpawnEPKcRK6VectorRK6QAnglePS_"
-				}
-				
 				"WeaponID_IsSniperRifle"
 				{
 					type "sym"
@@ -2815,6 +2809,9 @@
 				"CBaseEntity::DispatchUpdateTransmitState"    "_ZN11CBaseEntity27DispatchUpdateTransmitStateEv"
 				"CBaseEntity::SetEffects"                     "_ZN11CBaseEntity10SetEffectsEi"
 				"CBaseEntity::AddEffects"                     "_ZN11CBaseEntity10AddEffectsEi"
+				"CBaseEntity::Create"                         "_ZN11CBaseEntity6CreateEPKcRK6VectorRK6QAnglePS_"
+				"CBaseEntity::CreateNoSpawn"                  "_ZN11CBaseEntity13CreateNoSpawnEPKcRK6VectorRK6QAnglePS_"
+				"CBaseEntity::SetAbsVelocity"                 "_ZN11CBaseEntity14SetAbsVelocityERK6Vector"
 				
 				"CBaseCombatCharacter::GetBossType" "_ZNK20CBaseCombatCharacter11GetBossTypeEv"
 				

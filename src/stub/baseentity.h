@@ -142,6 +142,7 @@ public:
 	bool ClassMatchesComplex(const char *pszClassOrWildcard)                                                                { return ft_ClassMatchesComplex           (this, pszClassOrWildcard); }
 	void SetAbsOrigin(const Vector& absOrigin)                                                                              {        ft_SetAbsOrigin                  (this, absOrigin); }
 	void SetAbsAngles(const QAngle& absAngles)                                                                              {        ft_SetAbsAngles                  (this, absAngles); }
+	void SetAbsVelocity(const Vector& vecVelocity)                                                                          {        ft_SetAbsVelocity                (this, vecVelocity); }
 	void EmitSound(const char *soundname, float soundtime = 0.0f, float *duration = nullptr)                                {        ft_EmitSound_member1             (this, soundname, soundtime, duration); }
 	void EmitSound(const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = nullptr)    {        ft_EmitSound_member2             (this, soundname, handle, soundtime, duration); }
 	float GetNextThink(const char *szContext)                                                                               { return ft_GetNextThink                  (this, szContext); }
@@ -187,6 +188,8 @@ public:
 	float GetDefaultItemChargeMeterValue() const                                                                            { return vt_GetDefaultItemChargeMeterValue(this); }
 	
 	/* static */
+	static CBaseEntity *Create(const char *szName, const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity *pOwner = nullptr)                                                                       { return ft_Create             (szName, vecOrigin, vecAngles, pOwner); }
+	static CBaseEntity *CreateNoSpawn(const char *szName, const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity *pOwner = nullptr)                                                                { return ft_CreateNoSpawn      (szName, vecOrigin, vecAngles, pOwner); }
 	static int PrecacheModel(const char *name, bool bPreload = true)                                                                                                                                      { return ft_PrecacheModel      (name, bPreload); }
 	static bool PrecacheSound(const char *name)                                                                                                                                                           { return ft_PrecacheSound      (name); }
 	static HSOUNDSCRIPTHANDLE PrecacheScriptSound(const char *soundname)                                                                                                                                  { return ft_PrecacheScriptSound(soundname); }
@@ -255,6 +258,7 @@ private:
 	static MemberFuncThunk<      CBaseEntity *, bool, const char *>                                      ft_ClassMatchesComplex;
 	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                     ft_SetAbsOrigin;
 	static MemberFuncThunk<      CBaseEntity *, void, const QAngle&>                                     ft_SetAbsAngles;
+	static MemberFuncThunk<      CBaseEntity *, void, const Vector&>                                     ft_SetAbsVelocity;
 	static MemberFuncThunk<      CBaseEntity *, void, const char *, float, float *>                      ft_EmitSound_member1;
 	static MemberFuncThunk<      CBaseEntity *, void, const char *, HSOUNDSCRIPTHANDLE&, float, float *> ft_EmitSound_member2;
 	static MemberFuncThunk<      CBaseEntity *, float, const char *>                                     ft_GetNextThink;
@@ -303,6 +307,8 @@ private:
 	static MemberVFuncThunk<      CBaseEntity *, bool>                                                             vt_IsAlive;
 	static MemberVFuncThunk<const CBaseEntity *, float>                                                            vt_GetDefaultItemChargeMeterValue;
 	
+	static StaticFuncThunk<CBaseEntity *, const char *, const Vector&, const QAngle&, CBaseEntity *>                        ft_Create;
+	static StaticFuncThunk<CBaseEntity *, const char *, const Vector&, const QAngle&, CBaseEntity *>                        ft_CreateNoSpawn;
 	static StaticFuncThunk<int, const char *, bool>                                                                         ft_PrecacheModel;
 	static StaticFuncThunk<bool, const char *>                                                                              ft_PrecacheSound;
 	static StaticFuncThunk<HSOUNDSCRIPTHANDLE, const char *>                                                                ft_PrecacheScriptSound;
