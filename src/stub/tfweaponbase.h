@@ -55,8 +55,9 @@ public:
 	
 	bool IsSilentKiller() { return ft_IsSilentKiller(this); }
 	
-	int GetWeaponID() const      { return vt_GetWeaponID     (this); }
-	int GetPenetrateType() const { return vt_GetPenetrateType(this); }
+	int GetWeaponID() const                              { return vt_GetWeaponID                            (this); }
+	int GetPenetrateType() const                         { return vt_GetPenetrateType                       (this); }
+	bool ShouldRemoveInvisibilityOnPrimaryAttack() const { return vt_ShouldRemoveInvisibilityOnPrimaryAttack(this); }
 	
 	DECL_SENDPROP(float,                m_flLastFireTime);
 	DECL_SENDPROP(float,                m_flEffectBarRegenTime);
@@ -67,8 +68,9 @@ public:
 private:
 	static MemberFuncThunk<CTFWeaponBase *, bool> ft_IsSilentKiller;
 	
-	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetWeaponID;
-	static MemberVFuncThunk<const CTFWeaponBase *, int> vt_GetPenetrateType;
+	static MemberVFuncThunk<const CTFWeaponBase *, int>  vt_GetWeaponID;
+	static MemberVFuncThunk<const CTFWeaponBase *, int>  vt_GetPenetrateType;
+	static MemberVFuncThunk<const CTFWeaponBase *, bool> vt_ShouldRemoveInvisibilityOnPrimaryAttack;
 };
 
 class CTFWeaponBaseGun : public CTFWeaponBase {};
