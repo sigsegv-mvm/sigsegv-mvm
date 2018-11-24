@@ -73,7 +73,23 @@ private:
 	static MemberVFuncThunk<const CTFWeaponBase *, bool> vt_ShouldRemoveInvisibilityOnPrimaryAttack;
 };
 
-class CTFWeaponBaseGun : public CTFWeaponBase {};
+class CTFWeaponBaseGun : public CTFWeaponBase
+{
+public:
+	void UpdatePunchAngles(CTFPlayer *pPlayer) { ft_UpdatePunchAngles(this, pPlayer); }
+	
+	void RemoveProjectileAmmo(CTFPlayer *pPlayer) {        vt_RemoveProjectileAmmo(this, pPlayer); }
+	void DoFireEffects()                          {        vt_DoFireEffects       (this); }
+	bool ShouldPlayFireAnim()                     { return vt_ShouldPlayFireAnim  (this); }
+	
+private:
+	static MemberFuncThunk<CTFWeaponBaseGun *, void, CTFPlayer *> ft_UpdatePunchAngles;
+	
+	static MemberVFuncThunk<CTFWeaponBaseGun *, void, CTFPlayer *> vt_RemoveProjectileAmmo;
+	static MemberVFuncThunk<CTFWeaponBaseGun *, void>              vt_DoFireEffects;
+	static MemberVFuncThunk<CTFWeaponBaseGun *, bool>              vt_ShouldPlayFireAnim;
+};
+
 
 class CTFPipebombLauncher : public CTFWeaponBaseGun {};
 
