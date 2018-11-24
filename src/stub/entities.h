@@ -184,53 +184,6 @@ private:
 };
 
 
-class NextBotCombatCharacter : public CBaseCombatCharacter {};
-
-
-class CTFBaseBoss : public NextBotCombatCharacter
-{
-public:
-	void UpdateCollisionBounds() { vt_UpdateCollisionBounds(this); }
-	
-private:
-	static MemberVFuncThunk<CTFBaseBoss *, void> vt_UpdateCollisionBounds;
-};
-
-class IBody;
-class CTFTankBoss : public CTFBaseBoss
-{
-public:
-	DECL_EXTRACT (IBody *,             m_pBodyInterface);
-	DECL_RELATIVE(CHandle<CPathTrack>, m_hCurrentNode);
-	DECL_RELATIVE(CUtlVector<float>,   m_NodeDists);
-	DECL_RELATIVE(float,               m_flTotalDistance);
-	DECL_RELATIVE(int,                 m_iCurrentNode);
-	DECL_RELATIVE(int,                 m_iModelIndex);
-};
-
-
-class CHalloweenBaseBoss : public NextBotCombatCharacter
-{
-public:
-	enum HalloweenBossType : int32_t
-	{
-		INVALID         = 0,
-		HEADLESS_HATMAN = 1,
-		EYEBALL_BOSS    = 2,
-		MERASMUS        = 3,
-	};
-	
-	static CHalloweenBaseBoss *SpawnBossAtPos(HalloweenBossType type, const Vector& pos, int team, CBaseEntity *owner) { return ft_SpawnBossAtPos(type, pos, team, owner); }
-	
-private:
-	static StaticFuncThunk<CHalloweenBaseBoss *, HalloweenBossType, const Vector&, int, CBaseEntity *> ft_SpawnBossAtPos;
-};
-
-class CHeadlessHatman : public CHalloweenBaseBoss {};
-class CMerasmus       : public CHalloweenBaseBoss {};
-class CEyeballBoss    : public CHalloweenBaseBoss {};
-
-
 class CBaseToggle : public CBaseEntity {};
 
 class CBaseTrigger : public CBaseToggle

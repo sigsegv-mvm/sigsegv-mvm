@@ -1,7 +1,7 @@
 #include "mod.h"
+#include "stub/baseentity.h"
 #include "stub/misc.h"
 #include "util/misc.h"
-#include "util/iterate.h"
 
 #include <regex>
 

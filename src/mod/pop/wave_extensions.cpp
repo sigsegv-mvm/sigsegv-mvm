@@ -6,6 +6,7 @@
 #include "stub/objects.h"
 #include "stub/gamerules.h"
 #include "stub/tfplayer.h"
+#include "stub/nextbot_cc.h"
 #include "stub/team.h"
 #include "util/scope.h"
 #include "util/iterate.h"

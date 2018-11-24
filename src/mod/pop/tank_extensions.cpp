@@ -1,6 +1,6 @@
 #include "mod.h"
 #include "mod/pop/kv_conditional.h"
-#include "stub/entities.h"
+#include "stub/nextbot_cc.h"
 #include "stub/populators.h"
 #include "stub/tf_objective_resource.h"
 #include "stub/strings.h"
