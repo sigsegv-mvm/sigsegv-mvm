@@ -249,7 +249,7 @@ inline bool StringToFloatStrict(const char *str, float& out)
 
 
 template<int SIZE_BUF = FMTSTR_STD_LEN, typename... ARGS>
-std::string CFmtStdStr(ARGS... args)
+std::string CFmtStdStr(ARGS&&... args)
 {
 	return CFmtStrN<SIZE_BUF>(std::forward<ARGS>(args)...).Get();
 }

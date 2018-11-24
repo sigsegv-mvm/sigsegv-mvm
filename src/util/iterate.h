@@ -11,16 +11,16 @@ template<typename RET>
 struct IterateInternals
 {
 	template<typename FUNCTOR, typename... ARGS>
-	static bool CallFunc(const FUNCTOR& functor, ARGS... args);
+	static bool CallFunc(const FUNCTOR& functor, ARGS&&... args);
 };
 template<> template<typename FUNCTOR, typename... ARGS>
-inline bool IterateInternals<void>::CallFunc(const FUNCTOR& func, ARGS... args)
+inline bool IterateInternals<void>::CallFunc(const FUNCTOR& func, ARGS&&... args)
 {
 	func(std::forward<ARGS>(args)...);
 	return true;
 }
 template<> template<typename FUNCTOR, typename... ARGS>
-inline bool IterateInternals<bool>::CallFunc(const FUNCTOR& func, ARGS... args)
+inline bool IterateInternals<bool>::CallFunc(const FUNCTOR& func, ARGS&&... args)
 {
 	return func(std::forward<ARGS>(args)...);
 }
