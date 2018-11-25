@@ -675,6 +675,25 @@ namespace Mod::Pop::Wave_Extensions
 		return result;
 	}
 	
+	/* block attempts by MONOCULUS to switch to CEyeballBossTeleport */
+	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossIdle_Update, CEyeballBoss *actor, float dt)
+	{
+		auto result = DETOUR_MEMBER_CALL(CEyeballBossIdle_Update)(actor, dt);
+		
+		if (result.transition == ActionTransition::CHANGE_TO && strcmp(result.reason, "Moving...") == 0) {
+			BossInfo *info = GetInfoForBoss(rtti_cast<CHalloweenBaseBoss *>(actor));
+			if (info != nullptr) {
+				delete result.action;
+				
+				result.transition = ActionTransition::CONTINUE;
+				result.action     = nullptr;
+				result.reason     = nullptr;
+			}
+		}
+		
+		return result;
+	}
+	
 	
 	class CMod : public IMod, public IModCallbackListener
 	{
@@ -696,6 +715,7 @@ namespace Mod::Pop::Wave_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
 			
 			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_OnStart, "CEyeballBossIdle::OnStart");
+			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_Update,  "CEyeballBossIdle::Update");
 		}
 		
 		virtual void OnUnload() override
