@@ -212,7 +212,7 @@ private:
 
 
 template<typename T, T_PARAMS>
-class CPropAccessorBase
+class CPropAccessorBase : public IAccessOnly
 {
 private:
 	/* determine whether we should be returning writable refs/ptrs */
@@ -231,11 +231,6 @@ private:
 	using Ptr_t   = std::conditional_t<(NET && !RW), PtrRO_t, PtrRW_t>;
 	
 public:
-	CPropAccessorBase()                                    = delete;
-	CPropAccessorBase(CPropAccessorBase&  copy)            = delete;
-	CPropAccessorBase(CPropAccessorBase&& move)            = delete;
-	CPropAccessorBase& operator=(CPropAccessorBase&& move) = delete;
-	
 	/* conversion operators */
 	operator Ref_t() const { return this->Get(); }
 	
