@@ -10,6 +10,7 @@
 #include "stub/team.h"
 #include "util/scope.h"
 #include "util/iterate.h"
+#include "util/override.h"
 
 
 namespace Mod::Pop::Wave_Extensions
@@ -51,6 +52,7 @@ namespace Mod::Pop::Wave_Extensions
 		int teamnum = TF_TEAM_HALLOWEEN_BOSS;
 		int health  = -1;
 		float delay = 0.0f;
+		float lifetime = FLT_MAX;
 		
 		bool spawned = false;
 		CHandle<CHalloweenBaseBoss> boss;
@@ -70,6 +72,21 @@ namespace Mod::Pop::Wave_Extensions
 	
 	
 	std::map<CWave *, WaveData> waves;
+	
+	
+	// TODO: make this less egregiously inefficient please!
+	static BossInfo *GetInfoForBoss(CHalloweenBaseBoss *boss)
+	{
+		for (auto& wave : waves) {
+			for (auto& info : wave.second.bosses) {
+				if (info.spawned && info.boss == boss) {
+					return &info;
+				}
+			}
+		}
+		
+		return nullptr;
+	}
 	
 	
 	DETOUR_DECL_MEMBER(void, CWave_dtor0)
@@ -207,6 +224,9 @@ namespace Mod::Pop::Wave_Extensions
 			} else if (FStrEq(name, "Delay")) {
 				info.delay = Max(0.0f, subkey->GetFloat());
 			//	DevMsg("Delay \"%s\" --> %.1f\n", subkey->GetString(), info.delay);
+			} else if (FStrEq(name, "Lifetime")) {
+				info.lifetime = Max(0.0f, subkey->GetFloat());
+			//	DevMsg("Lifetime \"%s\" --> %.1f\n", subkey->GetString(), info.lifetime);
 			} else if (FStrEq(name, "Position")) {
 				FOR_EACH_SUBKEY(subkey, subsub) {
 					const char *name = subsub->GetName();
@@ -231,6 +251,11 @@ namespace Mod::Pop::Wave_Extensions
 		if (info.type == CHalloweenBaseBoss::INVALID) {
 			Warning("Missing BossType key in HalloweenBoss block.\n");
 			fail = true;
+		}
+		if (info.type != CHalloweenBaseBoss::EYEBALL_BOSS && info.lifetime != FLT_MAX) {
+			Warning("Only HalloweenBoss blocks of type MONOCULUS may specify a Lifetime value.\n");
+			/* eh... non-fatal warning, I guess */
+		//	fail = true;
 		}
 		if (info.teamnum != TF_TEAM_HALLOWEEN_BOSS) {
 			if (info.type == CHalloweenBaseBoss::EYEBALL_BOSS) {
@@ -635,6 +660,25 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
+	/* surreptitiously override the values of a couple of convars briefly during CEyeballBossIdle::OnStart,
+	 * since they are the single place where MONOCULUS gets his lifetime information */
+	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossIdle_OnStart, CEyeballBoss *actor, Action<CEyeballBoss> *action)
+	{
+		static auto tf_eyeball_boss_lifetime       = static_cast<IConVar *>(icvar->FindVar("tf_eyeball_boss_lifetime"));
+		static auto tf_eyeball_boss_lifetime_spell = static_cast<IConVar *>(icvar->FindVar("tf_eyeball_boss_lifetime_spell"));
+		
+		BossInfo *info = GetInfoForBoss(rtti_cast<CHalloweenBaseBoss *>(actor));
+		if (info != nullptr) {
+			COverrideRAII<CConVarOverride_FloatVal> override1(tf_eyeball_boss_lifetime,       info->lifetime);
+			COverrideRAII<CConVarOverride_FloatVal> override2(tf_eyeball_boss_lifetime_spell, info->lifetime);
+			
+			return DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
+		} else {
+			return DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
+		}
+	}
+	
+	
 	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
@@ -653,6 +697,8 @@ namespace Mod::Pop::Wave_Extensions
 			MOD_ADD_DETOUR_MEMBER(CWave_IsDoneWithNonSupportWaves, "CWave::IsDoneWithNonSupportWaves");
 			
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
+			
+			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_OnStart, "CEyeballBossIdle::OnStart");
 		}
 		
 		virtual void OnUnload() override

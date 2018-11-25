@@ -2851,6 +2851,8 @@
 				
 				"CTFTankBoss::UpdateOnRemove" "_ZN11CTFTankBoss14UpdateOnRemoveEv"
 				
+				"CEyeballBossIdle::OnStart" "_ZN16CEyeballBossIdle7OnStartEP12CEyeballBossP6ActionIS0_E
+				
 				"CAttributeList::GetAttributeByID"       "_ZNK14CAttributeList16GetAttributeByIDEi"
 				"CAttributeList::GetAttributeByName"     "_ZNK14CAttributeList18GetAttributeByNameEPKc"
 				"CAttributeList::IterateAttributes"      "_ZNK14CAttributeList17IterateAttributesEP26IEconItemAttributeIterator"
