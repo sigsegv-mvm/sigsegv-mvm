@@ -37,7 +37,7 @@ sourceFiles += [
   'src/library.cpp',
   'src/mod.cpp',
   'src/prop.cpp',
-  'src/sizeof.cpp',
+#  'src/sizeof.cpp',
   'src/util_commands.cpp',
   'src/version.c',
   
