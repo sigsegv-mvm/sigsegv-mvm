@@ -7,7 +7,6 @@
 #endif
 
 
-#include "stub/tfplayer.h"
 #include "stub/nav.h"
 #include "util/misc.h"
 
@@ -23,7 +22,9 @@ class INextBotEntityFilter;
 class INextBotReply;
 class CNavLadder;
 class NextBotCombatCharacter;
-template<class T> class Action;
+template<typename T> class Action;
+
+// TODO: uhhh, this redefinition seems... bad...
 #define CUtlVectorAutoPurge CUtlVector
 
 #include "../mvm-reversed/server/NextBot/NextBotKnownEntity.h"
@@ -41,27 +42,34 @@ template<class T> class Action;
 #include "../mvm-reversed/server/NextBot/NextBotManager.h"
 
 
-SIZE_CHECK(CKnownEntity,               0x30); // 0x2d
-SIZE_CHECK(INextBotEventResponder,     0x04);
-SIZE_CHECK(IContextualQuery,           0x04);
-SIZE_CHECK(INextBotComponent,          0x14);
-SIZE_CHECK(IIntention,                 0x18);
-SIZE_CHECK(IBody,                      0x14);
-SIZE_CHECK(ILocomotion,                0x58);
-SIZE_CHECK(IVision,                    0xc4);
-SIZE_CHECK(INextBot,                   0x60);
-SIZE_CHECK(Behavior<CTFBot>,           0x50);
-SIZE_CHECK(Action<CTFBot>,             0x34); // 0x32
-SIZE_CHECK(ActionResult<CTFBot>,       0x0c);
-SIZE_CHECK(EventDesiredResult<CTFBot>, 0x10);
-SIZE_CHECK(NextBotManager,             0x50);
+SIZE_CHECK(CKnownEntity,               0x0030); // 0x002d
+SIZE_CHECK(INextBotEventResponder,     0x0004);
+SIZE_CHECK(IContextualQuery,           0x0004);
+SIZE_CHECK(INextBotComponent,          0x0014);
+SIZE_CHECK(IIntention,                 0x0018);
+SIZE_CHECK(IBody,                      0x0014);
+SIZE_CHECK(ILocomotion,                0x0058);
+SIZE_CHECK(IVision,                    0x00c4);
+SIZE_CHECK(INextBot,                   0x0060);
+SIZE_CHECK(Behavior<CTFBot>,           0x0050);
+SIZE_CHECK(Action<CTFBot>,             0x0034); // 0x0032
+SIZE_CHECK(ActionResult<CTFBot>,       0x000c);
+SIZE_CHECK(EventDesiredResult<CTFBot>, 0x0010);
+SIZE_CHECK(NextBotManager,             0x0050);
 
 
 /* NextBotKnownEntity.cpp */
 inline CKnownEntity::~CKnownEntity() {}
 
+/* NextBotContextualQueryInterface.cpp */
+inline IContextualQuery::~IContextualQuery() {}
+
+/* NextBotEventResponder.cpp */
+inline INextBotEventResponder::~INextBotEventResponder() {}
+
 /* NextBotBehavior.cpp */
-template<class T> inline Action<T>::Action() :
+template<typename T> Action<T>::~Action() {}
+template<typename T> Action<T>::Action() :
 	m_ActionParent(nullptr), m_ActionChild(nullptr),
 	m_ActionWeSuspended(nullptr), m_ActionSuspendedUs(nullptr),
 	m_Actor(nullptr)
@@ -72,16 +80,56 @@ template<class T> inline Action<T>::Action() :
 	
 	memset((void *)&this->m_Result, 0x00, 0x10);
 }
-template<class T> inline Behavior<T> *Action<T>::GetBehavior() const { return this->m_Behavior; }
-template<class T> inline T *Action<T>::GetActor() const              { return this->m_Actor; }
+template<typename T> Behavior<T> *Action<T>::GetBehavior() const { return this->m_Behavior; }
+template<typename T> T           *Action<T>::GetActor()    const { return this->m_Actor; }
 
 
-/* wrapper for Action<CTFBot> which can be rapidly stopped at mod unload time */
-class IHotplugAction : public Action<CTFBot>, public AutoList<IHotplugAction>
+class IHotplugActionBase : public AutoList<IHotplugActionBase>
 {
 public:
-	/* nuke everything from the main action down */
-	static void UnloadAll();
+	static void UnloadAll()
+	{
+		std::set<INextBot *> actors;
+		
+		for (auto action : AutoList<IHotplugActionBase>::List()) {
+			auto actor = action->GetActorAsINextBot();
+			if (actor == nullptr) continue;
+			
+			actors.insert(actor);
+		}
+		
+		Msg("IHotplugActionBase::UnloadAll: calling Reset() on %zu NextBot intention interfaces\n", actors.size());
+		
+		for (auto actor : actors) {
+			actor->GetIntentionInterface()->Reset();
+		}
+		
+		assert(AutoList<IHotplugActionBase>::List().empty());
+	}
+	
+protected:
+	virtual INextBot *GetActorAsINextBot() const = 0;
+};
+
+
+/* IHotplugAction: wrapper for Action<T> which can be rapidly stopped at mod unload time */
+template<typename T>
+class IHotplugAction : public Action<T>, public IHotplugActionBase
+{
+public:
+	virtual INextBot *GetActorAsINextBot() const override final { return rtti_cast<INextBot *>(this->GetActor()); }
+};
+
+
+/* ActionStub: provides a base for interoperating with real Action<T> objects in the game */
+template<typename T>
+class ActionStub : public Action<T>
+{
+public:
+	virtual const char *GetName() const override { return nullptr; }
+	
+protected:
+	ActionStub() = default;
 };
 
 

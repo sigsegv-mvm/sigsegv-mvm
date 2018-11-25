@@ -1,6 +1,7 @@
 #include "mod.h"
 #include "re/nextbot.h"
 #include "re/path.h"
+#include "stub/tfbot.h"
 
 
 class CTFBotMvMEngineerIdle : public Action<CTFBot> {};
@@ -8,7 +9,7 @@ class CTFBotMvMEngineerIdle : public Action<CTFBot> {};
 
 namespace Mod::AI::EngieBot_Wrangler
 {
-	class CTFBotMvMEngineerDisableAutopilot : public IHotplugAction
+	class CTFBotMvMEngineerDisableAutopilot : public IHotplugAction<CTFBot>
 	{
 	public:
 		CTFBotMvMEngineerDisableAutopilot() {}

@@ -46,7 +46,7 @@ namespace Mod::AI::EngieBot_Dispensers
 	}
 	
 	
-	class CTFBotMvMEngineerBuildSGDispenser : public IHotplugAction
+	class CTFBotMvMEngineerBuildSGDispenser : public IHotplugAction<CTFBot>
 	{
 	public:
 		CTFBotMvMEngineerBuildSGDispenser(CTFBotHintSentrygun *hint) :
@@ -151,7 +151,7 @@ namespace Mod::AI::EngieBot_Dispensers
 		bool m_bNearHint = false;
 	};
 	
-	class CTFBotMvMEngineerBuildTEDispenser : public IHotplugAction
+	class CTFBotMvMEngineerBuildTEDispenser : public IHotplugAction<CTFBot>
 	{
 	public:
 		CTFBotMvMEngineerBuildTEDispenser(CTFBotHintTeleporterExit *hint) :

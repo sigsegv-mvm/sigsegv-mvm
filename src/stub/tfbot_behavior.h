@@ -7,23 +7,7 @@
 #include "stub/tfbot.h"
 
 
-/* fix undefined-reference linker errors related to ActionStub */
-inline INextBotEventResponder::~INextBotEventResponder() {}
-inline IContextualQuery::~IContextualQuery() {}
-template<typename T> Action<T>::~Action() {}
-
-
-class ActionStub : public Action<CTFBot>
-{
-public:
-	virtual const char *GetName() const override { return nullptr; }
-	
-protected:
-	ActionStub() {}
-};
-
-
-class CTFBotAttack : public ActionStub
+class CTFBotAttack : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotAttack *New();
@@ -39,7 +23,7 @@ private:
 SIZE_CHECK(CTFBotAttack, 0x9014);
 
 
-class CTFBotSeekAndDestroy : public ActionStub
+class CTFBotSeekAndDestroy : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotSeekAndDestroy *New(float duration = -1.0f);
@@ -57,7 +41,7 @@ private:
 SIZE_CHECK(CTFBotSeekAndDestroy, 0x4828);
 
 
-class CTFBotFetchFlag : public ActionStub
+class CTFBotFetchFlag : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotFetchFlag *New(bool give_up_when_done = false);
@@ -78,7 +62,7 @@ SIZE_CHECK(CTFBotFetchFlag, 0x4814);
 #endif
 
 
-class CTFBotPushToCapturePoint : public ActionStub
+class CTFBotPushToCapturePoint : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotPushToCapturePoint *New(Action<CTFBot> *done_action);
@@ -94,7 +78,7 @@ private:
 SIZE_CHECK(CTFBotPushToCapturePoint, 0x4818);
 
 
-class CTFBotMedicHeal : public ActionStub
+class CTFBotMedicHeal : public ActionStub<CTFBot>
 {
 public:
 #if TOOLCHAIN_FIXES
@@ -119,7 +103,7 @@ private:
 SIZE_CHECK(CTFBotMedicHeal, 0x9058);
 
 
-class CTFBotSniperLurk : public ActionStub
+class CTFBotSniperLurk : public ActionStub<CTFBot>
 {
 public:
 #if TOOLCHAIN_FIXES
@@ -140,7 +124,7 @@ private:
 SIZE_CHECK(CTFBotSniperLurk, 0x485c);
 
 
-class CTFBotMedicRetreat : public ActionStub
+class CTFBotMedicRetreat : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotMedicRetreat *New();
@@ -155,7 +139,7 @@ private:
 SIZE_CHECK(CTFBotMedicRetreat, 0x4814);
 
 
-class CTFBotSpyInfiltrate : public ActionStub
+class CTFBotSpyInfiltrate : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotSpyInfiltrate *New();
@@ -174,7 +158,7 @@ private:
 SIZE_CHECK(CTFBotSpyInfiltrate, 0x4834);
 
 
-class CTFBotEngineerBuild : public ActionStub
+class CTFBotEngineerBuild : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotEngineerBuild *New();
@@ -185,7 +169,7 @@ protected:
 SIZE_CHECK(CTFBotEngineerBuild, 0x0034);
 
 
-class CTFBotDead : public ActionStub
+class CTFBotDead : public ActionStub<CTFBot>
 {
 public:
 	static CTFBotDead *New();
@@ -199,7 +183,7 @@ private:
 SIZE_CHECK(CTFBotDead, 0x0038);
 
 
-class CTFBotMainAction : public ActionStub
+class CTFBotMainAction : public ActionStub<CTFBot>
 {
 public:
 	const CKnownEntity *SelectCloserThreat(CTFBot *actor, const CKnownEntity *threat1, const CKnownEntity *threat2) const { return ft_SelectCloserThreat(this, actor, threat1, threat2); }

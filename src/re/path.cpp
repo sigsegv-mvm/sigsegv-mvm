@@ -1,4 +1,5 @@
 #include "re/path.h"
+#include "stub/tfbot.h"
 
 
 #define MAX_SEGMENTS 256
@@ -197,3 +198,18 @@ void Path::Optimize(INextBot *nextbot) { ft_Path_Optimize(this, nextbot); }
 
 static MemberFuncThunk<Path *, void> ft_Path_PostProcess("Path::PostProcess");
 void Path::PostProcess() { ft_Path_PostProcess(this); }
+
+
+CTFBotPathCost::CTFBotPathCost(CTFBot *actor, RouteType rtype) :
+	m_Actor(actor), m_iRouteType(rtype)
+{
+	this->m_flStepHeight      = actor->GetLocomotionInterface()->GetStepHeight();
+	this->m_flMaxJumpHeight   = actor->GetLocomotionInterface()->GetMaxJumpHeight();
+	this->m_flDeathDropHeight = actor->GetLocomotionInterface()->GetDeathDropHeight();
+	
+	if (actor->IsPlayerClass(TF_CLASS_SPY)) {
+		TheNavMesh->CollectBuiltObjects(&this->m_EnemyObjects, GetEnemyTeam(actor));
+	} else {
+		this->m_EnemyObjects.RemoveAll();
+	}
+}

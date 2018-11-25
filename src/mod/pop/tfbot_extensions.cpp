@@ -14,7 +14,7 @@
 namespace Mod::Pop::TFBot_Extensions
 {
 	/* mobber AI, based on CTFBotAttackFlagDefenders */
-	class CTFBotMobber final : public IHotplugAction
+	class CTFBotMobber final : public IHotplugAction<CTFBot>
 	{
 	public:
 		CTFBotMobber()

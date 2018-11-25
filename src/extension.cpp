@@ -122,7 +122,7 @@ void CExtSigsegv::SDK_OnUnload()
 	
 	IGameSystem::Remove(this);
 	
-	IHotplugAction::UnloadAll();
+	IHotplugActionBase::UnloadAll();
 //	IHotplugEntity::UninstallAll();
 	
 	g_ModManager.Unload();

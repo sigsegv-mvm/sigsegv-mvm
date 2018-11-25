@@ -71,7 +71,6 @@ sourceFiles += [
   'src/link/nextbot1.cpp',
   'src/link/nextbot2.cpp',
   
-  'src/re/nextbot.cpp',
   'src/re/path.cpp',
   
 #  'src/entity/trigger_gravity_improved.cpp',

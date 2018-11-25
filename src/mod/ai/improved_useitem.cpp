@@ -17,7 +17,7 @@ namespace Mod::AI::Improved_UseItem
 	};
 	
 	
-	class CTFBotUseItemImproved : public Action<CTFBot>
+	class CTFBotUseItemImproved : public IHotplugAction<CTFBot>
 	{
 	public:
 		enum class State : int
