@@ -7,6 +7,7 @@
 #include "stub/gamerules.h"
 #include "stub/tfplayer.h"
 #include "stub/nextbot_cc.h"
+#include "stub/nextbot_cc_behavior.h"
 #include "stub/team.h"
 #include "util/scope.h"
 #include "util/iterate.h"
@@ -660,22 +661,18 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
-	/* surreptitiously override the values of a couple of convars briefly during CEyeballBossIdle::OnStart,
-	 * since they are the single place where MONOCULUS gets his lifetime information */
 	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossIdle_OnStart, CEyeballBoss *actor, Action<CEyeballBoss> *action)
 	{
-		static auto tf_eyeball_boss_lifetime       = static_cast<IConVar *>(icvar->FindVar("tf_eyeball_boss_lifetime"));
-		static auto tf_eyeball_boss_lifetime_spell = static_cast<IConVar *>(icvar->FindVar("tf_eyeball_boss_lifetime_spell"));
+		auto me = reinterpret_cast<CEyeballBossIdle *>(this);
+		
+		auto result = DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
 		
 		BossInfo *info = GetInfoForBoss(rtti_cast<CHalloweenBaseBoss *>(actor));
 		if (info != nullptr) {
-			COverrideRAII<CConVarOverride_FloatVal> override1(tf_eyeball_boss_lifetime,       info->lifetime);
-			COverrideRAII<CConVarOverride_FloatVal> override2(tf_eyeball_boss_lifetime_spell, info->lifetime);
-			
-			return DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
-		} else {
-			return DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
+			me->m_ctLifetime.Start(info->lifetime);
 		}
+		
+		return result;
 	}
 	
 	
