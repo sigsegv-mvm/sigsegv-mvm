@@ -37,9 +37,8 @@ private:
 		}
 	}
 	
-	static std::list<T *> *s_List;
+	static inline std::list<T *> *s_List = nullptr;
 };
-template<typename T> std::list<T *> *AutoList<T>::s_List = nullptr;
 
 
 template<typename T, typename K>
