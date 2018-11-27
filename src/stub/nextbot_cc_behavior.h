@@ -23,5 +23,12 @@ public:
 };
 SIZE_CHECK(CEyeballBossIdle, 0x4854); // 0x4851
 
+class CEyeballBossDead : public Action<CEyeballBoss>
+{
+public:
+	CountdownTimer m_ctDelay; // +0x0034
+};
+SIZE_CHECK(CEyeballBossDead, 0x0040); // 0x0040
+
 
 #endif

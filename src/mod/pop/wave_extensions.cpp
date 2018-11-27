@@ -75,18 +75,26 @@ namespace Mod::Pop::Wave_Extensions
 	std::map<CWave *, WaveData> waves;
 	
 	
-	// TODO: make this less egregiously inefficient please!
-	static BossInfo *GetInfoForBoss(CHalloweenBaseBoss *boss)
+	// TODO: make the search process here less egregiously inefficient please!
+	template<typename T, typename = std::enable_if_t<std::is_base_of_v<CHalloweenBaseBoss, T>>>
+	static BossInfo *GetInfoForBoss(T *boss)
 	{
+		auto baseboss = rtti_cast<CHalloweenBaseBoss *>(boss);
+		
 		for (auto& wave : waves) {
 			for (auto& info : wave.second.bosses) {
-				if (info.spawned && info.boss == boss) {
+				if (info.spawned && info.boss == baseboss) {
 					return &info;
 				}
 			}
 		}
 		
 		return nullptr;
+	}
+	template<typename T>
+	static bool HaveInfoForBoss(T *boss)
+	{
+		return (GetInfoForBoss(boss) != nullptr);
 	}
 	
 	
@@ -661,19 +669,23 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
+	/* set MONOCULUS's lifetime from the spawner parameter instead of from the global convars */
 	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossIdle_OnStart, CEyeballBoss *actor, Action<CEyeballBoss> *action)
 	{
 		auto me = reinterpret_cast<CEyeballBossIdle *>(this);
 		
 		auto result = DETOUR_MEMBER_CALL(CEyeballBossIdle_OnStart)(actor, action);
 		
-		BossInfo *info = GetInfoForBoss(rtti_cast<CHalloweenBaseBoss *>(actor));
-		if (info != nullptr) {
-			me->m_ctLifetime.Start(info->lifetime);
+		if (TFGameRules()->IsMannVsMachineMode()) {
+			BossInfo *info = GetInfoForBoss(actor);
+			if (info != nullptr) {
+				me->m_ctLifetime.Start(info->lifetime);
+			}
 		}
 		
 		return result;
 	}
+	
 	
 	/* block attempts by MONOCULUS to switch to CEyeballBossTeleport */
 	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossIdle_Update, CEyeballBoss *actor, float dt)
@@ -681,8 +693,7 @@ namespace Mod::Pop::Wave_Extensions
 		auto result = DETOUR_MEMBER_CALL(CEyeballBossIdle_Update)(actor, dt);
 		
 		if (result.transition == ActionTransition::CHANGE_TO && strcmp(result.reason, "Moving...") == 0) {
-			BossInfo *info = GetInfoForBoss(rtti_cast<CHalloweenBaseBoss *>(actor));
-			if (info != nullptr) {
+			if (TFGameRules()->IsMannVsMachineMode() && HaveInfoForBoss(actor)) {
 				delete result.action;
 				
 				result.transition = ActionTransition::CONTINUE;
@@ -692,6 +703,26 @@ namespace Mod::Pop::Wave_Extensions
 		}
 		
 		return result;
+	}
+	
+	
+	RefCount rc_CEyeballBossDead_Update__and_is_from_spawner;
+	DETOUR_DECL_MEMBER(ActionResult<CEyeballBoss>, CEyeballBossDead_Update, CEyeballBoss *actor, float dt)
+	{
+		SCOPED_INCREMENT_IF(rc_CEyeballBossDead_Update__and_is_from_spawner,
+			(TFGameRules()->IsMannVsMachineMode() && HaveInfoForBoss(actor)));
+		
+		return DETOUR_MEMBER_CALL(CEyeballBossDead_Update)(actor, dt);
+	}
+	
+	/* prevent MONOCULUS's death from spawning a teleport vortex */
+	DETOUR_DECL_STATIC(CBaseEntity *, CBaseEntity_Create, const char *szName, const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity *pOwner)
+	{
+		if (rc_CEyeballBossDead_Update__and_is_from_spawner > 0 && strcmp(szName, "teleport_vortex") == 0) {
+			return nullptr;
+		}
+		
+		return DETOUR_STATIC_CALL(CBaseEntity_Create)(szName, vecOrigin, vecAngles, pOwner);
 	}
 	
 	
@@ -715,7 +746,11 @@ namespace Mod::Pop::Wave_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTeamplayRoundBasedRules_State_Enter, "CTeamplayRoundBasedRules::State_Enter");
 			
 			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_OnStart, "CEyeballBossIdle::OnStart");
-			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_Update,  "CEyeballBossIdle::Update");
+			
+			MOD_ADD_DETOUR_MEMBER(CEyeballBossIdle_Update, "CEyeballBossIdle::Update");
+			
+			MOD_ADD_DETOUR_MEMBER(CEyeballBossDead_Update, "CEyeballBossDead::Update");
+			MOD_ADD_DETOUR_STATIC(CBaseEntity_Create,      "CBaseEntity::Create");
 		}
 		
 		virtual void OnUnload() override
