@@ -3,6 +3,7 @@
 
 
 #include "util/autolist.h"
+#include "util/iaccessonly.h"
 
 
 class IExtractBase;
