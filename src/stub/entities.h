@@ -316,9 +316,8 @@ class CTeamControlPointMaster : public CBaseEntity
 {
 public:
 	using ControlPointMap = CUtlMap<int, CTeamControlPoint *>;
-#if TOOLCHAIN_FIXES
+	
 	DECL_EXTRACT(ControlPointMap, m_ControlPoints);
-#endif
 };
 extern GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters;
 

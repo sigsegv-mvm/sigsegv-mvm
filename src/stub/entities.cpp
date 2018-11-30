@@ -43,18 +43,20 @@ using CExtract_CCurrencyPack_m_nAmount = IExtractStub;
 #if defined _LINUX
 
 static constexpr uint8_t s_Buf_CTeamControlPointMaster_m_ControlPoints[] = {
-	0x55,                                     // +0000  push ebp
-	0x89, 0xe5,                               // +0001  mov ebp,esp
-	0x56,                                     // +0003  push esi
-	0x8b, 0x45, 0x08,                         // +0004  mov eax,[ebp+this]
-	0x53,                                     // +0007  push ebx
-	0x8b, 0x75, 0x0c,                         // +0008  mov esi,[ebp+0xc]
-	0x0f, 0xb7, 0x98, 0x7a, 0x03, 0x00, 0x00, // +000B  movzx ebx,word ptr [eax+0xVVVVVVVV]
+	0x8d, 0xb3, 0x00, 0x00, 0x00, 0x00, // +0000  lea esi,[ebx+m_ControlPoints.m_Elements.m_pMemory]
+	0xe8, 0x00, 0x00, 0x00, 0x00,       // +0006  call CUtlMemory<CTeamControlPointRound *,int>::Purge(void)
+	0x8d, 0x83, 0x00, 0x00, 0x00, 0x00, // +000B  lea eax,[ebx+m_ControlPoints]
+	0x89, 0x04, 0x24,                   // +0011  mov [esp],eax
+	0xe8, 0x00, 0x00, 0x00, 0x00,       // +0014  call CUtlRBTree<CUtlMap<int,CTeamControlPoint *,ushort,bool (*)(int const&,int const&)>::Node_t,ushort,CUtlMap<int,CTeamCOntrolPoint *,ushort,bool (*)(int const&,int const&)>::CKeyLess,CUtlMemory<CUtlRBTreeNode_t<CUtlMap<int,CTeamControlPoint *,ushort,bool (*)(int const&,int const&)>::Node_t,ushort>,ushort>>::RemoveAll(void)
+	0x89, 0x34, 0x24,                   // +0019  mov esp,[esi]
+	0xe8, 0x00, 0x00, 0x00, 0x00,       // +001C  call CUtlMemory<UtlRBTreeNode_t<CUtlMap<int,CTeamControlPoint *,ushort,bool (*)(int const&,int const&)>::Node_t,ushort>,ushort>::Purge(void)
+	0x89, 0x34, 0x24,                   // +0021  mov esp,[esi]
+	0xe8, 0x00, 0x00, 0x00, 0x00,       // +0024  call CUtlMemory<UtlRBTreeNode_t<CUtlMap<int,CTeamControlPoint *,ushort,bool (*)(int const&,int const&)>::Node_t,ushort>,ushort>::Purge(void)
 };
 
-struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMap<int, CTeamControlPoint *> *>
+struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CTeamControlPointMaster::ControlPointMap *>
 {
-	using T = CUtlMap<int, CTeamControlPoint *> *;
+	using T = CTeamControlPointMaster::ControlPointMap *;
 	
 	CExtract_CTeamControlPointMaster_m_ControlPoints() : IExtract<T>(sizeof(s_Buf_CTeamControlPointMaster_m_ControlPoints)) {}
 	
@@ -62,16 +64,33 @@ struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CUtlMa
 	{
 		buf.CopyFrom(s_Buf_CTeamControlPointMaster_m_ControlPoints);
 		
-		mask.SetRange(0x0b + 3, 4, 0x00);
+		mask.SetRange(0x00 + 4, 2, 0x00);
+		mask.SetDword(0x06 + 1,    0x00);
+		mask.SetRange(0x0b + 2, 2, 0x00);
+		mask.SetDword(0x14 + 1,    0x00);
+		mask.SetDword(0x1c + 1,    0x00);
+		mask.SetDword(0x24 + 1,    0x00);
 		
 		return true;
 	}
 	
-	virtual const char *GetFuncName() const override   { return "CTeamControlPointMaster::PointLastContestedAt"; }
+	virtual bool Validate(const uint8_t *ptr) const override
+	{
+		uint32_t off_m_ControlPoints_m_Elements_m_pMemory = *(uint32_t *)(ptr + 0x00 + 2);
+		uint32_t off_m_ControlPoints                      = *(uint32_t *)(ptr + 0x0b + 2);
+		
+		static_assert(offsetof(CTeamControlPointMaster::ControlPointMap,             m_Elements) == 0x04);
+		static_assert(offsetof(CTeamControlPointMaster::ControlPointMap::m_Elements, m_pMemory ) == 0x00);
+		
+		if (off_m_ControlPoints_m_Elements_m_pMemory - 0x04 != off_m_ControlPoints) return false;
+		
+		return true;
+	}
+	
+	virtual const char *GetFuncName() const override   { return "CTeamControlPointMaster::~CTeamControlPointMaster [D2]"; }
 	virtual uint32_t GetFuncOffMin() const override    { return 0x0000; }
-	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
-	virtual uint32_t GetExtractOffset() const override { return 0x000b + 3; }
-	virtual T AdjustValue(T val) const override        { return reinterpret_cast<T>((uintptr_t)val - 0x12); }
+	virtual uint32_t GetFuncOffMax() const override    { return 0x0080; }
+	virtual uint32_t GetExtractOffset() const override { return 0x000b + 2; }
 };
 
 #elif defined _WINDOWS
@@ -178,9 +197,7 @@ static StaticFuncThunk<bool, const CBaseEntity *, const Vector&, bool> ft_PointI
 bool PointInRespawnRoom(const CBaseEntity *ent, const Vector& vec, bool b1) { return ft_PointInRespawnRoom(ent, vec, b1); }
 
 
-#if TOOLCHAIN_FIXES
 IMPL_EXTRACT(CTeamControlPointMaster::ControlPointMap, CTeamControlPointMaster, m_ControlPoints, new CExtract_CTeamControlPointMaster_m_ControlPoints());
-#endif
 
 GlobalThunk<CUtlVector<CHandle<CTeamControlPointMaster>>> g_hControlPointMasters("g_hControlPointMasters");
 

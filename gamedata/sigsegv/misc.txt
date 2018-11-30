@@ -1045,12 +1045,6 @@
 					sym  "_ZN12CTFGameRules18ClientDisconnectedEP7edict_t"
 				}
 				
-				"CTeamControlPointMaster::PointLastContestedAt"
-				{
-					type "sym"
-					sym  "_ZN23CTeamControlPointMaster20PointLastContestedAtEi"
-				}
-				
 //				"CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo"
 //				{
 //					type "sym"
@@ -2833,6 +2827,9 @@
 				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				
 				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
+				
+				"CTeamControlPointMaster::PointLastContestedAt"          "_ZN23CTeamControlPointMaster20PointLastContestedAtEi"
+				"CTeamControlPointMaster::~CTeamControlPointMaster [D2]" "_ZN23CTeamControlPointMasterD2Ev"
 				
 				"CTFObjectiveResource::DecrementMannVsMachineWaveClassCount" "_ZN20CTFObjectiveResource36DecrementMannVsMachineWaveClassCountE8string_tj"
 				
