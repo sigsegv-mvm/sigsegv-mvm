@@ -112,11 +112,11 @@ public:
 	}
 	
 	/* pad out extra space with NOP's to avoid confusing the disassembler */
-	void WritePadded(size_t len) const
+	void WritePadded(size_t len, OpCode pad = OPCODE_NOP) const
 	{
 		assert(len >= this->m_nSize);
 		std::copy_n(this->m_Buf, this->m_nSize, this->m_pWhere);
-		std::fill_n(this->m_pWhere + this->m_nSize, len - this->m_nSize, OPCODE_NOP);
+		std::fill_n(this->m_pWhere + this->m_nSize, len - this->m_nSize, pad);
 	}
 	
 protected:
