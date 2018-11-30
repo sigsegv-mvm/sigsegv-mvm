@@ -28,6 +28,8 @@ protected:
 	virtual size_t GetSize() const = 0;
 	virtual bool GetExtractInfo(ByteBuf& buf, ByteBuf& mask) const = 0;
 	
+	virtual bool Validate(const uint8_t *ptr) const { return true; }
+	
 	const int m_iLength;
 	
 	const char *m_pszFuncName = nullptr;
