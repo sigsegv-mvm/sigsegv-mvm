@@ -89,7 +89,7 @@ int IExtract<T>::ExtractPtrAsInt() const
 class IExtractStub final
 {
 public:
-	template<typename... ARGS> IExtractStub(ARGS...) {}
+	template<typename... ARGS> IExtractStub(ARGS&&...) {}
 };
 
 
