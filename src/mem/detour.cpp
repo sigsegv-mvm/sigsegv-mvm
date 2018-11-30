@@ -85,7 +85,7 @@ static bool UD86_insn_is_call_rel_imm32(struct ud *ud, const uint8_t **call_targ
 }
 
 /* detect instruction: 'mov e[acdb]x,[esp]' */
-static bool UD86_insn_is_mov_r32_rtnval(struct ud *ud, X86Instr::Reg *dest_reg = nullptr)
+static bool UD86_insn_is_mov_r32_rtnval(struct ud *ud, Reg *dest_reg = nullptr)
 {
 	auto mnemonic = ud_insn_mnemonic(ud);
 	if (mnemonic != UD_Imov) return false;
@@ -97,12 +97,12 @@ static bool UD86_insn_is_mov_r32_rtnval(struct ud *ud, X86Instr::Reg *dest_reg =
 	if (op0->type != UD_OP_REG) return false;
 	if (op0->size != 32)        return false;
 	
-	X86Instr::Reg reg;
+	Reg reg;
 	switch (op0->base) {
-	case UD_R_EAX: reg = X86Instr::REG_AX; break;
-	case UD_R_ECX: reg = X86Instr::REG_CX; break;
-	case UD_R_EDX: reg = X86Instr::REG_DX; break;
-	case UD_R_EBX: reg = X86Instr::REG_BX; break;
+	case UD_R_EAX: reg = REG_AX; break;
+	case UD_R_ECX: reg = REG_CX; break;
+	case UD_R_EDX: reg = REG_DX; break;
+	case UD_R_EBX: reg = REG_BX; break;
 	default: return false;
 	}
 	
@@ -136,7 +136,7 @@ static bool UD86_insn_is_ret(struct ud *ud)
 
 
 /* detect whether an instruction is a call to __i686.get_pc_thunk.(ax|cx|dx|bx) */
-static bool UD86_insn_is_call_to_get_pc_thunk(struct ud *ud, X86Instr::Reg *dest_reg = nullptr)
+static bool UD86_insn_is_call_to_get_pc_thunk(struct ud *ud, Reg *dest_reg = nullptr)
 {
 	const uint8_t *call_target;
 	if (!UD86_insn_is_call_rel_imm32(ud, &call_target)) return false;
@@ -194,7 +194,7 @@ static size_t Trampoline_CopyAndFixUpFuncBytes(size_t len_min, const uint8_t *fu
 		
 		/* detect calls to __i686.get_pc_thunk.(ax|cx|dx|bx);
 		 * convert them into direct-register-load operations */
-		X86Instr::Reg reg;
+		Reg reg;
 		if (UD86_insn_is_call_to_get_pc_thunk(&ud, &reg)) {
 			uint32_t pc_value = (ud_insn_off(&ud) + ud_insn_len(&ud) + (trampoline - func));
 			MovRegImm32(dest, reg, pc_value).Write();
@@ -644,11 +644,11 @@ void CDetouredFunc::CreateWrapper()
 		auto p_mov_funcaddr_2 = this->m_pWrapper + Wrapper::Offset_MOV_FuncAddr_2();
 		auto p_call_post      = this->m_pWrapper + Wrapper::Offset_CALL_Post();
 		
-		MovRegImm32      (p_mov_funcaddr_1, X86Instr::REG_CX, (uint32_t)this->m_pFunc)         .Write();
-		CallIndirectMem32(p_call_pre,                         (uint32_t)&this->m_pWrapperPre)  .Write();
-		CallIndirectMem32(p_call_inner,                       (uint32_t)&this->m_pWrapperInner).Write();
-		MovRegImm32      (p_mov_funcaddr_2, X86Instr::REG_CX, (uint32_t)this->m_pFunc)         .Write();
-		CallIndirectMem32(p_call_post,                        (uint32_t)&this->m_pWrapperPost) .Write();
+		MovRegImm32      (p_mov_funcaddr_1, REG_CX, (uint32_t)this->m_pFunc)         .Write();
+		CallIndirectMem32(p_call_pre,               (uint32_t)&this->m_pWrapperPre)  .Write();
+		CallIndirectMem32(p_call_inner,             (uint32_t)&this->m_pWrapperInner).Write();
+		MovRegImm32      (p_mov_funcaddr_2, REG_CX, (uint32_t)this->m_pFunc)         .Write();
+		CallIndirectMem32(p_call_post,              (uint32_t)&this->m_pWrapperPost) .Write();
 	}
 #endif
 }
