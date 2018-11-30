@@ -123,7 +123,7 @@ protected:
 	X86Instr(size_t size, uint8_t *where) : m_nSize(size), m_pWhere(where) {}
 	
 	size_t m_nSize;
-	uint8_t *m_pWhere = nullptr;
+	uint8_t *m_pWhere;
 	uint8_t m_Buf[15];
 };
 
@@ -158,13 +158,25 @@ public:
 	}
 };
 
+class CallRelImm32 : public X86InstrSized<5>
+{
+public:
+	/* rel: basis for the relative offset; usually equal to where the instruction will go, but not always */
+	CallRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel = where) : X86InstrSized(where)
+	{
+		this->m_Buf[0] = OPCODE_CALL_REL_IMM32;
+		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)rel + Size()));
+	}
+};
+
 class JmpRelImm32 : public X86InstrSized<5>
 {
 public:
-	JmpRelImm32(uint8_t *where, uint32_t target) : X86InstrSized(where)
+	/* rel: basis for the relative offset; usually equal to where the instruction will go, but not always */
+	JmpRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel = where) : X86InstrSized(where)
 	{
 		this->m_Buf[0] = OPCODE_JMP_REL_IMM32;
-		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)where + Size()));
+		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)rel + Size()));
 	}
 };
 
