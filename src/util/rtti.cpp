@@ -24,7 +24,14 @@ namespace RTTI
 		s_RTTI.clear();
 		s_VT.clear();
 		
-#if defined __GNUC__
+#if defined __clang__
+		
+		
+		#error TODO
+		
+		
+#elif defined __GNUC__
+		
 		
 		for (auto lib : {Library::SERVER, Library::ENGINE, Library::TIER0}) {
 			LibMgr::ForEachSym(lib, [](const Symbol& sym){

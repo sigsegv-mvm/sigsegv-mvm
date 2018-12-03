@@ -6,7 +6,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#ifdef __GNUC__
+#if defined __GNUC__ && !defined __clang__
 #include <strcompat.h>
 #endif
 
@@ -191,7 +191,7 @@ std::string CEconItemAttributeDefinition::ConvertValueToString(attribute_data_un
 	}
 	
 	/* we only actually need to use the strcompat workaround on GCC Linux builds */
-#ifdef __GNUC__
+#if defined __GNUC__ && !defined __clang__
 	string_compat str;
 	this->GetType()->ConvertEconAttributeValueToString(this, value, str.compat_ptr());
 	return str.get();

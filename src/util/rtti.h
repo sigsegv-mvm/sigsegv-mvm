@@ -5,17 +5,21 @@
 #include "abi.h"
 
 
-#if defined __GNUC__
+#if defined __clang__
+#error TODO
+#elif defined __GNUC__
 typedef abi::__class_type_info rtti_t;
 #elif defined _MSC_VER
 typedef _TypeDescriptor rtti_t;
 #endif
 
 
-#ifdef _MSC_VER
+#if defined __clang__
+#error TODO
+#elif defined __GNUC__
+#define TYPEID_NAME(type_or_expr) typeif(type_or_expr).name()
+#elif defined _MSC_VER
 #define TYPEID_NAME(type_or_expr) typeid(type_or_expr).raw_name()
-#else
-#define TYPEID_NAME(type_or_expr) typeid(type_or_expr).name()
 #endif
 
 template<typename T> inline const char *TypeName()
@@ -79,7 +83,9 @@ inline TO rtti_cast(const FROM ptr)
 	assert(rtti_from != nullptr);
 	assert(rtti_to   != nullptr);
 	
-#if defined __GNUC__
+#if defined __clang__
+	#error TODO
+#elif defined __GNUC__
 	/* GCC's __dynamic_cast is grumpy and won't do up-casts at runtime, so we
 	 * have to manually take care of up-casting ourselves */
 	void *result = (void *)ptr;
@@ -103,7 +109,9 @@ template<class TO, class FROM>
 inline TO __fastcall jit_cast(const FROM ptr)
 {
 	
-#if defined __GNUC__
+#if defined __clang__
+	#error TODO
+#elif defined __GNUC__
 	__asm__ volatile ("nop; nop; nop; nop; nop" : : : "memory");
 	
 	// INITIAL: nop pad
@@ -120,8 +128,6 @@ inline TO __fastcall jit_cast(const FROM ptr)
 	
 	// INITIAL: nop pad
 	// LATER:   compare with nullptr and conditionally do the add/subtract adjustment
-#else
-#error
 #endif
 	
 	return (TO)((uintptr_t)ptr + 0x20);

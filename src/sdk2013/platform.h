@@ -13,6 +13,8 @@
 #define PLATFORM_64BITS 1
 #endif
 
+// sigsegv warning: this should PROBABLY be parenthesized and then AND'd with !defined(__clang__)
+// (because clang DOES define the __GNUC__ macro!)
 #if defined(__GCC__) || defined(__GNUC__)
 #define COMPILER_GCC 1
 #endif

@@ -4,6 +4,11 @@
 #define _INCLUDE_SIGSEGV_COMMON_H_
 
 
+#if !defined __clang__ && !defined __GNUC__ && !defined _MSC_VER
+	#error WTF compiler are you using???
+#endif
+
+
 #if defined __cplusplus
 
 
@@ -13,18 +18,18 @@
 	#define PRAGMA(str) __pragma(str)
 #endif
 
-#if defined __GNUC__
-	#define WARN_RESTORE() PRAGMA(GCC diagnostic pop)
-#elif defined __clang__
+#if defined __clang__
 	#define WARN_RESTORE() PRAGMA(clang diagnostic pop)
+#elif defined __GNUC__
+	#define WARN_RESTORE() PRAGMA(GCC diagnostic pop)
 #else
 	#define WARN_RESTORE()
 #endif
 
-#if defined __GNUC__
-	#define WARN_IGNORE(x) PRAGMA(GCC diagnostic push) PRAGMA(GCC diagnostic ignored x)
-#elif defined __clang__
+#if defined __clang__
 	#define WARN_IGNORE(x) PRAGMA(clang diagnostic push) PRAGMA(clang diagnostic ignored x)
+#elif defined __GNUC__
+	#define WARN_IGNORE(x) PRAGMA(GCC diagnostic push) PRAGMA(GCC diagnostic ignored x)
 #else
 	#define WARN_IGNORE(x)
 #endif
@@ -41,7 +46,7 @@
 	#define WARN_IGNORE__ADDRESS()
 #endif
 
-#if defined __GNUC__
+#if defined __GNUC__ && !defined __clang__
 	#define WARN_IGNORE__NONNULL_COMPARE() WARN_IGNORE("-Wnonnull-compare")
 #else
 	#define WARN_IGNORE__NONNULL_COMPARE()

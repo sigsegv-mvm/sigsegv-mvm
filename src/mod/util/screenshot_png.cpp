@@ -21,14 +21,14 @@ namespace Mod::Util::Screenshot_PNG
 	
 	DETOUR_DECL_MEMBER(void, CVideoMode_Common_TakeSnapshotTGA, const char *pFilename)
 	{
-#if defined __GNUC
+#if defined __GNUC__
 		#warning TODO
 #endif
 	}
 	
 	DETOUR_DECL_STATIC(bool, TGAWriter_WriteToBuffer, unsigned char *pImageData, CUtlBuffer& buffer, int width, int height, ImageFormat srcFormat, ImageFormat dstFormat)
 	{
-#if defined __GNUC
+#if defined __GNUC__
 		#warning TODO
 #endif
 			return false;

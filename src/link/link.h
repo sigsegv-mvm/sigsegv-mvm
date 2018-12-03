@@ -381,9 +381,11 @@ public:
 			return false;
 		}
 		
-#if defined __GNUC__
+#if defined __clang__
+		#error TODO
+#elif defined __GNUC__
 		ptrdiff_t adj = -offsetof(vtable, vfptrs);
-#else
+#elif defined _MSC_VER
 		ptrdiff_t adj = 0;
 #endif
 		

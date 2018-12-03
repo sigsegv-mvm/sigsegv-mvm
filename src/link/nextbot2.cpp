@@ -2,7 +2,14 @@
 #include "abi.h"
 
 
-#if defined __GNUC__
+#if defined __clang__
+
+
+#error TODO
+
+
+#elif defined __GNUC__
+
 
 class Dummy {};
 
@@ -53,7 +60,9 @@ THUNK_VTABLE(16IContextualQuery, 0x40);
 THUNK_TYPEINFO_SINGLE(8INextBot);
 THUNK_VTABLE(8INextBot, 0x200);
 
+
 #elif defined _MSC_VER
+
 
 #include "re/nextbot.h"
 #include "re/path.h"
@@ -78,5 +87,6 @@ IContextualQuery::~IContextualQuery()             { assert(false); }
 
 // TODO: why didn't we have to hook up the RTTI?
 // will dynamic_cast's be broken?
+
 
 #endif
