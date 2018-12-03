@@ -162,22 +162,26 @@ class CallRelImm32 : public X86InstrSized<5>
 {
 public:
 	/* rel: basis for the relative offset; usually equal to where the instruction will go, but not always */
-	CallRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel = where) : X86InstrSized(where)
+	CallRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel) : X86InstrSized(where)
 	{
 		this->m_Buf[0] = OPCODE_CALL_REL_IMM32;
 		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)rel + Size()));
 	}
+	/* rel = where */
+	CallRelImm32(uint8_t *where, uint32_t target) : CallRelImm32(where, target, where) {}
 };
 
 class JmpRelImm32 : public X86InstrSized<5>
 {
 public:
 	/* rel: basis for the relative offset; usually equal to where the instruction will go, but not always */
-	JmpRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel = where) : X86InstrSized(where)
+	JmpRelImm32(uint8_t *where, uint32_t target, const uint8_t *rel) : X86InstrSized(where)
 	{
 		this->m_Buf[0] = OPCODE_JMP_REL_IMM32;
 		*reinterpret_cast<uint32_t *>(this->m_Buf + 1) = (target - ((uintptr_t)rel + Size()));
 	}
+	/* rel = where */
+	JmpRelImm32(uint8_t *where, uint32_t target) : JmpRelImm32(where, target, where) {}
 };
 
 class CallIndirectMem32 : public X86InstrSized<6>
