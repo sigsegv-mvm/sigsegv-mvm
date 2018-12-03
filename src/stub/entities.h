@@ -121,6 +121,21 @@ class CTFWearableRazorback  : public CTFWearable {};
 class CTFPowerupBottle      : public CTFWearable {};
 
 
+class CTFBotHint : public CBaseEntity
+{
+public:
+	enum HintType : int32_t
+	{
+		HINT_SNIPER = 0, // --> nav attr SNIPER_SPOT
+		HINT_SENTRY = 1, // --> nav attr SENTRY_SPOT
+	};
+	
+	DECL_DATAMAP(int,      m_team);
+	DECL_DATAMAP(HintType, m_hint);
+	DECL_DATAMAP(bool,     m_isDisabled);
+};
+
+
 class CBaseTFBotHintEntity : public CPointEntity {};
 class CTFBotHintSentrygun : public CBaseTFBotHintEntity {};
 class CTFBotHintTeleporterExit : public CBaseTFBotHintEntity {};

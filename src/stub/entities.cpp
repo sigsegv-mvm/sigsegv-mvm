@@ -136,6 +136,11 @@ MemberVFuncThunk<CEconWearable *, void, CBaseEntity *> CEconWearable::vt_RemoveF
 MemberVFuncThunk<CEconWearable *, void, CBasePlayer *> CEconWearable::vt_UnEquip   (TypeName<CEconWearable>(), "CEconWearable::UnEquip");
 
 
+IMPL_DATAMAP(int,                  CTFBotHint, m_team);
+IMPL_DATAMAP(CTFBotHint::HintType, CTFBotHint, m_hint);
+IMPL_DATAMAP(bool,                 CTFBotHint, m_isDisabled);
+
+
 IMPL_SENDPROP(bool, CTFBotHintEngineerNest, m_bHasActiveTeleporter, CTFBotHintEngineerNest);
 
 MemberFuncThunk<const CTFBotHintEngineerNest *, bool> CTFBotHintEngineerNest::ft_IsStaleNest      ("CTFBotHintEngineerNest::IsStaleNest");

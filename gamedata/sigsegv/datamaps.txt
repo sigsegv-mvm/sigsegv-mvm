@@ -31,6 +31,7 @@
 				"CPathTrack"           "_ZN10CPathTrack9m_DataMapE"
 				"CSmokeStack"          "_ZN11CSmokeStack9m_DataMapE"
 				"CSpellPickup"         "_ZN12CSpellPickup9m_DataMapE"
+				"CTFBotHint"           "_ZN10CTFBotHint9m_DataMapE"
 				"CTFPowerup"           "_ZN10CTFPowerup9m_DataMapE"
 				"CTFTeamSpawn"         "_ZN12CTFTeamSpawn9m_DataMapE"
 			}
