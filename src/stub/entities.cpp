@@ -64,7 +64,7 @@ struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CTeamC
 	{
 		buf.CopyFrom(s_Buf_CTeamControlPointMaster_m_ControlPoints);
 		
-		mask.SetRange(0x00 + 4, 2, 0x00);
+		mask.SetRange(0x00 + 2, 2, 0x00);
 		mask.SetDword(0x06 + 1,    0x00);
 		mask.SetRange(0x0b + 2, 2, 0x00);
 		mask.SetDword(0x14 + 1,    0x00);
