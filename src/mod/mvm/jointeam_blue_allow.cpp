@@ -762,16 +762,14 @@ namespace Mod::MvM::JoinTeam_Blue_Allow
 	CMod s_Mod;
 	
 	
-	/* by way of incredibly annoying persistent requests from Hell-met,
-	 * I've acquiesced and made this mod convar non-notifying (sigh) */
-	ConVar cvar_enable("sig_mvm_jointeam_blue_allow", "0", /*FCVAR_NOTIFY*/FCVAR_NONE,
+	ConVar cvar_enable("sig_mvm_jointeam_blue_allow", "0", FCVAR_NOTIFY,
 		"Mod: permit client command 'jointeam blue' from human players",
 		[](IConVar *pConVar, const char *pOldValue, float flOldValue){
 			s_Mod.Toggle(static_cast<ConVar *>(pConVar)->GetBool());
 		});
 	
 	/* default: admin-only mode ENABLED */
-	ConVar cvar_adminonly("sig_mvm_jointeam_blue_allow_adminonly", "1", /*FCVAR_NOTIFY*/FCVAR_NONE,
+	ConVar cvar_adminonly("sig_mvm_jointeam_blue_allow_adminonly", "1", FCVAR_NOTIFY,
 		"Mod: restrict this mod's functionality to SM admins only"
 		" [NOTE: missions with WaveSchedule param AllowJoinTeamBlue 1 will OVERRIDE this and allow non-admins for the duration of the mission]");
 }
