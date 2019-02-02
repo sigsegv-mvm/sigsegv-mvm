@@ -209,23 +209,19 @@ namespace Mod::Util::Download_Manager
 	}
 	
 	
-	DETOUR_DECL_MEMBER(void, CServerGameDLL_ServerActivate, edict_t *pEdictList, int edictList, int clientMax)
-	{
-		DETOUR_MEMBER_CALL(CServerGameDLL_ServerActivate)(pEdictList, edictList, clientMax);
-		
-		LoadDownloadsFile();
-	}
-	
-	
-	class CMod : public IMod
+	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
-		CMod() : IMod("Util:Download_Manager")
-		{
-			MOD_ADD_DETOUR_MEMBER(CServerGameDLL_ServerActivate, "CServerGameDLL::ServerActivate");
-		}
+		CMod() : IMod("Util:Download_Manager") {}
 		
 		virtual void OnEnable() override
+		{
+			LoadDownloadsFile();
+		}
+		
+		virtual bool ShouldReceiveCallbacks() const override { return this->IsEnabled(); }
+		
+		virtual void LevelInitPostEntity() override
 		{
 			LoadDownloadsFile();
 		}
