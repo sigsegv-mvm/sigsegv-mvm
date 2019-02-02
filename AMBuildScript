@@ -199,7 +199,7 @@ class ExtensionConfig(object):
     cxx.cflags += ['-fno-omit-frame-pointer']
 #   cxx.cflags += ['-masm=intel']
 #   cxx.cflags += ['-Q']
-    cxx.cflags += ['-Winvalid-pch']
+#   cxx.cflags += ['-Winvalid-pch']
     cxx.cflags += ['-Wno-unknown-pragmas']
     cxx.cflags += ['-pthread']
     cxx.cflags += ['-gsplit-dwarf']

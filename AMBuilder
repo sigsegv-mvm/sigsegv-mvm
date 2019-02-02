@@ -419,9 +419,9 @@ _, autogen = builder.AddCommand(
 binary.compiler.sourcedeps += autogen
 
 
-# PCH for GCC only (breaks Clang autogen.h dependency detection)
-if 'gcc' in binary.compiler.version.vendor_name:
-  project.sources = [ 'src/common.h' ] + project.sources
+## PCH for GCC only (breaks Clang autogen.h dependency detection)
+#if 'gcc' in binary.compiler.version.vendor_name:
+#  project.sources = [ 'src/common.h' ] + project.sources
 
 binary.compiler.cflags += [ '-include', 'common.h' ]
 
