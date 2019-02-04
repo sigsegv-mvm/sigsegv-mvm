@@ -187,6 +187,9 @@ static MemberFuncThunk<const Action<CTFBot> *, bool,             const INextBot 
 static MemberFuncThunk<      Action<CTFBot> *, Action<CTFBot> *, CTFBot *, Behavior<CTFBot> *, AR>                              ft_Action_ApplyResult(                        "Action<CTFBot>::ApplyResult");
 static MemberFuncThunk<      Action<CTFBot> *, void,             CTFBot *, Behavior<CTFBot> *, Action<CTFBot> *>                ft_Action_InvokeOnEnd(                        "Action<CTFBot>::InvokeOnEnd");
 static MemberFuncThunk<      Action<CTFBot> *, AR,               CTFBot *, Behavior<CTFBot> *, Action<CTFBot> *>                ft_Action_InvokeOnResume(                     "Action<CTFBot>::InvokeOnResume");
+static MemberFuncThunk<const Action<CTFBot> *, char *,           char[256], const Action<CTFBot> *>                             ft_Action_BuildDecoratedName(                 "Action<CTFBot>::BuildDecoratedName");
+static MemberFuncThunk<const Action<CTFBot> *, char *>                                                                          ft_Action_DebugString(                        "Action<CTFBot>::DebugString");
+static MemberFuncThunk<const Action<CTFBot> *, void>                                                                            ft_Action_PrintStateToConsole(                "Action<CTFBot>::PrintStateToConsole");
 
 /* CTFBotPathCost */
 static MemberFuncThunk<const CTFBotPathCost *, float, CNavArea *, CNavArea *, const CNavLadder *, const CFuncElevator *, float> ft_CTFBotPathCost_op_func("CTFBotPathCost::operator()");
@@ -372,6 +375,9 @@ template<> Action<CTFBot> *Action<CTFBot>::ApplyResult(CTFBot *actor, Behavior<C
 template<> void Action<CTFBot>::InvokeOnEnd(CTFBot *actor, Behavior<CTFBot> *behavior, Action<CTFBot> *action)                                        {        ft_Action_InvokeOnEnd                        (this, actor, behavior, action);  }
 #endif
 template<> ActionResult<CTFBot> Action<CTFBot>::InvokeOnResume(CTFBot *actor, Behavior<CTFBot> *behavior, Action<CTFBot> *action)                     { return ft_Action_InvokeOnResume                     (this, actor, behavior, action);  }
+template<> char *Action<CTFBot>::BuildDecoratedName(char buf[256], const Action<CTFBot> *action) const                                                { return ft_Action_BuildDecoratedName                 (this, buf, action);              }
+template<> char *Action<CTFBot>::DebugString() const                                                                                                  { return ft_Action_DebugString                        (this);                           }
+template<> void Action<CTFBot>::PrintStateToConsole() const                                                                                           {        ft_Action_PrintStateToConsole                (this);                           }
 
 float CTFBotPathCost::operator()(CNavArea *area1, CNavArea *area2, const CNavLadder *ladder, const CFuncElevator *elevator, float f1) const { return ft_CTFBotPathCost_op_func(this, area1, area2, ladder, elevator, f1); }
 

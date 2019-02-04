@@ -670,6 +670,21 @@
 					type "sym"
 					sym  "_ZN6ActionI6CTFBotE14InvokeOnResumeEPS0_P8BehaviorIS0_EPS1_"
 				}
+				"Action<CTFBot>::BuildDecoratedName"
+				{
+					type "sym"
+					sym  "_ZNK6ActionI6CTFBotE18BuildDecoratedNameEPcPKS1_"
+				}
+				"Action<CTFBot>::DebugString"
+				{
+					type "sym"
+					sym  "_ZNK6ActionI6CTFBotE11DebugStringEv"
+				}
+				"Action<CTFBot>::PrintStateToConsole"
+				{
+					type "sym"
+					sym  "_ZNK6ActionI6CTFBotE19PrintStateToConsoleEv"
+				}
 			}
 		}
 	}
