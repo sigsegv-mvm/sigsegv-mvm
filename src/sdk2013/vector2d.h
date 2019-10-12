@@ -266,13 +266,13 @@ constexpr Vector2D& Vector2D::operator=(const Vector2D &vOther)
 constexpr vec_t& Vector2D::operator[](int i)
 {
 	Assert( (i >= 0) && (i < 2) );
-	return ((vec_t*)this)[i];
+	return Base()[i];
 }
 
 constexpr vec_t Vector2D::operator[](int i) const
 {
 	Assert( (i >= 0) && (i < 2) );
-	return ((vec_t*)this)[i];
+	return Base()[i];
 }
 
 //-----------------------------------------------------------------------------
@@ -281,12 +281,14 @@ constexpr vec_t Vector2D::operator[](int i) const
 
 constexpr vec_t* Vector2D::Base()
 {
-	return (vec_t*)&x;
+	static_assert(offsetof(Vector2D, x) == 0);
+	return &x;
 }
 
 constexpr vec_t const* Vector2D::Base() const
 {
-	return (vec_t const*)&x;
+	static_assert(offsetof(Vector2D, x) == 0);
+	return &x;
 }
 
 //-----------------------------------------------------------------------------
