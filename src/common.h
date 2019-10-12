@@ -320,6 +320,9 @@ WARN_IGNORE__ADDRESS()
 WARN_RESTORE()
 #undef COMPILE_TIME_ASSERT
 #define COMPILE_TIME_ASSERT(pred) static_assert(pred)
+WARN_IGNORE__CLASS_MEMACCESS()
+#include <threadtools.h>
+WARN_RESTORE()
 #include "sdk2013/Color.h"
 #include "sdk2013/vector2d.h"
 #include "sdk2013/vector.h"
@@ -387,8 +390,8 @@ WARN_RESTORE()
 #include <SoundEmitterSystem/isoundemittersystembase.h>
 #include <IEngineSound.h>
 #include <igamesystem.h>
-#include <vphysics_interface.h>
 WARN_IGNORE__CLASS_MEMACCESS()
+#include <vphysics_interface.h>
 #include <studio.h>
 WARN_RESTORE()
 WARN_IGNORE__REORDER()
