@@ -334,7 +334,9 @@ WARN_IGNORE__CLASS_MEMACCESS()
 #include <utlmemory.h>
 WARN_RESTORE()
 #include <utlstring.h>
+#define swap V_swap
 #include <utlvector.h>
+#undef swap
 WARN_IGNORE__REORDER()
 #include <utlrbtree.h>
 WARN_RESTORE()
