@@ -7,14 +7,18 @@
 #endif
 
 
-#include "re/nextbot.h"
 #include "util/misc.h"
 
 
 class CBaseObject;
 class CNavLadder;
 class CFuncElevator;
+class CNavArea;
+class INextBot;
+class CBaseCombatCharacter;
+class CTFBot;
 enum NavDirType : int32_t;
+
 
 
 #include "../mvm-reversed/server/NextBot/Path/NextBotPath.h"
@@ -56,6 +60,7 @@ private:
 };
 SIZE_CHECK(CTFBotPathCost, 0x2c);
 
+#warning REMOVE ME / MOVE ME ELSEWHERE!
 inline CTFBotPathCost::~CTFBotPathCost() {}
 
 

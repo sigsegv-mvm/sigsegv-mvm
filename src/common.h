@@ -198,6 +198,7 @@ extern IClientMode *g_pClientMode;
 
 
 /* C standard library */
+#include <cstddef>
 #include <cstdlib>
 #include <cstdint>
 #include <cinttypes>
@@ -499,7 +500,11 @@ static_assert(_SIGSEGV_SDK2013_OVERRIDE__PUBLIC_MATERIALSYSTEM_IMATERIALSYSTEM_H
  * some of us use non-ancient development tools where a proper, working offsetof
  * is actually important for things to work right */
 #undef offsetof
-#define offsetof(OBJECT, MEMBER) reinterpret_cast<size_t>(std::addressof(((OBJECT *)nullptr)->MEMBER))
+/* yes, all three major compilers use `__builtin_offsetof` for the offsetof() macro! */
+#define offsetof(TYPE, MEMBER) __builtin_offsetof(TYPE, MEMBER)
+
+/* an optional manual alternative-implementation that at least compensates for overridden operator& */
+//#define offsetof(TYPE, MEMBER) reinterpret_cast<size_t>(std::addressof(((TYPE *)nullptr)->MEMBER))
 
 
 #endif

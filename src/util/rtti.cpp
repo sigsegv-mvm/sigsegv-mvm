@@ -286,6 +286,15 @@ namespace RTTI
 		// VTable
 		// Linux: find all symbols of format "_ZTV", add 8 bytes
 		// Windows: do some fancy backtracking from RTTI info
+		
+		
+#if RTTI_STATIC_CAST_ENABLE
+		/* now that we have all the RTTI preloaded, precompute ptr diffs for rtti_static_cast */
+		StaticCastRegistrar::InitAll();
+		
+		extern void REMOVEME();
+		REMOVEME();
+#endif
 	}
 	
 	
@@ -310,4 +319,68 @@ namespace RTTI
 		
 		return (*it).second;
 	}
+	
+	
+#if RTTI_STATIC_CAST_ENABLE
+	ptrdiff_t CalcStaticCastPtrDiff(const rtti_t *from, const rtti_t *to)
+	{
+		/* use a made-up address located a quarter of the way from zero to the max possible address value */
+		intptr_t ptr1 = std::numeric_limits<intptr_t>::max() / 2;
+		intptr_t ptr2 = ptr1;
+		
+		/* TODO: probably should call the 3-arg version of __do_upcast, so that we can intercept cases where
+		 * abi::__vmi_class_type_info::__do_upcast returns nullptr and indicates either __unknown or __contained_ambig
+		 * while also returning nullptr (we'd need to then emulate the 2-arg version of __do_upcast from
+		 * abi::__class_type_info ourselves) */
+		if (static_cast<const std::type_info *>(to)->__do_upcast(from, (void **)&ptr2) && ptr2 != (intptr_t)nullptr) {
+			return (ptr1 - ptr2);
+		}
+		
+		#error TODO: downcast cases
+		// (probably gonna have to reimplement abi::__dynamic_cast ourselves essentially)
+		assert(false);
+		return 0;
+	}
+#endif
 }
+
+
+#if RTTI_STATIC_CAST_ENABLE
+
+//class CBaseEntity {};
+#include "util/iterate.h"
+
+class CGameEventListener {};
+class CTFGameRulesProxy {};
+
+#define BASE CGameEventListener
+#define DERV CTFGameRulesProxy
+#define OFFS 0x36C
+
+namespace RTTI
+{
+	[[gnu::visibility("default")]]
+	void REMOVEME()
+	{
+		ForEachEntityByClassname("tf_gamerules", [&](CBaseEntity *ent){
+			volatile auto ptr0 = ent;
+			volatile auto ptr1 = (BASE *)((uintptr_t)ptr0 + OFFS);
+			volatile auto ptr2 = rtti_static_cast <DERV *>(ptr1);
+			volatile auto ptr3 = rtti_dynamic_cast<DERV *>(ptr1);
+			
+			Msg("ptr0: 0x%08X\n", (uintptr_t) ptr0);
+			Msg("ptr1: 0x%08X\n", (uintptr_t) ptr1);
+			Msg("ptr2: 0x%08X\n", (uintptr_t) ptr2);
+			Msg("ptr3: 0x%08X\n", (uintptr_t) ptr3);
+		});
+		
+	//	return rtti_static_cast<Y *>(x);
+	}
+}
+
+CON_COMMAND(sig_test_casts, "")
+{
+	RTTI::REMOVEME();
+}
+
+#endif

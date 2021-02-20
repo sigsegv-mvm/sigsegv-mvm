@@ -187,19 +187,6 @@ template<> bool Path::Compute<CTFBotPathCost>(INextBot *nextbot, CBaseCombatChar
 }
 
 
-static MemberFuncThunk<Path *, bool, INextBot *, const Vector&> ft_Path_BuildTrivialPath("Path::BuildTrivialPath");
-bool Path::BuildTrivialPath(INextBot *nextbot, const Vector& dest) { return ft_Path_BuildTrivialPath(this, nextbot, dest); }
-
-static MemberFuncThunk<Path *, bool, INextBot *, const Vector&> ft_Path_ComputePathDetails("Path::ComputePathDetails");
-bool Path::ComputePathDetails(INextBot *nextbot, const Vector& vec) { return ft_Path_ComputePathDetails(this, nextbot, vec); }
-
-static MemberFuncThunk<Path *, void, INextBot *> ft_Path_Optimize("Path::Optimize");
-void Path::Optimize(INextBot *nextbot) { ft_Path_Optimize(this, nextbot); }
-
-static MemberFuncThunk<Path *, void> ft_Path_PostProcess("Path::PostProcess");
-void Path::PostProcess() { ft_Path_PostProcess(this); }
-
-
 CTFBotPathCost::CTFBotPathCost(CTFBot *actor, RouteType rtype) :
 	m_Actor(actor), m_iRouteType(rtype)
 {

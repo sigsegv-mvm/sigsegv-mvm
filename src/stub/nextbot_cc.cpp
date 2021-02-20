@@ -50,3 +50,12 @@ IMPL_RELATIVE(int,                 CTFTankBoss, m_iModelIndex,     m_pBodyInterf
 
 
 StaticFuncThunk<CHalloweenBaseBoss *, CHalloweenBaseBoss::HalloweenBossType, const Vector&, int, CBaseEntity *> CHalloweenBaseBoss::ft_SpawnBossAtPos("CHalloweenBaseBoss::SpawnBossAtPos");
+
+
+IMPL_REL_BEFORE(CZombie::SkeletonType_t, CZombie, m_iSkeletonType, m_flHeadScale);
+IMPL_SENDPROP  (float,                   CZombie, m_flHeadScale,   CZombie);
+
+StaticFuncThunk<CZombie *, const Vector&, float, int, CBaseEntity *, CZombie::SkeletonType_t> CZombie::ft_SpawnAtPos("CZombie::SpawnAtPos");
+
+
+GlobalThunk<CUtlVector<IZombieAutoList *>> IZombieAutoList::m_IZombieAutoListAutoList("IZombieAutoList::m_IZombieAutoListAutoList");

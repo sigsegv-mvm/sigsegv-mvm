@@ -103,7 +103,12 @@ struct CExtract_CTFBot_m_Tags : public IExtract<CUtlVector<CFmtStr> *>
 	virtual uint32_t GetFuncOffMax() const override    { return 0x0000; }
 	virtual uint32_t GetExtractOffset() const override { return 0x0006 + 2; }
 	
-	virtual T AdjustValue(T val) const { return reinterpret_cast<T>((uintptr_t)val - offsetof(CUtlVector, m_Size)); }
+	virtual T AdjustValue(T val) const
+	{
+		/* access protections preclude us from doing an ACTUAL offsetof operation here, which is dumb */
+		constexpr size_t offsetof__CUtlVector__m_Size = 0xc;
+		return reinterpret_cast<T>((uintptr_t)val - offsetof__CUtlVector__m_Size);
+	}
 };
 
 #elif defined _WINDOWS

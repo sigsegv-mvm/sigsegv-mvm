@@ -59,5 +59,24 @@ inline bool DemangleTypeName(const char *mangled, std::string& result)
 #endif
 }
 
+inline const char *DemangleTypeName(const std::type_info& typeinfo)
+{
+	const char *mangled = typeinfo.name();
+	
+#if defined __clang__
+	#error TODO
+#elif defined __GNUC__
+	std::string demangled;
+	if (DemangleTypeName(mangled, demangled)) {
+		extern string_t AllocPooledString(const char *pszValue);
+		return STRING(AllocPooledString(demangled.c_str()));
+	} else {
+		return mangled;
+	}
+#elif defined _MSC_VER
+	return mangled;
+#endif
+}
+
 
 #endif

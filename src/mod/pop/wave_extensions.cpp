@@ -59,11 +59,36 @@ namespace Mod::Pop::Wave_Extensions
 		CHandle<CHalloweenBaseBoss> boss;
 	};
 	
+	struct SkeletonInfo
+	{
+		~SkeletonInfo()
+		{
+			/* WARNING: this removes ALL tf_zombie entities, not just "this one" */
+			for (int i = 0; i < IZombieAutoList::AutoList().Count(); ++i) {
+				auto skeleton = rtti_cast<CZombie *>(IZombieAutoList::AutoList()[i]);
+				if (skeleton == nullptr) continue;
+				
+				skeleton->Remove();
+			}
+		}
+		
+		Vector origin;
+		
+		CZombie::SkeletonType_t type = CZombie::SKELETON_NORMAL;
+		int teamnum = TF_TEAM_HALLOWEEN_BOSS;
+		float delay = 0.0f;
+		float lifetime = 0.0f;
+		
+		bool spawned = false;
+		// CHandle<CZombie> handle; // REMOVE ME IF POSSIBLE
+	};
+	
 	struct WaveData
 	{
 		std::vector<std::string>   explanation;
 		std::vector<SentryGunInfo> sentryguns;
 		std::vector<BossInfo>      bosses;
+		std::vector<SkeletonInfo>  skeletons;
 		std::vector<std::string>   sound_loops;
 		
 		bool red_team_wipe_causes_wave_loss = false;
@@ -147,6 +172,8 @@ namespace Mod::Pop::Wave_Extensions
 	{
 		SentryGunInfo info;
 		
+		bool got_position = false;
+		
 		FOR_EACH_SUBKEY(kv, subkey) {
 			const char *name = subkey->GetName();
 			
@@ -186,13 +213,14 @@ namespace Mod::Pop::Wave_Extensions
 					}
 				}
 				info.use_hint = false;
+				got_position = true;
 			} else {
 				Warning("Unknown key \'%s\' in SentryGun block.\n", name);
 			}
 		}
 		
 		bool fail = false;
-		if (info.use_hint && info.hints.empty()) {
+		if ((info.use_hint && info.hints.empty()) || (!info.use_hint && !got_position)) {
 			Warning("Missing HintName key or Position block in SentryGun block.\n");
 			fail = true;
 		}
@@ -209,6 +237,8 @@ namespace Mod::Pop::Wave_Extensions
 	static void Parse_HalloweenBoss(CWave *wave, KeyValues *kv)
 	{
 		BossInfo info;
+		
+		bool got_position = false;
 		
 		FOR_EACH_SUBKEY(kv, subkey) {
 			const char *name = subkey->GetName();
@@ -251,12 +281,17 @@ namespace Mod::Pop::Wave_Extensions
 						Warning("Unknown key \'%s\' in HalloweenBoss Position sub-block.\n", name);
 					}
 				}
+				got_position = true;
 			} else {
 				Warning("Unknown key \'%s\' in HalloweenBoss block.\n", name);
 			}
 		}
 		
 		bool fail = false;
+		if (!got_position) {
+			Warning("Missing Position block in HalloweenBoss block.\n");
+			fail = true;
+		}
 		if (info.type == CHalloweenBaseBoss::INVALID) {
 			Warning("Missing BossType key in HalloweenBoss block.\n");
 			fail = true;
@@ -281,6 +316,71 @@ namespace Mod::Pop::Wave_Extensions
 		
 		DevMsg("Wave %08x: add HalloweenBoss\n", (uintptr_t)wave);
 		waves[wave].bosses.push_back(info);
+	}
+	
+	static void Parse_Skeleton(CWave *wave, KeyValues *kv)
+	{
+		SkeletonInfo info;
+		
+		bool got_position = false;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "SkeletonType")) {
+				if (FStrEq(subkey->GetString(), "Normal")) {
+					info.type = CZombie::SKELETON_NORMAL;
+				} else if (FStrEq(subkey->GetString(), "King")) {
+					info.type = CZombie::SKELETON_KING;
+				} else if (FStrEq(subkey->GetString(), "Small")) {
+					info.type = CZombie::SKELETON_SMALL;
+				} else {
+					Warning("Invalid value \'%s\' for SkeletonType key in Skeleton block.\n", subkey->GetString());
+				}
+			//	DevMsg("SkeletonType \"%s\" --> %d\n", subkey->GetString(), info.type);
+			} else if (FStrEq(name, "TeamNum")) {
+				info.teamnum = subkey->GetInt();
+			//	DevMsg("TeamNum \"%s\" --> %d\n", subkey->GetString(), info.teamnum);
+			} else if (FStrEq(name, "Delay")) {
+				info.delay = Max(0.0f, subkey->GetFloat());
+			//	DevMsg("Delay \"%s\" --> %.1f\n", subkey->GetString(), info.delay);
+			} else if (FStrEq(name, "Lifetime")) {
+				info.lifetime = Max(0.0f, subkey->GetFloat());
+			//	DevMsg("Lifetime \"%s\" --> %.1f\n", subkey->GetString(), info.lifetime);
+			} else if (FStrEq(name, "Position")) {
+				FOR_EACH_SUBKEY(subkey, subsub) {
+					const char *name = subsub->GetName();
+					float value      = subsub->GetFloat();
+					
+					if (FStrEq(name, "X")) {
+						info.origin.x = value;
+					} else if (FStrEq(name, "Y")) {
+						info.origin.y = value;
+					} else if (FStrEq(name, "Z")) {
+						info.origin.z = value;
+					} else {
+						Warning("Unknown key \'%s\' in Skeleton Position sub-block.\n", name);
+					}
+				}
+				got_position = true;
+			} else {
+				Warning("Unknown key \'%s\' in Skeleton block.\n", name);
+			}
+		}
+		
+		bool fail = false;
+		if (!got_position) {
+			Warning("Missing Position block in Skeleton block.\n");
+			fail = true;
+		}
+		if (info.teamnum != TF_TEAM_HALLOWEEN_BOSS && info.teamnum != TF_TEAM_RED && info.teamnum != TF_TEAM_BLUE) {
+			Warning("Invalid value for TeamNum key in Skeleton block: must be team 5 or 2 or 3.\n");
+			fail = true;
+		}
+		if (fail) return;
+		
+		DevMsg("Wave %08x: add Skeleton\n", (uintptr_t)wave);
+		waves[wave].skeletons.push_back(info);
 	}
 	
 	static void Parse_SoundLoop(CWave *wave, KeyValues *kv)
@@ -318,6 +418,8 @@ namespace Mod::Pop::Wave_Extensions
 				Parse_SentryGun(wave, subkey);
 			} else if (FStrEq(name, "HalloweenBoss")) {
 				Parse_HalloweenBoss(wave, subkey);
+			} else if (FStrEq(name, "Skeleton")) {
+				Parse_Skeleton(wave, subkey);
 			} else if (FStrEq(name, "SoundLoop")) {
 				Parse_SoundLoop(wave, subkey);
 			} else if (FStrEq(name, "RedTeamWipeCausesWaveLoss")) {
@@ -496,8 +598,6 @@ namespace Mod::Pop::Wave_Extensions
 	
 	static void SpawnSentryGuns(SentryGunInfo& info)
 	{
-		info.spawned = true;
-		
 		if (info.use_hint && info.hints.empty()) {
 			Warning("SpawnSentryGuns: info.hints.empty()\n");
 			return;
@@ -510,13 +610,15 @@ namespace Mod::Pop::Wave_Extensions
 		} else {
 			info.sentry = SpawnSentryGun(info.origin, info.angles, info.teamnum, info.level);
 		}
+		
+		if (info.sentry != nullptr) {
+			info.spawned = true;
+		}
 	}
 	
 	
 	static void SpawnBoss(BossInfo& info)
 	{
-		info.spawned = true;
-		
 		CHalloweenBaseBoss *boss = CHalloweenBaseBoss::SpawnBossAtPos(info.type, info.origin, info.teamnum, nullptr);
 		if (boss == nullptr) {
 			Warning("SpawnBoss: CHalloweenBaseBoss::SpawnBossAtPos(type %d, teamnum %d) failed\n", info.type, info.teamnum);
@@ -529,6 +631,19 @@ namespace Mod::Pop::Wave_Extensions
 		}
 		
 		info.boss = boss;
+		info.spawned = true;
+	}
+	
+	
+	static void SpawnSkeleton(SkeletonInfo& info)
+	{
+		CZombie *skeleton = CZombie::SpawnAtPos(info.origin, info.lifetime, info.teamnum, nullptr, info.type);
+		if (skeleton == nullptr) {
+			Warning("SpawnSkeleton: CZombie::SpawnAtPos(type %d, teamnum %d) failed\n", info.type, info.teamnum);
+			return;
+		}
+		
+		info.spawned = true;
 	}
 	
 	
@@ -588,6 +703,12 @@ namespace Mod::Pop::Wave_Extensions
 				SpawnBoss(info);
 			}
 		}
+		
+		for (auto& info : data.skeletons) {
+			if (!info.spawned && !data.t_wavestart.IsLessThen(info.delay)) {
+				SpawnSkeleton(info);
+			}
+		}
 	}
 	
 	DETOUR_DECL_MEMBER(bool, CWave_IsDoneWithNonSupportWaves)
@@ -596,6 +717,7 @@ namespace Mod::Pop::Wave_Extensions
 		
 		auto wave = reinterpret_cast<CWave *>(this);
 		
+		/* don't let the wave end until all Halloween bosses have been killed */
 		auto it = waves.find(wave);
 		if (it != waves.end()) {
 			WaveData& data = (*it).second;
@@ -604,6 +726,16 @@ namespace Mod::Pop::Wave_Extensions
 				if (info.spawned && info.boss != nullptr && info.boss->IsAlive()) {
 					return false;
 				}
+			}
+		}
+		
+		/* don't let the wave end until all skeletons have been killed */
+		for (int i = 0; i < IZombieAutoList::AutoList().Count(); ++i) {
+			auto skeleton = rtti_cast<CZombie *>(IZombieAutoList::AutoList()[i]);
+			if (skeleton == nullptr) continue;
+			
+			if (skeleton->IsAlive()) {
+				return false;
 			}
 		}
 		
@@ -726,6 +858,35 @@ namespace Mod::Pop::Wave_Extensions
 	}
 	
 	
+	/* temporarily spoof tf_max_active_zombie to prevent skeletons from suiciding due to being over-limit */
+	DETOUR_DECL_MEMBER(void, CZombie_Spawn)
+	{
+		COverrideRAII<CConVarOverride_IntVal> override("tf_max_active_zombie", 10000);
+		DETOUR_MEMBER_CALL(CZombie_Spawn)();
+	}
+	
+	
+#if 0
+	RefCount rc_CZombieBehavior_OnKilled__and_is_king;
+	DETOUR_DECL_MEMBER(EventDesiredResult<CZombie>, CZombieBehavior_OnKilled, CZombie *actor, const CTakeDamageInfo& info)
+	{
+		SCOPED_INCREMENT_IF(rc_CZombieBehavior_OnKilled__and_is_king,
+			(TFGameRules()->IsMannVsMachineMode() && actor != nullptr && actor->m_iSkeletonType == CZombie::SKELETON_KING));
+		return DETOUR_MEMBER_CALL(CZombieBehavior_OnKilled)(actor, info);
+	}
+	
+	/* don't drop spells when skeleton kings are killed */
+	DETOUR_DECL_MEMBER(void, CTFGameRules_DropSpellPickup, const Vector& where, int tier)
+	{
+		if (rc_CZombieBehavior_OnKilled__and_is_king > 0) {
+			return;
+		}
+		
+		DETOUR_MEMBER_CALL(CTFGameRules_DropSpellPickup)(where, tier);
+	}
+#endif
+	
+	
 	class CMod : public IMod, public IModCallbackListener
 	{
 	public:
@@ -751,6 +912,13 @@ namespace Mod::Pop::Wave_Extensions
 			
 			MOD_ADD_DETOUR_MEMBER(CEyeballBossDead_Update, "CEyeballBossDead::Update");
 			MOD_ADD_DETOUR_STATIC(CBaseEntity_Create,      "CBaseEntity::Create");
+			
+			MOD_ADD_DETOUR_MEMBER(CZombie_Spawn, "CZombie::Spawn");
+			
+#if 0
+			MOD_ADD_DETOUR_MEMBER(CZombieBehavior_OnKilled,     "CZombieBehavior::OnKilled");
+			MOD_ADD_DETOUR_MEMBER(CTFGameRules_DropSpellPickup, "CTFGameRules::DropSpellPickup");
+#endif
 		}
 		
 		virtual void OnUnload() override

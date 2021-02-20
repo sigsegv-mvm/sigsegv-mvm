@@ -307,7 +307,7 @@ public:
 	#ifdef __GNUC__
 	//#warning TODO: ensure that operator[] returns reference types and that their constness is correct
 	#endif
-	template<typename A> auto operator[](const A& idx) const { return this->Get()[idx]; }
+	template<typename A> auto& operator[](const A& idx) const { return this->Get()[idx]; }
 	
 //	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<( RW2 && std::is_array_v<T2>),       T&/* remove extent */> operator[](/* TODO */) const/*?*/ { /* TODO */ }
 //	template<typename T2 = T, bool RW2 = (!NET || RW)> typename std::enable_if_t<(!RW2 && std::is_array_v<T2>), const T&/* remove extent */> operator[](/* TODO */) const/*?*/ { /* TODO */ }

@@ -1,5 +1,6 @@
 #include "mod.h"
 #include "stub/entities.h"
+#include "stub/tfplayer.h"
 #include "re/nextbot.h"
 #include "util/scope.h"
 #include "util/iterate.h"

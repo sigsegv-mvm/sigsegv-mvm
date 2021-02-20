@@ -140,6 +140,12 @@ public:
 	
 	float GetNextRespawnWave(int iTeam, CBasePlayer *pPlayer) { NULL_RET(0.0f); return vt_GetNextRespawnWave(this, iTeam, pPlayer); }
 	
+	static_assert(MAX_TEAMS == 32);
+	
+	DECL_EXTRACT (float[MAX_TEAMS],       m_flOriginalTeamRespawnWaveTime);
+	DECL_SENDPROP(float[MAX_TEAMS],       m_flNextRespawnWave);
+	DECL_SENDPROP(float[MAX_TEAMS],       m_TeamRespawnWaveTimes);
+	
 private:
 	DECL_SENDPROP(gamerules_roundstate_t, m_iRoundState);
 	DECL_SENDPROP(int,                    m_iWinningTeam);

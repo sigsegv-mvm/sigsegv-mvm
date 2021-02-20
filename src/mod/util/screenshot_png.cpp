@@ -4,6 +4,18 @@
 
 namespace Mod::Util::Screenshot_PNG
 {
+	// TODO: email TF Team and tell them to just make upstream TF2 write screenshots as PNG's
+	// - currently: 'jpeg' cmd does JPEG; 'screenshot' cmd does TGA
+	// - current code flow:
+	//   screenshot concmd calls CL_TakeScreenshot; jpeg concmd calls CL_TakeJpeg
+	//   CL_TakeScreenshot/CL_TakeJpeg set vars for CL_TakeSnapshotAndSwap
+	//   CL_TakeSnapshotAndSwap determines filename and what func to call based on cl_takejpeg var
+	//   CL_TakeSnapshotAndSwap calls into videomode->TakeSnapshot(TGA|JPEG)
+	//   CVideoMode_Common::TakeSnapshot(TGA|JPEG) does the actual business itself
+	// - tell Valve that they can utilize existing code already being used by client & gameui
+	//   - ImgUtl_SavePNGBitmapToBuffer, etc.
+	
+	
 	// detour CL_TakeSnapshotAndSwap
 	// - not strictly necessary actually
 	

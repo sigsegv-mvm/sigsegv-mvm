@@ -348,13 +348,16 @@ public:
 	{
 		auto rtti = RTTI::GetRTTI(this->m_pszName);
 		if (rtti == nullptr) {
+			static_assert((SIZE % 4) == 0);
+			std::fill_n((uint32_t *)m_pDest, SIZE / 4, 0xABAD1DEA);
+			
 			DevMsg("TypeInfoThunk::Link FAIL \"%s\": can't find RTTI\n", this->m_pszName);
 			return false;
 		}
 		
 		memcpy(m_pDest, rtti, SIZE);
 		
-//		DevMsg("TypeInfoThunk::Link OK \"%s\"\n", this->m_pszName);
+		DevMsg("TypeInfoThunk::Link OK \"%s\"\n", this->m_pszName);
 		return true;
 	}
 	
@@ -377,6 +380,9 @@ public:
 	{
 		auto vt = RTTI::GetVTable(this->m_pszName);
 		if (vt == nullptr) {
+			static_assert((SIZE % 4) == 0);
+			std::fill_n((uint32_t *)m_pDest, SIZE / 4, 0xABAD1DEA);
+			
 			DevMsg("VTableThunk::Link FAIL \"%s\": can't find vtable\n", this->m_pszName);
 			return false;
 		}
@@ -391,7 +397,7 @@ public:
 		
 		memcpy(m_pDest, (void *)((uintptr_t)vt + adj), SIZE);
 		
-//		DevMsg("VTableThunk::Link OK \"%s\"\n", this->m_pszName);
+		DevMsg("VTableThunk::Link OK \"%s\"\n", this->m_pszName);
 		return true;
 	}
 	

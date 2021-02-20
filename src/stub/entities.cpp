@@ -79,8 +79,9 @@ struct CExtract_CTeamControlPointMaster_m_ControlPoints : public IExtract<CTeamC
 		uint32_t off_m_ControlPoints_m_Elements_m_pMemory = *(uint32_t *)(ptr + 0x00 + 2);
 		uint32_t off_m_ControlPoints                      = *(uint32_t *)(ptr + 0x0b + 2);
 		
-		static_assert(offsetof(CTeamControlPointMaster::ControlPointMap,             m_Elements) == 0x04);
-		static_assert(offsetof(CTeamControlPointMaster::ControlPointMap::m_Elements, m_pMemory ) == 0x00);
+		/* would be nice to have these sanity checks, but access protections preclude them from working, which is dumb */
+	//	static_assert(offsetof(         CTeamControlPointMaster::ControlPointMap::CTree,              m_Elements) == 0x04);
+	//	static_assert(offsetof(decltype(CTeamControlPointMaster::ControlPointMap::CTree::m_Elements), m_pMemory ) == 0x00);
 		
 		if (off_m_ControlPoints_m_Elements_m_pMemory - 0x04 != off_m_ControlPoints) return false;
 		

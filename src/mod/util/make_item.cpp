@@ -26,6 +26,21 @@
 // - maybe: user restriction functionality (so everyone doesn't use this mod willy-nilly)
 
 
+#warning WARNING: as of 20180708, `sig_makeitem_add_attr "fire rate penalty" 2.5` reliably crashes via _int_free/malloc_printerr!!!
+// "double free or corruption (out)"
+// CRASH STACK:
+// raise
+// abort
+// __libc_message
+// malloc_printerr
+// _int_free
+// std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_Rep::_M_dispose(std::allocator<char> const&)
+// std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace_safe(unsigned int, unsigned int, char const*, unsigned int)
+// std::basic_string<char, std::char_traits<char>, std::allocator<char> >::assign(char const*, unsigned int)
+// CSchemaAttributeType_Default::ConvertEconAttributeValueToString(CEconItemAttributeDefinition const*, attribute_data_union_t const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*) const
+// Mod_Util_Make_Item::CC_AddAttr(CTFPlayer*, CCommand const&)
+
+
 namespace Mod::Util::Make_Item
 {
 	const CSteamID *GetCommandClientSteamID(const char *func, CTFPlayer *player)

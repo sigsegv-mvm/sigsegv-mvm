@@ -2826,6 +2826,8 @@
 				"CTeamplayRules::SetStalemate"   "_ZN14CTeamplayRules12SetStalemateEibb"
 				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				
+				"CTeamplayRoundBasedRules::SetTeamRespawnWaveTime" "_ZN24CTeamplayRoundBasedRules22SetTeamRespawnWaveTimeEif"
+				
 				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
 				
 				"CTeamControlPointMaster::PointLastContestedAt"          "_ZN23CTeamControlPointMaster20PointLastContestedAtEi"
@@ -2848,7 +2850,17 @@
 				
 				"CTFTankBoss::UpdateOnRemove" "_ZN11CTFTankBoss14UpdateOnRemoveEv"
 				
-				"CEyeballBossIdle::OnStart" "_ZN16CEyeballBossIdle7OnStartEP12CEyeballBossP6ActionIS0_E
+				"CEyeballBossIdle::OnStart" "_ZN16CEyeballBossIdle7OnStartEP12CEyeballBossP6ActionIS0_E"
+				"CEyeballBossIdle::Update"  "_ZN16CEyeballBossIdle6UpdateEP12CEyeballBossf"
+				
+				"CEyeballBossDead::Update" "_ZN16CEyeballBossDead6UpdateEP12CEyeballBossf"
+				
+				"CZombie::Spawn"      "_ZN7CZombie5SpawnEv"
+				"CZombie::SpawnAtPos" "_ZN7CZombie10SpawnAtPosERK6VectorfiP11CBaseEntityNS_14SkeletonType_tE"
+				
+				"IZombieAutoList::m_IZombieAutoListAutoList" "_ZN15IZombieAutoList25m_IZombieAutoListAutoListE"
+				
+				"CZombieBehavior::OnKilled" "_ZN15CZombieBehavior8OnKilledEP7CZombieRK15CTakeDamageInfo"
 				
 				"CAttributeList::GetAttributeByID"       "_ZNK14CAttributeList16GetAttributeByIDEi"
 				"CAttributeList::GetAttributeByName"     "_ZNK14CAttributeList18GetAttributeByNameEPKc"

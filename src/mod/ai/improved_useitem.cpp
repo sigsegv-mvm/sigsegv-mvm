@@ -1,7 +1,5 @@
 #include "mod.h"
-#include "stub/tfweaponbase.h"
-#include "re/nextbot.h"
-#include "stub/tfbot.h"
+#include "stub/tfbot_behavior.h"
 
 
 namespace Mod::AI::Improved_UseItem
@@ -10,13 +8,11 @@ namespace Mod::AI::Improved_UseItem
 		"Mod: debug CTFBotUseItemImproved and descendants");
 	
 	
-	class CTFBotUseItem : public Action<CTFBot>
-	{
-	public:
-		CHandle<CTFWeaponBase> m_hItem;
-	};
-	
-	
+	// TODO: figure out why the hell this was made to be Action<CTFBot> rather than IHotplugAction<CTFBot>;
+	// ostensibly it should be the latter, however when I make it the latter, the game goes crashy:
+	// the stack trace seems to indicate that an EIP --> garbage situation occurs in the m_DestroyedActions.PurgeAndDeleteElements()
+	// step of Behavior<CTFBot>::Update, under CTFBotMainAction's dtor and CTFBotTacticalMonitor's dtor
+	// (so it's some kind of "our IHotplugAction virtual dtor doesn't interact well with the game code" situation)
 	class CTFBotUseItemImproved : public IHotplugAction<CTFBot>
 	{
 	public:
@@ -209,27 +205,28 @@ namespace Mod::AI::Improved_UseItem
 	{
 		auto bot = reinterpret_cast<CTFBot *>(this);
 		
-		CTFBotUseItem *result = reinterpret_cast<CTFBotUseItem *>(DETOUR_MEMBER_CALL(CTFBot_OpportunisticallyUseWeaponAbilities)());
+		auto result = reinterpret_cast<CTFBotUseItem *>(DETOUR_MEMBER_CALL(CTFBot_OpportunisticallyUseWeaponAbilities)());
 		if (result != nullptr) {
 			CTFWeaponBase *item = result->m_hItem;
-			
-			if (item->GetWeaponID() == TF_WEAPON_BUFF_ITEM) {
-				delete result;
-				
-				if (CTFBotUseBuffItem::IsPossible(bot)) {
-					return new CTFBotUseBuffItem(item);
-				} else {
-					return nullptr;
+			if (item != nullptr) {
+				if (item->GetWeaponID() == TF_WEAPON_BUFF_ITEM) {
+					delete result;
+					
+					if (CTFBotUseBuffItem::IsPossible(bot)) {
+						return new CTFBotUseBuffItem(item);
+					} else {
+						return nullptr;
+					}
 				}
-			}
-			
-			if (item->GetWeaponID() == TF_WEAPON_LUNCHBOX) {
-				delete result;
 				
-				if (CTFBotUseLunchBoxItem::IsPossible(bot)) {
-					return new CTFBotUseLunchBoxItem(item);
-				} else {
-					return nullptr;
+				if (item->GetWeaponID() == TF_WEAPON_LUNCHBOX) {
+					delete result;
+					
+					if (CTFBotUseLunchBoxItem::IsPossible(bot)) {
+						return new CTFBotUseLunchBoxItem(item);
+					} else {
+						return nullptr;
+					}
 				}
 			}
 		}

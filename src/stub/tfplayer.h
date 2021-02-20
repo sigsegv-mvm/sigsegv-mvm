@@ -220,6 +220,7 @@ enum ETFCond : int32_t
 	TF_COND_ROCKETPACK                       = 125,
 	TF_COND_LOST_FOOTING                     = 126,
 	TF_COND_AIR_CURRENT                      = 127,
+	TF_COND_HALLOWEEN_HELL_HEAL              = 128,
 	
 	TF_COND_COUNT,
 };

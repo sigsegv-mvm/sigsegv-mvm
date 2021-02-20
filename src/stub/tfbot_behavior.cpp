@@ -1,15 +1,10 @@
 #include "stub/tfbot_behavior.h"
-#include "mem/patch.h"
-#include "mem/scan.h"
-#include "util/rtti.h"
+//#include "mem/patch.h"
 
 
 #if defined _MSC_VER || defined __clang__
 #error
 #endif
-
-
-//template<typename T> Action<T>::~Action() {}
 
 
 #if 0
@@ -34,25 +29,6 @@ struct IVerify_CTFBotSeekAndDestroy : public IVerify
 	}
 };
 #endif
-
-
-template<typename T>
-static uint32_t FindAdditionalVTable(const void **vt, ptrdiff_t diff)
-{
-	using VTScanner = CBasicScanner<ScanDir::FORWARD, ScanResults::ALL, 0x4>;
-	
-	const rtti_t *rtti = RTTI::GetRTTI<T>();
-	
-	uint32_t seek[2] = {
-		diff,
-		(uint32_t)rtti,
-	};
-	
-	CScan<VTScanner> scan(CAddrAddrBounds((void *)vt, (void *)((uintptr_t)vt + 0x2000)), seek, sizeof(seek));
-	assert(scan.ExactlyOneMatch());
-	
-	return (uint32_t)scan.FirstMatch() + 0x8;
-}
 
 
 static MemberFuncThunk<CTFBotAttack *, void> ft_CTFBotAttack_ctor("CTFBotAttack::CTFBotAttack [C1]");
@@ -117,20 +93,38 @@ CTFBotMedicHeal *CTFBotMedicHeal::New()
 #endif
 
 
+// REMOVE THIS TOO!!!
+#include "util/base_off.h"
+
+#if 1 // this doesn't work and is crashy, so we need an uglier but workable solution instead... sigh
+
 CTFBotMedicRetreat *CTFBotMedicRetreat::New()
 {
 	// TODO: verify sizeof(CTFBotMedicRetreat) in the game code at runtime
 	// TODO: verify that the addr for the vtable actually exists
 	
 	auto action = new CTFBotMedicRetreat();
-	
-	/* overwrite vtable pointers */
-	auto vt = RTTI::GetVTable<CTFBotMedicRetreat>();
-	*(uint32_t *)((uintptr_t)action + 0x0000) = (uintptr_t)vt;
-	*(uint32_t *)((uintptr_t)action + 0x0004) = FindAdditionalVTable<CTFBotMedicRetreat>(vt, -0x4);
-	
+			#warning SANITY CHECK; PLEASE REMOVE ME!
+			ptrdiff_t sanity_check = base_off<CTFBotMedicRetreat, IContextualQuery>();
+			assert(sanity_check == 0x0004);
+	action->OverwriteVTPtrs<CTFBotMedicRetreat, CTFBotMedicRetreat, IContextualQuery>();
 	return action;
 }
+
+#else
+
+#if defined _LINUX
+
+// TODO: write up a CExtract class to just grab what we need from
+//       the inline ctor contained in the body of CTFBotMedicHeal::Update
+
+#elif defined _WINDOWS
+
+#error
+
+#endif
+
+#endif
 
 
 static MemberFuncThunk<CTFBotSniperLurk *, void> ft_CTFBotSniperLurk_ctor("CTFBotSniperLurk::CTFBotSniperLurk [C1]");
@@ -153,12 +147,7 @@ CTFBotSpyInfiltrate *CTFBotSpyInfiltrate::New()
 	// TODO: verify that the addr for the vtable actually exists
 	
 	auto action = new CTFBotSpyInfiltrate();
-	
-	/* overwrite vtable pointers */
-	auto vt = RTTI::GetVTable<CTFBotSpyInfiltrate>();
-	*(uint32_t *)((uintptr_t)action + 0x0000) = (uintptr_t)vt;
-	*(uint32_t *)((uintptr_t)action + 0x0004) = FindAdditionalVTable<CTFBotSpyInfiltrate>(vt, -0x4);
-	
+	action->OverwriteVTPtrs<CTFBotSpyInfiltrate, CTFBotSpyInfiltrate, IContextualQuery>();
 	return action;
 }
 
@@ -169,12 +158,7 @@ CTFBotEngineerBuild *CTFBotEngineerBuild::New()
 	// TODO: verify that the addr for the vtable actually exists
 	
 	auto action = new CTFBotEngineerBuild();
-	
-	/* overwrite vtable pointers */
-	auto vt = RTTI::GetVTable<CTFBotEngineerBuild>();
-	*(uint32_t *)((uintptr_t)action + 0x0000) = (uintptr_t)vt;
-	*(uint32_t *)((uintptr_t)action + 0x0004) = FindAdditionalVTable<CTFBotEngineerBuild>(vt, -0x4);
-	
+	action->OverwriteVTPtrs<CTFBotEngineerBuild, CTFBotEngineerBuild, IContextualQuery>();
 	return action;
 }
 
@@ -185,12 +169,7 @@ CTFBotDead *CTFBotDead::New()
 	// TODO: verify that the addr for the vtable actually exists
 	
 	auto action = new CTFBotDead();
-	
-	/* overwrite vtable pointers */
-	auto vt = RTTI::GetVTable<CTFBotDead>();
-	*(uint32_t *)((uintptr_t)action + 0x0000) = (uintptr_t)vt;
-	*(uint32_t *)((uintptr_t)action + 0x0004) = FindAdditionalVTable<CTFBotDead>(vt, -0x4);
-	
+	action->OverwriteVTPtrs<CTFBotDead, CTFBotDead, IContextualQuery>();
 	return action;
 }
 

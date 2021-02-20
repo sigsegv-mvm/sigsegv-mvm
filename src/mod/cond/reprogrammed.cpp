@@ -10,6 +10,13 @@
 
 namespace Mod::Cond::Reprogrammed
 {
+	#warning TODO: need another fix for TF_COND_REPROGRAMMED + CMissionPopulator!
+	// specifically: Hell-met says that having red spies makes the Mission populator
+	// disregard the DesiredCount parameter and simply keep spawning them even if they're still alive
+	// BUT, interestingly, CMissionPopulator::UpdateMission only seems to have a bunch of sniper-specific logic in it
+	// ... will need to think about this ...
+	// ALSO: finish the StateType enum for the CMissionPopulator class in IDA!
+	
 	constexpr uint8_t s_Buf_UpdateMission[] = {
 		0x8d, 0x45, 0xa8,                               // +0000  lea eax,[ebp-0x58]
 		0xc7, 0x44, 0x24, 0x0c, 0x00, 0x00, 0x00, 0x00, // +0003  mov dword ptr [esp+0xc],false

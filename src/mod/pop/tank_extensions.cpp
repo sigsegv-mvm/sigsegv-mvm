@@ -12,12 +12,12 @@ namespace Mod::Pop::Tank_Extensions
 {
 	struct SpawnerData
 	{
-		bool disable_smokestack =  false;
-		float scale             =  1.00f;
-		bool force_romevision   =  false;
-		float max_turn_rate     =    NAN;
-		std::string icon        = "tank";
-		bool is_miniboss        =   true;
+		bool disable_smokestack =               false;
+		float scale             =               1.00f;
+		bool force_romevision   =               false;
+		float max_turn_rate     =                 NAN;
+		string_t icon           = MAKE_STRING("tank");
+		bool is_miniboss        =                true;
 		
 		std::vector<CHandle<CTFTankBoss>> tanks;
 	};
@@ -95,7 +95,7 @@ namespace Mod::Pop::Tank_Extensions
 				spawners[spawner].max_turn_rate = subkey->GetFloat();
 			} else if (FStrEq(name, "IconOverride")) {
 			//	DevMsg("Got \"IconOverride\" = \"%s\"\n", subkey->GetString());
-				spawners[spawner].icon = subkey->GetString();
+				spawners[spawner].icon = MAKE_STRING(subkey->GetString());
 			} else if (FStrEq(name, "IsMiniBoss")) {
 			//	DevMsg("Got \"IsMiniBoss\" = %d\n", subkey->GetBool());
 				spawners[spawner].is_miniboss = subkey->GetBool();
@@ -330,7 +330,7 @@ namespace Mod::Pop::Tank_Extensions
 		auto it = spawners.find(spawner);
 		if (it != spawners.end()) {
 			SpawnerData& data = (*it).second;
-			return AllocPooledString(data.icon.c_str());
+			return data.icon;
 		}
 		
 		return DETOUR_MEMBER_CALL(CTankSpawner_GetClassIcon)(index);
@@ -351,21 +351,28 @@ namespace Mod::Pop::Tank_Extensions
 	}
 	
 	
-	RefCount rc_CTFTankBoss_UpdateOnRemove__not_miniboss;
+	RefCount rc_CTFTankBoss_UpdateOnRemove;
+	SpawnerData *data_UpdateOnRemove = nullptr;
 	DETOUR_DECL_MEMBER(void, CTFTankBoss_UpdateOnRemove)
 	{
 		auto tank = reinterpret_cast<CTFTankBoss *>(this);
 		
-		SpawnerData *data = FindSpawnerDataForTank(tank);
-
-		SCOPED_INCREMENT_IF(rc_CTFTankBoss_UpdateOnRemove__not_miniboss, data != nullptr && !data->is_miniboss);
+		SCOPED_INCREMENT(rc_CTFTankBoss_UpdateOnRemove);
+		data_UpdateOnRemove = FindSpawnerDataForTank(tank);
+		
 		DETOUR_MEMBER_CALL(CTFTankBoss_UpdateOnRemove)();
+		
+		data_UpdateOnRemove = nullptr;
 	}
 	
 	DETOUR_DECL_MEMBER(void, CTFObjectiveResource_DecrementMannVsMachineWaveClassCount, string_t name, unsigned int flags)
 	{
-		if (rc_CTFTankBoss_UpdateOnRemove__not_miniboss) {
-			flags &= ~CLASSFLAG_MINIBOSS;
+		if (rc_CTFTankBoss_UpdateOnRemove > 0 && data_UpdateOnRemove != nullptr) {
+			name = data_UpdateOnRemove->icon;
+			
+			if (!data_UpdateOnRemove->is_miniboss) {
+				flags &= ~CLASSFLAG_MINIBOSS;
+			}
 		}
 		
 		DETOUR_MEMBER_CALL(CTFObjectiveResource_DecrementMannVsMachineWaveClassCount)(name, flags);

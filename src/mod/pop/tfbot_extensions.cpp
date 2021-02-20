@@ -115,6 +115,14 @@ namespace Mod::Pop::TFBot_Extensions
 		ACTION_Mobber,
 	};
 	
+	enum OverrideProjectileType
+	{
+		OVERRIDE_PROJ_None,
+		
+		// CTFProjectile_MechanicalArmOrb tf_projectile_mechanicalarmorb
+		OVERRIDE_PROJ_MechanicalArmOrb,
+	};
+	
 	struct SpawnerData
 	{
 		std::vector<AddCond> addconds;
@@ -129,6 +137,8 @@ namespace Mod::Pop::TFBot_Extensions
 		std::string use_custom_model;
 		
 		std::map<int, std::string> custom_weapon_models;
+		
+		std::map<int, OverrideProjectileType> override_projectile_types;
 		
 		std::string rocket_custom_model;
 		std::string rocket_custom_particle;
@@ -154,28 +164,30 @@ namespace Mod::Pop::TFBot_Extensions
 	std::map<CHandle<CTFBot>, CTFBotSpawner *> spawner_of_bot;
 	
 	
-	struct DelayedAddCond
+	struct DelayedAddCondInfo
 	{
-		CHandle<CTFBot> bot;
 		float when;
 		ETFCond cond;
 		float duration;
 	};
-	std::vector<DelayedAddCond> delayed_addconds;
+	std::multimap<CHandle<CTFBot>, DelayedAddCondInfo> delayed_addconds;
+	
+	
+	std::map<CHandle<CTFWeaponBaseGun>, OverrideProjectileType> projectile_type_overrides;
 	
 	
 	static void UpdateDelayedAddConds()
 	{
 		for (auto it = delayed_addconds.begin(); it != delayed_addconds.end(); ) {
-			const auto& info = *it;
+			const auto& [bot, info] = *it;
 			
-			if (info.bot == nullptr || !info.bot->IsAlive()) {
+			if (bot == nullptr || !bot->IsAlive()) {
 				it = delayed_addconds.erase(it);
 				continue;
 			}
 			
 			if (gpGlobals->curtime >= info.when) {
-				info.bot->m_Shared->AddCond(info.cond, info.duration);
+				bot->m_Shared->AddCond(info.cond, info.duration);
 				
 				it = delayed_addconds.erase(it);
 				continue;
@@ -190,7 +202,10 @@ namespace Mod::Pop::TFBot_Extensions
 	{
 		spawners.clear();
 		spawner_of_bot.clear();
+		
 		delayed_addconds.clear();
+		
+		projectile_type_overrides.clear();
 	}
 	
 	
@@ -245,13 +260,8 @@ namespace Mod::Pop::TFBot_Extensions
 	{
 		spawner_of_bot.erase(bot);
 		
-		for (auto it = delayed_addconds.begin(); it != delayed_addconds.end(); ) {
-			if ((*it).bot == bot) {
-				it = delayed_addconds.erase(it);
-			} else {
-				++it;
-			}
-		}
+		delayed_addconds.erase(bot);
+		/* projectile_type_overrides: handled automatically upon bot death or entity removal */
 	}
 	
 	
@@ -325,6 +335,17 @@ namespace Mod::Pop::TFBot_Extensions
 		}
 		
 		DETOUR_MEMBER_CALL(CTFPlayer_StateLeave)();
+	}
+	
+	
+	/* ideally we'd do this in CTFWeaponBaseGun::UpdateOnRemove, but that doesn't exist, so this is close enough */
+	DETOUR_DECL_MEMBER(void, CTFWeaponBase_UpdateOnRemove)
+	{
+		auto weapon = reinterpret_cast<CTFWeaponBase *>(this);
+		
+		projectile_type_overrides.erase(weapon->GetRefEHandle());
+		
+		DETOUR_MEMBER_CALL(CTFWeaponBase_UpdateOnRemove)();
 	}
 	
 	
@@ -562,12 +583,12 @@ namespace Mod::Pop::TFBot_Extensions
 		}
 		
 		if (!got_path) {
-			Warning("No Model path specified in CustomWeaponModel block.\n");
+			Warning("No model path specified in CustomWeaponModel block.\n");
 			return;
 		}
 		
 		if (slot < LOADOUT_POSITION_PRIMARY || slot > LOADOUT_POSITION_PDA2) {
-			Warning("CustomWeaponModel Slot must be in the inclusive range [LOADOUT_POSITION_PRIMARY, LOADOUT_POSITION_PDA2], i.e. [%d, %d].\n",
+			Warning("CustomWeaponModel slot must be in the inclusive range [LOADOUT_POSITION_PRIMARY, LOADOUT_POSITION_PDA2], i.e. [%d, %d].\n",
 				(int)LOADOUT_POSITION_PRIMARY, (int)LOADOUT_POSITION_PDA2);
 			return;
 		}
@@ -575,6 +596,61 @@ namespace Mod::Pop::TFBot_Extensions
 		DevMsg("CTFBotSpawner %08x: add CustomWeaponModel(%d, \"%s\")\n",
 			(uintptr_t)spawner, slot, path);
 		spawners[spawner].custom_weapon_models[slot] = path;
+	}
+	
+	static void Parse_OverrideProjectileType(CTFBotSpawner *spawner, KeyValues *kv)
+	{
+		int slot = -1;
+		const char *type_str = "";
+		OverrideProjectileType type = OVERRIDE_PROJ_None;
+		
+		bool got_slot = false;
+		bool got_type = false;
+		
+		FOR_EACH_SUBKEY(kv, subkey) {
+			const char *name = subkey->GetName();
+			
+			if (FStrEq(name, "Slot")) {
+				if (subkey->GetDataType() == KeyValues::TYPE_STRING) {
+					slot = GetLoadoutSlotByName(subkey->GetString());
+				} else {
+					slot = subkey->GetInt();
+				}
+				got_slot = true;
+			} else if (FStrEq(name, "Type")) {
+				type_str = subkey->GetString();
+				got_type = true;
+			} else {
+				Warning("Unknown key \'%s\' in OverrideProjectileType block.\n", name);
+			}
+		}
+		
+		if (!got_slot) {
+			Warning("No weapon slot specified in OverrideProjectileType block.\n");
+			return;
+		}
+		
+		if (!got_type) {
+			Warning("No projectile type specified in OverrideProjectileType block.\n");
+			return;
+		}
+		
+		if (slot < LOADOUT_POSITION_PRIMARY || slot > LOADOUT_POSITION_MELEE) {
+			Warning("OverrideProjectileType slot must be in the inclusive range [LOADOUT_POSITION_PRIMARY, LOADOUT_POSITION_MELEE], i.e. [%d, %d].\n",
+				(int)LOADOUT_POSITION_PRIMARY, (int)LOADOUT_POSITION_MELEE);
+			return;
+		}
+		
+		if (FStrEq(type_str, "MechanicalArmOrb")) {
+			type = OVERRIDE_PROJ_MechanicalArmOrb;
+		} else {
+			Warning("Unknown projectile type \'%s\' in OverrideProjectileType block.\n", type_str);
+			return;
+		}
+		
+		DevMsg("CTFBotSpawner %08x: add OverrideProjectileType(%d, \"%s\")\n",
+			(uintptr_t)spawner, slot, type_str);
+		spawners[spawner].override_projectile_types[slot] = type;
 	}
 	
 	DETOUR_DECL_MEMBER(bool, CTFBotSpawner_Parse, KeyValues *kv_orig)
@@ -610,6 +686,8 @@ namespace Mod::Pop::TFBot_Extensions
 				Parse_HomingRockets(spawner, subkey);
 			} else if (FStrEq(name, "CustomWeaponModel")) {
 				Parse_CustomWeaponModel(spawner, subkey);
+			} else if (FStrEq(name, "OverrideProjectileType")) {
+				Parse_OverrideProjectileType(spawner, subkey);
 			} else if (FStrEq(name, "UseHumanModel")) {
 				spawners[spawner].use_human_model = subkey->GetBool();
 			} else if (FStrEq(name, "UseBusterModel")) {
@@ -703,13 +781,12 @@ namespace Mod::Pop::TFBot_Extensions
 					spawner_of_bot[bot] = spawner;
 					
 				//	DevMsg("CTFBotSpawner %08x: found %u AddCond's\n", (uintptr_t)spawner, data.addconds.size());
-					for (auto addcond : data.addconds) {
+					for (const auto& addcond : data.addconds) {
 						if (addcond.delay == 0.0f) {
 							DevMsg("CTFBotSpawner %08x: applying AddCond(%d, %f)\n", (uintptr_t)spawner, addcond.cond, addcond.duration);
 							bot->m_Shared->AddCond(addcond.cond, addcond.duration);
 						} else {
-							delayed_addconds.push_back({
-								bot,
+							delayed_addconds.emplace(bot, DelayedAddCondInfo{
 								gpGlobals->curtime + addcond.delay,
 								addcond.cond,
 								addcond.duration,
@@ -748,11 +825,8 @@ namespace Mod::Pop::TFBot_Extensions
 					}
 					
 					// should really be in OnEventChangeAttributes, where ItemAttributes are applied
-					for (const auto& pair : data.item_colors) {
-						const char *item_name     = pair.first.c_str();
-						const color32& item_color = pair.second;
-						
-						CEconItemDefinition *item_def = GetItemSchema()->GetItemDefinitionByName(item_name);
+					for (const auto& [item_name, item_color] : data.item_colors) {
+						CEconItemDefinition *item_def = GetItemSchema()->GetItemDefinitionByName(item_name.c_str());
 						if (item_def == nullptr) continue;
 						
 						for (int i = 0; i < bot->GetNumWearables(); ++i) {
@@ -764,7 +838,7 @@ namespace Mod::Pop::TFBot_Extensions
 							
 							if (item_view->GetItemDefIndex() == item_def->m_iItemDefIndex) {
 								DevMsg("CTFBotSpawner %08x: applying color %02X%02X%02X to item \"%s\"\n",
-									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name);
+									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name.c_str());
 								
 								wearable->SetRenderColorR(item_color.r);
 								wearable->SetRenderColorG(item_color.g);
@@ -781,7 +855,7 @@ namespace Mod::Pop::TFBot_Extensions
 							
 							if (item_view->GetItemDefIndex() == item_def->m_iItemDefIndex) {
 								DevMsg("CTFBotSpawner %08x: applying color %02X%02X%02X to item \"%s\"\n",
-									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name);
+									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name.c_str());
 								
 								weapon->SetRenderColorR(item_color.r);
 								weapon->SetRenderColorG(item_color.g);
@@ -798,7 +872,7 @@ namespace Mod::Pop::TFBot_Extensions
 							
 							if (item_view->GetItemDefIndex() == item_def->m_iItemDefIndex) {
 								DevMsg("CTFBotSpawner %08x: applying color %02X%02X%02X to item \"%s\"\n",
-									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name);
+									(uintptr_t)spawner, item_color.r, item_color.g, item_color.b, item_name.c_str());
 								
 								econ_entity->SetRenderColorR(item_color.r);
 								econ_entity->SetRenderColorG(item_color.g);
@@ -808,28 +882,36 @@ namespace Mod::Pop::TFBot_Extensions
 					#endif
 					}
 					
-					for (const auto& pair : data.custom_weapon_models) {
-						int slot         = pair.first;
-						const char *path = pair.second.c_str();
-						
+					for (const auto& [slot, path] : data.custom_weapon_models) {
 						CBaseEntity *item;
 						if ((item = bot->GetEquippedWearableForLoadoutSlot(slot)) == nullptr &&
 							(item = bot->Weapon_GetSlot(slot)) == nullptr) {
-							DevMsg("CTFBotSpawner %08x: can't find item slot %d for CustomWeaponModel\n",
+							DevMsg("CTFBotSpawner %08x: can't find item in slot %d for CustomWeaponModel\n",
 								(uintptr_t)spawner, slot);
 							continue;
 						}
 						
-						DevMsg("CTFBotSpawner %08x: item slot %d is entity #%d classname \"%s\"\n",
+						DevMsg("CTFBotSpawner %08x: item in slot %d is entity #%d classname \"%s\"\n",
 							(uintptr_t)spawner, slot, ENTINDEX(item), item->GetClassname());
 						
 						DevMsg("CTFBotSpawner %08x: changing item model to \"%s\"\n",
-							(uintptr_t)spawner, path);
+							(uintptr_t)spawner, path.c_str());
 						
-						CBaseEntity::PrecacheModel(path);
+						CBaseEntity::PrecacheModel(path.c_str());
 						for (int i = 0; i < MAX_VISION_MODES; ++i) {
-							item->SetModelIndexOverride(i, modelinfo->GetModelIndex(path));
+							item->SetModelIndexOverride(i, modelinfo->GetModelIndex(path.c_str()));
 						}
+					}
+					
+					for (const auto& [slot, type] : data.override_projectile_types) {
+						CTFWeaponBaseGun *weapon;
+						if ((weapon = rtti_cast<CTFWeaponBaseGun *>(bot->Weapon_GetSlot(slot))) == nullptr) {
+							DevMsg("CTFBotSpawner %08x: can't find weapon in slot %d for OverrideProjectileType\n",
+								(uintptr_t)spawner, slot);
+							continue;
+						}
+						
+						projectile_type_overrides.emplace(weapon, type);
 					}
 				}
 			}
@@ -973,6 +1055,80 @@ namespace Mod::Pop::TFBot_Extensions
 		}
 		
 		return DETOUR_MEMBER_CALL(CTFGameRules_ApplyOnDamageModifyRules)(info, pVictim, b1);
+	}
+	
+	
+	#warning TODO: regression-test AddCond param [multimap conversion]
+	#warning TODO: test OverrideProjectileType param
+	#warning TODO: wiki documentation for OverrideProjectileType
+	// DOCUMENTATION:
+	// - explain the purpose (to enable "override_projectile_type" functionality for proj's that lack numbers for that)
+	// - it trumps the "override_projectile_type" attribute, if any, that's on the weapon
+	// - it stays on the weapon, not the bot
+	// - same slot selection syntax as CustomWeaponModel (number or name are both fine)
+	// - explain the possible projectile type names that are available and what they are
+	
+	DETOUR_DECL_MEMBER(CBaseEntity *, CTFWeaponBaseGun_FireProjectile, CTFPlayer *player)
+	{
+		auto weapon = reinterpret_cast<CTFWeaponBaseGun *>(this);
+		
+		CBaseEntity *retval;
+		
+		auto it = projectile_type_overrides.find(weapon);
+		if (it == projectile_type_overrides.end()) {
+			goto no_override;
+		}
+		
+		switch ((*it).second) {
+			
+			case OVERRIDE_PROJ_MechanicalArmOrb:
+			{
+				/* based on CTFMechanicalArm::SecondaryAttack */
+				
+				retval = CBaseEntity::CreateNoSpawn("tf_projectile_mechanicalarmorb", player->EyePosition(), player->EyeAngles(), player);
+				
+				auto projectile = rtti_cast<CTFProjectile_MechanicalArmOrb *>(retval);
+				if (projectile != nullptr) {
+					projectile->SetOwnerEntity(player);
+					projectile->SetLauncher   (weapon);
+					
+					Vector eye_angles_fwd;
+					AngleVectors(player->EyeAngles(), &eye_angles_fwd);
+					projectile->SetAbsVelocity(700.0f * eye_angles_fwd);
+					
+					projectile->ChangeTeam(player->GetTeamNumber());
+					
+					if (projectile->IsCritical()) {
+						projectile->SetCritical(false);
+					}
+					
+					DispatchSpawn(projectile);
+				}
+				
+				break;
+			}
+			
+			default:
+				goto no_override;
+		}
+		
+		if (weapon->ShouldPlayFireAnim()) {
+			player->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
+		}
+		
+		weapon->RemoveProjectileAmmo(player);
+		weapon->m_flLastFireTime = gpGlobals->curtime;
+		weapon->DoFireEffects();
+		weapon->UpdatePunchAngles(player);
+		
+		if (player->m_Shared->IsStealthed() && weapon->ShouldRemoveInvisibilityOnPrimaryAttack()) {
+			player->RemoveInvisibility();
+		}
+		
+		return retval;
+		
+	no_override:
+		return DETOUR_MEMBER_CALL(CTFWeaponBaseGun_FireProjectile)(player);
 	}
 	
 	
@@ -1333,6 +1489,8 @@ namespace Mod::Pop::TFBot_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_StateEnter, "CTFPlayer::StateEnter");
 			MOD_ADD_DETOUR_MEMBER(CTFPlayer_StateLeave, "CTFPlayer::StateLeave");
 			
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBase_UpdateOnRemove, "CTFWeaponBase::UpdateOnRemove");
+			
 			MOD_ADD_DETOUR_MEMBER(CTFBotSpawner_Parse, "CTFBotSpawner::Parse");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFBotSpawner_Spawn, "CTFBotSpawner::Spawn");
@@ -1346,6 +1504,8 @@ namespace Mod::Pop::TFBot_Extensions
 			MOD_ADD_DETOUR_MEMBER(CTFBot_GetFlagCaptureZone, "CTFBot::GetFlagCaptureZone");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFGameRules_ApplyOnDamageModifyRules, "CTFGameRules::ApplyOnDamageModifyRules");
+			
+			MOD_ADD_DETOUR_MEMBER(CTFWeaponBaseGun_FireProjectile, "CTFWeaponBaseGun::FireProjectile");
 			
 			MOD_ADD_DETOUR_MEMBER(CTFWeaponBaseGun_FireRocket, "CTFWeaponBaseGun::FireRocket");
 			

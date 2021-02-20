@@ -22,6 +22,7 @@ constexpr size_t countof()
 	
 	return extent;
 }
+#define countof(x) countof<decltype(x)>()
 
 
 template<typename T, T BASE = 10>
@@ -107,6 +108,10 @@ template<typename T>
 	val += (mult - 1);
 	return (val & ~(mult - 1));
 }
+
+
+std::string HexDump(const void *ptr, size_t len, bool absolute = false);
+void HexDumpToSpewFunc(void (*func)(const char *, ...), const void *ptr, size_t len, bool absolute = false);
 
 
 /* use this when you want to do e.g. multiple calls to console spew functions
