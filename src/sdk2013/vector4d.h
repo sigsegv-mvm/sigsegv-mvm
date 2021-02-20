@@ -594,15 +594,15 @@ constexpr vec_t Vector4DNormalize( Vector4D& v )
 
 constexpr vec_t Vector4D::DistTo(const Vector4D &vOther) const
 {
-	Vector4D delta;
-	Vector4DSubtract( *this, vOther, delta );
+	Vector4D delta = *this;
+	delta -= vOther;
 	return delta.Length();
 }
 
 constexpr vec_t Vector4D::DistToSqr(const Vector4D &vOther) const
 {
-	Vector4D delta;
-	Vector4DSubtract( *this, vOther, delta );
+	Vector4D delta = *this;
+	delta -= vOther;
 	return delta.LengthSqr();
 }
 

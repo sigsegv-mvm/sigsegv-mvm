@@ -551,16 +551,12 @@ constexpr vec_t Vector2DNormalize( Vector2D& v )
 //-----------------------------------------------------------------------------
 constexpr vec_t Vector2D::DistTo(const Vector2D &vOther) const
 {
-	Vector2D delta;
-	Vector2DSubtract( *this, vOther, delta );
-	return delta.Length();
+	return (*this - vOther).Length();
 }
 
 constexpr vec_t Vector2D::DistToSqr(const Vector2D &vOther) const
 {
-	Vector2D delta;
-	Vector2DSubtract( *this, vOther, delta );
-	return delta.LengthSqr();
+	return (*this - vOther).LengthSqr();
 }
 
 
@@ -569,8 +565,7 @@ constexpr vec_t Vector2D::DistToSqr(const Vector2D &vOther) const
 //-----------------------------------------------------------------------------
 constexpr void ComputeClosestPoint2D( const Vector2D& vecStart, float flMaxDist, const Vector2D& vecTarget, Vector2D *pResult )
 {
-	Vector2D vecDelta;
-	Vector2DSubtract( vecTarget, vecStart, vecDelta );
+	Vector2D vecDelta = vecTarget - vecStart;;
 	float flDistSqr = vecDelta.LengthSqr();
 	if ( flDistSqr <= flMaxDist * flMaxDist )
 	{
@@ -620,45 +615,35 @@ constexpr Vector2D Vector2D::operator-(void) const
 }
 
 constexpr Vector2D Vector2D::operator+(const Vector2D& v) const	
-{ 
-	Vector2D res;
-	Vector2DAdd( *this, v, res );
-	return res;	
+{
+	return Vector2D(x + v.x, y + v.y);
 }
 
 constexpr Vector2D Vector2D::operator-(const Vector2D& v) const	
 { 
-	Vector2D res;
-	Vector2DSubtract( *this, v, res );
-	return res;	
+	return Vector2D(x - v.x, y - v.y);
 }
 
 constexpr Vector2D Vector2D::operator*(float fl) const	
 { 
-	Vector2D res;
-	Vector2DMultiply( *this, fl, res );
-	return res;	
+	return Vector2D(x * fl, y * fl);
 }
 
 constexpr Vector2D Vector2D::operator*(const Vector2D& v) const	
 { 
-	Vector2D res;
-	Vector2DMultiply( *this, v, res );
-	return res;	
+	return Vector2D(x * v.x, y * v.y);
 }
 
 constexpr Vector2D Vector2D::operator/(float fl) const	
 { 
-	Vector2D res;
-	Vector2DDivide( *this, fl, res );
-	return res;	
+	Assert(fl != 0.0f);
+	return Vector2D(x / fl, y / fl);
 }
 
 constexpr Vector2D Vector2D::operator/(const Vector2D& v) const	
 { 
-	Vector2D res;
-	Vector2DDivide( *this, v, res );
-	return res;	
+	Assert(v.x != 0.0f && v.y != 0.0f);
+	return Vector2D(x / v.x, y / v.y);
 }
 
 constexpr Vector2D operator*(float fl, const Vector2D& v)	
